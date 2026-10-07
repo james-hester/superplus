@@ -1,0 +1,8 @@
+rom_dispatch_table PROC EXPORT
+    EXPORT DispTable,rom_dispatch_table_end
+    INCLUDE ':DispatchSize.a'
+DispTable EQU *
+    DCB.B DispatchBytes,0
+rom_dispatch_table_end EQU *
+    ENDP
+    END

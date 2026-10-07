@@ -102,9 +102,9 @@ In assembler sources, `;]` marks added instructions, declarations, labels, or co
 | `Source/Resources/Cursors.r` | `$41F14C–$41F27B` | 304 | Four cursor resources and memory headers |
 | `Source/Resources/SystemFonts.r` | `$41F27C–$41FFBF` | 3,396 | Chicago font resources and memory headers |
 | `Source/ROMTail.a` | `$41FFC0–$41FFCF` | 16 | SCSI reset helper |
-| Hiram, configured in `target.json` | `$41FFD0–$41FFFF` | 48 | Initials, build date, and trailing date length |
+| Hiram, configured in `MPW/ROM.make` | `$41FFD0–$41FFFF` | 48 | Initials, build date, and trailing date length |
 
-QuickDraw forms one continuous span. Its sources include the original mask, slope, region, pattern, raster, and stretch tables. Its local `GrafTypes.a` holds declarations from the earlier QuickDraw source release. `Source/QuickDraw/CrossCheck.json` links the revised sources to that release and to the previous module hashes. The older evidence remains a historical record; the latest build records both module and include hashes. `target.json` lists each module, placement, and checked entry points. The matching evidence files describe each module's ancestors and restoration. Recorded addresses check the linked result; they do not supply symbol values to the assembler.
+QuickDraw forms one continuous span. Its sources include the original mask, slope, region, pattern, raster, and stretch tables. Its local `GrafTypes.a` holds declarations from the earlier QuickDraw source release. `Source/QuickDraw/CrossCheck.json` links the revised sources to that release and to the previous module hashes. The evidence files record module addresses, source hashes, and restoration history. The build uses linker symbols to resolve addresses and checks the finished ROM's SHA-256.
 
 Filenames and module boundaries are reconstruction choices. `Points.a`, for example, comes from `QuickDraw/Classic/GrafAsm.m.a`. Matching bytes establish emitted code and data, but cannot establish the exact text or file organization of the lost sources. `StartInit.a` and `StartBoot.a` group the former startup fragments under names used in SuperMario. Older `Evidence/` snapshots retain the fragment paths, spans, and hashes recorded before that regrouping.
 
@@ -116,76 +116,44 @@ Source-history dates can conflict with the ROM import filename. The filename say
 
 ## Build and verify
 
-The build uses MPW Make, Asm, Rez, Link, and SC through the `mpw` emulator. Run from the project root:
+Run `make` from the project root to build the ROM with MPW and verify its SHA-256:
 
 ```sh
-python3 Tools/verify.py --require-complete
-python3 -m unittest discover -s Tools -p 'test_*.py'
+make
+make test
 ```
 
-Install Python 3, `mpw`, `mpw-make`, and an MPW installation with its assembler, Rez compiler, linker, C compiler, headers, and libraries. The build uses no GNU m68k tools, Retro68 installation, or host C compiler. These environment variables select other installations:
+Install Python 3, `mpw`, `mpw-shell`, and an MPW installation with Make, Asm, Rez, Link, SC, SetFile, headers, and libraries. Put the emulator and `mpw-shell` on `PATH`. The `MPW` environment variable selects the MPW installation; the emulator otherwise searches its standard locations, including `~/mpw`. `make MPW_SHELL=/path/to/mpw-shell` selects another MPW shell. `make BUILD=/private/tmp/macplus-build` selects another output directory.
 
-| Variable | Purpose | Default |
-| --- | --- | --- |
-| `MPW` | MPW tools, headers, and libraries | `~/mpw` |
-| `MPW_EXECUTABLE` | The `mpw` emulator | `mpw` on `PATH`, then `~/bin/mpw` |
-| `MPW_MAKE_EXECUTABLE` | The shell that executes MPW Make's commands | `mpw-make` beside the emulator, on `PATH`, or in `~/bin` |
-| `SUPER_MARIO_ROOT` | Surviving source tree used for provenance checks | `~/src/supermario/base/SuperMarioProj.1994-02-09` |
+The checked-in [MPW/ROM.make](MPW/ROM.make) owns the build. MPW Make emits the commands needed to update its targets, and `mpw-shell` executes them through the emulator's MPW shell. Asm assembles the sources, Rez compiles resources, Link joins objects in ROM order, and SC compiles ROMBuild and Hiram. Hiram writes `Build/MacPlus-v3.rebuilt.bin`. The Unix Makefile checks Make's exit status before running its commands, then runs `shasum -a 256 -c` against [ROM/MacPlus-v3.sha256](ROM/MacPlus-v3.sha256).
 
-To prepare the sources and run MPW Make yourself:
+To run the steps separately:
 
 ```sh
-python3 Tools/verify.py --prepare-only
-cd Build
-mpw-make -f Makefile
+make prepare
+(cd Build && mpw Make -f MPW/ROM.make > ROM.commands && mpw-shell < ROM.commands)
+make verify
 ```
 
-MPW `Make` emits the commands required to update its targets. `mpw-make` runs that tool and executes its output through the emulator's MPW shell. The generated Makefile runs Asm, Rez, Link, SC, ROMBuild, and Hiram. Its recipes do not invoke Python or a host compiler. Run the verifier again from the project root to compare the result with the reference ROM.
+`make prepare` runs `Tools/stage.py`. It copies assembly, Rez, C, and MPW build inputs into `Build/`, converts UTF-8 to MacRoman and LF to CR, and sets the MPW text file type. It removes deleted inputs from those copies and preserves unchanged files' timestamps. A changed input updates `SourceStamp`, which makes MPW Make rebuild the assembly objects. This conservative dependency rule covers nested and macro-selected includes without parsing assembly in Python. Rerun preparation after editing source files. Use `make clean` for a fresh build after changing the MPW installation.
 
-The preparation step keeps `Source/` in UTF-8 and stages MacRoman copies with carriage-return line endings under `Build/Inputs/`. A generated wrapper includes each module and supplies an empty exported procedure that marks its start in the link map. Asm reads the includes, expands macros, evaluates expressions and conditions, and resolves procedure scopes. Its diagnostics identify the source file and line. Python records input hashes and checks the resulting bytes and symbols.
+[MPW/Asm.a](MPW/Asm.a) supplies `MACHINE MC68000`, `STRING ASIS`, and `OPT SYNON`, then includes the source selected by each Make rule. Asm reads includes, expands macros, evaluates expressions and conditions, and resolves procedure scopes. Imports and exports carry references between objects. Two short calls in `MFSVOL.a` use byte-displacement expressions through the adjacent `Gt1stFCB` boundary because Asm rejects their unresolved imported operands. Link checks the signed-byte range.
 
-The wrapper selects `MACHINE MC68000`, `STRING ASIS`, and `OPT SYNON`. Source instructions use explicit quick forms where the ROM requires them. Source `OPT NONE` directives preserve a few long immediate operations on address registers, then restore `OPT SYNON`. Asm also handles the startup macros' `LCLC`, `SETC`, and `&Setting` directives. `BSR5` and `BSR6` use `BRA.W`: Asm can shorten a branch to an already-known target, but retains `BRA.L` for forward and imported targets. Scoped machine declarations preserve the startup CPU probe and restore the 68000 instruction limit afterward.
+Asm runs with `-sym on,nolines -wb`. Omitting line records avoids an Asm object-file defect found in ATP. Link writes `Build/MacPlus-v3.rom`, a `ZROM` file containing resource `'ROM '` with ID zero, and `Build/MacPlus-v3.map` for inspection. The build does not parse listings or maps, check private label names or addresses, compare individual modules, or require the historical source tree. A label rename needs no separate verification metadata.
 
-MPW imports and exports carry references between procedures and objects. Two short calls in `MFSVOL.a` use explicit byte-displacement expressions because Asm rejects their unresolved imported operands. Those expressions use the adjacent `Gt1stFCB` boundary. Link checks the signed-byte range, and the verifier checks the boundary equality declared in `target.json`. Python emits no instruction encodings or ROM addresses.
+The link reserves space for the compressed dispatch table and appends its 768 long offsets after the ROM prefix. ROMBuild reads layout metadata emitted by the linker and compresses those offsets. MPW Make adjusts the reservation and relinks until its size agrees with the encoded table, with a limit of 16 passes. ROMBuild fills the reservation and writes `Build/MacPlus-v3.unfinished.bin`. Hiram fills the tail from the linked prefix boundary with the supplied initials and date, then writes the checksum. Neither tool reads the reference ROM.
 
-MPW Asm runs with `-sym on,nolines -wb -l`. Omitting line records avoids an Asm object-file defect found in the ATP module. MPW Link joins the objects in manifest order into `Build/MacPlus-v3.rom`, a `ZROM` file containing resource `'ROM '` with ID zero. SC and Link build the ROMBuild and Hiram tools from their C sources.
+SuperMario's `OS/DispTable.a` describes a compressor run after linking and emits `handler-BaseOfROM` values. Its `Make/MainCode.Make` keeps that table last. A July 1986 note in `Interfaces/AIncludes/HardwareEqu.a` names `postlinker.a`; `OS/StartMgr/StartInit.a` supplies its trap count, and `OS/TrapDispatcher/Dispatch.a` retains the decoder. No implementation of PostLinker was found in the local release. The reservation and relinking used here adapt that process to the Plus table's position before QuickDraw; they do not establish Apple's original build algorithm.
 
-Trap calls retain their `OPWORD` declarations and MPW options, such as `_NewPtr ,SYS,CLEAR` and `_Read ,ASYNC`. Asm combines the option bits with the base trap word. `GrafTraps.a` preserves the original QuickDraw trap macros from `QuickDraw/Classic/GrafTypes.m.a`.
+Rez compiles the cursor and font `.r` files into resource forks. ROMBuild reads them through the Resource Manager and emits assembly in the order declared by `MPW/rom-cursors.layout` and `MPW/rom-fonts.layout`. Each resource receives an eight-byte memory header and exported labels; Asm then builds its object file. The resource map derives ROM offsets from those labels.
 
-The link reserves space for the compressed dispatch table in its ROM position and appends the 768 long offsets after the ROM prefix. ROMBuild reads symbol-derived layout metadata and compresses those offsets using the format documented in the surviving `OS/TrapDispatcher/Dispatch.a`. MPW Make adjusts the reservation and relinks until its size agrees with the encoded table, with a limit of 16 passes. ROMBuild then fills the reservation and writes `Build/MacPlus-v3.unfinished.bin`. All code retains its final linked position. The verifier independently decodes the compressed table, compares all offsets, and checks the compressed bytes against the reference. The generated dispatch `.uncompressed.bin` records the offsets before compression; its `.bin` file contains the ROM encoding.
-
-SuperMario's `OS/DispTable.a` describes a post-link compressor and emits `handler-BaseOfROM` values. Its `Make/MainCode.Make` keeps that table last. A July 1986 note in `Interfaces/AIncludes/HardwareEqu.a` names `postlinker.a`; `OS/StartMgr/StartInit.a` supplies its trap count, and `OS/TrapDispatcher/Dispatch.a` retains the decoder. No implementation of PostLinker was found in the local release. The reservation and relinking used here adapt that process to the Plus table's position before QuickDraw; they do not claim to recover Apple's original build algorithm.
-
-MPW Rez compiles the cursor and font `.r` files into resource forks. ROMBuild reads them through the Resource Manager and emits assembly in the resource order declared by `target.json`. Each resource receives an eight-byte memory header and exported labels; Asm then builds its object file. ROMBuild checks the resource set, IDs, names, and attributes before emitting data. The map source derives ROM offsets from those labels.
-
-The surviving Rez sources already supply these payloads. `Source/Resources/Cursors.r` contains four unchanged resources from SuperMario's `Resources/ROMFonts.r`. `Source/Resources/SystemFonts.r` contains FONT 0 and FONT 12 from the surviving `Resources/SystemFonts.r`, with FONT 12's final word restored from `$0009` to `$FFFF`. The Chicago 12 in the later `ROMFonts.r` differs substantially. These local excerpts retain the resources needed by this ROM.
-
-SuperMario's `Resources/Resources.make` compiles `ROMFonts.rsrc` with Rez. Its Hiram history records the addition of memory headers in February 1985; the surviving `buildRsrcImage` routine extracts resource payloads and adds those headers. That later Hiram uses a different ROM map format. ROMBuild supplies the Plus headers and linker labels here; Rez's resource-fork layout is only an intermediate representation.
-
-Hiram reads the unfinished prefix, fills the tail from the linked prefix boundary with initials and the supplied date, and writes the checksum. It produces `Build/MacPlus-v3.hiram.bin`. The verifier compares every byte with the reference and independently checks the checksum before publishing `Build/MacPlus-v3.rebuilt.bin`. Neither ROMBuild nor Hiram reads the reference ROM or fills gaps in assembled code.
-
-`Build/verification.json` records a successful verification. `Build/mpw-build.json` records Make's inputs, command, tool hashes, and outputs. The build directory also contains staged assembly, object files, assembler listings, `MacPlus-v3.map`, and Make's output logs. Source and output hashes invalidate stale objects and images, including changes that retain an old file timestamp. Unchanged preparation files keep their timestamps so MPW Make can reuse existing outputs. Failed MPW builds remove the finished images and their build records. Each verification run removes the prior verification report and verified image before checking the inputs.
-
-The verifier checks module lengths, declared entry points, span boundaries, source inventories, and the reference image's hash and checksum. `--require-complete` requires every declared span through Hiram's fill boundary. Asm and Link report assembly and relocation errors; byte comparison detects valid source changes that alter the ROM. Native listings and the link map supply entry-point addresses, including private labels inside procedures.
+`Source/Resources/Cursors.r` contains four unchanged resources from SuperMario's `Resources/ROMFonts.r`. `Source/Resources/SystemFonts.r` contains FONT 0 and FONT 12 from the surviving `Resources/SystemFonts.r`, with FONT 12's final word restored from `$0009` to `$FFFF`. The Chicago 12 in the later `ROMFonts.r` differs substantially. SuperMario's `Resources/Resources.make` compiles these resources with Rez. Its surviving Hiram extracts resource payloads and adds memory headers, but uses a later ROM map format. ROMBuild supplies the Plus headers and linker labels here.
 
 ## Python tools
 
-Python prepares the source files, starts MPW Make, and checks the resulting ROM. MPW Asm, Rez, Link, SC, ROMBuild, and Hiram produce the image. The generated Makefile does not invoke Python.
+`Tools/stage.py` converts build inputs to MPW text. It does not generate the Makefile, interpret assembly, or inspect build outputs. `make verify` checks only the finished ROM's SHA-256 and exits with an error if the file is missing or differs from the recorded hash. `target.json` and the former Python build and verification scripts have been removed.
 
-`verify.py` is the main command. It reads `target.json`, checks the reference ROM and historical source inventories, stages source copies and wrappers, and calls the build. After the build, it checks module bytes, entry points, dispatch offsets, the checksum, and the complete image, then writes `Build/verification.json`. It does not evaluate assembly expressions, expand macros, rewrite instructions, or rename source symbols.
-
-The other modules support that command or the source study:
-
-| Module | Role |
-| --- | --- |
-| `mpw_make.py` | Writes the MPW Makefile and resource layouts, stages inputs, tracks input and output hashes, invokes `mpw-make`, and records the build. The Makefile controls resource compilation and the dispatch-table relinking loop. |
-| `mpw.py` | Resolves MPW tools and libraries, stages MacRoman text, and supplies shared C-tool compilation commands. It also reads the linked ROM resource and parses assembler listings and linker maps. Its assembly and C-tool helpers support focused tests. |
-| `dispatch_table.py` | Independently encodes and decodes the trap table so verification can check the C ROMBuild tool's output. |
-| `paths.py` | Resolves project and historical paths and checks source inventories, including the two recorded comment-header excerpts. |
-| `index_sources.py` | Compares Ghidra symbol names with labels in the surviving sources and writes research candidates. It does not supply symbols to the linker. |
-| `test_*.py` | Exercises preparation, MPW builds, relocation, dispatch compression, Hiram, provenance checks, and rejection of changed ROM bytes. |
-
-QuickDraw uses the same preparation and verification path as the rest of the ROM. The former `verify_quickdraw.py` wrapper only ran the complete verifier and added a byte count, so it has been removed. Run `python3 Tools/verify.py --require-complete` to verify QuickDraw along with its dependencies. Native include tests live in `Tools/test_includes.py`; listing and symbol tests live in `Tools/test_mpw.py`.
+`index_sources.py` and `paths.py` support the optional historical source study. They do not run during a build. The test helpers compile the C tools through the same MPW Makefile and check their output. `dispatch_test_support.py` supplies an independent codec for the ROMBuild tests. The build tests cover a complete ROM, reuse of unchanged outputs, a private label rename, an instruction change, an assembly error, and a missing Make prerequisite.
 
 ## Shared includes and Hiram
 
@@ -211,12 +179,12 @@ Regenerate the candidate index with:
 python3 Tools/index_sources.py
 ```
 
-The index verifies the 906 recorded assembly files before regenerating the candidate index. It preserves the captured inventory and ignores added reference files when that inventory exists. A separate resource inventory records the two released Rez files used here. Two assembly inventory entries, `TFSVOL.a` and `VSM.a`, describe copies with introductory comment headers removed. The verifier checks those recorded excerpts and reports the complete files' hashes separately. It rejects omitted instructions or changes to the retained text. Preserve these baselines when extending the reconstruction.
+The index verifies the 906 recorded assembly files before regenerating the candidate index. It preserves the captured inventory and ignores added reference files when that inventory exists. A separate resource inventory records the two released Rez files used here. Two assembly inventory entries, `TFSVOL.a` and `VSM.a`, describe copies with introductory comment headers removed. The index checks those recorded excerpts and rejects changes to the retained text. Set `SUPER_MARIO_ROOT` to select another historical tree; it defaults to `~/src/supermario/base/SuperMarioProj.1994-02-09`. These checks apply only when regenerating the research index.
 
-[The MPW 1.0.1 inventory](Evidence/mpw-1.0.1-includes.json) records hashes and lengths for both the original MacRoman files and the checked-in UTF-8 copies. The verifier checks all 21 local copies against this inventory before building. Build records also include each module's header dependencies.
+[The MPW 1.0.1 inventory](Evidence/mpw-1.0.1-includes.json) records hashes and lengths for both the original MacRoman files and the checked-in UTF-8 copies. This inventory documents their provenance and does not constrain edits during a build.
 
 ## Verification and limits
 
-The complete build verifies every module, its declared entry points, and the final image. The tool tests cover source preparation, includes, MPW assembly, ROMBuild, Hiram, and image verification. The include tests formerly beside QuickDraw now live in `Tools/test_includes.py`. `Evidence/complete-build.json` and `Evidence/includes-and-hiram.json` record earlier build methods and their validation; [Evidence/mpw-build.json](Evidence/mpw-build.json) records the MPW build, all 131,072 matching bytes, and 74 passing tests. [Evidence/symbolic-linking.json](Evidence/symbolic-linking.json) records the move to linker symbols, all 5,142 checked entry points, and 79 passing tests. The latest reports live under `Build/`.
+The build checks the finished image's SHA-256. The tests exercise source conversion, MPW builds, ROMBuild, Hiram, and rejection of changed ROM bytes. `Evidence/complete-build.json` and `Evidence/includes-and-hiram.json` record earlier build methods and their validation. [Evidence/mpw-build.json](Evidence/mpw-build.json) records the earlier MPW build and its 74 passing tests. [Evidence/symbolic-linking.json](Evidence/symbolic-linking.json) records the move to linker symbols and the former entry-point checks. These reports remain historical evidence; the build no longer writes verification reports or enforces their source names and addresses.
 
 Binary identity establishes the reconstructed ROM contents. It does not recover the exact original spelling, module boundaries, or every private symbol name. Sources absent from the released tree, including several drivers, are restored from the ROM and marked accordingly. Surviving declarations, patch references, headers, and comments provide their documented provenance. Some source-history dates remain unresolved. The build tools run under the MPW emulator. The reconstructed ROM itself has not been tested by booting an emulator or Macintosh hardware.

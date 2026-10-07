@@ -2453,10 +2453,11 @@ DragTheRgn
         _PaintRgn 
         MOVEQ     #-1,D5	;flag it as visible and active
 
-WM_411EB0 ;]
 ;
 ; here is the main drag loop -- first read the mouse in our local coordinates
 ;
+
+DragLoop
         SUBQ.W    #6,SP	;make room for results
         MOVE.L    SP,-(SP)	;push pointer to result buffer
         _GetMouse 	;read the current mouse position
@@ -2528,23 +2529,23 @@ NoMotion
         MOVE.L    Ticks,D0
         ADDQ.L    #2,D0	;bump it two ticks
 
-WM_411F12 ;]
+DragDelay ;]
         CMP.L     Ticks,D0	;has ticks caught up yet?
-        BNE.S     WM_411F12 ;]
+        BNE.S     DragDelay     ; Loop till it has
 ;
         SUBQ.W    #2,SP	;make room for function result
         _WaitMouseUp	;is button stillDown?
-        TST.B     (SP)+	;examine result
-        BNE.S     WM_411EB0	;]loop if it is
+	TST.B	(SP)+					;examine result
+	BNE.S	DRAGLOOP				;loop if it is
 ;
 ;  the mouse went up so remove outline (if visible), restore pen and we're done
 ;
         TST.W     D5	;is it visible?
-        BEQ.S     WM_411F28	;]if not, don't bother
+        BEQ.S     ItsClear	;if not, don't bother
         MOVE.L    A3,-(SP)	;push region handle
         _PaintRgn 
 
-WM_411F28 ;]
+ItsClear
         _SetPenState	;restore old pen state
 ;
 ; if the last point isn't inside the slopRect, make sure we return an offset of 0
@@ -2555,13 +2556,13 @@ WM_411F28 ;]
         MOVE.L    14(A6),-(SP)
         _PtInRect 
         TST.B     (SP)+	;is it?
-        BNE.S     WM_411F42	;]if so, skip zeroing offset
+        BNE.S     @3	;if so, skip zeroing offset
 ;
 ; flag it as aborted
 ;
         MOVE.L    #$80008000,DragResult(A6)	;set delta to large neg number
 
-WM_411F42 ;]
+@3
         MOVEM.L   (SP)+,D3-D5/A3
         UNLK      A6	;deallocate stack frame
         MOVE.L    (SP)+,A0	;get return address

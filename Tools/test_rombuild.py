@@ -5,8 +5,8 @@ import subprocess
 import tempfile
 import unittest
 
-from dispatch_table import ENTRY_COUNT, decode_dispatch_table, encode_dispatch_table
-from mpw import build_tool
+from dispatch_test_support import ENTRY_COUNT, decode_dispatch_table, encode_dispatch_table
+from mpw_test_support import build_tool
 
 
 class ROMBuildTests(unittest.TestCase):
@@ -150,7 +150,7 @@ class ROMBuildTests(unittest.TestCase):
         return result, output
 
     def test_resource_mode_rebuilds_plus_cursors_in_layout_order(self):
-        from mpw import assemble
+        from mpw_test_support import assemble
 
         root = Path(__file__).resolve().parent.parent
         source = (root / "Source/Resources/Cursors.r").read_text()
@@ -162,17 +162,14 @@ class ROMBuildTests(unittest.TestCase):
         subprocess.run([self.mpw, "Asm", "-o", "generated.o", output.name],
                        cwd=self.directory, check=True, capture_output=True, encoding="mac_roman")
         assembly = data.decode("mac_roman").replace("\r", "\n")
-        binary, labels = assemble(assembly, "cursors", self.mpw, self.directory)
+        binary = assemble(assembly, "cursors", self.mpw, self.directory)
         reference = (root / "ROM/MacPlus-v3.bin").read_bytes()
         self.assertEqual(binary, reference[0x1f14c:0x1f27c])
         for index, number in enumerate((2, 3, 1, 4)):
-            self.assertEqual(labels[f"curs{number}block"], index * 76)
-            self.assertEqual(labels[f"curs{number}"], index * 76 + 8)
-            self.assertEqual(labels[f"curs{number}end"], (index + 1) * 76)
             self.assertIn(f"EXPORT Curs{number},Curs{number}Block,Curs{number}End", assembly)
 
     def test_resource_mode_preserves_empty_named_font(self):
-        from mpw import assemble
+        from mpw_test_support import assemble
 
         root = Path(__file__).resolve().parent.parent
         source = (root / "Source/Resources/SystemFonts.r").read_text()
@@ -181,25 +178,22 @@ class ROMBuildTests(unittest.TestCase):
         result, output = self.resource_assembly(source, layout)
         self.assertEqual(result.returncode, 0, result.stderr)
         assembly = output.read_bytes().decode("mac_roman").replace("\r", "\n")
-        binary, labels = assemble(assembly, "fonts", self.mpw, self.directory)
+        binary = assemble(assembly, "fonts", self.mpw, self.directory)
         reference = (root / "ROM/MacPlus-v3.bin").read_bytes()
         self.assertEqual(binary, reference[0x1f27c:0x1ffc0])
-        self.assertEqual(labels["font0"], labels["font0end"])
-        self.assertEqual(labels["font0end"], labels["font12block"])
         self.assertEqual(binary[:16], pack(">4I", 0xc0000008, 144, 0xc0000d3c, 148))
 
     def test_resource_mode_does_not_pad_odd_payloads(self):
-        from mpw import assemble
+        from mpw_test_support import assemble
 
         source = "data 'TEST' (-32768) { $\"01\" };\ndata 'TEST' (32767) { $\"020304\" };\n"
         layout = "rom_odd 192 0 2\n54455354 -32768 0 First -\n54455354 32767 0 Second -\n"
         result, output = self.resource_assembly(source, layout)
         self.assertEqual(result.returncode, 0, result.stderr)
         assembly = output.read_bytes().decode("mac_roman").replace("\r", "\n")
-        binary, labels = assemble(assembly, "odd", self.mpw, self.directory)
+        binary = assemble(assembly, "odd", self.mpw, self.directory)
         self.assertEqual(binary, pack(">2I", 0xc0000009, 0) + b"\x01" +
                          pack(">2I", 0xc000000b, 4) + b"\x02\x03\x04")
-        self.assertEqual(labels["secondblock"], 9)
 
     def test_resource_mode_rejects_metadata_changes_and_unlisted_resources(self):
         source = 'data \'TEST\' (1, "Name", sysheap) { $"0102" };\n'

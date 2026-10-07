@@ -32,14 +32,10 @@ The earlier source also contains `PutRgn`'s two-corner rectangle path and `RgnOp
 Run from the project root:
 
 ```sh
-python3 Tools/verify.py --require-complete
-python3 -m unittest discover -s Tools -p 'test_*.py'
+make
+make test
 ```
 
-The complete ROM link resolves QuickDraw's imports from other modules. MPW Asm and Link produce the code, and the shared verifier checks the ROM hash and checksum, historical source inventories, emitted bytes, entry points, and module spans. Set `MPW_EXECUTABLE` if `mpw` is absent from `PATH`.
+The complete ROM link resolves QuickDraw's imports from other modules. MPW Asm and Link produce the code, and `make` checks the finished image's SHA-256. Put `mpw` and `mpw-shell` on `PATH`.
 
-The verifier writes output to `Build/` by default. Pass `--build /private/tmp/quickdraw-build` to choose another directory. `verification.json` records hashes for included files and each module, with separate entries for all 29 QuickDraw modules and their 25,374 bytes.
-
-Six tests in `Tools/test_includes.py` cover include order, dependency hashes, missing files, cycles, unsupported syntax, and directory boundaries. They import the shared include expander directly. The former `verify_quickdraw.py` wrapper has been removed because it ran the complete verifier without adding a separate check.
-
-`CrossCheck.json` records the compared source hashes and verified module spans from the earlier comparison. That comparison used GNU m68k tools; the current build uses MPW.
+The build writes output to `Build/` by default. Run `make BUILD=/private/tmp/quickdraw-build` to choose another directory. All 29 QuickDraw modules use the shared MPW Asm driver and the checked-in `MPW/ROM.make`. Python converts source text for MPW without parsing includes, instructions, or labels.

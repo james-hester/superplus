@@ -34,4 +34,4 @@ The original `SANEMacs.a` replaces the selected macro bodies in the SANE element
 
 ## Provenance
 
-[`Evidence/mpw-1.0.1-includes.json`](../../../Evidence/mpw-1.0.1-includes.json) records each disk path, original byte length and SHA-256, and converted byte length and SHA-256. The verifier checks the local copies against this inventory. The original disk directory is not a build dependency.
+[`Evidence/mpw-1.0.1-includes.json`](../../../Evidence/mpw-1.0.1-includes.json) records each disk path, original byte length and SHA-256, and converted byte length and SHA-256. The inventory records provenance; it does not constrain source edits during a build. The original disk directory is not a build dependency.

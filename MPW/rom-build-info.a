@@ -1,0 +1,11 @@
+rom_build_info PROC EXPORT
+    IMPORT BaseOfROM,rom_dispatch_table,rom_dispatch_table_end
+    IMPORT rom_dispatch_offsets,rom_prefix_end
+    DC.L $52424c44,1
+    DC.L rom_dispatch_table-BaseOfROM
+    DC.L rom_dispatch_table_end-BaseOfROM
+    DC.L rom_dispatch_offsets-BaseOfROM
+    DC.L rom_prefix_end-BaseOfROM
+    DC.L 768
+    ENDP
+    END

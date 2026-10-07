@@ -5,19 +5,18 @@
 The normal build compiles Hiram and runs it from MPW Make. From the project root:
 
 ```sh
-python3 Tools/verify.py --require-complete
+make
 python3 -m unittest discover -s Tools -p 'test_hiram.py'
 ```
 
-The generated Makefile also has a `hiram` target. To compile only that tool:
+The checked-in `MPW/ROM.make` also has a `hiram` target. To compile only that tool:
 
 ```sh
-python3 Tools/verify.py --prepare-only
-cd Build
-mpw-make -f Makefile hiram
+make prepare
+make native TARGET=hiram
 ```
 
-The Makefile compiles staged MacRoman C source with `SC -w iserror`. It links `MacRuntime.o`, `StdCLib.o`, `IntEnv.o`, and `Interface.o` into an `MPST` file. The tool's executable code occupies its resource fork, so build reports hash that fork. `MPW` selects the MPW installation; `MPW_EXECUTABLE` and `MPW_MAKE_EXECUTABLE` select the emulator and Make runner.
+The Makefile compiles staged MacRoman C source with `SC -w iserror`. It links `MacRuntime.o`, `StdCLib.o`, `IntEnv.o`, and `Interface.o` into an `MPST` file. The tool's executable code occupies its resource fork. `MPW` selects the MPW installation; put `mpw` and `mpw-shell` on `PATH`.
 
 After a complete build, run Hiram separately from the project root with:
 
@@ -31,7 +30,7 @@ The input must contain exactly `0x1ffd0` bytes for this invocation. It includes 
 
 ## Surviving source
 
-The [surviving Hiram source](../../supermario/base/SuperMarioProj.1994-02-09/Tools/hiram.c) remains unchanged. The verifier finds this tree through `SUPER_MARIO_ROOT`, which defaults to `~/src/supermario/base/SuperMarioProj.1994-02-09`. Its SHA-256 is `19eb09aa0d4921936eea0034f5928889cf68cff1e36808a439ffcab75dbe5c9f`. The adaptation retains J. T. Coonen's attribution and Apple's copyright notice. These parts derive from that file:
+The [surviving Hiram source](../../supermario/base/SuperMarioProj.1994-02-09/Tools/hiram.c) remains unchanged. This historical tree is not required to build the ROM. Its SHA-256 is `19eb09aa0d4921936eea0034f5928889cf68cff1e36808a439ffcab75dbe5c9f`. The adaptation retains J. T. Coonen's attribution and Apple's copyright notice. These parts derive from that file:
 
 | Adapted code | Original source | Change in this adaptation |
 | --- | --- | --- |
@@ -50,4 +49,4 @@ The original history records a date with a trailing length on May 15, 1985. The 
 
 The initials argument above records the 31 bytes visible after the SCSI helper. The complete original initials string and its position within the repeated fill remain unknown. The surviving loop fills the entire ROM before loading code. This adaptation starts the supplied string at `--fill-start` to reproduce the known fragment without inventing the missing string or its position. A longer free span would repeat that supplied fragment; that behavior does not establish what the original 1985 build would have written there.
 
-The tests compile the C source with MPW SC, treat warnings as errors, and run the linked MPW tool through the emulator. They check preservation of code at the later header offsets, unsigned word sums, exclusion of the checksum field, inclusion of the final word, 32-bit overflow, repeated initials, date bounds, and input length checks. The complete build separately compares the finished image with the reference ROM.
+The tests compile the C source with MPW SC, treat warnings as errors, and run the linked MPW tool through the emulator. They check preservation of code at the later header offsets, unsigned word sums, exclusion of the checksum field, inclusion of the final word, 32-bit overflow, repeated initials, date bounds, and input length checks. The complete build checks the finished image's SHA-256.

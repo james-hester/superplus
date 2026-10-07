@@ -3,7 +3,7 @@ import subprocess
 import tempfile
 import unittest
 
-from mpw import build_tool
+from mpw_test_support import build_tool
 
 
 class HiramTests(unittest.TestCase):

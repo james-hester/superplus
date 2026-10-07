@@ -1,0 +1,3 @@
+rom_dispatch_offsets PROC EXPORT
+	ENDP
+	INCLUDE 'Asm.a'

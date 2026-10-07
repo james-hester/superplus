@@ -170,19 +170,12 @@ ROMVersion      DC.B    Machine                 ; [ 8] machine number
 ; ROM vectors & entry points
 ;---------------------------------------------------
 
-StBoot
-; [ A] jump to start code for a restart
-          BRA.W   StartBoot ;]
-BadDisk
-; [ E] eject disk, and reboot
-         BRA.W   RejectBootDevice ;]
+StBoot          BRA.W   StartBoot ;] ; [ A] jump to start code for a restart
+BadDisk         BRA.W   RejectBootDevice ;] ; [ E] eject disk, and reboot
 PhaseReadEntry  BRA.W   DoPhaseRead ;]
 TestEntry       BRA.W   StoreByteThenTest ;]
-RomRsrc
-; [1A] ROMStart -> HiRam -> offset to ROM resource header
-         DC.L    RomResourceMap-BaseOfROM ;]
-Eject
-           JMP     DoEject	;] [1E] jump to utility to eject and notify Bruce
+RomRsrc         DC.L    RomResourceMap-BaseOfROM ;] ; [1A] ROMStart -> HiRam -> offset to ROM resource header
+Eject           JMP     DoEject	;] [1E] jump to utility to eject and notify Bruce
 ReservedHeader ;]
   DC.L    0,0
 ResetEntry
