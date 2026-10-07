@@ -16,6 +16,7 @@
 *R applicable history, and comments remain.
 
 *R These equates retain the original include definitions.
+MFSRFN2Module PROC ;]
 		IMPORT DAlBlks,GtNxBlk,SEOFOK,ShrtnTrash,SubMrk ;]
 		EXPORT MFSShrtnF ;]
 
@@ -66,4 +67,5 @@ MFSShrtnF	MOVEQ	#0,D6				; used to figure new physical length
 			BRA 	ShrtnTrash			; rejoin TFS code to trash any orphaned blocks	<01Oct85>
 
 MFSRFN2End ;]
+        ENDP ;]
 	END

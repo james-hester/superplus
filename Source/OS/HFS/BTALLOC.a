@@ -528,7 +528,7 @@ RelMap
 			MOVE.L	(A6)+,-(SP) 		; put return address back on stack
 			TST.W	D0					; set up condition codes
 			RTS 						; exit RelMap
+BTALLOCEnd ;]
 	ENDP
 
-BTALLOCEnd ;]
 	END

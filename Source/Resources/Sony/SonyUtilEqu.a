@@ -6,6 +6,3 @@
 		INCLUDE 'SonyInterfaceEqu.a' ;]
 		INCLUDE 'SysEqu.a'
 		INCLUDE 'SysErr.a'
-		INCLUDE 'Timer.a'
-
-hiIntMask 		EQU 		$0300					; programmer switch only

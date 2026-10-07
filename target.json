@@ -4828,7 +4828,7 @@
         "DCDWriteLastGroup": "0x419bf0",
         "DCDWriteWaitHigh": "0x419c4a",
         "DCDWritePacketExit": "0x419c56",
-        "DCDReset": "0x419c66",
+        "ResetDCD": "0x419c66",
         "jtDCDReset": "0x419c6c",
         "DCDResetPoll": "0x419ca0",
         "DCDResetOK": "0x419cb6",
@@ -5018,7 +5018,7 @@
         "DDPWrite": "0x41a820",
         "DDPOpenEntry": "0x41a822",
         "WriteDDPPacket": "0x41a824",
-        "DDPChecksum": "0x41a888",
+        "CalcDDPChecksum": "0x41a888",
         "ReadLongDDP": "0x41a8d2",
         "ReadShortDDP": "0x41a8e4",
         "DispatchDDP": "0x41a8ea",
@@ -6181,5 +6181,11 @@
     "fill_start": "0x1ffd0",
     "initials": "HB JTC SC DLD PWD KWK LAK SEL B",
     "date": "Wed, Nov 6, 1985"
-  }
+  },
+  "link_equalities": [
+    [
+      "MFSVOLEnd",
+      "Gt1stFCB"
+    ]
+  ]
 }

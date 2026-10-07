@@ -53,6 +53,7 @@
 *R GetFPos and SetFPos retain their names before the 1992 Trap suffix.
 
 *R Definitions retain the surviving include-file names.
+TFSRFN1Module PROC ;]
 		IMPORT AdjEOF,Alloc,CacheRdIP,CacheWrIP,CmdDone,FlushCache ;]
 		IMPORT FSQueue,GetBlock,MarkA5Block,RfNCall,TstMod ;]
 		EXPORT FileRead,FileReadBlock,FileWrite,GetFPos,SetFPos,TFSBitTst ;]
@@ -600,4 +601,5 @@ DoPart
 			BRA.S	@3					; and take the good route if done
 
 TFSRFN1End ;]
+        ENDP ;]
 	END

@@ -37,6 +37,7 @@
 *R retains the same field offset.
 
 *R These equates retain the original include definitions.
+MFSDIR3Module PROC ;]
 		IMPORT CkFilStatus,CmdDone,GtNxEntry,MarkBlock,MFSCtlFlush,MFSDirRead ;]
 		IMPORT MFSRd1stDB,MFSRdNxtDB ;]
 		EXPORT ChgMFlLock,FndMFSFile,GetMFlInfo,GtMFlIBI,SetMFlInfo,SetMFlType ;]
@@ -379,4 +380,5 @@ XferMFInfo
 @3			BRA 	CkFilStatus 		; Re-join TFS code for FCB scan 		<27Oct85>
 
 MFSDIR3End ;]
+        ENDP ;]
 	END

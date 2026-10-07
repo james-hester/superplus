@@ -263,6 +263,7 @@ USESTD	JMP 	(A0)						;GO TO IT
 
 
 TextFace PROC  EXPORT
+		IMPORT TextWidth ;]
 		EXPORT DrawChar,CharWidth
 ;-------------------------------------------------------
 ;
@@ -296,7 +297,7 @@ CharWidth
 		JSR	TextWidth ;]
 		MOVE	(SP)+,6(SP) 				;MOVE UP RESULT
 SHARE	MOVE.L	(SP)+,A0					;POP RETURN ADDR
-		ADD 	#2,SP						;STRIP CHAR PARAM
+		ADDQ 	#2,SP						;STRIP CHAR PARAM
 		JMP 	(A0)						;AND RETURN
 
 
@@ -390,7 +391,7 @@ StringWidth FUNC	EXPORT
 ;
 ;  FALL THRU INTO TEXTWIDTH
 ;
-TextWidth PROC EXPORT ;]
+TextWidth
 ;------------------------------------------
 ;
 ;  FUNCTION TEXTWIDTH(TEXTBUF: WordPtr; firstbyte,byteCount: INTEGER): INTEGER;
@@ -700,7 +701,7 @@ USESTD	JSR 	(A0)						;CALL IT
 		CLR 	D0							;GET READY FOR BYTE
 		MOVE.B	11(A0),D0					;GET SHADOW COUNT
 		BEQ.S	NOTSHAD 					;SKIP IF ZERO
-		ADD 	#1,0(A1)					;ADJUST ASCENT
+		ADDQ 	#1,0(A1)					;ADJUST ASCENT
 		ADD 	D0,2(A1)					;ADJUST DESCENT
 NOTSHAD
 

@@ -50,7 +50,8 @@
 
 fsymok		EQU 	0					; debug flag from Lisa Workshop version 		;<19Aug85>
 
-Pack7Block ;]
+Pack7Block PROC ;]
+	IMPORT Pack7End ;]
 	DC.L $C0000000+(Pack7End-Pack7Block) ;]
 	DC.L $74 ;]
 
@@ -261,6 +262,7 @@ select2 																						;<19Aug85>
 ;<16Sep85>
 			INCLUDE    'Dec2Str.a' ;]
 
+	EXPORT Pack7End ;]
 Pack7End ;]
 			END 
 

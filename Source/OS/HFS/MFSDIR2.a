@@ -39,6 +39,7 @@
 *R the same error value.
 
 *R These equates retain the original include definitions.
+MFSDIR2Module PROC ;]
 		IMPORT CkFileBusy,CmdDone,DAlBlks,FndFilName,FndFilSpc,FndFN2 ;]
 		IMPORT Gt1stMatch,GtNxtMatch,MarkBlock,MarkVCB,MarkVCBTime,MFSCtlFlush ;]
 		IMPORT TrashFBlocks ;]
@@ -296,4 +297,5 @@ AdjFlPos	MOVE.L	FlFlNum(A3),D2		; file number of this file				<09Oct85>
 @2			RTS
 
 MFSDIR2End ;]
+        ENDP ;]
 	END

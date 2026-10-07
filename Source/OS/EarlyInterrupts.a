@@ -25,7 +25,6 @@
 *R It retains matching released instructions and applicable comments.
 *R Evidence/early-interrupts.json records provenance and exact checks.
 
-		EXPORT Level2Return,OneSecDone ;]
 
         MACHINE MC68000
         STRING ASIS
@@ -38,6 +37,7 @@
 SccDT		equ		Lvl2DT							; dispatch table for SCC interrupts
 
 EarlyInterrupts PROC ;]
+		EXPORT Level2Return,OneSecDone ;]
         EXPORT Level1Int
         EXPORT SccDecode
         EXPORT ExtBInt ;]

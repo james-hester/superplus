@@ -46,7 +46,6 @@
 ;									JSR for ref's to ClkRW routine
 ;				  6/7/85	JTC		Modified to return long to OS dispatcher. <07Jun85>
 
-		EXPORT WriteXPRam ;]
 
         BLANKS ON
         STRING ASIS
@@ -82,6 +81,8 @@ RTCWriteExtended EQU $07 ;]
 ;_______________________________________________________________________
 
 ReadPram PROC EXPORT ;]
+        IMPORT ClkRW ;]
+        EXPORT PRAMInit ;]
         MOVEM.L D1-D2/D5/A1,-(SP) ;]
         MOVEQ #RTCRead+(16<<2)+RTCRegister-256,D1 ;]
         MOVEQ #16-1,D5 ;]
@@ -132,6 +133,7 @@ PRAMInit DC.B $A8                ; old PRAM validity byte
 *R SysParam defaults. It reads the time without resetting it.
 
 InitUtil PROC EXPORT ;]
+        IMPORT WrProtOff,ClkRW,WrProtOn,ReadTime,PRAMInit,WritePram ;]
         CLR.W -(SP)             ; assume no reset of PRam values
         BSR WrProtOff ;]
         MOVEQ #RTCTest,D1 ;]
@@ -202,6 +204,7 @@ ClkXit		MOVE.W	(SP)+,D0				; pass back error code							<30oct85> LAK
 ;________________________________________________________________________________________
 
 ReadTime PROC EXPORT ;]
+        IMPORT ClkRW ;]
         MOVEM.L D1-D2/D4-D5/A2-A3,-(SP) ;]
         MOVEQ #2-1,D4           ; try reading twice in case the time rolls over
         MOVEQ #0,D0
@@ -242,6 +245,7 @@ ReadDone ;]
 ;________________________________________________________________________________________
 
 WriteTime PROC EXPORT ;]
+        IMPORT WrProtOff,ClkRW,WrProtOn ;]
         MOVEM.L D1-D5,-(SP) ;]
         BSR.S WrProtOff ;]
         MOVE.L Time,D3          ; get the time to write
@@ -283,6 +287,7 @@ WriteDone BSR.S WrProtOn ;]
 ;________________________________________________________________________________________
 
 WrProtOn PROC ;]
+        IMPORT ClkRW ;]
 ; use 'set write protect' command
         MOVEQ #RTCWriteProtect,D1 ;]
         MOVEQ #(1<<7)+RTCProtectPattern-256,D2 ;]
@@ -303,6 +308,7 @@ WrProtOn PROC ;]
 ;________________________________________________________________________________________
 
 WrProtOff PROC ;]
+        IMPORT ClkRW ;]
 ; use 'reset write protect' command
         MOVEQ #RTCWriteProtect,D1 ;]
         MOVEQ #RTCProtectPattern,D2 ;]
@@ -322,6 +328,7 @@ WrProtOff PROC ;]
 ;_______________________________________________________________________
 
 WritePram PROC EXPORT ;]
+        IMPORT ClkRW ;]
         MOVEM.L D1-D3/A2,-(SP) ;]
         BSR.S WrProtOff ;]
         LEA SysParam,A2 ;]
@@ -378,6 +385,8 @@ SetupXPram PROC ;]
 ; Function:	reads or writes extended PRAM bytes into the caller's buffer
 ;________________________________________________________________________________________
 ReadXPRam PROC EXPORT ;]
+        IMPORT SetupXPram,WrProtOff,ClkRW,WrProtOn ;]
+		EXPORT WriteXPRam ;]
         MOVEM.L D1-D5/A1,-(SP) ;]
         BSR.S SetupXPram ;]
         MOVEQ #RTCReadExtended,D0 ;]

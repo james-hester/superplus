@@ -354,7 +354,7 @@ UpdCName
 			MOVEM.L  (SP)+,D0-D1/A0-A1	; restore regs				<09Sep85>
 			RTS 						; exit UpdCName 			<09Sep85>
 
+CMMAINTEnd ;]
 	ENDP
 
-CMMAINTEnd ;]
 	END

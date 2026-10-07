@@ -7,9 +7,7 @@
 		INCLUDE 'SysErr.a'
 		INCLUDE 'Traps.a'
 
-InitLth EQU GetSCCAddrs-InitData ;]
 MasterPointerOffset EQU $68 ;]
-ResetLth EQU ResetDataEnd-ResetData ;]
 ResourceBlockFlags EQU $C0 ;]
 SCCData EQU 4
 SCCWriteOffset EQU SCCWBase-SCCRBase ;]

@@ -1147,7 +1147,9 @@ FSin2
 @4		swap	D3				; frac := fixed/2
 		lsr.l	#3,D3
 		MOVE.l	A2,-(SP)		;need an address register
-		SUB.L	#16,SP			;space for 4 FracMul's function result
+		OPT NONE ;]
+		SUBA.L	#16,SP			;]space for 4 FracMul's function result
+		OPT SYNON ;]
 
 		move.l	D3,-(sp)
 		move.l	D3,-(sp)
@@ -1245,7 +1247,9 @@ FixATan2
 		subq.W	#1,D0
 
 @2		MOVE.l	A2,-(SP)		; need an address register
-		SUB.L	#32,SP			; space for 8 Longints function results 8LP
+		OPT NONE ;]
+		SUBA.L	#32,SP			;] space for 8 Longints function results 8LP
+		OPT SYNON ;]
 
 		cmp.l	D3,D0			; D0 - D3
 		ble.s	bigger			; is |Y| > |X| if yes then
@@ -1257,7 +1261,9 @@ FixATan2
 		bra.s	GetATanArg
 
 NoPoly	move.l	D3,D0
-NoPoly2 Add.l	#36,sp			; clean up stack						0LP
+		OPT NONE ;]
+NoPoly2 AddA.l	#36,sp			;] clean up stack						0LP
+		OPT SYNON ;]
 		bra.s	bypass
 
 bigger	move.l	D0,-(sp)		; reduced argument for ArcTan is |Y|/|X|

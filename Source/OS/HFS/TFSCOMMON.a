@@ -28,6 +28,7 @@
 
 *R These definitions retain the fields used by this ROM.
 *R Values come from FSEqu.a, FSPrivate.a, SysEqu.a, and SysErr.a.
+TFSCOMMONModule PROC ;]
 		IMPORT CkWDRefNum,GetBlock,RelBlock ;]
 		EXPORT DivUp,FlushMDB,GetVCBDrv,GetVCBRfn,GetWDCBRfn,MarkVCB ;]
 		EXPORT MarkVCBDirty,MarkVCBTime,QWordSearch,RoundAlloc ;]
@@ -282,7 +283,9 @@ FlushMDB:
 			LEA 	DrTInfoSt(A1),A1	; Point to tail end of MDB
 			MOVEQ	#VCBTDILen,D0		; Length of TFS info
 			_BlockMove					; Copy it into the MDB Buffer
+        OPT NONE ;]
 			SUBA.L	#DrTInfoSt,A1		; Point A1 back to start of buffer
+        OPT SYNON ;]
 
 			MOVEA.L FCBsPtr,A3			; Point to FCB array
 			MOVE.W	VCBXTRef(A2),D1 	; Get extent file refNum
@@ -325,4 +328,5 @@ FlMDBExit	MOVEM.L (A6)+,D0-D2/A0-A1	; Restore scratch registers
 			RTS
 
 TFSCOMMONEnd ;]
+        ENDP ;]
 	END

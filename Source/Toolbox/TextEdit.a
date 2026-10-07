@@ -164,11 +164,6 @@
 ;
 ;<<<END HISTORY>>>	<- This is to make the end of these comments easy to find with MPW.
 
-		EXPORT TEActivate,TEAutoView,TECalText,TEClick,TECopy,TECut ;]
-		EXPORT TEDeactivate,TEDelete,TEDispose,TEIdle,TEInit,TEInsert ;]
-		EXPORT TEKey,TENew,TEPaste,TEPinScroll,TEScroll,TESelView ;]
-		EXPORT TESetJust,TESetSelect,TESetText,TEUpdate,TextBox,XFindLine ;]
-		EXPORT XFindWord,XTrimMeasure ;]
 
 botRight  		EQU 		4         				; lower right corner [point]
 bottom			EQU 		4         				; bottom coordinate [word]
@@ -209,6 +204,11 @@ v 				EQU 		0         				; vertical coordinate [word]
 ;----------------------------------------------------------------------
 
 TEGetText PROC EXPORT ;]
+		EXPORT TEActivate,TEAutoView,TECalText,TEClick,TECopy,TECut ;]
+		EXPORT TEDeactivate,TEDelete,TEDispose,TEIdle,TEInit,TEInsert ;]
+		EXPORT TEKey,TENew,TEPaste,TEPinScroll,TEScroll,TESelView ;]
+		EXPORT TESetJust,TESetSelect,TESetText,TEUpdate,TextBox,XFindLine ;]
+		EXPORT XFindWord,XTrimMeasure ;]
                 BSR.W   StdEntry
                 MOVE.L  teTextH(A3),(A2)            ; return the text handle
                 BRA.W   epilog4

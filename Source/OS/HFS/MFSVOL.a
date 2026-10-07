@@ -44,6 +44,8 @@
 *R NewPtr uses the system-heap trap variant.
 
 *R These equates retain the original include definitions.
+MFSVOLModule PROC ;]
+        EXPORT MFSVOLEnd ;]
 		IMPORT CheckRemount,CmdDone,CVFlgs,DsposVCB,DtrmV1,DtrmV3 ;]
 		IMPORT FlushBuffers,FSQueue,Gt1stFCB,GtNxBlk,GtNxEntry,GtNxtFCB ;]
 		IMPORT MarkA5Block,MarkVCB,MFSMapRead,MFSRd1stDB,MFSRdNxtDB,MFSVolRead ;]
@@ -486,10 +488,12 @@ GetMFSVolInfo
 
 RetMFSVolInfo
 			BSET	#6,VCBAtrb+1(A2)	; set if any files are opened
-			BSR.S	Gt1stFCB			; get (A1,D1) pointing to first FCB
+*R Asm cannot encode an imported short-branch addend this far into the module.
+*R These calls use the adjacent Gt1stFCB boundary; Link resolves the offsets.
+			DC.B $61,Gt1stFCB-Gt1stFCB+MFSVOLEnd-(*+2)			;] get (A1,D1) pointing to first FCB
 @1			CMP.L	FCBVPtr(A1,D1),A2	; file open on this volume?
 			BEQ.S	@2					; br if so
-			BSR.S	GtNxtFCB			; get next one until we run out
+			DC.B $61,GtNxtFCB-Gt1stFCB+MFSVOLEnd-(*+2)			;] get next one until we run out
 			BCS.S	@1
 			BCLR	#6,VCBAtrb+1(A2)	; 0 if no open files match
 
@@ -505,4 +509,5 @@ RetMFSVolInfo
 GMVIDone	BRA 	CmdDone
 
 MFSVOLEnd ;]
+        ENDP ;]
 	END

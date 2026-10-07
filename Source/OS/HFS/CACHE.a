@@ -1098,7 +1098,7 @@ NQCBuf
 			MOVE.L	(SP)+,A1			; restore reg
 			RTS 						; exit NQCBuf
 
+CACHEEnd ;]
 	ENDP
 
-CACHEEnd ;]
 	END

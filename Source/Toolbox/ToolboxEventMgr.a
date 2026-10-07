@@ -14,8 +14,6 @@
 ;	Change History (most recent first):
 
 		IMPORT BaseOfROM,ROMEject ;]
-		EXPORT Button,EventAvail,GetKeys,GetMouse,GetNextEvent,StillDown ;]
-		EXPORT TickCount,WaitMouseUp ;]
 
 		INCLUDE 'HardwarePrivateEqu.a'
 		INCLUDE 'SysEqu.a'
@@ -25,6 +23,8 @@
 
 
 MiscMGR PROC EXPORT
+		EXPORT Button,EventAvail,GetKeys,GetMouse,GetNextEvent,StillDown ;]
+		EXPORT TickCount,WaitMouseUp ;]
 
 ; PROCEDURE GetKeys(VAR k: keyMap) returns 128 bits (4 longs) worth of keyMap state.
 ;

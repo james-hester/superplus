@@ -32,6 +32,7 @@
 ;									long delays on blank tracks
 ;
 
+SonyReadModule PROC ;]
 		IMPORT AdrDisk,DskRtn ;]
 		EXPORT jtRdData,RdAddr,RdAddrSetup,RdData,SetUpPoll ;]
 
@@ -84,8 +85,8 @@ SetUpPoll	MOVE.L	JSetUpPoll,-(SP)
 			RTS
 
 jtSetUpPoll
-	LEA SCCData,A6 ;]
-	LEA VIAHeadSel,A5 ;]
+	LEA SCCRBase+aData,A6 ;]
+	LEA AVBufA,A5 ;]
 			ORI 	#HiIntMask,SR		; no ints from now on!				<29Jul85>
 
 			MOVE.L	SP,PollStack		; init PollStack at current stack level

@@ -44,6 +44,7 @@ JStdBits	EQU	xToolTable+(4*$EB)
 ;
 
 StdBits PROC  EXPORT
+		IMPORT PackBits ;]
 ;---------------------------------------------------------------
 ;
 ;  PROCEDURE StdBits(VAR srcBits: BitMap;

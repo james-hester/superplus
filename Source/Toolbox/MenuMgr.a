@@ -114,12 +114,6 @@
 ;				 6/29/82	AJH		New today.
 
 		IMPORT RestorePort,SetWPort,WMgrGray ;]
-		EXPORT AddResMenu,AppendMenu,CalcMBHeight,CalcMenuSize,CheckItem,ClearMenuBar ;]
-		EXPORT CountMItems,DeleteMenu,DelMenuItem,DisableItem,DisposeMenu,DrawMBar ;]
-		EXPORT DrawMenuBar,EnableItem,FlashMenuBar,GetItem,GetItemIcon,GetItemMark ;]
-		EXPORT GetItemStyle,GetMenuBar,GetMHandle,HiliteMenu,InsertMenu,InsMenuItem ;]
-		EXPORT InsrtResMenu,MenuKey,MenuSelect,NewMenu,PlotIcon,SetItem ;]
-		EXPORT SetItemIcon,SetItemMark,SetItemStyle,SetMenuBar,SetMenuFlash ;]
 
 		INCLUDE 'SysEqu.a'
 		INCLUDE 'SysErr.a'
@@ -131,18 +125,18 @@ bounds			EQU 		6         				; bounding box [rectangle]
 clipRgn   		EQU 		$1C       				; clipping region [handle]
 FuncResult EQU 12                               ; longword function result (menu,item)
 GrafGlobals EQU 0
-ItemBuffer EQU ItemCount+2                      ;256 byte buffer for items
-ItemCount EQU ItemFlags+1                       ;integer -- number of chars in buffer
-ItemFlags EQU ItemState+1                       ;one byte enable flag field
-ItemLinkSize EQU ItemProperties ;]
 ItemProperties EQU -280                         ;4 attribute bytes of item
-ItemResult EQU 14                               ; item portion of funcResult
 ItemState EQU ItemProperties+4                  ;one byte parse state field
+ItemFlags EQU ItemState+1                       ;one byte enable flag field
+ItemCount EQU ItemFlags+1                       ;integer -- number of chars in buffer
+ItemBuffer EQU ItemCount+2                      ;256 byte buffer for items
+ItemLinkSize EQU ItemProperties ;]
+ItemResult EQU 14                               ; item portion of funcResult
 left  			EQU 		2         				; left coordinate [word]
-MapTRUE EQU -1 ;]
 MenuCapacity EQU 16 ;]
 MenuEntrySize EQU 6 ;]
 MenuListSize EQU 102 ;]
+SaveBitmap EQU -20 ;]
 MenuRect EQU SaveBitmap-8 ;]
 MSavePort EQU MenuRect-4
 patBic EQU 11
@@ -150,7 +144,6 @@ portBits  		EQU 		$2        				; port's bitmap [bitmap]
 portRect  		EQU 		$10       				; port's rectangle [rect]
 right 			EQU 		6         				; right coordinate [word]
 rowBytes  		EQU 		4         				; row bytes (must be even) [word]
-SaveBitmap EQU -20 ;]
 SaveRect EQU MSavePort-8 ;]
 SelectFrame EQU SaveRect ;]
 StartPt EQU 8                                   ; 1st parameter is 8, and is 4 bytes long
@@ -163,6 +156,12 @@ thePort EQU 0
 ;
 
 InitMenus PROC EXPORT
+		EXPORT AddResMenu,AppendMenu,CalcMBHeight,CalcMenuSize,CheckItem,ClearMenuBar ;]
+		EXPORT CountMItems,DeleteMenu,DelMenuItem,DisableItem,DisposeMenu,DrawMBar ;]
+		EXPORT DrawMenuBar,EnableItem,FlashMenuBar,GetItem,GetItemIcon,GetItemMark ;]
+		EXPORT GetItemStyle,GetMenuBar,GetMHandle,HiliteMenu,InsertMenu,InsMenuItem ;]
+		EXPORT InsrtResMenu,MenuKey,MenuSelect,NewMenu,PlotIcon,SetItem ;]
+		EXPORT SetItemIcon,SetItemMark,SetItemStyle,SetMenuBar,SetMenuFlash ;]
                 BSR.S   NewMList ;]
                 MOVE.L  A0,MENULIST             ;make it the current menuList
                 MOVEQ   #$0C,D0                 ;only use 2 bits worth

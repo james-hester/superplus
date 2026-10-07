@@ -67,7 +67,8 @@ FPFORLISA 	EQU 	0					; LISA LIBRARY ASSEMBLY
 										; EQUATE								<31JUL85>
 			INCLUDE  'FPEqus.a' ;]
 
-Pack4Block ;]
+Pack4Block PROC ;]
+	IMPORT Pack4End ;]
 	DC.L $C0000000+(Pack4End-Pack4Block) ;]
 	DC.L $7C ;]
 
@@ -77,6 +78,7 @@ FP68K		PROC	 EXPORT 			;										<31JUL85>
 			INCLUDE  'FPCtrl.a' ;]
 			INCLUDE  'FPOps.a' ;]
 			INCLUDE  'FPBD.a'
+	EXPORT Pack4End ;]
 Pack4End ;]
 			END 
 

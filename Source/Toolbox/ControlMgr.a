@@ -289,14 +289,18 @@ CallDControl
 *R Restore the port-rectangle test removed in January 1986.
 
 				 MOVEM.L D0-D1,-(SP)			 ; save message, param				 <EHB 27-Apr-85>
+		OPT NONE ;]
 				 SUBA.L  #10,SP 				 ; make room for rect, result		 <EHB 27-Apr-85>
+		OPT SYNON ;]
 				 PEA	 ContrlRect(A0) 		 ; push address of control’s rect    <EHB 27-Apr-85>
 				 MOVE.L  ContrlOwner(A0),A1 	 ; get pointer to owning window 	 <EHB 27-Apr-85>
 				 PEA	 PortRect(A1)			 ; push address of window’s portRect <EHB 27-Apr-85>
 				 PEA	 10(SP) 				 ; point to temp rect				 <EHB 27-Apr-85>
 				 _SectRect						 ; should we draw it?				 <EHB 27-Apr-85>
 				 TST.B	 (SP)+					 ; NE if we should					 <EHB 27-Apr-85>
+		OPT NONE ;]
 				 ADDA.L  #8,SP					 ; strip the rect					 <EHB 27-Apr-85>
+		OPT SYNON ;]
 				 MOVEM.L (SP)+,D0-D1			 ; restore message, param			 <EHB 27-Apr-85>
 				 BEQ.S	 NoDControl 			 ; => don’t draw remote ones         <EHB 27-Apr-85>
 ;

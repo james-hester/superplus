@@ -23,6 +23,7 @@
 ;									use equates - adjusted frequency count table - assume no speed
 ;									errors for now
 ;
+SonyFormatModule PROC ;]
 		IMPORT AdrDisk,EmptyPD,GetDrv1,MeasureSpeed,POffExit,RdAddr ;]
 		IMPORT RdAddrSetup,RdData,RWPowerUp,Seek,SetUpPoll ;]
 

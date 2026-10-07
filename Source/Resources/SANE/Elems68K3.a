@@ -260,7 +260,9 @@ COSGUTS
 
 			PEA 	FPK1	; 1
 			PEA 	(A4)				; RESULT
+			OPT ALL ;]
 			FADDX						; RES = 1 - T*T/2 + T^4*P/Q
+			OPT SYNON ;]
 			RTS
 
  ;
@@ -292,13 +294,17 @@ CGBIG
 
 			PEA 	(A1)				; W = T'/2
 			PEA 	(A4)				; RES
+			OPT ALL ;]
 			FADDX						; RES <-- T'/2 + (T'*T'/2 ...)
+			OPT SYNON ;]
 
 			BCHG	#7,(A4) 			; RES <-- -RES
 
 			PEA 	FPK78	; 0.875 = 7/8
 			PEA 	(A4)				; RES
+			OPT ALL ;]
 			FADDX						; RES <-- 0.875 + ...
+			OPT SYNON ;]
 			RTS
 
 ;ne 100
@@ -407,7 +413,9 @@ TANGUTS
 
 			PEA 	(A1)				; Z
 			PEA 	(A0)				; X
+			OPT ALL ;]
 			FADDX						; X <-- T^3/3 + T^5*P/Q
+			OPT SYNON ;]
 			BRA.S	TGFIN				; GO ADD TO T AND EXIT
 
  ;
@@ -434,7 +442,9 @@ TGBIG
 
  ; X = T^5*P/Q ALREADY PUSHED
 			PEA 	(A1)				; Y
+			OPT ALL ;]
 			FADDX						; Y <-- T*T*T' + T^5*P/Q
+			OPT SYNON ;]
 
 			PEA 	FPKFOURTH	; 1/4
 			PEA 	(A2)				; W = T*T
@@ -442,7 +452,9 @@ TGBIG
 
 			PEA 	(A2)				; W
 			PEA 	(A1)				; Y
+			OPT ALL ;]
 			FADDX						; Y <-- T*T/4 + T*T*T'/3 + ...
+			OPT SYNON ;]
 
 			MOVEA.L A1,A0				; SET UP FOR LAST ADD...
 
@@ -452,7 +464,9 @@ TGBIG
 TGFIN
 			PEA 	(A0)				; EITHER X OR Y
 			PEA 	(A4)				; RES = T
+			OPT ALL ;]
 			FADDX						; RES <-- T + (...)
+			OPT SYNON ;]
 			RTS
 
 ;ne 100
@@ -571,11 +585,15 @@ AGLONGFORM
 
 			PEA 	FPK1	; 1
 			PEA 	(A1)				; Y = 1/(T*X2)
+			OPT ALL ;]
 			FADDX						; Y <-- 1 + 1/(T*X2)
+			OPT SYNON ;]
 
 			PEA 	FPK1	; 1
 			PEA 	STW(A6) 			; W = T*X2
+			OPT ALL ;]
 			FADDX						; W <-- 1 + T*X2
+			OPT SYNON ;]
 
 			PEA 	FPKX2	; CONSTANT X2
 			PEA 	(A4)				; RES = T
@@ -606,11 +624,15 @@ AGLONGFORM
 
 			PEA 	FPKX2FX2	; CONSTANT X2FX2
 			PEA 	(A4)				; RES = B*P/Q
+			OPT ALL ;]
 			FADDX						; RES <-- B*P/Q + X2FX2
+			OPT SYNON ;]
 
 			PEA 	STZ(A6) 			; Z = A
 			PEA 	(A4)				; RES = ...
+			OPT ALL ;]
 			FADDX						; RES = A + B*P/Q + X2FX2
+			OPT SYNON ;]
 
  ;
  ; Finish up by computing:
@@ -636,7 +658,9 @@ AGFINI
 AGSUBPI2
 			PEA 	FPKPI2	; PI/2
 			PEA 	(A4)				; RES
+			OPT ALL ;]
 			FADDX						; PI/2 - (T - RES)
+			OPT SYNON ;]
 			RTS 						; RETURN TO BELOW ATANTOP
 
 ;ne 100
@@ -666,7 +690,9 @@ RANDTOP
 
 			PEA 	FPKPRAND
 			PEA 	(A4)
+			OPT ALL ;]
 			FADDX						; RES <-- (...) + PRAND
+			OPT SYNON ;]
 @1
 			BRA 	RESULTDELIVERED
 

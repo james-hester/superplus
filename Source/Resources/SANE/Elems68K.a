@@ -76,7 +76,8 @@ FPFORDEB	EQU 	 FPFORDEBUG
 ResourceBlockFlags EQU $C0 ;]
 MasterPointerOffset EQU $78 ;]
 
-PACK5ResourceBlock ;]
+PACK5ResourceBlock PROC ;]
+	IMPORT PACK5ResourceEnd ;]
                 DC.L    ResourceBlockFlags*$1000000+PACK5ResourceEnd-PACK5ResourceBlock ;]
                 DC.L    MasterPointerOffset ;]
 
@@ -101,6 +102,7 @@ ELEMS68K	PROC	 EXPORT
 			INCLUDE  'Elems68KC.a' ;]
 ;
 ;
+	EXPORT PACK5ResourceEnd ;]
 PACK5ResourceEnd ;]
 			END 						 ; ELEMS68K
 

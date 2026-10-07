@@ -42,8 +42,6 @@
 *R before merging it into the character table.
 ;
 		IMPORT FPointOne,GetStrike,InValWidths,MyFixMul,MyFixRatio ;]
-		EXPORT BuildCharTable,FontMetrics,GetFNum,GetFOND,GetFontName,RealFont ;]
-		EXPORT SetFontLock,SetFScaleDisable ;]
 
 		MACHINE	MC68000
 		STRING	ASIS
@@ -61,9 +59,7 @@
 ; the following word values are to be placed into the
 ; word located at RomMapInsert
 
-MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
 
-FMDefaultSize 	EQU 		$987      				; default size [byte]
 
 ;new FONT manager stuff
 
@@ -78,7 +74,6 @@ FMDefaultSize 	EQU 		$987      				; default size [byte]
 
 ; format of a width table:
 
-WidTabSize	EQU 	WidthASize+2			;total size of a width table.
 
 	
 
@@ -99,9 +94,9 @@ FONDProperty	EQU 	FONDStylOff+4			;1C (12 words) contains style property info
 FONDAssoc	EQU 	FONDProperty+24 		;34 (variable length) Font Association Table.
 
 
-ScrapSize EQU $9FA ;]
-
 FontManager PROC EXPORT
+		EXPORT BuildCharTable,FontMetrics,GetFNum,GetFOND,GetFontName,RealFont ;]
+		EXPORT SetFontLock,SetFScaleDisable ;]
 ; PROCEDURE GetFontName(familyID: INTEGER; VAR theName: Str255);
 ;
 ;	Get the name of the font, given the family ID
@@ -127,7 +122,7 @@ GetFontName
             BEQ.S @returnNilString       ;if NIL, return empty string
 @askForName
             MOVE.L D0,-(SP)              ;push the resource handle
-            PEA ScrapSize ;]
+            PEA Scratch8 ;]
             MOVE.L (SP),-(SP)
             MOVE.L 20(SP),-(SP)          ;place for name (where app wants)
             MOVE.W #MapFALSE,ROMMapInsert ;get from ROM if possible		<10 Jul 85>

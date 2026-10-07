@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import ast
 import hashlib
 import json
 import os
@@ -13,12 +12,9 @@ import mpw
 from mpw_make import build_project, resource_assembly
 
 
-from paths import HERE, HISTORICAL_ROOT, source_path, historical_path, inventory_record
+from paths import HERE, source_path, inventory_record
 
 ROOT = HERE
-IGNORED = {"BLANKS", "STRING", "ENDP", "ENDPROC"}
-SCOPE = {"PROC", "FUNC"}
-IDENTIFIER = re.compile(r"(?<![\w.])(@[A-Za-z0-9_]+)")
 INCLUDE = re.compile(r"\s+INCLUDE\s+'([^']+)'\s*(?:;.*)?", re.I)
 SHARED_INCLUDES = HERE / "Source" / "Includes"
 
@@ -28,446 +24,62 @@ def sha256(data):
 
 
 class AssemblyText(str):
-    def __new__(cls, text, dependencies):
+    def __new__(cls, text, dependencies, input_files=None, input_sources=None):
         result = super().__new__(cls, text)
         result.dependencies = dependencies
-        result.adjacency = None
+        result.input_files = input_files or {}
+        result.input_sources = input_sources or {}
         return result
 
 
-def expand_includes(source, dependencies, stack=(), include_dirs=None):
-    if include_dirs is None:
-        include_dirs = (SHARED_INCLUDES,)
+def assembly_inputs(source):
     source = source.resolve()
-    if source in stack:
-        raise ValueError(f"Include cycle: {' -> '.join(map(str, (*stack, source)))}")
-    content = source.read_bytes()
-    digest = sha256(content)
-    if str(source) in dependencies and dependencies[str(source)] != digest:
-        raise ValueError(f"Source changed during translation: {source}")
-    dependencies[str(source)] = digest
-    lines = []
-    for number, line in enumerate(content.decode("utf-8").splitlines(), 1):
-        match = INCLUDE.fullmatch(line)
-        if match:
-            if Path(match[1]).name != match[1] or ":" in match[1] or "\\" in match[1]:
-                raise ValueError(f"{source}:{number}: include must name a file in the same directory or include path")
-            candidates = [directory / match[1] for directory in (source.parent, *include_dirs)]
-            child = next((path for path in candidates if path.is_file()), None)
-            if child is None:
-                raise FileNotFoundError(f"{source}:{number}: include not found: {match[1]}")
-            lines.append(expand_includes(child, dependencies, (*stack, source), include_dirs))
-        elif re.match(r"\s+INCLUDE\b", line, re.I):
-            raise ValueError(f"{source}:{number}: unsupported INCLUDE syntax")
-        else:
-            lines.append(line)
-    return "\n".join(lines) + "\n"
-
-
-def expression(value, scope):
-    value = re.sub(r"'([^']*)'", lambda m: str(int.from_bytes(m[1].encode("mac_roman"), "big")), value)
-    value = re.sub(r"(^|[(,+\-/&|^#])\s*\*", r"\1.", value)
-    value = re.sub(r"\$([0-9a-fA-F]+)", r"0x\1", value)
-    value = re.sub(r"(?<![\w.])0[0-9]+(?![\w.])", lambda m: str(int(m[0])), value)
-    value = IDENTIFIER.sub(lambda m: scope + "__local_" + m[1][1:], value)
-    return value.lower()
-
-
-def data_expression(value, scope, byte_strings=False):
-    item_pattern = r"(?:'(?:[^']|'')*'|[^,'])+"
-    if not re.fullmatch(item_pattern + "(?:," + item_pattern + ")*", value):
-        raise ValueError(f"Unsupported data operands: {value}")
-    items = re.findall(item_pattern, value)
-    values = []
-    for item in items:
-        literal = re.fullmatch(r"\s*'((?:[^']|'')*)'\s*", item)
-        if byte_strings and literal:
-            values.extend(str(b) for b in literal[1].replace("''", "'").encode("mac_roman"))
-        else:
-            values.append(expression(item, scope))
-    return ", ".join(values)
-
-
-def strip_comment(line):
-    if line.startswith("*"):
-        return ""
-    quoted = False
-    for index, char in enumerate(line):
-        if char == "'":
-            quoted = not quoted
-        elif char == ";" and not quoted:
-            return line[:index]
-    return line
-
-
-def parse_line(line):
-    code = strip_comment(line).rstrip()
-    label = None
-    if code and not code[0].isspace():
-        parts = code.split(None, 1)
-        label = parts[0].rstrip(":")
-        code = parts[1] if len(parts) == 2 else ""
-    parts = code.split(None, 1)
-    return label, parts[0].upper() if parts else "", parts[1] if len(parts) == 2 else ""
-
-
-def integer_expression(value, constants):
-    value = re.sub(r"&Eval\(", "(", value, flags=re.I)
-    tree = ast.parse(expression(value, "module"), mode="eval")
-    operations = {ast.Add: lambda a, b: a + b, ast.Sub: lambda a, b: a - b,
-                  ast.Mult: lambda a, b: a * b, ast.Div: lambda a, b: a // b,
-                  ast.FloorDiv: lambda a, b: a // b, ast.LShift: lambda a, b: a << b,
-                  ast.RShift: lambda a, b: a >> b, ast.BitOr: lambda a, b: a | b,
-                  ast.BitAnd: lambda a, b: a & b, ast.BitXor: lambda a, b: a ^ b}
-
-    def visit(node):
-        if isinstance(node, ast.Constant) and isinstance(node.value, int):
-            return node.value
-        if isinstance(node, ast.Name):
-            return constants[node.id.lower()]
-        if isinstance(node, ast.UnaryOp):
-            n = visit(node.operand)
-            if isinstance(node.op, ast.USub): return -n
-            if isinstance(node.op, ast.UAdd): return n
-            if isinstance(node.op, ast.Invert): return ~n
-        if isinstance(node, ast.BinOp) and type(node.op) in operations:
-            return operations[type(node.op)](visit(node.left), visit(node.right))
-        raise ValueError(f"Unsupported integer expression: {value}")
-
-    return visit(tree.body)
-
-
-def expand_macros(lines):
-    lines = [line for line in lines if not line.startswith("*")]
-    definitions = {}
-    globals_ = {}
-    constants = {}
-    procedure = None
-
-    def condition_value(text):
-        match = re.fullmatch(r"(.+?)\s*(<>|<=|>=|=|<|>)\s*(.+?)", text)
-        if not match:
-            return bool(integer_expression(text, constants))
-        left, op, right = match.groups()
-        a, b = integer_expression(left, constants), integer_expression(right, constants)
-        return {"=": a == b, "<>": a != b, "<": a < b, ">": a > b,
-                "<=": a <= b, ">=": a >= b}[op]
-
-    def expand_sequence(lines, depth=0, arguments=None, parameter_names=()):
-        nonlocal procedure, constants
-        if depth > 32:
-            raise ValueError("Macro expansion exceeds 32 levels")
-        active = [True]
-        taken = []
-        saw_else = []
-        result = []
-        iterator = iter(lines)
-        for line in iterator:
-            if arguments is not None:
-                bindings = {name: arguments[i] if i < len(arguments) else ""
-                            for i, name in enumerate(parameter_names)}
-                line = re.sub(r"&([A-Za-z_][A-Za-z0-9_]*)",
-                              lambda m: bindings.get(m[1].lower(), m[0]), line)
-                line = re.sub(r"&Sysl(?:i)?st\[(\d+)\]",
-                              lambda m: arguments[int(m[1]) - 1], line, flags=re.I)
-                line = re.sub(r"&Eval\(([^()]*)\)", r"(\1)", line, flags=re.I)
-            code = strip_comment(line).strip()
-            if code.startswith(".*"):
-                continue
-            if code.upper() == "MACRO":
-                declaration = strip_comment(next(iterator, "")).strip().lower()
-                match = re.fullmatch(r"([a-z_][a-z0-9_]*)(?:\s+(.+))?", declaration)
-                if not match:
-                    raise ValueError(f"Unsupported macro name: {declaration}")
-                name, parameters = match.groups()
-                parameter_names_ = []
-                if parameters:
-                    for parameter in parameters.split(","):
-                        parameter = parameter.strip()
-                        if not re.fullmatch(r"&[a-z_][a-z0-9_]*", parameter):
-                            raise ValueError(f"Unsupported macro parameter: {parameter}")
-                        if parameter[1:] in parameter_names_:
-                            raise ValueError(f"Duplicate macro parameter: {parameter}")
-                        parameter_names_.append(parameter[1:])
-                body = []
-                for body_line in iterator:
-                    if strip_comment(body_line).strip().upper() == "ENDM":
-                        break
-                    body.append(body_line)
-                else:
-                    raise ValueError(f"Unterminated macro: {name}")
-                if active[-1]:
-                    definitions[name] = (body, parameter_names_)
-                continue
-            condition = re.fullmatch(r"(IF|ELSEIF)\s+(.+?)\s+THEN", code, re.I)
-            if condition:
-                if condition[1].upper() == "IF":
-                    selected = active[-1] and condition_value(condition[2])
-                    active.append(selected)
-                    taken.append(selected)
-                    saw_else.append(False)
-                else:
-                    if len(active) == 1 or saw_else[-1]:
-                        raise ValueError("Unmatched ELSEIF or ELSEIF after ELSE")
-                    selected = active[-2] and not taken[-1] and condition_value(condition[2])
-                    active[-1] = selected
-                    taken[-1] |= selected
-            elif code.upper() == "ELSE":
-                if len(active) == 1 or saw_else[-1]:
-                    raise ValueError("Unmatched or repeated ELSE")
-                active[-1] = active[-2] and not taken[-1]
-                taken[-1] = True
-                saw_else[-1] = True
-            elif code.upper() == "ENDIF":
-                if len(active) == 1:
-                    raise ValueError("Unmatched ENDIF")
-                active.pop()
-                taken.pop()
-                saw_else.pop()
-            elif re.match(r"(?:IF|ELSEIF|ELSE|ENDIF)\b", code, re.I):
-                raise ValueError(f"Unsupported condition: {code}")
-            elif active[-1]:
-                label, op, operands = parse_line(line)
-                if op in SCOPE:
-                    procedure = label
-                    constants = dict(globals_)
-                if op == "EQU":
-                    try:
-                        constants[label.lower()] = integer_expression(operands, constants)
-                        if procedure is None:
-                            globals_[label.lower()] = constants[label.lower()]
-                    except (KeyError, SyntaxError):
-                        pass
-                if op.lower() in definitions:
-                    if label:
-                        result.append(label)
-                    args = [a.strip() for a in operands.split(",")] if operands else []
-                    macro_body, names = definitions[op.lower()]
-                    if names and len(args) > len(names):
-                        raise ValueError(f"Too many arguments for macro {op}")
-                    result.extend(expand_sequence(macro_body, depth + 1, args, names))
-                else:
-                    result.append(line)
-        if len(active) != 1:
-            raise ValueError("Unterminated condition")
-        return result
-
-    return expand_sequence(lines)
-
-
-def prepare_mpw(lines):
-    body, pending = [], []
-    for line in lines:
-        label, op, value = parse_line(line)
-        if op == "EQU":
-            value = re.sub(r"(?<![\w.])\.(?![\w.])", "*", value)
-            line = f"{label} EQU {value}"
-            if not re.match(r"\s*\*(?:\s*[+\-]|\s*$)", value):
-                pending.append((label, value))
-                continue
-        body.append(line)
-    constants = {}
+    dependencies, contents = {}, {}
+    pending = [source]
     while pending:
-        rest = []
-        for label, value in pending:
-            try:
-                number = integer_expression(value, constants)
-            except (KeyError, SyntaxError, ValueError):
-                rest.append((label, value))
-            else:
-                if label in constants and constants[label] != number:
-                    raise ValueError(f"Conflicting equate: {label}")
-                constants[label] = number
-        if len(rest) == len(pending):
-            break
-        pending = rest
-    labels = {parse_line(line)[0].lower() for line in body if parse_line(line)[0]}
-    imports = {name.strip().lower() for line in body
-               if parse_line(line)[1] == "IMPORT" for name in parse_line(line)[2].split(",")}
-    known = labels | set(constants) | imports
-    tail = []
-    while pending:
-        rest = []
-        for label, value in pending:
-            identifiers = set(re.findall(r"(?<![\w.])[a-z_]\w*", value))
-            if identifiers <= known:
-                tail.append(f"{label} EQU {value}")
-                known.add(label)
-            else:
-                rest.append((label, value))
-        if len(rest) == len(pending):
-            raise ValueError(f"Unresolved equates: {rest}")
-        pending = rest
-    aliases = dict((parse_line(line)[0], parse_line(line)[2]) for line in tail)
-    output = ["\tMACHINE MC68000", "\tOPT SYNON"]
-    output.extend(f"{label} EQU {number}" for label, number in constants.items())
-    checks = []
-    for line in body:
-        label, op, operands = parse_line(line)
-        if op in {"DC.B", "DC.W", "DC.L"}:
-            values = operands.split(", ")
-            output.extend(f"\t{op} " + ",".join(values[i:i + 20]) for i in range(0, len(values), 20))
+        path = pending.pop().resolve()
+        if path in contents:
             continue
-        if op.startswith("MOVEM"):
-            operands = re.sub(r"d([0-7])-a([0-7])", r"d\1-d7/a0-a\2", operands)
-            line = f"\t{op} {operands}"
-        if op == "MOVE.L" and (match := re.fullmatch(r"#(.+),d([0-7])", operands)):
-            try:
-                number = integer_expression(match[1], constants)
-            except (KeyError, SyntaxError, ValueError):
-                number = None
-            if number is not None and -128 <= number <= 127:
-                line = f"\tMOVEQ #{number},d{match[2]}"
-        if op == "MOVEQ":
-            match = re.fullmatch(r"#(.+),d([0-7])", operands)
+        data = path.read_bytes()
+        contents[path] = data.decode("utf-8")
+        dependencies[str(path)] = sha256(data)
+        for line in contents[path].splitlines():
+            match = INCLUDE.fullmatch(line)
             if match:
-                try:
-                    integer_expression(match[1], constants)
-                except (KeyError, SyntaxError, ValueError):
-                    value = match[1]
-                    for _ in range(len(aliases)):
-                        expanded = re.sub(r"(?<![\w.])([a-z_]\w*)", lambda m:
-                                          "(" + aliases[m[1]] + ")" if m[1] in aliases else m[1], value)
-                        if expanded == value:
-                            break
-                        value = expanded
-                    output.append(f"\tDC.W ${0x7000 + int(match[2]) * 512:04x}+(({value}) AND $ff)")
-                    checks.append(match[1])
-                    continue
-        address_immediate = re.fullmatch(r"(ADD|SUB|CMP|MOVE)A?\.L", op)
-        if address_immediate and re.fullmatch(r"#[^,]+,(a[0-7]|sp)", operands):
-            output.extend(["\tOPT NONE", f"\t{address_immediate[1]}A.L {operands}", "\tOPT SYNON"])
-        elif re.fullmatch(r"(?:ADD|SUB)(?:\.[BWL])?", op) and operands.startswith("#"):
-            amount, destination = operands[1:].split(",", 1)
-            try:
-                number = integer_expression(amount, constants)
-            except (KeyError, SyntaxError, ValueError):
-                number = None
-            if number is not None and 1 <= number <= 8:
-                mnemonic, _, width = op.partition(".")
-                line = f"\t{mnemonic}Q.{width or 'W'} #{number},{destination}"
-            output.append(line)
-        elif re.fullmatch(r"B(?:RA|SR|HI|LS|CC|HS|CS|LO|NE|EQ|VC|VS|PL|MI|GE|LT|GT|LE)(?:\.[SW])?", op):
-            op = op.replace("BHS", "BCC").replace("BLO", "BCS")
-            output.extend(["\tOPT NONE", f"\t{op} {operands}", "\tOPT SYNON"])
-        else:
-            output.append(line)
-    output.extend(tail)
-    for value in checks:
-        for comparison in (f"({value}) < -128", f"({value}) > 127"):
-            output.extend([f"\tIF {comparison} THEN", "\tFAIL 'MOVEQ immediate out of range'", "\tENDIF"])
-    output.extend(["\tENDP", "\tEND"])
-    text = "\n".join(output) + "\n"
-    text = re.sub(r"0x([0-9a-fA-F]+)", r"$\1", text)
-    text = re.sub(r"(?<![\w$])([0-9]{10,})(?!\w)", lambda m: "$" + format(int(m[1]), "x"), text)
-    return text
+                name = match[1]
+                if name.startswith(":"):
+                    name = name[1:]
+                name = name.replace(":", "/")
+                candidates = [directory / name for directory in (path.parent, SHARED_INCLUDES)]
+                child = next((candidate for candidate in candidates if candidate.is_file()), None)
+                if child is not None:
+                    pending.append(child)
+            elif re.match(r"\s+INCLUDE\b", line, re.I):
+                for directory in (path.parent, SHARED_INCLUDES):
+                    pending.extend(directory.glob("*.a"))
+    external = [path.parent for path in contents
+                if not path.is_relative_to(HERE) and not path.is_relative_to(SHARED_INCLUDES)]
+    external_root = Path(os.path.commonpath(external)) if external else None
+    external_id = sha256(str(external_root).encode())[:12] if external_root else None
+
+    def staged_path(path):
+        if path.is_relative_to(SHARED_INCLUDES):
+            return Path("Inputs/Source/Includes") / path.relative_to(SHARED_INCLUDES)
+        if path.is_relative_to(HERE):
+            return Path("Inputs") / path.relative_to(HERE)
+        return Path("Inputs/External") / external_id / path.relative_to(external_root)
+
+    files = {staged_path(path).as_posix(): text for path, text in contents.items()}
+    origins = {staged_path(path).as_posix(): str(path) for path in contents}
+    return staged_path(source), dependencies, files, origins
 
 
 def translate(source, module_name="ROMModule"):
-    dependencies = {}
-    text = expand_includes(source, dependencies)
-    lines = expand_macros(text.splitlines())
-    exports = {name.strip().lower() for line in lines
-               if parse_line(line)[1] == "EXPORT" for name in parse_line(line)[2].split(",")}
-    exports.update(label.lower() for line in lines for label, op, operands in [parse_line(line)]
-                   if label and op in SCOPE and operands.strip().upper() == "EXPORT")
-    definitions = {}
-    local_equates = {}
-    procedure = "module"
-    for line in lines:
-        code = strip_comment(line)
-        label, op, operands = parse_line(line)
-        if op in SCOPE and label:
-            procedure = label.lower()
-        elif op == "EQU" and label and procedure != "module" and label.lower() not in exports:
-            local_equates.setdefault(procedure, set()).add(label.lower())
-        if code and not code[0].isspace():
-            parts = code.split()
-            if parts and not (len(parts) > 1 and parts[1].upper() in {"EQU", "OPWORD"}):
-                name = parts[0].lower().rstrip(":")
-                definitions[name] = definitions.get(name, 0) + 1
-    duplicate_labels = {name for name, count in definitions.items()
-                        if (count > 1 or name in {"ac", "bc", "control", "status"}) and not name.startswith("@")}
-    output = [f"{module_name} PROC EXPORT"]
-    scope = "module"
-    procedure = "module"
-    traps = set()
-    imported = set()
-    exported = set()
-    ended = False
-    for number, line in enumerate(lines, 1):
-        code = strip_comment(line).rstrip()
-        if not code.strip():
-            continue
-        if ended:
-            raise ValueError(f"{source}:{number}: substantive content follows END")
-        label = None
-        if not code[0].isspace():
-            parts = code.split(None, 1)
-            label = parts[0].rstrip(":")
-            code = parts[1] if len(parts) == 2 else ""
-        parts = code.split(None, 1)
-        op = parts[0].upper() if parts else ""
-        operands = parts[1] if len(parts) == 2 else ""
-        if op in SCOPE and label:
-            procedure = label.lower()
-        names = local_equates.get(procedure, set())
-        for name in sorted(names, key=len, reverse=True):
-            operands = re.sub(r"\b" + re.escape(name) + r"\b", procedure + "__" + name, operands, flags=re.I)
-        if op == "END":
-            ended = True
-            continue
-        if op in {"IMPORT", "EXPORT"}:
-            names = [name.strip().lower() for name in operands.split(",")]
-            if op == "IMPORT":
-                names = [name for name in names if name not in definitions and name not in exports
-                         and name not in imported]
-                imported.update(names)
-            else:
-                names = [name for name in names if name not in exported]
-                exported.update(names)
-            if names:
-                output.append("\t" + op + " " + ",".join(names))
-            continue
-        if op in SCOPE and operands.strip().upper() == "EXPORT":
-            if label.lower() not in exported:
-                output.append("\tEXPORT " + label.lower())
-                exported.add(label.lower())
-        if op in {"EQU", "OPWORD"}:
-            if label is None:
-                raise ValueError(f"{source}:{number}: EQU requires a name")
-            value = expression(operands, scope)
-            qualified = procedure + "__" + label.lower() if label.lower() in names else label.lower()
-            output.append(f"{qualified} {op} {value}")
-            if op == "OPWORD":
-                traps.add(label.upper())
-            continue
-        if label:
-            if not label.startswith("@"):
-                scope = label.lower()
-            if label.lower() in duplicate_labels:
-                label = procedure + "__" + label
-            output.append(expression(label, scope) + " EQU *")
-        if not op or op in IGNORED or op in SCOPE:
-            continue
-        if op == "MACHINE":
-            machine = operands.upper()
-            if machine not in {"MC68000", "MC68020"}:
-                raise ValueError(f"{source}:{number}: unsupported machine {operands}")
-            output.append("\tMACHINE " + machine)
-            continue
-        for name in duplicate_labels:
-            operands = re.sub(r"\b" + re.escape(name) + r"\b", procedure + "__" + name, operands, flags=re.I)
-        if op in traps:
-            output.append("\t" + op + " " + expression(operands, scope))
-        elif op in {"DC.B", "DC.W", "DC.L"}:
-            directive = op
-            output.append("\t" + directive + " " + data_expression(operands, scope, op == "DC.B"))
-        else:
-            if not re.fullmatch(r"[A-Z][A-Z0-9]*(?:\.[BWLSD])?", op):
-                raise ValueError(f"{source}:{number}: unsupported operation {op}")
-            output.append("\t" + op.lower() + " " + expression(operands, scope))
-    return AssemblyText(prepare_mpw(output), dependencies)
+    path, dependencies, input_files, input_sources = assembly_inputs(source)
+    marker = f"{module_name} PROC EXPORT\n\tENDP\n"
+    include = ":" + str(path).replace("/", ":")
+    text = marker + "\tMACHINE MC68000\n\tSTRING ASIS\n\tOPT SYNON\n"
+    return AssemblyText(text + f"\tINCLUDE '{include}'\n", dependencies, input_files, input_sources)
 
 
 def module_assembly(module):
@@ -485,49 +97,8 @@ def module_assembly(module):
 
 
 def project_assemblies(modules):
-    """Use adjacent object boundaries for short imports that Asm cannot range-check.
-
-    Asm checks the unresolved byte addend before Link supplies the target.
-    The next object's origin and this object's end provide an equivalent
-    expression with a small addend. Link still checks the signed byte range;
-    verification checks that the two boundaries coincide.
-    """
-    assemblies = {module["name"]: module_assembly(module) for module in modules
-                  if module.get("format") != "rez-data"}
-    for module, following in zip(modules, modules[1:]):
-        if (module["name"] not in assemblies or following["name"] not in assemblies
-                or following.get("format") == "mpw-compressed-dispatch"):
-            continue
-        assembly = assemblies[module["name"]]
-        next_text = assemblies[following["name"]]
-        next_exports = {name.strip().lower() for line in next_text.splitlines()
-                        if parse_line(line)[1] == "EXPORT" for name in parse_line(line)[2].split(",")}
-        imports = {name.strip().lower() for line in assembly.splitlines()
-                   if parse_line(line)[1] == "IMPORT" for name in parse_line(line)[2].split(",")}
-        next_name = "rom_" + following["name"].replace("-", "_")
-        end_name = "rom_" + module["name"].replace("-", "_") + "_end"
-        conditions = "RA SR HI LS CC CS NE EQ VC VS PL MI GE LT GT LE".split()
-        rewritten = []
-        count = 0
-        for line in assembly.splitlines():
-            label, op, operand = parse_line(line)
-            if op.endswith(".S") and op[1:-2] in conditions and operand in imports & next_exports:
-                opcode = 0x60 + conditions.index(op[1:-2])
-                rewritten.append(f"\tDC.B ${opcode:x},{operand}-{next_name}+{end_name}-(*+2)")
-                count += 1
-            else:
-                rewritten.append(line)
-        if count:
-            for index, line in enumerate(rewritten):
-                if parse_line(line)[1] == "PROC":
-                    rewritten[index + 1:index + 1] = [f"\tIMPORT {next_name}", f"\tEXPORT {end_name}"]
-                    break
-            end = next(index for index, line in enumerate(rewritten) if parse_line(line)[1] == "ENDP")
-            rewritten.insert(end, f"{end_name} EQU *")
-            prepared = AssemblyText("\n".join(rewritten) + "\n", getattr(assembly, "dependencies", {}))
-            prepared.adjacency = (end_name, next_name)
-            assemblies[module["name"]] = prepared
-    return assemblies
+    return {module["name"]: module_assembly(module) for module in modules
+            if module.get("format") != "rez-data"}
 
 
 def verify_module(module, rom, base, runner, build):
@@ -544,6 +115,9 @@ def verify_module(module, rom, base, runner, build):
 def verify_emitted(module, actual, offsets, translated, rom, base, build, linked_symbols=None):
     source = source_path(module["source"])
     name = module["name"]
+    dependencies = getattr(translated, "dependencies", {})
+    if any(sha256(Path(path).read_bytes()) != digest for path, digest in dependencies.items()):
+        raise ValueError(f"Source changed during the build: {name}")
     start, end = int(module["start"], 16), int(module["end_exclusive"], 16)
     source_format = module.get("format", "mpw-asm")
     symbols = {name: base + value for name, value in (linked_symbols or {}).items()}
@@ -578,7 +152,6 @@ def verify_emitted(module, actual, offsets, translated, rom, base, build, linked
     for label, address in module.get("entry_points", {}).items():
         if symbols.get(label.lower()) != int(address, 16):
             raise ValueError(f"{name}: entry point {label} does not equal {address}")
-    dependencies = getattr(translated, "dependencies", {})
     result = {"name": name, "source": module["source"],
               "source_sha256": dependencies.get(str(source.resolve()), sha256(source.read_bytes())),
               "start": module["start"], "end_exclusive": module["end_exclusive"],
@@ -685,6 +258,9 @@ def main():
     for inventory in ("source-inventory.json", "resource-source-inventory.json"):
         historical_sources.extend(inventory_record(item) for item in
                                   json.loads((HERE / "Evidence" / inventory).read_text()))
+    mpw_interfaces = json.loads((HERE / "Evidence/mpw-1.0.1-includes.json").read_text())
+    historical_sources.extend(inventory_record(item, root=HERE)
+                              for item in mpw_interfaces["files"])
     base = int(target["rom"]["base_address"], 16)
     modules = list(target["modules"])
     covered = set()
@@ -719,11 +295,10 @@ def main():
             translated[name] = AssemblyText(text, dependencies)
         linked = mpw.resource_data(args.build / "MacPlus-v3.rom")
         locations = mpw.link_map(args.build / "MacPlus-v3.map")
-        for assembly in translated.values():
-            adjacency = getattr(assembly, "adjacency", None)
-            if adjacency and (locations.get(adjacency[0]) is None
-                              or locations.get(adjacency[0]) != locations.get(adjacency[1])):
-                raise ValueError(f"MPW Link separated adjacent short-branch modules: {adjacency}")
+        for first, second in target.get("link_equalities", []):
+            if (locations.get(first.lower()) is None
+                    or locations.get(first.lower()) != locations.get(second.lower())):
+                raise ValueError(f"MPW Link separated required adjacent symbols: {first}, {second}")
         position = 0
         dispatch = None
         for module in modules:
@@ -735,7 +310,8 @@ def main():
                 dispatch = module
             if locations.get(module_name) != position or position + base != int(module["start"], 16):
                 raise ValueError(f"MPW Link changed module order or position: {name}")
-            offsets, size = mpw.listing_symbols(args.build / (name + ".a.lst"))
+            offsets, size = mpw.listing_symbols(args.build / (name + ".a.lst"), locations,
+                                               locations["rom_dispatch_offsets"] if is_dispatch else position)
             data_start = locations["rom_dispatch_offsets"] if is_dispatch else position
             actual = linked[data_start:data_start + size]
             result = verify_emitted(module, actual, offsets, translated[name], rom, base, args.build, locations)

@@ -37,6 +37,7 @@
 ;
 
 DrawArc PROC	EXPORT	
+		IMPORT BUMPOVAL,INITOVAL ;]
 ;----------------------------------------------------------------
 ;
 ;  PROCEDURE DrawArc(dstRect: Rect;

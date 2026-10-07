@@ -37,6 +37,7 @@
 *R applicable history, and comments remain.
 
 *R These equates retain the original include definitions.
+MFSRFN1Module PROC ;]
 		IMPORT FileReadBlock ;]
 		EXPORT MFSDirRead,MFSMapRead,MFSRd1stDB,MFSRdNxtDB,MFSVolRead ;]
 
@@ -135,4 +136,5 @@ MFSMapR2:
 			RTS 						; return to ReadBlock					<01Oct85>
 
 MFSRFN1End ;]
+        ENDP ;]
 	END

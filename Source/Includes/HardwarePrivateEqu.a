@@ -11,11 +11,10 @@
 ;	Copyright:	© 1990-1993 by Apple Computer, Inc.  All rights reserved.
 ;
 
+	INCLUDE 'HardwareEqu.a' ;]
+	INCLUDE 'Private.a' ;]
+
 numOsTrap 		EQU 		256   					; number of os traps
 numTrapMask EQU $1FF ;]
-DiagROM   		EQU 		$F80000   				; Alternate ROM - initial vector
-ROMStart EQU 4194304
-DBase EQU $DFE1FF
-ToolTable 		EQU 		$0C00 					; start of toolbox trap table
 numTbTrap 		EQU 		512   					; number of toolbox traps
 HeapStart 		EQU 		$1400 					; Mac Plus starting point

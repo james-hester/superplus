@@ -75,6 +75,7 @@
 ;_______________________________________________________________________
 
 
+TFSRFN3Module PROC ;]
 		IMPORT ExtendFile,MFSAlloc,TFSVolTst ;]
 		EXPORT Alloc,AllocContig ;]
 
@@ -100,4 +101,5 @@ AllocCall ;]
 			 RTS
 
 TFSRFN3End ;]
+        ENDP ;]
 	END

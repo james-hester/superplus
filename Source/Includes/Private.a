@@ -1,8 +1,12 @@
-*R Mac Plus declarations selected from the surviving includes.
-*R See Evidence/shared-includes.json for source lines and retained local definitions.
-;
-*R Source: Interfaces/AIncludes/Private.a
-;
+*R MPW 1.0.1 supplies the complete 1986 interface below.
+*R Additional declarations retain the names used by the ROM sources.
+
+	IF (&TYPE('PlusPrivateIncluded') = 'UNDEFINED') THEN ;]
+PlusPrivateIncluded EQU 1 ;]
+PrNonPortable EQU 1 ;]
+	INCLUDE ':MPW1.0.1:Private.a' ;]
+
+*R Additional declarations come from SuperMario Interfaces/AIncludes/Private.a.
 ; File: Private.a
 ;
 ; Assembler Interface to the Macintosh Libraries
@@ -10,89 +14,9 @@
 ; All Rights Reserved
 ;
 ;
-
-SonyVars  		EQU 		$134  					; 3-1/2 disk driver vars [pointer]
-DskRtnAdr 		EQU 		$124  					; temp for disk driver [pointer]
-PollRtnAddr   	EQU 		$128  					; 'other' driver locals [pointer]
-PWMValue  		EQU 		$138  					; current PWM value [word]
-PollStack 		EQU 		$13A  					; SCC poll data start stack location [pointer]
-PollProc  		EQU 		$13E  					; SCC poll data procedure [pointer]
-DiskVars  		EQU 		$222  					; Disk driver variables [62 bytes]
 GrafBegin 		EQU 		$800  					; graf global area
-JHIDECURSOR 	EQU 	GRAFBEGIN
-JShowCursor 	EQU 		$804
-JShieldCursor	EQU 		$808
-JSCRNADDR		EQU 	JSHIELDCURSOR+4 		;not used (see _GetScrnBits)
-JSCRNSIZE		EQU 	JSCRNADDR+4 		;not used (see _GetScrnBits)
-JINITCRSR		EQU 	JSCRNSIZE+4
-JSETCRSR		EQU 	JINITCRSR+4
-JCRSROBSCURE	EQU 	JSETCRSR+4
-JSwapFont		EQU 		$8E0					; jump entry for FMSwapFont [long]
-OSTable   		EQU 		$0400 					; 256 longs, up to $800, where old table of 512 words was
-ToolDisp EQU 10
-OldDisp EQU 9
-MacJmp			EQU 		$120  					; MACSBUG jumptable [pointer]
-FileVars  		EQU 		$340  					; file system vars [184 bytes]
-FlEvtMask 		EQU 		$25E  					; (word) mask of allowable events to flush at FlushEvents.
-TrapAgain 		EQU 		$B00  					; use 4 bytes here for another trap
-PWMBuf1   		EQU 		$B0A  					; (long) PWM buffer ptr
-BootMask  		EQU 		$B0E  					; (word) needed during boot
-AtalkHk1  		EQU 		$B14  					; (long) Appletalk hook
-AtalkHk2  		EQU 		$B18  					; (long) Appletalk hook
-SCSIFlag  		EQU 		$B22  					; (word) Configuration Flag for SCSI
-HWCfgFlags EQU $0B22
-BtDskRfn  		EQU 		$B34  					; (word) refnum for boot drive driver refnum
-BootTmp8  		EQU 		$B36  					; (8bytes) temp space needed by StartBoot
-T1Arbitrate   	EQU 		$B3F  					; (byte) $FF if Timer T1 up for grabs.
-RMGRHiVars		EQU 		$B80  					; $B80-$BFF are switched vars
-TETrimMeasure 	EQU 		(4*253+OSTable)   		; trimMeasure hook
-TEFindLine		EQU 		(4*255+OSTable)   		; findLine hook
-JBlockMove EQU $4B8
-JPrimeTime		EQU 		(602-512)*4+OSTable   	;
-JLg2Phys  		EQU 		(703-512)*4+OSTable   	;
-JFlushCache   	EQU 		(704-512)*4+OSTable   	;
-JGetBlock 		EQU 		(705-512)*4+OSTable   	;
-JMarkBlock		EQU 		(706-512)*4+OSTable   	;
-JRelBlock 		EQU 		(707-512)*4+OSTable   	;
-JTrashBlocks  	EQU 		(708-512)*4+OSTable   	;
-JTrashVBlks   	EQU 		(709-512)*4+OSTable   	;
-JCacheWrIP		EQU 		(710-512)*4+OSTable   	;
-JCacheRdIP		EQU 		(711-512)*4+OSTable   	;
-JBasicIO  		EQU 		(712-512)*4+OSTable   	;
-JRdBlocks 		EQU 		(713-512)*4+OSTable   	;
-JWrBlocks 		EQU 		(714-512)*4+OSTable   	;
-JSetUpTags		EQU 		(715-512)*4+OSTable   	;
-JBTClose  		EQU 		(716-512)*4+OSTable   	;
-JBTDelete 		EQU 		(717-512)*4+OSTable   	;
-JBTFlush  		EQU 		(718-512)*4+OSTable   	;
-JBTGetRecord  	EQU 		(719-512)*4+OSTable   	;
-JBTInsert 		EQU 		(720-512)*4+OSTable   	;
-JBTOpen   		EQU 		(721-512)*4+OSTable   	;
-JBTSearch 		EQU 		(722-512)*4+OSTable   	;
-JBTUpdate 		EQU 		(723-512)*4+OSTable   	;
-JGetNode  		EQU 		(724-512)*4+OSTable   	;
-JRelNode  		EQU 		(725-512)*4+OSTable   	;
-JAllocNode		EQU 		(726-512)*4+OSTable   	;
-JFreeNode 		EQU 		(727-512)*4+OSTable   	;
-JExtBTFile		EQU 		(728-512)*4+OSTable   	;
-JDeallocFile  	EQU 		(729-512)*4+OSTable   	;
-JExtendFile   	EQU 		(730-512)*4+OSTable   	;
-JTruncateFile 	EQU 		(731-512)*4+OSTable   	;
-JCMSetUp  		EQU 		(732-512)*4+OSTable   	;
-JDtrmV1   		EQU 		(734-512)*4+OSTable   	;
-JBlkAlloc 		EQU 		(735-512)*4+OSTable   	;
-JBlkDeAlloc   	EQU 		(736-512)*4+OSTable   	;
-JFileOpen 		EQU 		(737-512)*4+OSTable   	;
-JPermssnChk   	EQU 		(738-512)*4+OSTable   	;
-JFndFilName   	EQU 		(739-512)*4+OSTable   	;
-JRfNCall  		EQU 		(740-512)*4+OSTable   	;
-JAdjEOF   		EQU 		(741-512)*4+OSTable   	;
-JClkNoMem EQU $054C
-JSegStack 		EQU 		(760-512)*4+OSTable   	;vector for segment loader
-JSuperLoad		EQU 		(761-512)*4+OSTable   	;
-JCmpFrm   		EQU 		(762-512)*4+OSTable   	;
-JNewMap   		EQU 		(763-512)*4+OSTable   	;
-JCheckLoad		EQU 		(764-512)*4+OSTable   	;
+toolDisp  		EQU 		10    					; bit #10 distinguishes Tool/OS Get/Set Trap address
+oldDisp   		EQU 		9 						; bit #9 distinguishes Old/New trap numbering
 GrafEnd   		EQU 		$8F2  					; end of graphics globals
 bbEntry   		EQU 		2 						; (contains BRA.S) entrypoint to boot blocks
 bbVersion 		EQU 		6 						; (word) version number
@@ -110,3 +34,5 @@ bb128KSHeap   	EQU 		$7E   					; size of system heap on a 128K Mac
 bb512KSHeap   	EQU 		$86   					; size of system heap on a 512K Mac
 bbOldVers 		EQU 		$14   					; really old versions of boot blocks are <= this
 bbOldExecVers 	EQU 		'D'   					; old version for executable boot blocks
+
+	ENDIF ;]

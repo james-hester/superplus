@@ -49,6 +49,7 @@
 ;				  9/7/84	BAS		Put in suggestions/bugs found by LAK & SC & RS { whew! }
 ;
 
+PrintDriverModule PROC ;]
 		EXPORT PrintHeader ;]
 
 		INCLUDE 'PrPrivate.a'

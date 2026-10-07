@@ -126,7 +126,6 @@
 *R Evidence/memory-manager-internal.json records provenance and exact byte checks.
 ;
 
-		EXPORT MMNoErrEpilogue
 
         MACHINE MC68000
         STRING ASIS
@@ -142,6 +141,7 @@ FNGZResrv		EQU 	3
 
 
 HeapGuts PROC EXPORT
+		EXPORT MMNoErrEpilogue
         EXPORT MMPPrologue
         EXPORT MMHPrologue
         EXPORT MMPrologue
@@ -890,13 +890,13 @@ TotePurgeables_0 ;]
 CallGZProc
         MOVE.L    44(A6),D2 ;]
         BEQ.S     CGZReturn	;No, return dSize of 0.
-        MOVEM.L   D0-D1/D3-A6,-(SP)
+        MOVEM.L   D0-D1/D3-D7/A0-A6,-(SP) ;]
         MOVE.L    44(A6),A1 ;]
         CLR.L     -(SP)	;we're not hackers! (function result)
         MOVE.L    D0,-(SP)	;Push s as argument.
         JSR       (A1)	;Call GrowZone Function.
         MOVE.L    (SP)+,D2	;Get GrowZone result.
-        MOVEM.L   (SP)+,D0-D1/D3-A6
+        MOVEM.L   (SP)+,D0-D1/D3-D7/A0-A6 ;]
 
 CGZReturn
         RTS       	;Return to caller.

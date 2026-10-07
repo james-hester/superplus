@@ -127,7 +127,7 @@
 
         MACRO
         ToolBox &num,&name ;]
-        IF '&name' = '0' THEN ;]
+        IF &name = '0' THEN ;]
         DC.L 0
         ELSE
         DC.L &name-BaseOfROM
@@ -136,7 +136,7 @@
 
         MACRO
         OS &num,&name ;]
-        IF '&name' = '0' THEN ;]
+        IF &name = '0' THEN ;]
         DC.L 0
         ELSE
         DC.L &name-BaseOfROM

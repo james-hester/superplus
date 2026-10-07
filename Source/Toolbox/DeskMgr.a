@@ -50,19 +50,19 @@
 ;				11/16/82	AJH		Added TaskLock to SystemTask to avoid re-entrancy problems
 ;
 
-arrow 			EQU 		dkGray-68     			;Cursor
+thePort   		EQU 		0         				;GrafPtr
+white 			EQU 		thePort-8     			;Pattern
 black 			EQU 		white-8       			;Pattern
+gray  			EQU 		black-8       			;Pattern
+ltGray			EQU 		gray-8        			;Pattern
+dkGray			EQU 		ltGray-8      			;Pattern
+arrow 			EQU 		dkGray-68     			;Cursor
+screenBits		EQU 		arrow-14      			;BitMap
 bounds			EQU 		6         				; bounding box [rectangle]
 		INCLUDE 'SysEqu.a'
 		INCLUDE 'ToolUtils.a'
 		INCLUDE 'Traps.a'
 
-dkGray			EQU 		ltGray-8      			;Pattern
-gray  			EQU 		black-8       			;Pattern
-ltGray			EQU 		gray-8        			;Pattern
-screenBits		EQU 		arrow-14      			;BitMap
-thePort   		EQU 		0         				;GrafPtr
-white 			EQU 		thePort-8     			;Pattern
 
 
 DeskMgr 		PROC	EXPORT	

@@ -19,6 +19,7 @@
 ;
 ;
 
+SoundDriverModule PROC ;]
 		EXPORT SoundHeader ;]
 
 		INCLUDE 'HardwareEqu.a'
@@ -229,19 +230,19 @@ PrimeInstall ;]
             BSR.S      InstallNextVBL ;]
             BRA.S      PrimeReturn ;]
 EndFourTone ;]
-            MOVEM.L    (SP)+,D0-A6
+            MOVEM.L    (SP)+,D0-D7/A0-A6
             BRA.S      DoneVBL ;]
 
 ;] The four-tone record holds a duration, four increments, four phases,
 ;] and four waveform pointers. The VBL task updates the phases in place.
 FourToneVBL ;]
-            MOVEM.L    D0-A6,-(SP)
+            MOVEM.L    D0-D7/A0-A6,-(SP)
             MOVE.L     SoundPtr,A6 ;]
             TST.W      (A6)
             BEQ.S      EndFourTone ;]
             MOVE.W     #1,SoundVBL+vblCount ;]
             SUBQ.W     #1,(A6)+ ;]
-            MOVEM.L    (A6),D2-A5 ;] four increment/phase pairs and four waveform pointers
+            MOVEM.L    (A6),D2-D7/A0-A5 ;] four increment/phase pairs and four waveform pointers
             MOVE.L     SoundBase,A6 ;]
             MOVE.L     #16711680,D1 ;] Mask for the waveform index in each fixed-point phase.
 
@@ -336,8 +337,8 @@ SavePhases ;]
             ADDQ.W     #4,SP
             MOVE.L     SoundPtr,A6 ;]
             ADDQ.W     #2,A6 ;]
-            MOVEM.L    D2-A1,(A6) ;]
-            MOVEM.L    (SP)+,D0-A6
+            MOVEM.L    D2-D7/A0-A1,(A6) ;]
+            MOVEM.L    (SP)+,D0-D7/A0-A6
 BMapExit ;]
             RTS        
 

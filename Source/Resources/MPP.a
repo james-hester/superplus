@@ -8,7 +8,6 @@
 *R Resource lengths, driver entries, and dispatch tables use label differences.
 
 *R Surviving interface definitions and restored private layout.
-		EXPORT MPPDriver ;]
 
 		INCLUDE 'AppleTalk.a'
 		INCLUDE 'Private.a'
@@ -31,7 +30,6 @@ DDPTblEnd EQU SktLstnr+4*DDPTblSz ;]
 VBLQEl			EQU		DDPTblEnd				; A VBL queue element
 NRPtr			EQU		VBLQEl+14				; Ptr to non-resident code (and flag)
 LookupPtr		EQU		NRPtr+4					; Pointer to lookup-reply code (and flag)
-SCCLockout68000 EQU $2600 ;]
 NRVars			EQU		LookupPtr+4				; Pointer to NR local variables
 JDDPWrite		EQU		NRVars+4				; Address of DDPWrite routine
 NTQueueHd		EQU		JDDPWrite+4				; Names Table Queue Head
@@ -92,6 +90,7 @@ SCCReadEnable EQU $2100 ;]
 
 
 MPPResourceBlock PROC ;]
+		EXPORT MPPDriver ;]
  DC.L $C0000000+(MPPResourceEnd-MPPResourceBlock) ;]
  DC.L $64 ;]
 
@@ -197,7 +196,7 @@ DoOpenSkt ;]
 DDPOpenSocket
  MOVEQ      #DDPSktErr,D0 ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  TST.B      D1
  BEQ.S      MPPBranch_41a7ca ;]
  BMI.S      MPPBranch_41a7f6 ;]
@@ -284,13 +283,13 @@ WriteDDPPacket ;]
  BEQ.S      MPPBranch_41a870 ;]
  MOVEQ      #9,D0
  CLR.W      D3
- BSR.S      DDPChecksum ;]
+ BSR.S      CalcDDPChecksum ;]
 
 MPPBranch_41a860 ;]
  MOVE.W     (A1)+,D0
  BEQ.S      MPPBranch_41a86a ;]
  MOVE.L     (A1)+,A0
- BSR.S      DDPChecksum ;]
+ BSR.S      CalcDDPChecksum ;]
  BRA.S      MPPBranch_41a860 ;]
 
 MPPBranch_41a86a ;]
@@ -310,12 +309,12 @@ MPPBranch_41a870 ;]
  ADDQ.W     #4,SP
  RTS        
 
-DDPChecksum
+CalcDDPChecksum ;]
  MOVE.B     (A0)+,D2
  ADD.W      D2,D3
  ROL.W      #1,D3
  SUBQ.W     #1,D0
- BNE.S      DDPChecksum ;]
+ BNE.S      CalcDDPChecksum ;]
 
 MPPBranch_41a892 ;]
  RTS        
@@ -557,7 +556,7 @@ MPPBranch_41aa14 ;]
  BNE.S      MPPBranch_41aa14 ;]
 
 MPPBranch_41aa1c ;]
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  MOVE.B     #14,(A1) ;]
  MOVEQ      #3,D0
  ADDQ.W     #3,D3 ;]
@@ -646,7 +645,7 @@ MPPBranch_41aac4 ;]
  BSET       #0,deferHistory(A2) ;]
 
 MPPBranch_41aade ;]
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  MOVE.B     #15,(A1)
  MOVEQ      #-120,D0
  MOVE.B     D0,(A1)
@@ -697,7 +696,7 @@ MPPBranch_41ab32 ;]
  SUBQ.B     #1,VBLDeferCnt(A2) ;]
  BNE.S      MPPBranch_41ab66 ;]
  MOVEM.L    SCCRd,A0-A1 ;]
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  BSR.W      ResetReceive ;]
  BRA.S      MPPBranch_41ab0e ;]
 
@@ -1134,7 +1133,7 @@ MPPClose
  _CLOSE     
  ADD.W      #IOQElSize,SP
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  LEA        CloseSCCData,A0 ;]
  BSR.S      SetSCCRegisters ;]
  LEA        VBLQEl(A2),A0
@@ -1231,7 +1230,7 @@ MPPBranch_41af60 ;]
  MOVE.W     (A1)+,vSCCEnable(A2) ;]
  MOVE.B     (A1)+,VAbortWait(A2) ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  LEA        Lvl2DT+8,A3 ;]
  LEA        SaveVects(A2),A1 ;]
  LEA        LAPReceiveInt,A0 ;]
@@ -1729,7 +1728,7 @@ DoRemoveName ;]
  BSR.S      FindName ;]
  BEQ.S      MPPBranch_41b3ce ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  LEA        NTQueueHd(A2),A0 ;]
 
 MPPBranch_41b416 ;]

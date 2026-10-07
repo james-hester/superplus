@@ -2,7 +2,7 @@
 *R The UNLINK structure follows QuickDraw Source/GrafTypes.a.
 *R See Evidence/shared-includes.json for the module-specific encoding choices.
 ;
-*R UNLINK uses ADD after the zero-byte and four-byte cases.
+*R UNLINK uses ADDQ for up to eight parameter bytes, then ADD.
 
 		MACRO
 		UNLINK
@@ -20,7 +20,11 @@
 		RTS							;RETURN
 		ELSE
 		MOVE.L	(SP)+,A0			;POP RETURN ADDR
+		IF &Eval(&Syslst[1])<=8 THEN ;]
+		ADDQ	#&Syslst[1],SP ;]
+		ELSE
 		ADD		#&Syslst[1],SP		;STRIP PARAMETERS
+		ENDIF
 		JMP		(A0)				;AND RETURN
 		ENDIF
 		ENDM

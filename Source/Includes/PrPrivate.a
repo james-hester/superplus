@@ -1,13 +1,12 @@
-*R Mac Plus declarations selected from the surviving includes.
-*R See Evidence/shared-includes.json for source lines and retained local definitions.
-;
-*R Source: Interfaces/AIncludes/PrPrivate.a
-;
-;	File:		PrPrivate.a
-;
-;
-;
-;	Copyright:	© 1991 by Apple Computer, Inc., all rights reserved.
-;
+*R MPW 1.0.1 supplies the complete 1986 interface below.
 
+	IF (&TYPE('PlusPrPrivateIncluded') = 'UNDEFINED') THEN ;]
+PlusPrPrivateIncluded EQU 1 ;]
+	INCLUDE ':MPW1.0.1:PrEqu.a' ;]
+
+*R This private declaration comes from SuperMario PrPrivate.a.
+; Copyright © 1991 by Apple Computer, Inc., all rights reserved.
+;
 PrintVars 		EQU 		$944      				; print code variables [16 bytes]
+
+	ENDIF ;]

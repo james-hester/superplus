@@ -1,3 +1,5 @@
+import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -6,6 +8,7 @@ import struct
 import subprocess
 
 TOOLS = Path(__file__).resolve().parent
+ASM_INCLUDE_PATH = ":Inputs:Source:Includes"
 C_LIBRARIES = ("{Libraries}MacRuntime.o", "{CLibraries}StdCLib.o",
                "{Libraries}IntEnv.o", "{Libraries}Interface.o")
 
@@ -61,7 +64,43 @@ def run(runner, tool, arguments, build):
     return stdout, stderr
 
 
+def input_manifest(path):
+    return Path(str(path) + ".inputs.json")
+
+
+def validate_dependencies(dependencies):
+    for name, expected in dependencies.items():
+        path = Path(name)
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise ValueError(f"Source changed after preparation: {path}")
+
+
 def stage(path, assembly):
+    path = Path(path)
+    files = getattr(assembly, "input_files", {})
+    manifest = input_manifest(path)
+    if manifest.is_file():
+        previous = json.loads(manifest.read_text())
+        retained = set()
+        for other in path.parent.glob("*.a.inputs.json"):
+            if other != manifest:
+                retained.update(json.loads(other.read_text())["files"])
+        for name in set(previous["files"]) - files.keys():
+            original = previous.get("input_sources", {}).get(name)
+            if name not in retained or original is not None and not Path(original).is_file():
+                (path.parent / name).unlink(missing_ok=True)
+    if files:
+        dependencies = getattr(assembly, "dependencies", {})
+        validate_dependencies(dependencies)
+        for name, text in files.items():
+            target = path.parent / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            write_changed(target, text.replace("\n", "\r").encode("mac_roman"), text=True)
+        data = {"files": sorted(files), "dependencies": dependencies,
+                "input_sources": getattr(assembly, "input_sources", {})}
+        write_changed(manifest, (json.dumps(data, indent=2) + "\n").encode())
+    else:
+        manifest.unlink(missing_ok=True)
     write_changed(path, assembly.replace("\n", "\r").encode("mac_roman"), text=True)
 
 
@@ -103,35 +142,80 @@ def resource_data(path):
     return data[offset + 4:offset + 4 + size]
 
 
-def listing_symbols(path):
+class LinkMap(dict):
+    def __init__(self, definitions):
+        super().__init__(definitions)
+        self.definitions = definitions
+
+
+def listing_symbols(path, locations=None, base=0):
     text = Path(path).read_bytes().decode("mac_roman").replace("\r", "\n")
     symbols = {}
-    size = None
+    scopes = []
+    scope = None
+    nearest = None
     for line in text.splitlines():
-        match = re.match(r"^([0-9A-Fa-f]{5,8})[^\t]*\t(.*)$", line)
-        if not match:
+        if "\t" not in line:
             continue
-        position, statement = int(match[1], 16), match[2].strip()
-        label = re.fullmatch(r"(\w+)\s+(?:EQU\s+\*|PROC(?:\s+EXPORT)?)(?:\s*)", statement, re.I)
-        if label:
-            symbols[label[1].lower()] = position
-        equate = re.fullmatch(r"(\w+)\s+EQU\s+(.+)", statement, re.I)
-        if equate:
-            value = re.match(r"^[0-9A-Fa-f]{5,8}\s+([0-9A-Fa-f]{4}) ([0-9A-Fa-f]{4})\s", line)
-            if value:
-                number = int(value[1] + value[2], 16)
-                symbols[equate[1].lower()] = number if number < 0x80000000 else number - 0x100000000
-        if statement.upper() == "ENDP":
-            size = position
-    if size is None:
+        prefix, statement = line.split("\t", 1)
+        address = re.match(r"^([0-9A-Fa-f]{5,8})\s", prefix)
+        position = int(address[1], 16) if address else None
+        label = re.match(r"^([\w@.?]+)(?::|\s+|(?=;|$))", statement)
+        name = label[1].lower() if label else None
+        remainder = statement[label.end():] if label else statement
+        fields = remainder.split()
+        opcode = fields[0].upper() if fields else ""
+        if opcode in {"PROC", "FUNC"} and name and position is not None:
+            definitions = getattr(locations, "definitions", (locations or {}).items())
+            matches = [value - base for symbol, value in definitions
+                       if symbol == name and value >= base]
+            if locations is not None and not matches:
+                raise ValueError(f"Missing linked procedure {name} in {path}")
+            if matches:
+                offset = min(matches)
+            elif scope is None:
+                offset = 0
+            elif scope["end"] is not None:
+                offset = scope["offset"] + scope["end"]
+            else:
+                raise ValueError(f"A link map is required for implicit procedure ends in {path}")
+            if scope is not None and scope["end"] is None:
+                scope["end"] = offset - scope["offset"]
+            scope = {"name": name, "offset": offset, "end": None}
+            scopes.append(scope)
+            nearest = name
+            symbols[name] = offset
+            continue
+        if opcode in {"ENDP", "ENDPROC", "ENDF", "ENDFUNC", "END"}:
+            if scope is not None and position is not None:
+                scope["end"] = position
+            continue
+        if name is None or position is None or scope is None:
+            continue
+        value = position
+        if opcode == "EQU":
+            equate = re.match(r"^[0-9A-Fa-f]{5,8}\s+([0-9A-Fa-f]{4}) ([0-9A-Fa-f]{4})\s", prefix)
+            if not equate:
+                continue
+            value = int(equate[1] + equate[2], 16)
+            if value >= 0x80000000:
+                value -= 0x100000000
+        elif name.startswith("@"):
+            symbols[nearest + "__local_" + name[1:]] = scope["offset"] + value
+            continue
+        else:
+            nearest = name
+        symbols[name] = scope["offset"] + value
+        symbols[scope["name"] + "__" + name] = scope["offset"] + value
+    if not scopes or any(item["end"] is None for item in scopes):
         raise ValueError(f"Missing MPW module end in {path}")
-    return symbols, size
+    return symbols, max(item["offset"] + item["end"] for item in scopes)
 
 
 def link_map(path):
     text = Path(path).read_bytes().decode("mac_roman").replace("\r", "\n")
-    return {match[1].lower(): int(match[2], 16) for match in re.finditer(
-        r"^(\w+)\s+\S+\s+\$[0-9A-Fa-f]+,\$([0-9A-Fa-f]+)\b", text, re.M)}
+    return LinkMap([(match[1].lower(), int(match[2], 16)) for match in re.finditer(
+        r"^([\w.?]+)\s+\S+\s+\$[0-9A-Fa-f]+,\$([0-9A-Fa-f]+)\b", text, re.M)])
 
 
 def assemble(assembly, name, runner, build):
@@ -139,14 +223,14 @@ def assemble(assembly, name, runner, build):
     build.mkdir(parents=True, exist_ok=True)
     stage(build / (name + ".a"), assembly)
     output, diagnostics = run(runner, "Asm", ["-sym", "on,nolines", "-wb", "-l",
-                             "-o", name + ".o", name + ".a"], build)
+                             "-i", ASM_INCLUDE_PATH, "-o", name + ".o", name + ".a"], build)
     (build / (name + ".assembler.txt")).write_text(output + diagnostics)
-    listing, diagnostics = run(runner, "Link", ["-t", "ZROM", "-rt", "ROM =0", "-l",
+    listing, diagnostics = run(runner, "Link", ["-t", "ZROM", "-rt", "ROM =0", "-la",
                               "-o", name + ".rom", name + ".o"], build)
     (build / (name + ".map")).write_text(listing)
     if diagnostics.strip():
         raise ValueError(f"MPW Link diagnostics: {diagnostics}")
-    symbols, size = listing_symbols(build / (name + ".a.lst"))
+    symbols, size = listing_symbols(build / (name + ".a.lst"), link_map(build / (name + ".map")))
     binary = resource_data(build / (name + ".rom"))
     if len(binary) != size:
         raise ValueError("MPW Link changed the assembled module length")

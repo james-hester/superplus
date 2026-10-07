@@ -375,7 +375,6 @@
 *R Evidence/resourcemgr.json records correspondence and exact checks.
 ;
 
-		EXPORT vCmpFrm
 
         MACHINE MC68000
         STRING ASIS
@@ -474,6 +473,7 @@ ROVR			EQU 	$524F7672		; ROVR = 'ROvr' (type of override rsrc)
 ; The resource map is defined as follows:
 
 RMgr PROC EXPORT
+		EXPORT vCmpFrm
         EXPORT InitResources
         EXPORT SuperLoad
         EXPORT vSuperLoad
@@ -1074,12 +1074,16 @@ RM_41365A ;]
         BSR.W     RdData	; Read data, set new ResErr result.
         BMI.S     NMFail
         MOVE.L    A1,A0	; Source for blockmove							<20jun85> BBM
-        ADD.L     #HdrSize,A0	; ... finish calc for source
+		OPT NONE ;]
+        ADDA.L     #HdrSize,A0	;] ... finish calc for source
+		OPT SYNON ;]
         LEA       HSCache,A1	; Destination for blockmove
         MOVEQ     #PreSize,D0 ;]
         _BlockMove	; move the key data to the stack
         MOVE.L    A0,A1	; restore A1
-        SUB.L     #HdrSize,A1	; ... finish restoring A1
+		OPT NONE ;]
+        SUBA.L     #HdrSize,A1	;] ... finish restoring A1
+		OPT SYNON ;]
         BSR.S     PreFormat
         MOVEQ     #HdrSize-4, D1	; Get header size - 4 in D1 					<19sep85> BBM
         MOVE.L    ResMapOffset(A1), D2	; Get offset to resource map,

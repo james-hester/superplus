@@ -41,6 +41,7 @@ JStdRect	EQU	xToolTable+(4*$A0)
 		INCLUDE 'GrafMacros.a' ;]
 
 StdRect PROC  EXPORT
+		IMPORT DrawRect,FrRect,PushVerb,PutRect ;]
 ;---------------------------------------------------------------
 ;
 ;  PROCEDURE StdRect(verb: GrafVerb; r: Rect);

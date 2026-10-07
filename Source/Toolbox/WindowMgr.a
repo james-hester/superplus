@@ -193,7 +193,6 @@
 ;
 
 		IMPORT CalcMBHeight,DrawMBar ;]
-		EXPORT TrackBox
 
         MACHINE MC68000
         STRING ASIS
@@ -237,61 +236,6 @@ Windows PROC ;]
         EXPORT SubStructLoop
         EXPORT CalcVBehind ;]
         EXPORT ClipAbove ;]
-        EXPORT DrawNew
-        EXPORT ShowHide
-        EXPORT SetWPort
-        EXPORT RestorePort
-        EXPORT GetWMgrPort
-        EXPORT CheckUpdate ;]
-        EXPORT AllocPort
-        EXPORT InitWindows
-        EXPORT NewWindow
-        EXPORT CloseWindow ;]
-        EXPORT MakeDeactive
-        EXPORT DisposeWindow
-        EXPORT ShowWindow
-        EXPORT HideWindow
-        EXPORT GetWRefCon
-        EXPORT SetWRefCon
-        EXPORT SetWindowPic
-        EXPORT GetWindowPic
-        EXPORT GetWTitle
-        EXPORT SetWTitle
-        EXPORT RemoveContent
-        EXPORT DeltaPoint
-        EXPORT MoveGuts
-        EXPORT MoveWindow
-        EXPORT CallWindow
-        EXPORT CallDWindow
-        EXPORT CallWCalc
-        EXPORT HiliteWindow
-        EXPORT ClipVStruct
-        EXPORT SizeWindow
-        EXPORT SizeGuts
-        EXPORT ZoomWindow
-        EXPORT TrackGoAway
-        EXPORT EORSymbol
-        EXPORT SelectWindow
-        EXPORT BringToFront
-        EXPORT NegWords
-        EXPORT SendBehind
-        EXPORT BeginUpdate
-        EXPORT EndUpdate
-        EXPORT FrontWindow ;]
-        EXPORT DragWindow
-        EXPORT WMgrGray
-        EXPORT DragGrayRgn
-        EXPORT DragTheRgn
-        EXPORT InvalRgn
-        EXPORT InvalRect
-        EXPORT ValidRgn
-        EXPORT ValidRect
-        EXPORT GrowWindow
-        EXPORT CallGrow
-        EXPORT GetPinMouse
-        EXPORT GWCalcSize
-        EXPORT FindWindow ;]
-        EXPORT DrawGrowIcon
 
 
 ;
@@ -754,6 +698,62 @@ GetNewRgn PROC EXPORT
 ;
 
 SaveOld PROC EXPORT
+		EXPORT TrackBox
+        EXPORT DrawNew
+        EXPORT ShowHide
+        EXPORT SetWPort
+        EXPORT RestorePort
+        EXPORT GetWMgrPort
+        EXPORT CheckUpdate ;]
+        EXPORT AllocPort
+        EXPORT InitWindows
+        EXPORT NewWindow
+        EXPORT CloseWindow ;]
+        EXPORT MakeDeactive
+        EXPORT DisposeWindow
+        EXPORT ShowWindow
+        EXPORT HideWindow
+        EXPORT GetWRefCon
+        EXPORT SetWRefCon
+        EXPORT SetWindowPic
+        EXPORT GetWindowPic
+        EXPORT GetWTitle
+        EXPORT SetWTitle
+        EXPORT RemoveContent
+        EXPORT DeltaPoint
+        EXPORT MoveGuts
+        EXPORT MoveWindow
+        EXPORT CallWindow
+        EXPORT CallDWindow
+        EXPORT CallWCalc
+        EXPORT HiliteWindow
+        EXPORT ClipVStruct
+        EXPORT SizeWindow
+        EXPORT SizeGuts
+        EXPORT ZoomWindow
+        EXPORT TrackGoAway
+        EXPORT EORSymbol
+        EXPORT SelectWindow
+        EXPORT BringToFront
+        EXPORT NegWords
+        EXPORT SendBehind
+        EXPORT BeginUpdate
+        EXPORT EndUpdate
+        EXPORT FrontWindow ;]
+        EXPORT DragWindow
+        EXPORT WMgrGray
+        EXPORT DragGrayRgn
+        EXPORT DragTheRgn
+        EXPORT InvalRgn
+        EXPORT InvalRect
+        EXPORT ValidRgn
+        EXPORT ValidRect
+        EXPORT GrowWindow
+        EXPORT CallGrow
+        EXPORT GetPinMouse
+        EXPORT GWCalcSize
+        EXPORT FindWindow ;]
+        EXPORT DrawGrowIcon
         IMPORT GetNewRgn
         MOVEM.L   D3-D4/A2,-(SP)	;save work registers
         BSR.S     GetNewRgn	;get "oldStruct" region

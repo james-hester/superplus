@@ -20,7 +20,6 @@
 *R Matching operations retain their applicable original comments.
 *R Evidence/startup-tests.json records provenance and exact checks.
 
-		EXPORT PutSymbolRow ;]
 
         MACHINE MC68000
         STRING ASIS
@@ -32,6 +31,7 @@
 
 
 StartupTests PROC ;]
+		EXPORT PutSymbolRow ;]
         EXPORT StartUpROMTest
         EXPORT Mod3Test
         EXPORT PutIcon

@@ -72,8 +72,6 @@
 *R GetAppParms copies 32 bytes; its original comment below says 24.
 *R See Evidence/segmentloader.json for the source and ROM comparison.
 ;
-		EXPORT Chain,ExitToShell,GetAppParms,InstallRDrivers,Launch,LoadSeg ;]
-		EXPORT UnloadSeg,vSegStack ;]
 
         BLANKS ON
         STRING ASIS
@@ -90,6 +88,8 @@
 dCtlEntrySize EQU dCtlMenu+2 ;]
 
 Loader PROC EXPORT
+		EXPORT Chain,ExitToShell,GetAppParms,InstallRDrivers,Launch,LoadSeg ;]
+		EXPORT UnloadSeg,vSegStack ;]
 
 ; segment header definitions
 

@@ -69,6 +69,7 @@
 *R branch preserves the ROM encoding.
 
 *R These equates retain the original include definitions.
+TFSDIR3Module PROC ;]
 		IMPORT ChgMFlLock,CkExtFS,CmdDone,CMGetCN,CMGetOff,CMUpdateCN ;]
 		IMPORT CVFlgs,DtrmV1,DtrmV3,FndMFSFile,FSQueue,GetMFlInfo ;]
 		IMPORT Gt1stMatch,GtMFlIBI,GtNxtMatch,SetMFlInfo,SetMFlType,TFSVCBTst ;]
@@ -872,4 +873,5 @@ XferCInfo	LEA 	IOFlAttrib(A0),A4	; info destination
 			BRA 	GFIExit 			; And leave.
 
 TFSDIR3End ;]
+        ENDP ;]
 	END

@@ -374,7 +374,7 @@ vSetUpTags								; 'vectored' SetUpTags routine			<02Oct85>
 @4			MOVE.L	Time,BufTgDate				; use date for MFS				<01Oct85>
 			RTS
 
+CACHEIOEnd ;]
 	ENDP
 
-CACHEIOEnd ;]
 	END

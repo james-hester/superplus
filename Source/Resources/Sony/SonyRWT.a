@@ -63,6 +63,7 @@
 ;				 5/11/83	LAK		MakeSpdTbl no longer trashes A1 on error path (in DoRecal).
 ;				  5/5/83	LAK		Adapted from twiggy driver for 3-1/2 inch drive . . .
 ;
+SonyRWTModule PROC ;]
 		IMPORT AdrAndSense,CkDrvNum,DCDPrime,DiskDone,DiskSelect,FastPower ;]
 		IMPORT GetDrv1,jtRdData,MakeSpdTbl,MeasureSpeed,PowerDown,RdAddrSetup ;]
 		IMPORT RdData,Recal,RWPowerUp,Seek,SetSpeed,SpeedLimits ;]
@@ -70,7 +71,6 @@
 		EXPORT CheckRead,EmptyPD,POffExit ;]
 
 	INCLUDE 'SonyEqu.a'
-	INCLUDE 'SonyRWTEqu.a' ;]
 
 
 ;_______________________________________________________________________

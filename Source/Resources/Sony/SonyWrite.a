@@ -24,6 +24,7 @@
 ;				11/18/82	LAK		Clear D0, D1 at start
 ;				 11/1/82	LAK		Added full handshaking for inclusion in ROM, 512-dot version.
 ;
+SonyWriteModule PROC ;]
 		IMPORT DskRtn ;]
 		EXPORT WrData
 

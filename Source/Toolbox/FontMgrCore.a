@@ -41,7 +41,6 @@
 *R Additional routine and branch labels describe the inferred control flow.
 ;
 		IMPORT BuildCharTable,GetFOND,InValWidths ;]
-		EXPORT FPointOne,GetFontHandle,GetStrike,MyFixMul,MyFixRatio,SetScreenDevice ;]
 
 		MACHINE MC68000
 		STRING ASIS
@@ -59,9 +58,7 @@
 ; the following word values are to be placed into the
 ; word located at RomMapInsert
 
-MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
 
-FMDefaultSize 	EQU 		$987      				; default size [byte]
 
 ;new FONT manager stuff
 
@@ -97,7 +94,6 @@ thePort   		EQU 		0         				;GrafPtr
 
 ; format of a width table:
 
-WidTabSize	EQU 	WidthASize+2			;total size of a width table.
 
 FONDFlags		EQU 	0					; 0 (word) Flags word for family
 FONDFamID	EQU 	FONDFlags+2 			; 2 (word) Family ID number
@@ -119,6 +115,7 @@ saveFondFlags EQU WidthListHand ;]
 
 
 FontManagerCore PROC ;]
+		EXPORT FPointOne,GetFontHandle,GetStrike,MyFixMul,MyFixRatio,SetScreenDevice ;]
 
 
 ; the most important thing to do is to see if the input record is the same

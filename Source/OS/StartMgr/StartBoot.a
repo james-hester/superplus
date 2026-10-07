@@ -106,15 +106,14 @@
 		INCLUDE 'FSPrivate.a'
 
 MyIOPBA6	EQU 	-$400							; A6 offset for IO parameter block
-HFSStkLen EQU $500 ;]
 PMSPSwOS EQU 24 ;]
 WDCBSwOS EQU 20 ;]
 
         IMPORT BootRetry,DSHook,InitCache ;]
-        EXPORT InitEvents,InitFS
-        EXPORT TheBoot ;]
 
 StartBootModule PROC ;]
+        EXPORT InitEvents,InitFS
+        EXPORT TheBoot ;]
 ;------------------------------------------------------------------------------------------------
 ; A5	=	points to "A5 world" data, the first long of which is a pointer to QuickDraw globals.
 ; A6	=	points to the boot blocks, which have been read from the Startup Device.

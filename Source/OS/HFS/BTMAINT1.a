@@ -525,7 +525,7 @@ RRLExit
 			MOVEM.L  (SP)+,A2-A3		; restore registers
 			RTS 						; exit RotRecLt
 
+BTMAINT1End ;]
 	ENDP
 
-BTMAINT1End ;]
 	END

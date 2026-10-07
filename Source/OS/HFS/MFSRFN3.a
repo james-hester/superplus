@@ -25,6 +25,7 @@
 *R encodings with the verification assembler.
 
 *R These equates retain the original include definitions.
+MFSRFN3Module PROC ;]
 		IMPORT MapFBlock,MarkVCB,TFSVolTst ;]
 		EXPORT AllocSt,DAlBlks,GtNxBlk,Lg2Phys,MFSAlloc,SubMrk ;]
 		EXPORT vLg2Phys
@@ -471,4 +472,5 @@ DAlBlks
 DAlDone 	RTS 						; that's all folks.
 
 MFSRFN3End ;]
+        ENDP ;]
 	END

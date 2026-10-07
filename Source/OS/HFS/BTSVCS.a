@@ -58,9 +58,6 @@
 		IMPORT LocTPR,MarkBlock,RelBlock,RelNode,RotateLT,SearchNode ;]
 		IMPORT SplitLt,TreeSearch,UpdDRec,UpdIKey ;]
 
-*R BTCB size before the April 1992 expansion.
-LenBTCB EQU 54 ;]
-
 *R BTSVCS reproduces $4066DC..$406E38 in ROM $4D1F8172.
 *R The original header, applicable history, and comments remain. Later error
 *R checks, repeated root reduction, write counts, and size changes are absent.
@@ -1067,7 +1064,7 @@ vBTOpen 								; 'vectored' BTOpen routine 			<25Oct85>
 ;
 ; allocate and initialize a BTCB
 ;
-			MOVE.L	#lenBTCB,D0			; allocate space for BTCB
+			MOVEQ	#lenBTCB,D0			;] allocate space for BTCB
 			_NewPtr ,SYS,CLEAR			;
 			BNE		BOExit1				; couldn't get it ->
 			MOVEA.L	A0,A4				; A4 = BTCB ptr
@@ -1399,7 +1396,7 @@ CalBTVars
 
 			RTS 						; exit CalBTVars
 
+BTSVCSEnd ;]
 	ENDP
 
-BTSVCSEnd ;]
 	END

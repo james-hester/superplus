@@ -58,6 +58,7 @@ JStdText		EQU 	$C00+(4*$82) ;]
 		INCLUDE 'GrafMacrosAdd.a' ;]
 
 StdComment PROC  EXPORT 	
+		IMPORT DPutPicByte,PutPicData,PutPicWord ;]
 ;------------------------------------------------------------------
 ;
 ;  PROCEDURE StdComment(kind,dataSize: INTEGER; dataHandle: Handle);
@@ -220,6 +221,7 @@ USESTD	JMP 	(A0)					;AND JUMP TO IT
 
 
 OpenPicture FUNC  EXPORT	
+		IMPORT PutPicWord ;]
 ;------------------------------------------------------------------
 ;
 ;  FUNCTION OpenPicture(picFrame: Rect): PicHandle;
@@ -318,6 +320,7 @@ DONE	MOVEM.L (SP)+,A3-A4 			;RESTORE REGS
 
 
 ClosePicture PROC  EXPORT		
+		IMPORT PutPicByte ;]
 ;------------------------------------------------------------------
 ;
 ;  PROCEDURE ClosePicture;
@@ -360,6 +363,7 @@ KillPicture PROC  EXPORT
 
 
 DrawPicture PROC  EXPORT	
+		IMPORT PicItem ;]
 ;------------------------------------------------------------------
 ;
 ;  PROCEDURE DrawPicture(myPicture: PicHandle; dstRect: Rect);
@@ -500,7 +504,7 @@ SAVELP	MOVE.W	(A0)+,(A1)+ 			;COPY A WORD
 		MOVE	#8,(A0)+				;pnMode := patCopy
 		MOVE.L	D0,(A0)+				;pnPat := black
 		MOVE.L	D0,(A0)+
-		ADD 	#2,A0					;skip over pnVis
+		ADDQ 	#2,A0					;skip over pnVis
 		CLR.L	(A0)+					;txFont, txFace := 0
 		MOVE	#1,(A0)+				;txMode := srcOr
 		CLR 	(A0)+					;txSize := 0;
@@ -551,6 +555,7 @@ GOHOME	MOVEM.L (SP)+,D3-D7/A2-A4			;RESTORE REGISTERS
 		UNLINK	PARAMSIZE,'DRAWPICT'
 
 PicItem FUNC  EXPORT
+		IMPORT GetPicData,MapPt,MapRect,ScalePt ;]
 ;------------------------------------------------------------------
 ;
 ;  FUNCTION PicItem(VAR playState: PicPlayRec): BOOLEAN;
@@ -1439,7 +1444,7 @@ PutPicRect PROC  EXPORT
 		CMP.L	PICTHERECT+4(A0),D1 		;IS BOTRIGHT THE SAME ?
 		BNE.S	NOTSAME 				;NO, CONTINUE
 
-SAME	ADD 	#8,D0					;YES, ADD 8 TO OPCODE
+SAME	ADDQ 	#8,D0					;YES, ADD 8 TO OPCODE
 		JMP 	DPutPicByte	;PUT MODIFIED OPCODE AND RETURN
 
 NOTSAME MOVE.L	D2,PICTHERECT(A0)			;UPDATE PICTHERECT
@@ -1692,9 +1697,9 @@ TORECT			EQU 	FROMRECT-4			;LONG, ADDR OF RECT
 		MOVE.L	FROMRECT(A6),A1 			;POINT TO FROMRECT
 		MOVE.L	TORECT(A6),A2				;POINT TO TORECT
 		BSR.S	SCALE1					;SCALE THE HEIGHT
-		ADD 	#2,A0					;OFFSET TO PT.H
-		ADD 	#2,A1					;OFFSET TO FROMRECT.H
-		ADD 	#2,A2					;OFFSET TO TORECT.H
+		ADDQ 	#2,A0					;OFFSET TO PT.H
+		ADDQ 	#2,A1					;OFFSET TO FROMRECT.H
+		ADDQ 	#2,A2					;OFFSET TO TORECT.H
 		BSR.S	SCALE1					;SCALE THE WIDTH
 DONE	MOVEM.L (SP)+,D0-D6/A0-A2			;RESTORE REGS
 		UNLINK	PARAMSIZE,'SCALEPT '
@@ -1755,9 +1760,9 @@ TORECT			EQU 	FROMRECT-4			;LONG, ADDR OF RECT
 		MOVE.L	FROMRECT(A6),A1 			;POINT TO FROMRECT
 		MOVE.L	TORECT(A6),A2				;POINT TO TORECT
 		BSR.S	MAP1					;MAP THE VERTICAL COORD
-		ADD 	#2,A0					;OFFSET TO PT.H
-		ADD 	#2,A1					;OFFSET TO FROMRECT.H
-		ADD 	#2,A2					;OFFSET TO TORECT.H
+		ADDQ 	#2,A0					;OFFSET TO PT.H
+		ADDQ 	#2,A1					;OFFSET TO FROMRECT.H
+		ADDQ 	#2,A2					;OFFSET TO TORECT.H
 		BSR.S	MAP1					;MAP THE HORIZ COORD
 DONE	MOVEM.L (SP)+,D0-D6/A0-A2			;RESTORE REGS
 		UNLINK	PARAMSIZE,'MAPPT   '
@@ -1809,7 +1814,7 @@ MapRect PROC  EXPORT
 		MOVE.L	12(SP),-(SP)				;PUSH FROMRECT
 		MOVE.L	12(SP),-(SP)				;PUSH TORECT
 		JSR 	MAPPT	;MAP TOPLEFT POINT
-		ADD.L	#4,12(SP)				;OFFSET RECT TO BOTRIGHT
+		ADDQ.L	#4,12(SP)				;OFFSET RECT TO BOTRIGHT
 		JMP 	MAPPT	;MAP BOTRIGHT AND RETURN
 
 

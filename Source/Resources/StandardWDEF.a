@@ -115,7 +115,8 @@ ParamSize       EQU     12                      ; size of all the passed paramet
 ResourceBlockFlags EQU $C0 ;]
 MasterPointerOffset EQU $70 ;]
 
-WDEFResourceBlock ;]
+WDEFResourceBlock PROC ;]
+	IMPORT WDEFResourceEnd ;]
                 DC.L    ResourceBlockFlags*$1000000+WDEFResourceEnd-WDEFResourceBlock ;]
                 DC.L    MasterPointerOffset ;]
 
@@ -893,6 +894,7 @@ GrowBits
                 DC.W    $0000                   ; ................
 
 
-                ENDP
+	EXPORT WDEFResourceEnd ;]
 WDEFResourceEnd ;]
+                ENDP
                 END

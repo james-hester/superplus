@@ -161,8 +161,6 @@
 		INCLUDE 'Traps.a'
 
 HiIntMask            EQU      $0300
-MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
-DCtlEntrySize        EQU      40 ;]
 
 IOCore		PROC	EXPORT	
 

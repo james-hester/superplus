@@ -18,7 +18,7 @@ ResetAndReloadSCSI PROC EXPORT ;]
                 _SCSIDispatch
                 JSR     (SCSILoad-BaseOfROM+ROMStart).L ;]
                 RTS
+ROMTailEnd ;]
                 ENDP
 
-ROMTailEnd ;]
                 END

@@ -38,6 +38,7 @@
 *R One word branch preserves the ROM encoding.
 
 *R These equates retain the original include definitions.
+TFSDIR2Module PROC ;]
 		IMPORT CkFilMod,CmdDone,CMDeleteCN,CMGetCN,CMMoveCN,CMRenameCN ;]
 		IMPORT CVFlgs,DeallocFile,DtrmV2,DtrmV3,ExtOffLinCk,FndFilName ;]
 		IMPORT FSQueue,Gt1stMatch,GtNxtMatch,MFSDelete,MFSReName,PopCName ;]
@@ -650,4 +651,5 @@ MvExOK		MOVEQ	#0,D0				; no errors
 MvEx1		BRA		MvExit
 
 TFSDIR2End ;]
+        ENDP ;]
 	END

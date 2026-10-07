@@ -1,8 +1,12 @@
-*R Mac Plus declarations selected from the surviving includes.
-*R See Evidence/shared-includes.json for source lines and retained local definitions.
-;
-*R Source: Interfaces/AIncludes/SysErr.a
-;
+*R MPW 1.0.1 supplies the complete 1986 interface below.
+*R Additional declarations retain the names used by the ROM sources.
+
+	IF (&TYPE('PlusSysErrIncluded') = 'UNDEFINED') THEN ;]
+PlusSysErrIncluded EQU 1 ;]
+wholeErrors EQU 1 ;]
+	INCLUDE ':MPW1.0.1:SysErr.a' ;]
+
+*R Additional declarations come from SuperMario Interfaces/AIncludes/SysErr.a.
 ; File:SysErr.a
 ;
 ; Assembler Interface to the Macintosh Libraries
@@ -10,131 +14,10 @@
 ; All Rights Reserved
 ;
 ;
-
-noErr 			EQU 		0     					; success
-paramErr		EQU 		-50 					; bad parameter passed
-QERR			EQU		-1
-vTypErr   		EQU 		-2        				; invalid queue element
-seNoDB			EQU 		-8        				; no debugger installed to handle debugger command
-controlErr		EQU 		-17       				; driver can’t respond to Control call / Unimplemented control instruction
-statusErr 		EQU 		-18       				; driver can’t respond to Status call
-readErr   		EQU 		-19       				; driver can’t respond to Read call
-writErr   		EQU 		-20       				; driver can’t respond to Write call
-badUnitErr		EQU 		-21       				; driver reference number doesn’t match unit table
-unitEmptyErr  	EQU 		-22       				; driver reference number specifies NIL handle in unit table
-openErr   		EQU 		-23       				; requested read/write permission doesn’t match driver’s open permission / Attempt to open RAM serial Driver failed
-closErr   		EQU 		-24       				; close error
-dRemovErr 		EQU 		-25       				; tried to remove an open driver
-abortErr  		EQU 		-27       				; I/O request aborted by KillIO / I/O abort error
-notOpenErr		EQU 		-28       				; Couldn’t rd/wr/ctl/sts cause driver not opened
-dirFulErr 		EQU 		-33       				; directory full
-dskFulErr 		EQU 		-34       				; disk full
-nsvErr			EQU 		-35       				; no such volume
-ioErr 			EQU 		-36       				; I/O error (bummers)
-bdNamErr  		EQU 		-37       				; bad file name or volume name (perhaps zero length)
-fnOpnErr  		EQU 		-38       				; file not open
-eofErr			EQU 		-39       				; logical end-of-file reached during read operation
-PosErr EQU -40
-tmfoErr   		EQU 		-42       				; too many files open
-fnfErr			EQU 		-43       				; file not found
-wPrErr			EQU 		-44       				; diskette is write protected
-fLckdErr  		EQU 		-45       				; file is locked
-vLckdErr  		EQU 		-46       				; volume is locked
-fBsyErr   		EQU 		-47       				; file is busy (delete)
-dupFNErr  		EQU 		-48       				; duplicate filename (rename)
-opWrErr   		EQU 		-49       				; file already open with with write permission
-rfNumErr  		EQU 		-51       				; path reference number specifies nonexistent access path
-volOffLinErr  	EQU 		-53       				; volume not on line error (was Ejected)
-permErr   		EQU 		-54       				; permissions error (on file open) / Attempt to open locked file for writing
-volOnLinErr   	EQU 		-55       				; drive volume already on-line at MountVol
-nsDrvErr  		EQU 		-56       				; no such drive (tried to mount a bad drive num)
-noMacDskErr   	EQU 		-57       				; not a mac diskette (sig bytes are wrong)
-extFSErr  		EQU 		-58       				; volume in question belongs to an external fs
-fsRnErr   		EQU 		-59       				; file system internal error:
-badMDBErr 		EQU 		-60       				; bad master directory block: must reinitialize volume
-wrPermErr 		EQU 		-61       				; Read/write permission doesn’t allow writing
-dirNFErr  		EQU 		-120      				; directory not found
-tmwdoErr  		EQU 		-121      				; no free WDCB available
-badMovErr 		EQU 		-122      				; move into offspring error
-wrgVolTypErr  	EQU 		-123      				; wrong volume type error
-noDriveErr		EQU 		-64       				; drive not installed
-offLinErr 		EQU 		-65       				; r/w requested for an off-line drive
-noNybErr  		EQU 		-66       				; couldn’t find 5 nybbles in 200 tries
-noAdrMkErr		EQU 		-67       				; couldn’t find valid addr mark
-dataVerErr		EQU 		-68       				; read verify compare failed
-badCksmErr		EQU 		-69       				; addr mark checksum didn’t check
-badBtSlpErr   	EQU 		-70       				; bad addr mark bit slip nibbles
-noDtaMkErr		EQU 		-71       				; couldn’t find a data mark header
-badDCksum 		EQU 		-72       				; bad data mark checksum
-badDBtSlp 		EQU 		-73       				; bad data mark bit slip nibbles
-wrUnderrun		EQU 		-74       				; write underrun occurred
-cantStepErr   	EQU 		-75       				; step handshake failed
-tk0BadErr 		EQU 		-76       				; track 0 detect doesn’t change
-initIWMErr		EQU 		-77       				; unable to initialize IWM
-twoSideErr		EQU 		-78       				; tried to read 2nd side on a 1-sided drive
-spdAdjErr 		EQU 		-79       				; unable to correctly adjust disk speed
-seekErr   		EQU 		-80       				; track number wrong on address mark
-sectNFErr 		EQU 		-81       				; sector number never found on a track
-fmt1Err   		EQU 		-82       				; can’t find sector 0 after track format
-fmt2Err   		EQU 		-83       				; can’t get enough sync
-verErr			EQU 		-84       				; track failed to verify
-ClkRdErr EQU -85
-ClkWrErr EQU -86
-prWrErr   		EQU 		-87       				; parameter ram written didn’t read-verify
-PRInitErr EQU -88
-rcvrErr   		EQU 		-89       				; SCC receiver error (framing, parity, OR)
-breakRecd 		EQU 		-90       				; Break received (SCC)
-noTypeErr 		EQU 		-102      				; No object of that type in scrap
 memROZWarn		EQU 		-99       				; soft error in ROZ
-memFullErr		EQU 		-108      				; Not enough room in heap zone
-nilHandleErr  	EQU 		-109      				; Handle was NIL in HandleZone or other;
-memWZErr  		EQU 		-111      				; WhichZone failed (applied to free block);
-memPurErr 		EQU 		-112      				; trying to purge a locked or non-purgeable block;
-memAZErr  		EQU 		-113      				; Address in zone check failed;
-memBCErr  		EQU 		-115      				; Block Check failed;
-memLockedErr  	EQU 		-117      				; trying to move a locked block (MoveHHi)
-resNotFound   	EQU 		-192      				; resource not found
-resFNotFound  	EQU 		-193      				; resource file not found
-addResFailed  	EQU 		-194      				; AddResource failed
-addRefFailed  	EQU 		-195      				; AddReference failed
-rmvResFailed  	EQU 		-196      				; RmveResource failed
-rmvRefFailed  	EQU 		-197      				; RmveReference failed
-resAttrErr		EQU 		-198      				; attribute inconsistent with operation
-mapReadErr		EQU 		-199      				; map inconsistent with operation
-evtNotEnb 		EQU 		1         				; event not enabled at PostEvent
-ddpSktErr 		EQU 		-91       				; error in socket number
-ddpLenErr 		EQU 		-92       				; data length too big
-noBridgeErr   	EQU 		-93       				; no network bridge for non-local send
-lapProtErr		EQU 		-94       				; error in attaching/detaching protocol
-excessCollsns 	EQU 		-95       				; excessive collisions on write
-portInUse 		EQU 		-97       				; driver Open error code (port is in use)
-portNotCf 		EQU 		-98       				; driver Open error code (parameter RAM not
-nbpNoConfirm  	EQU 		-1025     				; Name not confirmed on ConfirmName
-nbpConfDiff   	EQU 		-1026     				; Name confirmed at different socket
-nbpDuplicate  	EQU 		-1027     				; Duplicate name exists already
-nbpNotFound   	EQU 		-1028     				; Name not found on remove
-nbpNISErr 		EQU 		-1029     				; Error trying to open the NIS
-reqFailed 		EQU 		-1096     				; SendRequest failed: retry count exceeded
-tooManyReqs   	EQU 		-1097     				; Too many concurrent requests
-tooManySkts   	EQU 		-1098     				; Too many concurrent responding-sockets
-badATPSkt 		EQU 		-1099     				; Bad ATP-responding socket
-badBuffNum		EQU 		-1100     				; Bad response buffer number specififed
-noRelErr  		EQU 		-1101     				; No release received
-cbNotFound		EQU 		-1102     				; Control Block (TCB or RspCB) not found
-noSendResp		EQU 		-1103     				; AddResponse issued without SendResponse
-noDataArea		EQU 		-1104     				; No data area for request to MPP
-reqAborted		EQU 		-1105     				; SendRequest aborted by RelTCB
-dsIOCoreErr   	EQU 		14        				; I/O core error
-dsLoadErr 		EQU 		15        				; Segment Loader error
-DSFPErr        EQU      16
-DSNoPackErr    EQU      17
-dsBadLaunch   	EQU 		26        				; can’t launch file (CODE 0 missing or ...)
-dsFSErr   		EQU 		27        				; file system map has been trashed
-dsStknHeap		EQU 		28        				; stack has moved into application heap
-negZcbFreeErr 	EQU 		33        				; zcbFree has gone negative
 dsFinderErr   	EQU 		41        				; can’t load the Finder
-MenuPrgErr EQU $54
-dsReinsert		EQU 		30        				; request user to reinsert off-line volume
 dsMacsBugInstalled 		EQU		-10       			; say “MacsBug Installed”
 dsDisassemblerInstalled	EQU		-11       			; say “Disassembler Installed”
 dsGreeting		EQU 		40        				; welcome to Macintosh greeting
+
+	ENDIF ;]

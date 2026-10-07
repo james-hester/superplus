@@ -8,6 +8,7 @@
 *R The VCBWrProt assertion remains a comment.
 
 *R These equates retain the original include definitions.
+TFSVOLModule PROC ;]
 		IMPORT BlkChk,BTGetRecord,BTOpen,BTSearch,CmdDone,CMGetCN ;]
 		IMPORT CMKeyCmp,CMRenameCN,CVFlgs,DEQUEUE,DivUp,DumpCaches ;]
 		IMPORT ENQUEUE,FindDrive,FlushMDB,FSQueueSync,FXMKeyCmp,GetBlock ;]
@@ -848,4 +849,5 @@ AccessBT:	MOVE.L	(SP)+,-(A6) 			 ; Save return address
 			RTS
 
 TFSVOLMountEnd ;]
+        ENDP ;]
 	END

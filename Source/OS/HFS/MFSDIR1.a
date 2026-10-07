@@ -25,6 +25,7 @@
 *R to FileCreate.
 
 *R These equates retain the original include definitions.
+MFSDIR1Module PROC ;]
 		IMPORT CmdDone,CVFlgs,FlushCache,MarkA5Block,MarkVCB,MFSRd1stDB ;]
 		IMPORT MFSRdNxtDB,PermssnChk,SetupFCB ;]
 		EXPORT FndFilSpc,GtNxEntry,MFSCreate,MFSCtlFlush,MFSOpen ;]
@@ -266,4 +267,5 @@ GtNxEntry	MOVEQ	#0,D6
 			RTS 						; BCS branches if not at end
 
 MFSDIR1End ;]
+        ENDP ;]
 	END

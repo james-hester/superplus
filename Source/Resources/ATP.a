@@ -7,7 +7,6 @@
 *R The resource block header and driver offsets use assembled label differences.
 
 *R Surviving interface definitions and restored private layout.
-		EXPORT ATPDriver ;]
 
 		INCLUDE 'AppleTalk.a'
 		INCLUDE 'SysEqu.a'
@@ -33,10 +32,8 @@ RspCache EQU RAddrFilter+4*MaxATPSkts ;]
 RspEntrySz EQU 12 ;]
 ATPDCE EQU RspCache+MaxRsps*RspEntrySz ;]
 VBL60	EQU	60			; Call us every second (60 ticks)
-SCCLockout68000 EQU $2600 ;]
 WorkATP EQU $60 ;]
 WorkRespNo EQU WorkATP+ATPRespNo ;]
-userData  		EQU 		$12       				; User bytes
 NextTID EQU ATPDCE+4 ;]
 WorkWDS EQU $3A ;]
 WorkDDP EQU $4F ;]
@@ -47,6 +44,7 @@ WorkTID EQU WorkATP+ATPTransID ;]
 
 
 ATPResourceBlock PROC ;]
+		EXPORT ATPDriver ;]
  DC.L $C0000000+(ATPResourceEnd-ATPResourceBlock) ;]
  DC.L $60 ;]
 
@@ -281,7 +279,7 @@ DoGetRequest ;]
  LSL.W      #2,D2
  LEA        RQElPtr(A2,D2.W),A3 ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
 
 ATPBranch_419f84 ;]
  TST.L      (A3)
@@ -369,7 +367,7 @@ ATPBranch_41a024 ;]
 ATPBranch_41a030 ;]
  MOVE.W     TransID(A0),D0 ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  BSR.S      FindResponseCache ;]
  BNE.W      ATPBranch_41a118 ;]
  MOVE.L     A0,8(A1) ;]
@@ -438,7 +436,7 @@ DoAddResponse ;]
  BSR.W      FreeDataArea
  MOVE.W     TransID(A0),D0 ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  BSR.S      FindResponseCache ;]
  BNE.S      ATPBranch_41a118 ;]
  MOVE.L     8(A1),A3 ;]
@@ -538,7 +536,7 @@ ATPBranch_41a176 ;]
  BSR.W      FreeDataArea
  MOVE.B     TimeoutVal(A0),(A1)
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  BRA.W      DispatchNext ;]
 
 SendPacket ;]
@@ -615,7 +613,7 @@ IntoCheckTime
 
 ATPBranch_41a27e ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
 
 ATPBranch_41a284 ;]
  SUBQ.W     #1,D2
@@ -660,7 +658,7 @@ ATPBranch_41a2dc ;]
 
 ATPBranch_41a2e2 ;]
  MOVE.W     SR,-(SP)
- MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.W     #SCCLockout,SR ;]
  MOVEQ      #MaxRsps,D2 ;]
  LEA        RspCache(A2),A3 ;]
 

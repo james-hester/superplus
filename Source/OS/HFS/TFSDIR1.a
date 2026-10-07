@@ -55,6 +55,7 @@
 *R correction, and volume-writability check added to FileCreate.
 
 *R These equates retain the original include definitions.
+TFSDIR1Module PROC ;]
 		IMPORT AdjEOF,CMCreateCN,CmdDone,FndFilName,FSQueue,MFSCreate ;]
 		IMPORT MFSOpen,TFSVCBTst ;]
 		EXPORT FileCreate,FileOpen,Gt1stFCB,Gt1stMatch,GtNxtFCB,GtNxtMatch ;]
@@ -636,4 +637,5 @@ PopCName	TST.W	D2					; Zero length string?
 @90 		RTS 						;
 
 TFSDIR1End ;]
+        ENDP ;]
 	END

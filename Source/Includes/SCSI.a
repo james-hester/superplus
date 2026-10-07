@@ -1,36 +1,7 @@
-*R Mac Plus declarations selected from the surviving includes.
-*R See Evidence/shared-includes.json for source lines and retained local definitions.
-;
-*R Source: Interfaces/AIncludes/SCSI.a
-;
-;	File:		SCSI.a
-;
-;	Copyright:	© 1990-1992 by Apple Computer, Inc., all rights reserved.
-;
+*R MPW 1.0.1 supplies the complete 1986 interface below.
 
-SCSIDrvrs 		EQU 		$B2E      				; (word) bitmap for loaded SCSI drivers
-scCommErr 		EQU 		2         				; communications error (operation timeout)
-scBadparmsErr 	EQU 		4         				; bad parameter or TIB opcode
-scPhaseErr		EQU 		5         				; SCSI bus not in correct phase for attempted operation
-scCompareErr  	EQU 		6         				; data compare error
-scOpcode  		EQU 		0         				; offsets into command "line" for data xfer
-scParam1  		EQU 		2
-scParam2  		EQU 		6
-scSize			EQU 		10        				; size of a command line
-scInc 			EQU 		1         				; xfer with address increment
-scStop			EQU 		7         				; then stop doing even that
-sbSigWord 		EQU 		$4552     				; block 0 validator
-sbSig 			EQU 		0         				; signature word
-sbBlkSize 		EQU 		2         				; block size of device
-sbData			EQU 		12        				; start of data section
-sbDrvCount		EQU 		16        				; # drivers following
-sbDrvrs   		EQU 		18        				; start of driver descriptors
-ddBlock   		EQU 		0         				; physical block of driver
-ddSize			EQU 		4         				; block count of driver
-ddType			EQU 		6         				; Processor type of driver
-ddLen 			EQU 		8
-sbMac 			EQU 		1         				; Macintosh driver type
-scsiGet   		EQU 		1
-scsiSelect		EQU 		2
-scsiCmd   		EQU 		3
-scsiRead  		EQU 		5
+	IF (&TYPE('PlusSCSIIncluded') = 'UNDEFINED') THEN ;]
+PlusSCSIIncluded EQU 1 ;]
+	INCLUDE ':MPW1.0.1:SCSIEqu.a' ;]
+
+	ENDIF ;]

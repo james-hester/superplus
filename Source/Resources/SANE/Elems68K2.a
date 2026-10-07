@@ -92,8 +92,10 @@ EXPROOT
 
 			PEA 	FPK1	; (2^T - 1) + 1
 			PEA 	(A4)
+			OPT ALL ;]
 			FADDX
 
+			OPT SYNON ;]
 			MOVEA.L A4,A0				; RESULT PTR
 			LEA 	STW(A6),A1			; INTEGER PART
 			BSR 	SCALBXX
@@ -227,8 +229,10 @@ EXP1ROOT
 
 			PEA 	FPK1	; (2^T - 1) + 1
 			PEA 	(A4)
+			OPT ALL ;]
 			FADDX
 
+			OPT SYNON ;]
 			MOVEA.L A4,A0				; RESULT PTR
 			LEA 	STW(A6),A1			; INTEGER PART
 			BSR 	SCALBXX 			; ((2^T - 1) + 1) * 2^W
@@ -634,7 +638,7 @@ FINPWRY
 			PEA 	FPK1
 			PEA 	(A4)
 			FCMPX
-			FBEQL	XPWRY9ERR			; 								<1.1>
+			FBEQ	XPWRY9ERR			; 								<1.1>
 
  ;
  ; Finally, compute finite^reasonable and return.
@@ -688,8 +692,8 @@ COMPOUNDTOP
 			PEA 	FPKM1	; -1
 			MOVE.L	D5,-(SP)			; SRC2
 			FCMPX
-			FBULTL	ERRFINAN			; UNORDERED OR LESS THAN -1			<1.1>
-			FBGTL	CMPGTM1				;									<1.1>
+			FBULT	ERRFINAN			; UNORDERED OR LESS THAN -1			<1.1>
+			FBGT	CMPGTM1				;									<1.1>
 
  ;
  ; Get here if SRC2 is -1.	Check SRC (D2) for 0 or nonzero.
@@ -847,7 +851,7 @@ ANNRINF
 			MOVE.L	D4,-(SP)			; SRC
 			FCMPX
 			FBEQS	ANNM1				; N = -1, STUFF -1					<1.1>
-			FBGTL	M0STUFF				;									<1.1>
+			FBGT	M0STUFF				;									<1.1>
 			BRA 	MINFSTUFF
 
  ;
@@ -992,7 +996,9 @@ annspecial
 			BSR 	a0toa1				; Y gets N.
 			PEA 	FPK1
 			PEA 	(a1)
+			OPT ALL ;]
 			FADDX						; Y gets N+1.
+			OPT SYNON ;]
 			PEA 	(A1)
 			LEA 	stx(a6),a1			; A1 gets X again.
 			PEA 	(a1)

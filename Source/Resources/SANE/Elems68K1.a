@@ -278,7 +278,9 @@ CLASSDSTORSRC2
 			BSR.S	A0TOA1				; JUST BIT COPY
 			MOVE.L	D4,-(SP)			; SRC ADRS
 			PEA 	(A4)				; ALWAYS DST ADRS
+			OPT ALL ;]
 			FADDX
+			OPT SYNON ;]
 			BRA.S	NANEXIT
 NOT2NANS
 			SUBQ.B	#FCINF,D1			; CHECK SRC2 OR DST
@@ -379,7 +381,9 @@ POLYLOOP
 			ADDQ.L	#2,A1				; ...COEFFICIENT
 			PEA 	(A1)
 			PEA 	(A0)
+			OPT ALL ;]
 			FADDX						; ACCUM <-- ACCUM + CJ
+			OPT SYNON ;]
 			SUBQ.W	#1,D0
 			BGT.S	POLYLOOP
 
@@ -605,7 +609,9 @@ LOG12R
 
 			PEA 	FPK1
 			PEA 	(A4)
+			OPT ALL ;]
 			FADDX						; W <-- 1+T
+			OPT SYNON ;]
 
  ;
  ; Now compare with bounds SQRT(1/2) and SQRT(2).
@@ -665,11 +671,13 @@ LOG2R
 			PEA 	FPKSQRT2
 			PEA 	(A4)
 			FCMPX
-			FBULEL	At11				; ???? was local @1				<1.1>
+			FBULE	At11				; ???? was local @1				<1.1>
 
 			PEA 	FPK1
 			PEA 	STW(A6)
+			OPT ALL ;]
 			FADDX						; INCREMENT L
+			OPT SYNON ;]
 
 			PEA 	FPK2
 			PEA 	(A4)
@@ -691,10 +699,12 @@ At11									; ???? was local @1
  ;
 			PEA 	STW(A6)
 			PEA 	(A4)
+			OPT ALL ;]
 			FADDX
 
 
  ;
+			OPT SYNON ;]
  ; Finish up with a multiply by LN(2) if a natural log was r.EQUested.
  ;
 LOGFINI
@@ -756,7 +766,9 @@ LANORMAL
 
 			PEA 	FPK2
 			PEA 	(A4)
+			OPT ALL ;]
 			FADDX						; S := S + 2
+			OPT SYNON ;]
 
 			PEA 	(A4)
 			PEA 	(A1)				; ADRS OF CELL X

@@ -97,6 +97,11 @@ def layout(modules, postlink):
     return modules, dispatch[0]["name"], size, fill_start
 
 
+def assembly_dependencies(build, name):
+    manifest = mpw.input_manifest(Path(build) / (name + ".a"))
+    return json.loads(manifest.read_text()) if manifest.is_file() else {"files": [], "dependencies": {}}
+
+
 def write_makefile(build, modules, postlink):
     build = Path(build).resolve()
     build.mkdir(parents=True, exist_ok=True)
@@ -132,10 +137,13 @@ def write_makefile(build, modules, postlink):
         "",
     ]
     for name in [module["name"] for module in modules] + ["rom-prefix-end", "rom-build-info"]:
+        inputs = assembly_dependencies(build, name)["files"]
+        prerequisites = [quote(name + ".a"), '"Makefile"']
+        prerequisites.extend(quote(":" + path.replace("/", ":")) for path in inputs)
         lines.extend([
-            f'{quote(name + ".o")} ƒ {quote(name + ".a")} "Makefile"',
-            f'\tAsm -sym on,nolines -wb -l -o {quote(name + ".o")} {quote(name + ".a")} '
-            f'> {quote(name + ".listing.txt")}',
+            f'{quote(name + ".o")} ƒ ' + " ∂\n\t".join(prerequisites),
+            f'\tAsm -sym on,nolines -wb -l -i {quote(mpw.ASM_INCLUDE_PATH)} '
+            f'-o {quote(name + ".o")} {quote(name + ".a")} > {quote(name + ".listing.txt")}',
             "",
         ])
     for module in modules:
@@ -271,6 +279,21 @@ def build_project(build, modules, postlink):
     source_names = [module["name"] + suffix for module in modules
                     for suffix in ((".r", ".layout") if module["name"] in resources else (".a",))]
     source_names += LAYOUT_SOURCES + ["rombuild.c", "hiram.c", "Makefile"]
+    assembly_inputs = {}
+    original_dependencies = {}
+    for module in modules:
+        name = module["name"]
+        inputs = assembly_dependencies(build, name)
+        if inputs["files"]:
+            paths = inputs["files"] + [mpw.input_manifest(name + ".a").name]
+            assembly_inputs[name] = set(paths)
+            source_names.extend(paths)
+            for source, expected in inputs["dependencies"].items():
+                if source in original_dependencies and original_dependencies[source] != expected:
+                    raise ValueError(f"Source changed after preparation: {source}")
+                original_dependencies[source] = expected
+    source_names = sorted(set(source_names))
+    mpw.validate_dependencies(original_dependencies)
     sources = {name: digest((build / name).read_bytes()) for name in source_names}
     tool_paths = [runner, make, *[installation / "Tools" / name for name in ("Make", "Asm", "SC", "Link", "Rez")],
                   *mpw.c_libraries()]
@@ -287,8 +310,11 @@ def build_project(build, modules, postlink):
     if tool_change or "Makefile" in changed:
         remove_outputs(build, all_objects + ["hiram", "rombuild"] + resource_outputs)
     else:
+        for name, inputs in assembly_inputs.items():
+            if inputs.intersection(changed):
+                remove_outputs(build, [name + ".o"])
         for name in changed:
-            if name.endswith(".a"):
+            if name.endswith(".a") and "/" not in name:
                 remove_outputs(build, [name[:-2] + ".o"])
             elif name.endswith(".c"):
                 remove_outputs(build, [name + ".o", name[:-2]])
@@ -328,6 +354,7 @@ def build_project(build, modules, postlink):
             raise ValueError("MPW Link did not produce a ROM resource")
         if sources != {name: digest((build / name).read_bytes()) for name in source_names}:
             raise ValueError("MPW source changed during the build")
+        mpw.validate_dependencies(original_dependencies)
         outputs = {name: fingerprints(build / name) for name in output_names}
     except Exception:
         remove_outputs(build, [FINAL, UNFINISHED, LINKED, STATE])

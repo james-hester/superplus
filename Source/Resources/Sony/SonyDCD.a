@@ -6,12 +6,13 @@
 *R Routine names from jump vectors remain; other labels and comments are new.
 *R The resource ends after the status callback jump at $419D96.
 
+SonyDCDModule PROC ;]
 		IMPORT CheckRead,DiskCtlErr,DiskDone,DiskSelect,GetDrive,Sense ;]
 		IMPORT WakeUp ;]
 		EXPORT DCDPrime ;]
 
 	INCLUDE 'SonyEqu.a'
-	INCLUDE 'SonyDCDEqu.a' ;]
+	INCLUDE 'FSEqu.a'
 
 
 ;_______________________________________________________________________
@@ -120,7 +121,7 @@ DCDRetryBlocks ;]
 	BEQ.S DCDResetForRetry ;]
 	CLR.B RecalCnt(A1)
 DCDResetForRetry ;]
-	BSR.W DCDReset ;]
+	BSR.W ResetDCD ;]
 	BNE.S DCDBlockError ;]
 	ST dcdFlags(A1) ;]
 DCDRetryCommand ;]
@@ -190,7 +191,7 @@ DCDMaskCommand ;]
 	ANDI.B #63,dcdCmd(A1) ;]
 	RTS
 
-*R SendCmd and DCDReset retain the patchable vectors installed by DiskOpen.
+*R SendCmd and ResetDCD retain the patchable vectors installed by DiskOpen.
 SendCmd
 	MOVE.L jSendCmd,-(SP) ;]
 	RTS
@@ -854,7 +855,7 @@ DCDWritePacketExit ;]
 	MOVE.W (SP)+,SR
 	TST.B D0
 	RTS
-DCDReset
+ResetDCD ;]
 	MOVE.L jDCDReset,-(SP) ;]
 	RTS
 
@@ -946,7 +947,7 @@ DCDControlError ;]
 DCDControlReset ;]
 	BSET #resetonce,dcdFlags(A1) ;]
 	BNE.S DCDControlFailed ;]
-	BSR.W DCDReset ;]
+	BSR.W ResetDCD ;]
 	BNE.S DCDControlFailed ;]
 	BRA.S DCDControlRetry ;]
 DCDControlReceive ;]

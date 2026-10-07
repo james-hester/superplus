@@ -100,7 +100,8 @@ LinkSize        EQU     MInfoRec ;]
 ResourceBlockFlags EQU $C0 ;]
 MasterPointerOffset EQU $6C ;]
 
-MDEFResourceBlock ;]
+MDEFResourceBlock PROC ;]
+	IMPORT MDEFResourceEnd ;]
                 DC.L    ResourceBlockFlags*$1000000+MDEFResourceEnd-MDEFResourceBlock ;]
                 DC.L    MasterPointerOffset ;]
 
@@ -678,6 +679,7 @@ GRAYRECT
                 _PENNORMAL
                 RTS
 
-                ENDP
+	EXPORT MDEFResourceEnd ;]
 MDEFResourceEnd ;]
+                ENDP
                 END

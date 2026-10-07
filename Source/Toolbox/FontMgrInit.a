@@ -40,7 +40,6 @@
 *R The later source routes this initialization through FMSwapFont.
 ;
 		IMPORT GetFontHandle,SetScreenDevice ;]
-		EXPORT FMSwapFont,InitFonts,InValWidths ;]
 
 		MACHINE MC68000
 		STRING ASIS
@@ -53,9 +52,6 @@
 		INCLUDE 'Traps.a'
 		INCLUDE 'fontPrivate.a'
 
-*R Default size is a word in this ROM.
-FMDefaultSize EQU $986 ;]
-
 ;new FONT manager stuff
 
 
@@ -64,13 +60,13 @@ FMDefaultSize EQU $986 ;]
 
 ; format of a width table:
 
-WidTabSize	EQU 	WidthASize+2			;total size of a width table.
 
 
 *R External routines and trap words match the ROM.
 
 
 FontManagerInit PROC ;]
+		EXPORT FMSwapFont,InitFonts,InValWidths ;]
 
 ; PROCEDURE InitFonts -- initialize the font manager data structures
 
@@ -87,7 +83,8 @@ InitFonts
             MOVE.W SPFont,ApFontID         ;set up default font ID
             ADDQ.W #1,ApFontID             ;bump it by 1
             MOVEQ #12,D0
-            MOVE.W D0,FMDefaultSize	;]set up FMDefault Size
+*R FMDefaultSize names the byte at $987; the ROM stores a word at $986.
+            MOVE.W D0,FMDefaultSize-1	;]set up FMDefault Size
             MOVE.W SysFontFam,D3 ;]
             ASL #7,D3
             MOVE.W SysFontSize,D1

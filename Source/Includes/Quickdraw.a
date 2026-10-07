@@ -1,13 +1,7 @@
-*R Mac Plus declarations selected from the surviving includes.
-*R See Evidence/shared-includes.json for source lines and retained local definitions.
-;
-*R Source: Interfaces/AIncludes/Quickdraw.a
-;
-; File: Quickdraw.a
-;
-; Assembler Interface to the Macintosh Libraries
-; Copyright Apple Computer, Inc. 1984-1992
-; All Rights Reserved
-;
+*R MPW 1.0.1 supplies the complete 1986 interface below.
 
-ulineBit  		EQU 		2
+	IF (&TYPE('PlusQuickdrawIncluded') = 'UNDEFINED') THEN ;]
+PlusQuickdrawIncluded EQU 1 ;]
+	INCLUDE ':MPW1.0.1:QuickEqu.a' ;]
+
+	ENDIF ;]

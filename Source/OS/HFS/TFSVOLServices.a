@@ -13,6 +13,7 @@
 *R FlVolStart names the shared flush entry restored from the ROM.
 
 *R These equates retain the original include definitions.
+TFSVOLServicesModule PROC ;]
 		IMPORT CmdDone,CMGetCN,DEQUEUE,DsposVBlks,DsposVCB,ENQUEUE ;]
 		IMPORT ExtOffLinCk,FClose,FlushCache,FlushMDB,FndFilName,FSQueue ;]
 		IMPORT FSQueueSync,GetVCBDrv,GetVCBRfn,GetWDCBRfn,Gt1stFCB,Gt1stWDCB ;]
@@ -778,7 +779,9 @@ DtrmV2:
 			SUBQ.W	#1,D2				; and the colon
 			MOVE.L	A4,A1				; ptr to 1st char of vol name string
 			ADD.L	D3,A4				; ptr to first colon in pathname string
+        OPT NONE ;]
 			ADDA.L	#1,A4				; now pointing to the pathname
+        OPT SYNON ;]
 
 			TST.W	D3					; Have we scanned over any characters?
 			BGT.S	VolSpcfd			; Yes - go look for volume by name
@@ -1720,4 +1723,5 @@ SetupDef:	MOVEM.L D3-D7/A1-A6,-(SP)	; Save registers, same as SetUpWDCB 				<26S
 										; [returns directly to trap dispatcher] 			<26Sep85>
 
 TFSVOLServicesEnd ;]
+        ENDP ;]
 	END

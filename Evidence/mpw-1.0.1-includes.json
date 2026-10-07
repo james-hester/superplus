@@ -1,0 +1,175 @@
+{
+  "source_release": "MPW 1.0.1 - 10 Oct 1986",
+  "source_disk": "MPW5",
+  "conversion": "MacRoman to UTF-8; CR line endings to LF; no other text changes",
+  "files": [
+    {
+      "source": "MPW5/ATalkEqu.a",
+      "path": "Source/Includes/MPW1.0.1/ATalkEqu.a",
+      "source_bytes": 9679,
+      "source_sha256": "30998692280b9514a569762783935770dc92c3be25c7ed83f1573d27a1f6b846",
+      "bytes": 9679,
+      "sha256": "a8c609e46d76729494d6227634791b03dc2e1c6f1e5ddfdcece8b5489a095421"
+    },
+    {
+      "source": "MPW5/FSEqu.a",
+      "path": "Source/Includes/MPW1.0.1/FSEqu.a",
+      "source_bytes": 12190,
+      "source_sha256": "4b6b82dc766b43218073cfd7b2c03fd896ae9770ed40038defd9a4d1d1864f3b",
+      "bytes": 12190,
+      "sha256": "3417a9b10ab0c56c9099b029682659bc8467bd68c92f085e88c3360277613be5"
+    },
+    {
+      "source": "MPW5/FSPrivate.a",
+      "path": "Source/Includes/MPW1.0.1/FSPrivate.a",
+      "source_bytes": 16059,
+      "source_sha256": "3992e8e7bb1027b9f87313ac84eebdf173847f40cd65b27094bac2196d2f1b4a",
+      "bytes": 16059,
+      "sha256": "cdb7d23673a7339792f910a4ec5dca017188893b455947f686aa92c2e806920e"
+    },
+    {
+      "source": "MPW5/FixMath.a",
+      "path": "Source/Includes/MPW1.0.1/FixMath.a",
+      "source_bytes": 3361,
+      "source_sha256": "fae1555fe8b87d254712b58e3bb6fe5b7922e7b1a0ededc3578ea997816e7cb4",
+      "bytes": 3365,
+      "sha256": "6c74df18db85648451af3cbd2a89e5f66f6dcbbf791f8fb4cd10543a80787956"
+    },
+    {
+      "source": "MPW5/Graf3DEqu.a",
+      "path": "Source/Includes/MPW1.0.1/Graf3DEqu.a",
+      "source_bytes": 2430,
+      "source_sha256": "5ec4fa9f7888cf8978821a735461894425f76869fcf2599fb1091604f651300b",
+      "bytes": 2430,
+      "sha256": "bbb3da426a2fc4d6eb8d74f79dfcd003ca0fe2ecd87a0e116850c73a44807dea"
+    },
+    {
+      "source": "MPW5/HardwareEqu.a",
+      "path": "Source/Includes/MPW1.0.1/HardwareEqu.a",
+      "source_bytes": 10550,
+      "source_sha256": "477857a5bc70876a69c13824958c901bfe21643edfa9b7f4cc6840546af4940e",
+      "bytes": 10550,
+      "sha256": "30020681001819638765a81f5fa88c940d2ae1f681ffa948c7e797df7e7bf219"
+    },
+    {
+      "source": "MPW5/IntEnv.a",
+      "path": "Source/Includes/MPW1.0.1/IntEnv.a",
+      "source_bytes": 4019,
+      "source_sha256": "bae7a047aa80e3f828a09ad4200f916e8a586c2eaef1b675b75f216d4bdd6d37",
+      "bytes": 4019,
+      "sha256": "26c5090049e85c91836015f8eed4c8e6dde31c13e90fe4051016c72e8dc24b71"
+    },
+    {
+      "source": "MPW5/ObjMacros.a",
+      "path": "Source/Includes/MPW1.0.1/ObjMacros.a",
+      "source_bytes": 11100,
+      "source_sha256": "44b592786f2642161453cef354ecc86a40aeb62b32519b6a1d8bc9707970e234",
+      "bytes": 11100,
+      "sha256": "1a68ad2ff3a34136756a28db9e8320e742e496f2b930f770437d04137f73b203"
+    },
+    {
+      "source": "MPW5/PackMacs.a",
+      "path": "Source/Includes/MPW1.0.1/PackMacs.a",
+      "source_bytes": 11476,
+      "source_sha256": "42843e507fd981cd5ecab96b64f18f86b3313649db38ab15a831f2465ffa85b3",
+      "bytes": 11476,
+      "sha256": "49b2cbb6ab77f83464f5ca55fa27433ef3d8ab6db7f6b25a8f81a49236008f4c"
+    },
+    {
+      "source": "MPW5/PrEqu.a",
+      "path": "Source/Includes/MPW1.0.1/PrEqu.a",
+      "source_bytes": 5294,
+      "source_sha256": "e6d6562a87418bd96a9ddfd64d977cbef88375d23f915790cd9f02929a38e280",
+      "bytes": 5294,
+      "sha256": "ac690fbf8e55a6b06471c18394ab7e9606946d84623e7002ec393cfc474321d7"
+    },
+    {
+      "source": "MPW5/Private.a",
+      "path": "Source/Includes/MPW1.0.1/Private.a",
+      "source_bytes": 10840,
+      "source_sha256": "24ffb75208df6c09e0e0aa1dd661438eee741a666ea4ce66b39140686b0f102a",
+      "bytes": 10840,
+      "sha256": "fd0c6914d7506766ab5c2f61c282ffb4b048f69b64082ec06ac2ed34201f152f"
+    },
+    {
+      "source": "MPW5/QuickEqu.a",
+      "path": "Source/Includes/MPW1.0.1/QuickEqu.a",
+      "source_bytes": 5920,
+      "source_sha256": "8844b3f649b220d0adec0326e3e046c261164225698e7f59905108f7179e718d",
+      "bytes": 5920,
+      "sha256": "d4b4e65b53da59de451cb735d7a08a7e9249e452bc3c2dcfbd444ca02975dfa4"
+    },
+    {
+      "source": "MPW5/SANEMacs.a",
+      "path": "Source/Includes/MPW1.0.1/SANEMacs.a",
+      "source_bytes": 18319,
+      "source_sha256": "a76eae87b5c6ecd1dbd9378cab0e313792332932929e0334e2117c6aa9fa3238",
+      "bytes": 27051,
+      "sha256": "960077d4e71d6351a006616320b14711dd78c1403b7507d766ede1b4756bd02a"
+    },
+    {
+      "source": "MPW5/SCSIEqu.a",
+      "path": "Source/Includes/MPW1.0.1/SCSIEqu.a",
+      "source_bytes": 3357,
+      "source_sha256": "4619ddccd26389f715b728f644b04ab1393e33d968871749c8d1dc85d17a8531",
+      "bytes": 3357,
+      "sha256": "60e81c0891df34297b88acb753efd5d650a99a381a01215ffbcd97c84670606f"
+    },
+    {
+      "source": "MPW5/Signal.a",
+      "path": "Source/Includes/MPW1.0.1/Signal.a",
+      "source_bytes": 1248,
+      "source_sha256": "8b497747c4f0ee384596403ade0c15c728b5331cd19428470cc9e059c84d77c9",
+      "bytes": 1248,
+      "sha256": "021a167c4b8b3a07a0e01c5842733279edd9f35d49bf36d8bcf66d1c2b610510"
+    },
+    {
+      "source": "MPW5/SonyEqu.a",
+      "path": "Source/Includes/MPW1.0.1/SonyEqu.a",
+      "source_bytes": 15204,
+      "source_sha256": "46796f64bddc8556f5f645eaaf045c5b36c445a982cb7fae81efaa30d55b7904",
+      "bytes": 15205,
+      "sha256": "05b00053a0e58eedda38ed8142e5ed518ef0f0ea821f1581c290a1d815c4bae5"
+    },
+    {
+      "source": "MPW5/SysEqu.a",
+      "path": "Source/Includes/MPW1.0.1/SysEqu.a",
+      "source_bytes": 34497,
+      "source_sha256": "0cc2c554395445d8224e8dc413411238d16f9da28562f47438bbc5a07a4ad768",
+      "bytes": 34497,
+      "sha256": "88041d77afd26313ee68b00c11d8e5e4868569a252f2882116b45e646099041b"
+    },
+    {
+      "source": "MPW5/SysErr.a",
+      "path": "Source/Includes/MPW1.0.1/SysErr.a",
+      "source_bytes": 9342,
+      "source_sha256": "3b3b941708f5def54677c0e27f53252c4072e10367d8c3f1d14e9ccb5764bd17",
+      "bytes": 9342,
+      "sha256": "a781cad143f39635f7ddbbbf98cd3bc47a01cbedb755edc173e1bf76cdb16a93"
+    },
+    {
+      "source": "MPW5/TimeEqu.a",
+      "path": "Source/Includes/MPW1.0.1/TimeEqu.a",
+      "source_bytes": 758,
+      "source_sha256": "a953e3aede4d6ede514f260dc857b448a50c05db643531057258e1a4eb0400fd",
+      "bytes": 758,
+      "sha256": "e52909702637da2efdd0c3d8d781077dca41212cfd82482db13867fff29a3a7e"
+    },
+    {
+      "source": "MPW5/ToolEqu.a",
+      "path": "Source/Includes/MPW1.0.1/ToolEqu.a",
+      "source_bytes": 23654,
+      "source_sha256": "b5454ae8cbcaa4c41901a1cae851f7e36f8e0b0b96bcd314a754c81d6001bda4",
+      "bytes": 23654,
+      "sha256": "24a08bb4100049adea1b1c65fbfec4feec2acda69041255503c13b6d1ac603bd"
+    },
+    {
+      "source": "MPW5/Traps.a",
+      "path": "Source/Includes/MPW1.0.1/Traps.a",
+      "source_bytes": 19329,
+      "source_sha256": "64f925a5b5368e451c78a670c0e2c5dc363406e6e51c5b05fb1347442f59fc1a",
+      "bytes": 19329,
+      "sha256": "163c878c0cc98e4ffb77c41a17a9ce770b7a1ba2b794ac16e9da01a9f76907f3"
+    }
+  ]
+}

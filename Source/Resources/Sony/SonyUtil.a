@@ -27,6 +27,9 @@
 ;									loops to use equates - adjusted tach frequency tables - replaced
 ;									make speed table routine w/ 800 ms delay
 ;
+		INCLUDE 'Timer.a'
+
+SonyUtilModule PROC ;]
 		IMPORT EmptyPD,SetUpPoll ;]
 		EXPORT AdrAndSense,AdrDisk,DCDSense,DiskSelect,DiskVBLTask,DskRtn ;]
 		EXPORT FastPower,GetDrive,GetDrv1,InvalTrkCache,MakeSpdTbl,MeasureSpeed ;]

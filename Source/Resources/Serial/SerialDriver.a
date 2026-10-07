@@ -8,6 +8,7 @@
 *R clock support are absent from this target.
 *R OPWORD definitions preserve the actual trap words.
 
+SerialDriverModule PROC ;]
 		EXPORT SERDResource ;]
 
 	INCLUDE 'SerialEqu.a' ;]
@@ -328,6 +329,7 @@ BRGEnable	DC.B	$01,14				; enb baud rate generator from RTxC pin				<57>
 *R This helper derives both SCC control addresses from the channel offset.
 
 GetSCCAddrs ;]
+InitLth EQU GetSCCAddrs-InitData ;]
 	MOVEM.L SCCRd,A0-A1 ;]
 	ADD.W SCCOffset(A2),A0 ;]
 	ADD.W SCCOffset(A2),A1 ;]
@@ -397,6 +399,7 @@ ResetData
 	DC.B 4,$FF,1,$FF,3,$FF,5,$FF ;]
 	DC.B $08,15,$01,1,$0A,9 ;]
 ResetDataEnd ;]
+ResetLth EQU ResetDataEnd-ResetData ;]
 
 
 *R Close restores saved interrupt vectors and releases local storage.

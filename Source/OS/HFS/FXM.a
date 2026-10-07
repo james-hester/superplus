@@ -1085,7 +1085,7 @@ RUExit1
 			TST.W	D0					; set condition codes
 			RTS 						; exit XRUpdate
 
+FXMEnd ;]
 	ENDP
 
-FXMEnd ;]
 	END

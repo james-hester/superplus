@@ -35,6 +35,7 @@
 ;
 
 StretchBits PROC  EXPORT	
+		IMPORT SetupStretch ;]
 ;--------------------------------------------------------------
 ;
 ;  PROCEDURE StretchBits(srcBits,dstBits: BitMap;

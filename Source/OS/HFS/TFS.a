@@ -74,6 +74,7 @@
 ;				  8/5/84	GSS		New today. (taken from Larry Kenyon's Mac File System)
 ;
 
+TFSModule PROC ;]
 		IMPORT ENQUEUE,GetVCBRfn,MakeStkPB,AllocFakeRgns ;]
 		EXPORT CmdDone,DoEject,DSHook,FInitQueue,FSQueue,FSQueueSync ;]
 		EXPORT TFSDispatch ;]
@@ -90,23 +91,6 @@ HiIntMask EQU $0300 ;] Macintosh Plus interrupt mask
 portSize EQU 116 ;] Classic GrafPort size
 screenBits EQU -122 ;] QuickDraw global bitmap offset
 
-OpenWD EQU TFSDispatch+$1320 ;]
-CloseWD EQU TFSDispatch+$13CC ;]
-SetDir EQU TFSDispatch+$12C8 ;]
-GetDir EQU TFSDispatch+$12FC ;]
-TFMove EQU TFSDispatch+$1DDE ;]
-CreateDir EQU TFSDispatch+$1984 ;]
-GetWDInfo EQU TFSDispatch+$1406 ;]
-GetFCBInfo EQU TFSDispatch+$2B60 ;]
-GetCatInfo EQU TFSDispatch+$227E ;]
-SetCatInfo EQU TFSDispatch+$20B6 ;]
-SetVolInfo EQU TFSDispatch+$117C ;]
-SetPMSP EQU TFSDispatch+$FA4 ;]
-SetUpWDCB EQU TFSDispatch+$150E ;]
-SetUpDef EQU TFSDispatch+$1538 ;]
-ReadWDCB EQU TFSDispatch+$14B2 ;]
-LockRng EQU TFSDispatch+$2C14 ;]
-UnLockRng EQU TFSDispatch+$2C14 ;]
 
             MACRO
             DispatchEntry &where
@@ -731,5 +715,25 @@ DoEject_1 ;]
 DoEject_2 ;]
             ADD.W      #IOVQElSize,SP ; clean up stack and return
             RTS        
+
+OpenWD EQU TFSDispatch+$1320 ;]
+CloseWD EQU TFSDispatch+$13CC ;]
+SetDir EQU TFSDispatch+$12C8 ;]
+GetDir EQU TFSDispatch+$12FC ;]
+TFMove EQU TFSDispatch+$1DDE ;]
+CreateDir EQU TFSDispatch+$1984 ;]
+GetWDInfo EQU TFSDispatch+$1406 ;]
+GetFCBInfo EQU TFSDispatch+$2B60 ;]
+GetCatInfo EQU TFSDispatch+$227E ;]
+SetCatInfo EQU TFSDispatch+$20B6 ;]
+SetVolInfo EQU TFSDispatch+$117C ;]
+SetPMSP EQU TFSDispatch+$FA4 ;]
+SetUpWDCB EQU TFSDispatch+$150E ;]
+SetUpDef EQU TFSDispatch+$1538 ;]
+ReadWDCB EQU TFSDispatch+$14B2 ;]
+LockRng EQU TFSDispatch+$2C14 ;]
+UnLockRng EQU TFSDispatch+$2C14 ;]
+
 TFSDispatchEnd ;]
+        ENDP ;]
             END

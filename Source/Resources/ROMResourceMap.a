@@ -15,11 +15,10 @@
 		IMPORT ATPDriver,BaseOfROM,Curs1,Curs2,Curs3,Curs4 ;]
 		IMPORT ELEMS68K,Font0,Font12,FP68K,MDEF0,MPPDriver ;]
 		IMPORT PKG7,PrintHeader,SERDResource,SonyHeader,SoundHeader,WDEF0 ;]
-		EXPORT RomResourceMap ;]
 
 ResourceAttributes EQU $58 ;]
 
-RomResourceMap PROC ;]
+RomResourceMap PROC EXPORT ;]
 RomResourceCount DC.W (ReferencesEnd-References)/12 ;]
 	DC.W MapEnd-RomMap ;]
 RomMap ;]
@@ -116,14 +115,11 @@ FONTRefs ;]
 FONTRefsEnd ;]
 ReferencesEnd ;]
 NameList ;]
-MPPName
- DC.B 4,'.MPP' ;]
-ATPName
- DC.B 4,'.ATP' ;]
+MPPName DC.B 4,'.MPP' ;]
+ATPName DC.B 4,'.ATP' ;]
 SonyName DC.B 5,'.Sony' ;]
 SoundName DC.B 6,'.Sound' ;]
-PrintName
- DC.B 6,'.Print' ;]
+PrintName DC.B 6,'.Print' ;]
 ChicagoName DC.B 7,'Chicago' ;]
 MapEnd ;]
 	END

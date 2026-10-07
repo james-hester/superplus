@@ -69,20 +69,6 @@
 ;									code that is the same size in both cases. Added some padding for
 ;									overpatching.
 ;
-;	File:		StartSearch.a
-;
-;	Contains:	This collection of subroutines is used to search out the most appropriate device to become
-;				the startup device, and to load the boot blocks from that device.  It also provides the user
-;				with feedback as to what is happening.
-;
-;	Written by:	Wayne R. Loofbourrow - September, 1986
-;
-;	Copyright:	© 1986-1993 by Apple Computer, Inc.  All rights reserved.
-;
-;	Change History (most recent first):
-;	  <C198>	 10/2/86			Fixed bug in flashing X on disk icon.
-;	  <C152>	 9/30/86			Creation based loosely on the Mac Plus boot code.
-;
 
         MACHINE MC68000
         STRING ASIS
@@ -106,7 +92,6 @@ BeepWavePattern EQU $C006FA40 ;]
 BootStackReserve EQU $400 ;]
 FailureCount EQU ScreenLow+$2EDF ;]
 FailureText EQU ScreenLow+$2CDD ;]
-hiIntMask 		EQU 		$0300					; programmer switch only
 PRAMValidByte EQU $A8 ;]
 PRAMValidCommand EQU -$3F ;]
 PRAMVolumeCommand EQU -$5F ;]
@@ -120,7 +105,6 @@ VIAStartupA EQU $6B ;]
 arrow EQU -108 ;]
 bounds EQU 6
 gray EQU -24 ;]
-MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
 QDBootGlobalsSize	EQU		$190						; a mere 400 bytes for QD
 screenBits EQU -122 ;]
 SwitchLen EQU 32 ;]
@@ -131,40 +115,48 @@ SwitchLen EQU 32 ;]
         IMPORT VBLInt,Dispatch,DispTable,EMT1010,CrossMark,DiskOutline ;]
         IMPORT HappyMac,InitKeyboard,PutIcon,PutSymbolRow,QuestionMark,SCSILoad ;]
         IMPORT SystemError,TheBoot,ResetAndReloadSCSI ;]
-        EXPORT BaseOfROM,BootRetry,ClkNoMem,CritErr,StartBoot,InitDispatcher
-        EXPORT BadTrap,InitSCC
-        EXPORT ROMEject,BootBeep,WriteSCC ;]
 
 *R These macros restore the original stackless call convention.
 *R BSR5 and BSR6 use word branches for the 68000.
-*R Their later source definitions select the 68020 and long branches.
-	MACRO
-	BSR5 &label
-	LEA @1,A5
-	BRA.W &label ;]
+*R Asm retains long branches to forward and imported targets.
+				MACRO
+				BSR5		&label
+			lclc &OLDMACH
+&OLDMACH		SETC		&Setting('MACHINE')		; save the current Machine setting
+				MACHINE		MC68020
+				LEA 		@1,A5
+				BRA.W 		&label ;]
+				MACHINE		&OLDMACH				; reset Machine setting
 @1
-	ENDM
-	MACRO
-	BSR6 &label
-	LEA @1,A6
-	BRA.W &label ;]
+				ENDM
+				MACRO
+				BSR6		&label
+			lclc &OLDMACH
+&OLDMACH		SETC		&Setting('MACHINE')		; save the current Machine setting
+				MACHINE		MC68020
+				LEA 		@1,A6
+				BRA.W 		&label ;]
+				MACHINE		&OLDMACH				; reset Machine setting
 @1
-	ENDM
+				ENDM
 
 
-  				MACRO
-  				RTS5
-  				JMP 		(A5)
-  				ENDM
+				MACRO
+				RTS5
+				JMP 		(A5)
+				ENDM
 
 
 
-  				MACRO
-  				RTS6
-  				JMP 		(A6)
-  				ENDM
+				MACRO
+				RTS6
+				JMP 		(A6)
+				ENDM
 
 StartInit PROC ;]
+        EXPORT BaseOfROM,BootRetry,ClkNoMem,CritErr,StartBoot,InitDispatcher
+        EXPORT BadTrap,InitSCC
+        EXPORT ROMEject,BootBeep,WriteSCC ;]
 BaseOfROM
 CheckSum
         DC.L    ROMChecksum ;]

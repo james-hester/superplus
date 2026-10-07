@@ -71,6 +71,7 @@
 *R Explicit branch sizes preserve the ROM encoding.
 
 *R These equates retain the original include definitions.
+TFSRFN2Module PROC ;]
 		IMPORT Alloc,AllocContig,AllocSt,BTClose,BTFlush,CkExtFS ;]
 		IMPORT CmdDone,CMGetCN,CMUpdateCN,CVFlgs,DtrmV1,ExtOffLinCk ;]
 		IMPORT FlushCache,FSQueue,GetBlock,Gt1stFCB,Gt1stMatch,GtNxEntry ;]
@@ -986,4 +987,5 @@ vAdjEOF 								; 'vectored' AdjEOF routine 			<29Oct85>
 			RTS 						; that's all folks.
 
 TFSRFN2End ;]
+        ENDP ;]
 	END

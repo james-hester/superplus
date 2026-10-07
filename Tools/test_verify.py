@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 import verify
+from paths import historical_path
 
 
 class FidelityVerificationTests(unittest.TestCase):
@@ -26,7 +27,20 @@ class FidelityVerificationTests(unittest.TestCase):
         self.build = Path(directory.name)
 
     def read_source(self, name):
-        return verify.expand_includes(verify.source_path(self.modules[name]["source"]), {})
+        def include_fixture(source):
+            lines = []
+            for line in source.read_text().splitlines():
+                include = re.fullmatch(r"\s+INCLUDE\s+'([^']+)'\s*(?:;.*)?", line, re.I)
+                if include:
+                    name = include[1].removeprefix(":").replace(":", "/")
+                    candidates = (source.parent / name, verify.HERE / "Source/Includes" / name)
+                    child = next(path for path in candidates if path.is_file())
+                    lines.append(include_fixture(child))
+                else:
+                    lines.append(line)
+            return "\n".join(lines) + "\n"
+
+        return include_fixture(verify.source_path(self.modules[name]["source"]))
 
     def verify_copy(self, name, source, variant):
         path = self.build / (variant + ".a")
@@ -48,14 +62,15 @@ class FidelityVerificationTests(unittest.TestCase):
         self.assertEqual(len(original_bytes), len(changed_bytes))
         self.assertNotEqual(original_bytes, changed_bytes)
 
-    def test_instructions_after_end_are_rejected(self):
+    def test_early_end_cannot_escape_byte_comparison(self):
         source = self.read_source("packagemgr")
         self.verify_copy("packagemgr", source, "original")
-        with self.assertRaisesRegex(ValueError, "substantive content follows END"):
-            self.verify_copy("packagemgr", "\tEND\n" + source, "after_end")
+        with self.assertRaisesRegex(ValueError, "first mismatches"):
+            self.verify_copy("packagemgr", "Short PROC\n\tRTS\n\tEND\n" + source, "early_end")
 
-    def test_named_macro_parameters_preserve_argument_boundaries(self):
-        lines = """        MACRO
+    def test_native_named_macro_parameters_preserve_argument_boundaries(self):
+        source = self.build / "named_macro.a"
+        source.write_text("""        MACRO
         Emit &num,&number
         IF &num = 0 THEN
         DC.B &number
@@ -63,27 +78,52 @@ class FidelityVerificationTests(unittest.TestCase):
         DC.B &num,&SysList[2]
         ENDIF
         ENDM
+Data PROC
         Emit 0,$80
         Emit 2,$ff
-""".splitlines()
-        expanded = verify.expand_macros(lines)
-        values = [verify.parse_line(line)[2] for line in expanded if verify.parse_line(line)[1] == "DC.B"]
-        self.assertEqual(values, ["$80", "2,$ff"])
-        for declaration in ("Emit &a,&a", "Emit a"):
-            with self.assertRaises(ValueError):
-                verify.expand_macros(["        MACRO", "        " + declaration, "        ENDM"])
-        with self.assertRaisesRegex(ValueError, "Too many arguments"):
-            verify.expand_macros(lines + ["        Emit 1,2,3"])
+        DC.B 0
+        END
+""")
+        expected = bytes.fromhex("80 02 ff 00")
+        module = {"name": "named_macro", "source": str(source),
+                  "start": "0x400000", "end_exclusive": "0x400004"}
+        self.assertTrue(verify.verify_module(module, expected, self.base, self.mpw, self.build)["matches_rom"])
+        source.write_text(source.read_text().replace("Emit 0,$80", "Emit 0,UndefinedValue"))
+        with self.assertRaises(subprocess.CalledProcessError) as failure:
+            verify.verify_module(module, expected, self.base, self.mpw, self.build)
+        self.assertEqual(failure.exception.cmd[1], "Asm")
+        self.assertIn("Undefined id", failure.exception.output + failure.exception.stderr)
+
+    def test_native_macro_variables_restore_machine_settings(self):
+        source = self.build / "machine_macro.a"
+        source.write_text("""        MACRO
+        ProbeCache
+        LCLC &SavedMachine
+&SavedMachine SETC &Setting('MACHINE')
+        MACHINE MC68020
+        MOVEC D0,CACR
+        MACHINE &SavedMachine
+        ENDM
+Start PROC
+        ProbeCache
+        RTS
+        END
+""")
+        expected = bytes.fromhex("4e7b 0002 4e75")
+        module = {"name": "machine_macro", "source": str(source),
+                  "start": "0x400000", "end_exclusive": "0x400006"}
+        self.assertTrue(verify.verify_module(module, expected, self.base, self.mpw, self.build)["matches_rom"])
+        source.write_text(source.read_text().replace("        RTS", "        MOVEC D0,CACR"))
+        with self.assertRaises(subprocess.CalledProcessError) as failure:
+            verify.verify_module(module, expected, self.base, self.mpw, self.build)
+        self.assertEqual(failure.exception.cmd[1], "Asm")
 
     def test_quoted_semicolons_survive_comment_parsing(self):
         source = self.build / "quoted_semicolons.a"
-        source.write_text("""Table DC.B ';','it''s;data' ; actual comment
+        source.write_text("""Data PROC
+Table DC.B ';','it''s;data' ; actual comment
         END
 """)
-        self.assertEqual(
-            verify.parse_line("Table DC.B ';','it''s;data' ; actual comment"),
-            ("Table", "DC.B", "';','it''s;data'"),
-        )
         expected = b";it's;data"
         module = {"name": "quoted_semicolons", "source": str(source),
                   "start": "0x400000", "end_exclusive": "0x40000a"}
@@ -94,11 +134,12 @@ class FidelityVerificationTests(unittest.TestCase):
         source = self.build / "star_comments.a"
         source.write_text("""*R INCLUDE 'Missing.a'
 * An ordinary MPW comment.
+CommentTest PROC
 Data DC.B '*R;notes' ; historical comment
 Position EQU *
         DC.W 2*3,Position-Data
-        MACRO
 *R A note before the macro declaration.
+        MACRO
         Emit &value
 *R This note mentions &SysList[99] without referring to a macro argument.
         DC.W &value
@@ -109,8 +150,6 @@ Position EQU *
         END
 *R A trailing note's apostrophe.
 """)
-        for comment in ("*R RTS", "* Ordinary comment", "*R ';'"):
-            self.assertEqual(verify.parse_line(comment), (None, "", ""))
         expected = b"*R;notes" + bytes.fromhex("0006 0008 0007 4e75")
         module = {"name": "star_comments", "source": str(source),
                   "start": "0x400000", "end_exclusive": "0x400010"}
@@ -164,14 +203,13 @@ Calls PROC
                   "start": "0x400000", "end_exclusive": hex(0x400000 + len(expected))}
         self.assertTrue(verify.verify_module(module, expected, self.base, self.mpw, self.build)["matches_rom"])
 
-    def test_extra_section_cannot_escape_byte_comparison(self):
+    def test_native_assembler_rejects_unknown_directives(self):
         source = self.read_source("packagemgr")
-        self.verify_copy("packagemgr", source, "original")
         changed = "\t.data\n\tNOP\n\t.text\n" + source
-        with self.assertRaisesRegex(
-            ValueError, r"unsupported operation \.DATA|unexpected allocated section \.data"
-        ):
+        with self.assertRaises(subprocess.CalledProcessError) as failure:
             self.verify_copy("packagemgr", changed, "extra_section")
+        self.assertEqual(failure.exception.cmd[1], "Asm")
+        self.assertIn("Error", failure.exception.output + failure.exception.stderr)
 
     def test_instruction_mutation_is_rejected(self):
         self.assert_mutation_rejected("packagemgr", r"(MOVEQ\s+)#15,D0", r"\g<1>#14,D0")
@@ -184,7 +222,7 @@ Calls PROC
 
     def test_original_macro_body_changes_emitted_bytes(self):
         statement = "DC.B\t(&Syslst[1]+7)"
-        self.assertIn(statement, verify.historical_path("OS/SysUtil.a").read_text())
+        self.assertIn(statement, historical_path("OS/SysUtil.a").read_text())
         self.assert_mutation_rejected(
             "sysutil", re.escape(statement), "DC.B\t(&Syslst[1]+6)"
         )
@@ -223,7 +261,7 @@ SecondReturn _Return paramSize
         IF MODE THEN
         MACRO
         _Value
-        IF &SYSLIST[1] = 4 THEN
+        IF &Eval(&SYSLIST[1]) = 4 THEN
         MOVEQ #4,D0
         ELSE
         MOVEQ #&Syslst[1],D0
@@ -269,17 +307,18 @@ VALUE EQU 8
         with self.assertRaisesRegex(ValueError, "first mismatches"):
             verify.verify_module(module, expected, 0x400000, self.mpw, self.build)
 
-    def test_malformed_conditions_are_rejected(self):
-        for text in [" ELSE", " ENDIF", " ELSEIF 1 THEN", " IF 1 THEN",
-                     " IF 1 THEN\n ELSE\n ELSE\n ENDIF",
-                     " IF 1 THEN\n ELSE\n ELSEIF 0 THEN\n ENDIF",
-                     " IF 0 THEN\n IF missing\n ENDIF\n ENDIF"]:
-            with self.subTest(text=text), self.assertRaises(ValueError):
-                verify.expand_macros(text.splitlines())
+    def test_native_assembler_rejects_malformed_conditions(self):
+        for index, text in enumerate((" ELSE", " ENDIF", " ELSEIF 1 THEN")):
+            with self.subTest(text=text):
+                source = self.build / ("bad_condition_" + str(index) + ".a")
+                source.write_text("Start PROC\n" + text + "\n NOP\n END\n")
+                with self.assertRaises(subprocess.CalledProcessError) as failure:
+                    verify.mpw.assemble(verify.translate(source), source.stem, self.mpw, self.build)
+                self.assertEqual(failure.exception.cmd[1], "Asm")
 
     def test_leading_zero_constants_remain_decimal(self):
         source = self.build / "decimal.a"
-        source.write_text("A EQU 08\nB EQU 09\nC EQU 010\n\tIF C=10 THEN\n\tDC.W A,B,C,$0010\n\tENDIF\n\tEND\n")
+        source.write_text("A EQU 08\nB EQU 09\nC EQU 010\nData PROC\n\tIF C=10 THEN\n\tDC.W A,B,C,$0010\n\tENDIF\n\tEND\n")
         module = {"name": "decimal", "source": str(source),
                   "start": "0x400000", "end_exclusive": "0x400008"}
         expected = bytes.fromhex("0008 0009 000a 0010")
@@ -324,7 +363,8 @@ VALUE EQU 8
         objects = []
         for module, _ in sources:
             verify.mpw.stage(directory / (module + ".a"), assemblies[module])
-            verify.mpw.run(self.mpw, "Asm", ["-sym", "on,nolines", "-wb", "-l", "-o",
+            verify.mpw.run(self.mpw, "Asm", ["-i", verify.mpw.ASM_INCLUDE_PATH,
+                           "-sym", "on,nolines", "-wb", "-l", "-o",
                            module + ".o", module + ".a"], directory)
             objects.append(module + ".o")
         listing, diagnostics = verify.mpw.run(self.mpw, "Link", ["-t", "ZROM", "-rt", "ROM =0",
@@ -414,14 +454,16 @@ Exit RTS
         self.assertEqual(symbols["first"], 10)
         self.assertEqual(symbols["second"], 18)
 
-    def test_late_short_import_branch_uses_linked_target_and_checks_range(self):
-        caller = ("Caller PROC\n\tIMPORT Target\n\tEXPORT CallSite\n" + "\tNOP\n" * 128
-                  + "CallSite BSR.S Target\n\tRTS\n\tENDP\n\tEND\n")
+    def test_late_short_import_uses_explicit_native_boundary_expression(self):
+        caller = ("Caller PROC\n\tIMPORT Target,Following\n\tEXPORT CallSite,CallerEnd\n"
+                  + "\tNOP\n" * 128
+                  + "CallSite DC.B $61,Target-Following+CallerEnd-(*+2)\n"
+                  + "\tRTS\nCallerEnd\n\tENDP\n\tEND\n")
 
-        def sources(padding):
-            following = ("Following PROC\n\tEXPORT Target\n" + "\tNOP\n" * (padding // 2)
+        def sources(padding, body=caller):
+            following = ("Following PROC EXPORT\n\tEXPORT Target\n" + "\tNOP\n" * (padding // 2)
                          + "Target RTS\n\tENDP\n\tEND\n")
-            return [("caller", caller), ("following", following)]
+            return [("caller", body), ("following", following)]
 
         for padding in (0, 124):
             with self.subTest(padding=padding):
@@ -432,18 +474,23 @@ Exit RTS
                 self.assertEqual(image, expected)
                 self.assertEqual(symbols["callsite"], 256)
                 self.assertEqual(symbols["target"] - symbols["callsite"] - 2, 2 + padding)
-                self.assertEqual(symbols["rom_caller_end"], symbols["rom_following"])
+                self.assertEqual(symbols["callerend"], symbols["following"])
 
         with self.assertRaises(subprocess.CalledProcessError) as failure:
             self.link_source_modules("late_short_out_of_range", sources(126))
         self.assertEqual(failure.exception.cmd[1], "Link")
+        direct = caller.replace("DC.B $61,Target-Following+CallerEnd-(*+2)", "BSR.S Target")
+        with self.assertRaises(subprocess.CalledProcessError) as failure:
+            self.link_source_modules("late_short_unresolved", sources(0, direct))
+        self.assertEqual(failure.exception.cmd[1], "Asm")
 
     def test_local_pc_equates_preserve_instruction_data_addresses(self):
         for name, equate in (("location", "*+2"), ("label", "DefWordBrk+2")):
             source = self.build / (name + ".a")
             source.write_text(f"""TextEdit PROC
-lo16 EQU {equate}
+{"lo16 EQU " + equate if name == "location" else ""}
 DefWordBrk AND.L #$0000FFFF,D0
+{"lo16 EQU " + equate if name == "label" else ""}
         MOVE.W lo16,D1
         DC.W 2*3,2 * 3
         END
@@ -456,7 +503,8 @@ DefWordBrk AND.L #$0000FFFF,D0
 
     def test_cpu_probe_can_restore_the_68000_instruction_limit(self):
         source = self.build / "cpu_probe.a"
-        source.write_text("""        MACHINE MC68020
+        source.write_text("""ProbeCode PROC
+        MACHINE MC68020
 Probe MOVEC D0,CACR
         MACHINE MC68000
         RTS
@@ -507,26 +555,28 @@ data 'CURS' (2, sysheap, locked) { $"AA 55" /* .. */ };''')
         self.assertEqual(before["source_sha256"], after["source_sha256"])
         self.assertNotEqual(before["source_dependencies"], after["source_dependencies"])
 
-    def test_include_after_end_is_rejected(self):
+    def test_native_assembler_stops_at_end(self):
         source = self.build / "include.a"
-        source.write_text("\tEND\n\tINCLUDE 'Types.a'\n")
-        (self.build / "Types.a").write_text("\tRTS\n")
-        with self.assertRaisesRegex(ValueError, "substantive content follows END"):
-            verify.translate(source)
+        source.write_text("Start PROC\n\tRTS\n\tEND\n\tINCLUDE 'Types.a'\n")
+        (self.build / "Types.a").write_text("\tInvalidOpcode\n")
+        module = {"name": "end", "source": str(source), "start": "0x400000",
+                  "end_exclusive": "0x400002"}
+        result = verify.verify_module(module, bytes.fromhex("4e75"), self.base, self.mpw, self.build)
+        self.assertTrue(result["matches_rom"])
 
     def test_postlink_checksum_exception_is_limited_to_zero_at_rom_base(self):
         source = self.build / "header.a"
-        source.write_text("CheckSum DC.L 0\nStart DC.W $1234\n\tEND\n")
+        source.write_text("Header PROC\nCheckSum DC.L 0\nStart DC.W $1234\n\tEND\n")
         module = {"name": "header", "source": str(source), "start": "0x400000",
                   "end_exclusive": "0x400006", "postlink_checksum": True}
         rom = bytes.fromhex("deadbeef 1234")
         result = verify.verify_module(module, rom, self.base, self.mpw, self.build)
         self.assertEqual(result["verified_bytes"], 2)
         self.assertFalse(result["matches_rom"])
-        source.write_text("CheckSum DC.L 1\nStart DC.W $1234\n\tEND\n")
+        source.write_text("Header PROC\nCheckSum DC.L 1\nStart DC.W $1234\n\tEND\n")
         with self.assertRaisesRegex(ValueError, "zero longword at the ROM base"):
             verify.verify_module(module, rom, self.base, self.mpw, self.build)
-        source.write_text("CheckSum DC.L 0\nStart DC.W $1235\n\tEND\n")
+        source.write_text("Header PROC\nCheckSum DC.L 0\nStart DC.W $1235\n\tEND\n")
         with self.assertRaisesRegex(ValueError, "first mismatches"):
             verify.verify_module(module, rom, self.base, self.mpw, self.build)
         with self.assertRaisesRegex(ValueError, "zero longword at the ROM base"):

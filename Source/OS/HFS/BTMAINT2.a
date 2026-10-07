@@ -329,7 +329,7 @@ DeleteRec
 			SUB.W	 D3,D0				;	 - next offset
 			JSR 	 MovRecLt			; move the records
 
-			SUB.W	 #1,NDNRecs(A5) 	 ; decrement number of keys
+			SUBQ.W	 #1,NDNRecs(A5) 	 ;] decrement number of keys
 
 ;
 ; Adjust the offsets
@@ -810,7 +810,7 @@ LocRec
 ;__________________________________________________________________________________
 
 LocTPR
-			SUB.W	 #1,D0				; offset
+			SUBQ.W	 #1,D0				;] offset
 			MULU	 #LenTPR,D0 		; ...from beg of table
 			MOVEA.L  BTCVarPtr(A4),A0	; ptr to BTree buffer
 			LEA 	 BTVTPTable(A0,D0.L),A0 ; get ptr(TPR)
@@ -897,7 +897,7 @@ MovRecLt
 
 			TST.W	  D0				; test byte count
 			BLE.S	  MovlExit			; byte count <= 0
-			SUBQ.W	  #1,D0 			; adjust loop index
+			SUBQ.W	  #1,D0 			;] adjust loop index
 
 @1			MOVE.B	  (A0)+,(A1)+		; move
 			DBRA	  D0,@1 			; ...it
@@ -930,7 +930,7 @@ MovRecRt
 
 			ADDA.W	  D0,A0 			; high-address of source block
 			ADDA.W	  D0,A1 			; high-address of dest block
-			SUBQ.W	  #1,D0 			; byte count - 1
+			SUBQ.W	  #1,D0 			;] byte count - 1
 @1			MOVE.B	  -(A0),-(A1)		; move
 			DBRA	  D0,@1 			; ...it
 MovrExit
@@ -1164,7 +1164,7 @@ UpdIKey
 @5			MOVEM.L  (SP)+,D0-D1/A0-A2	; restore regs
 			RTS 						; exit UpdIKey
 
+BTMAINT2End ;]
 	ENDP
 
-BTMAINT2End ;]
 	END

@@ -1070,7 +1070,7 @@ UpdRtCnts
 
 @2			RTS 						; exit UpdVCnts/UpdRtCnts
 
+CMSVCSEnd ;]
 	ENDP
 
-CMSVCSEnd ;]
 	END

@@ -35,7 +35,6 @@
 		INCLUDE 'SysEqu.a'
 		INCLUDE 'Traps.a'
 
-scsiComplete  	EQU 		4
 
 
 
@@ -79,7 +78,9 @@ LoadDone ;]
 *R OpenIt solicits the SCSI device whose ID is in D5 for a Macintosh driver.
 *R The ROM reads 256 bytes of the descriptor and partition blocks.
 OpenIt
-            SUB.L   #256,SP ;]
+        OPT NONE ;]
+            SUBA.L   #256,SP ;]
+        OPT SYNON ;]
             MOVE.L  SP,A2
 				moveq.l	#0,d3					; d3 gets block location
 				moveq.l	#1,d2					; d2 gets block count
@@ -98,7 +99,7 @@ NextDD
             CMPI.W  #SBMac,DDType(A0) ;]
             BEQ.S   FoundDD
             ADDQ.L  #DDLen,A0
-            SUBQ.W  #1,D0
+            SUBQ.W  #1,D0 ;]
             BNE.S   NextDD
             BRA.S   Exit
 

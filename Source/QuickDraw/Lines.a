@@ -44,6 +44,7 @@ JStdLine	EQU	xToolTable+(4*$90)
 ;
 
 StdLine PROC  EXPORT
+		IMPORT DoLine ;]
 ;---------------------------------------------------------------
 ;
 ;  PROCEDURE StdLine(newPt: Point);

@@ -75,6 +75,7 @@
 ;_______________________________________________________________________
 
 
+SonyModule PROC ;]
 		IMPORT AdrAndSense,AdrDisk,DCDSense,DiskSelect,DiskVBLTask,GetDrive ;]
 		IMPORT GetDrv1,InvalTrkCache,PowerDown,WakeUp ;]
 		EXPORT CkDrvNum,DiskCtlErr,DiskDone,SonyHeader ;]
@@ -82,6 +83,14 @@
 	INCLUDE 'SonyEqu.a'
 
 *R These routine addresses belong to later Sony source sections.
+
+ResourceBlockFlags EQU $C0 ;]
+MasterPointerOffset EQU $5C ;]
+Version EQU 1 ;]
+DCDRfN EQU -2
+SonyRfN EQU -5
+
+SonyResourceBlock ;]
 SonyResourceEnd EQU SonyResourceBlock+$2070 ;]
 DiskPrime EQU SonyResourceBlock+$342 ;]
 jtDiskPrime EQU SonyResourceBlock+$348 ;]
@@ -105,15 +114,7 @@ ctlDCDVerify EQU SonyResourceBlock+$1FC4 ;]
 ctlDCDIcon EQU SonyResourceBlock+$1FAE ;]
 CtlFormat EQU SonyResourceBlock+$13BE ;]
 CtlVerify EQU SonyResourceBlock+$16A6 ;]
-
-ResourceBlockFlags EQU $C0 ;]
-MasterPointerOffset EQU $5C ;]
-Version EQU 1 ;]
-DCDRfN EQU -2
-SonyRfN EQU -5
-
-SonyResourceBlock ;]
-	DC.L ResourceBlockFlags*$1000000+SonyResourceEnd-SonyResourceBlock ;]
+	DC.L ResourceBlockFlags*$1000000+(SonyResourceEnd-SonyResourceBlock) ;]
 	DC.L MasterPointerOffset ;]
 
 ; Here is the driver header

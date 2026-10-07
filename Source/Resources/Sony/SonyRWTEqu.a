@@ -1,8 +1,0 @@
-*R These additional equates retain the original include expressions.
-
-		INCLUDE 'HardwareEqu.a'
-		INCLUDE 'Private.a'
-		INCLUDE 'SonyInterfaceEqu.a' ;]
-		INCLUDE 'SysEqu.a'
-		INCLUDE 'SysErr.a'
-
