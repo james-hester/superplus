@@ -1,0 +1,243 @@
+{
+  "module": "Control Manager",
+  "source": "Reconstruction/Source/Toolbox/ControlMgr.a",
+  "source_sha256": "c8b1cac4bf955a54d9948147656c7dce2eac4d7bbd4589ecc62b67c214354a7e",
+  "originals": [
+    {
+      "path": "Toolbox/ControlMgr/ControlMgr.a",
+      "sha256": "dc3ff2eac05b68b353dfa4b8b8414a85c07e5c0665bc972497a499d614808679",
+      "role": "Routine bodies, historical revisions, commented-out older code, and interface contracts.",
+      "retained_header_lines": [
+        1,
+        11
+      ],
+      "retained_history_ranges": [
+        [
+          82,
+          98
+        ],
+        [
+          129,
+          170
+        ],
+        [
+          196,
+          202
+        ]
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "role": "Required control fields, message codes, window fields, globals, and trap words.",
+      "declaration_lines": [
+        170,
+        245
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "role": "Required control fields, message codes, window fields, globals, and trap words.",
+      "declaration_lines": [
+        790,
+        426,
+        424,
+        420,
+        423,
+        422,
+        417,
+        418,
+        427,
+        429,
+        428,
+        421,
+        419,
+        440,
+        792,
+        795,
+        439,
+        788,
+        789,
+        372,
+        181,
+        791,
+        416,
+        793,
+        175,
+        794,
+        796,
+        287,
+        276
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "role": "Required control fields, message codes, window fields, globals, and trap words.",
+      "declaration_lines": [
+        407,
+        408,
+        443,
+        444,
+        449,
+        501,
+        503,
+        506,
+        545,
+        550,
+        551,
+        569,
+        693,
+        694,
+        747,
+        750,
+        751,
+        752,
+        756,
+        758,
+        765,
+        780,
+        785,
+        895,
+        910,
+        1646,
+        1648,
+        1650,
+        1765
+      ]
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 831,
+  "rom": {
+    "start": "0x412d54",
+    "end_exclusive": "0x413354",
+    "bytes": 1536,
+    "sha256": "77fbbc219ab86cf3ed27bdabcf9250be944ebb2bf0843cbf98aaf838b29f53e6"
+  },
+  "changes": [
+    "NewControl retains the old control-record fields and high-byte variant. It saves A2\u2013A4 but does not save D1, which the source history added in December 1986. Color-record creation and later 32-bit paths are omitted.",
+    "CallDControl restores the commented-out SectRect sequence at $412E02\u2013$412E2A. The source says that this test was removed in January 1986 because it broke MacExpress. The ROM still tests the control rectangle against the owner port before drawing.",
+    "CallControl reads the variant from the high byte of the definition handle, clears that byte on the LoadResource stack argument, and uses BSET/BCLR on bit seven of the master pointer. The later GetCVariant, StripAddress, lock traps, cache flush, and missing-resource error path are absent.",
+    "DisposeControl uses the earlier A3-only frame, unconditionally erases the control, removes it from the owner list, sends the dispose message, frees its handle, and branches to CShowDone. Later layer and auxiliary color-record cleanup is absent.",
+    "HideControl clears the visible field after EraseControl; EraseControl itself does not change that field. The source history dates moving those two instructions into EraseControl to January 1987. DrawOneControl lacks the later redundant visibility check and reaches the existing CallDControl check.",
+    "SetCTitle retains its unchecked SetHandleSize result. The later memory-error branch is omitted. DragControl uses the old high-bit region parameter and calls GetNewRgn at $411402 with PC-relative addressing.",
+    "TrackControl omits scrolling-delay state and restores the direct action-procedure call. DoTheThumb sets the byte at DragFlag and omits the later saved-value comparison and flag clear. ReturnZero clears the part-code result directly.",
+    "Routine comments, declaration comments, and the 1982\u20131985 histories remain where they describe the restored code. Four inherited comments now identify the length byte, title string, TestControl result, and indicator threshold correctly. Explicit branch widths retain the ROM encodings."
+  ],
+  "external_references": [
+    {
+      "name": "GetNewRgn",
+      "address": "0x411402",
+      "call_site": "0x4130d2",
+      "basis": "The ROM JSR uses a signed PC-relative displacement to this Window Manager helper."
+    }
+  ],
+  "verification": {
+    "name": "controlmgr",
+    "source": "Reconstruction/Source/Toolbox/ControlMgr.a",
+    "source_sha256": "c8b1cac4bf955a54d9948147656c7dce2eac4d7bbd4589ecc62b67c214354a7e",
+    "start": "0x412d54",
+    "end_exclusive": "0x413354",
+    "bytes": 1536,
+    "sha256": "77fbbc219ab86cf3ed27bdabcf9250be944ebb2bf0843cbf98aaf838b29f53e6",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Toolbox/ControlMgr.a",
+        "sha256": "c8b1cac4bf955a54d9948147656c7dce2eac4d7bbd4589ecc62b67c214354a7e"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "controlmgr",
+    "source": "Reconstruction/Source/Toolbox/ControlMgr.a",
+    "start": "0x412d54",
+    "end_exclusive": "0x413354",
+    "entry_points": {
+      "NewControl": "0x412d54",
+      "cmgrEnd": "0x413354",
+      "callcontrol": "0x412e2c",
+      "calldcontrol": "0x412df8",
+      "checkaction": "0x413194",
+      "checkcpart": "0x41318e",
+      "cmgr": "0x412d54",
+      "cshowdone": "0x412eee",
+      "dccommon": "0x41326c",
+      "dcloop": "0x413286",
+      "dcmoveit": "0x413114",
+      "deldone": "0x4132e0",
+      "deletelist": "0x4132be",
+      "deleteloop": "0x4132ce",
+      "deletenext": "0x4132d6",
+      "disposecontrol": "0x412e96",
+      "dodc": "0x4132a0",
+      "donedc1": "0x413110",
+      "donedrgcontrol": "0x413130",
+      "donedrwctls": "0x4132ac",
+      "donehicontrol": "0x412fbe",
+      "donemc": "0x412f42",
+      "donemc0": "0x412f3a",
+      "donemc1": "0x412f3e",
+      "donesetcstring": "0x413018",
+      "donetcontrol": "0x4130a8",
+      "dothethumb": "0x4131ee",
+      "dragcon1": "0x4130b2",
+      "dragcontrol": "0x4130ae",
+      "drawcontrols": "0x41325e",
+      "drawonecontrol": "0x412ecc",
+      "eightbytexit": "0x412f46",
+      "erasecontrol": "0x412e70",
+      "fcontrolloop": "0x413326",
+      "findcontrol": "0x4132e6",
+      "getccommon": "0x412f4e",
+      "getcdefproc": "0x412dae",
+      "getcrefcon": "0x412f4c",
+      "getctitle": "0x412fc6",
+      "getctlaction": "0x412f6a",
+      "getctlcommon": "0x413022",
+      "getctlmax": "0x413032",
+      "getctlmin": "0x41302e",
+      "getctlvalue": "0x413020",
+      "getnewrgn": "0x411402",
+      "gotfcontrol": "0x413348",
+      "gotstvis": "0x413010",
+      "hidecontrol": "0x412ef4",
+      "hilitecontrol": "0x412f9a",
+      "killcloop": "0x412ec0",
+      "killcontrols": "0x412eba",
+      "movecontrol": "0x412f0e",
+      "ncdone": "0x412dea",
+      "noaction": "0x413182",
+      "nodcontrol": "0x412e6e",
+      "nostring1": "0x412eae",
+      "ownerport": "0x413142",
+      "returnzero": "0x413248",
+      "rportexit": "0x412e6c",
+      "setccommon": "0x412f5c",
+      "setcrefcon": "0x412f5a",
+      "setctitle": "0x412fde",
+      "setctlaction": "0x412f6e",
+      "setctlcommon": "0x413038",
+      "setctlmax": "0x41307c",
+      "setctlmin": "0x413078",
+      "setctlvalue": "0x413036",
+      "showcommon": "0x412ee8",
+      "showcontrol": "0x412ed6",
+      "sixbytexit": "0x412fc0",
+      "sizecontrol": "0x412f72",
+      "skipcload": "0x412e58",
+      "skipcontrol": "0x41333c",
+      "skipdc": "0x4132a6",
+      "tcnextmouse": "0x4131ca",
+      "testcontrol": "0x413080",
+      "trackcontrol": "0x413160",
+      "trackdone": "0x4131de",
+      "trkctlloop": "0x413176",
+      "updtcontrols": "0x41324e",
+      "usegaction": "0x4131c0",
+      "valsetdone": "0x413072"
+    }
+  },
+  "historical_limits": "The source comparison and exact assembly verify the emitted instructions. They do not execute control definition procedures or recover the lost source text."
+}

@@ -1,0 +1,197 @@
+{
+  "module": "QuickDraw/RRects.a",
+  "source_path": "Reconstruction/Source/QuickDraw/RRects.a",
+  "source_sha256": "469b3760af5e55db8e6d1a6ccb6a02109e73e7ae1db73638cc0f7977ecf65c39",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/RRects.m.a",
+    "sha256": "ec1572ecdd7b526eafc6dd89f528411bb84e4ba3e36aa753e5b55df4bf5bfc53",
+    "instruction_lines": [
+      16,
+      183
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        103,
+        107
+      ],
+      [
+        161,
+        184
+      ],
+      [
+        228,
+        233
+      ],
+      [
+        248,
+        272
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        529
+      ],
+      [
+        297,
+        316
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40ac70",
+      "end_address_exclusive": "0x40ad4c",
+      "rom_offset": "0xac70",
+      "length": 220,
+      "sha256": "5b3864c87685ac21997d99020b1d19fbbf21f57ce6d546269c675679a19872ce",
+      "first_symbol": "StdRRect",
+      "last_symbol": "CallRRect"
+    }
+  ],
+  "symbols": {
+    "StdRRect": "0x40ac70",
+    "FrameRoundRect": "0x40ad02",
+    "PaintRoundRect": "0x40ad06",
+    "EraseRoundRect": "0x40ad0a",
+    "InvertRoundRect": "0x40ad0e",
+    "FillRoundRect": "0x40ad12",
+    "CallRRect": "0x40ad28"
+  },
+  "manifest_entry": {
+    "name": "rrects",
+    "source": "Reconstruction/Source/QuickDraw/RRects.a",
+    "start": "0x40ac70",
+    "end_exclusive": "0x40ad4c",
+    "entry_points": {
+      "StdRRect": "0x40ac70",
+      "FrameRoundRect": "0x40ad02",
+      "PaintRoundRect": "0x40ad06",
+      "EraseRoundRect": "0x40ad0a",
+      "InvertRoundRect": "0x40ad0e",
+      "FillRoundRect": "0x40ad12",
+      "CallRRect": "0x40ad28"
+    }
+  },
+  "external_routines": {
+    "CheckPic": "0x40e448",
+    "PutPicVerb": "0x40e34a",
+    "PutPicRect": "0x40e2ea",
+    "PushVerb": "0x409ee0",
+    "DrawArc": "0x40b020",
+    "DPutPicByte": "0x40e2a4",
+    "PutPicLong": "0x40e2ce",
+    "PutOval": "0x40ae1a"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable RRects.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled the final Fill routine branch to the next instruction as NOP, matching the ROM. This changes no control flow."
+    },
+    {
+      "kind": "configuration",
+      "description": "Selected the Mac Plus Toolbox table at $C00."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 50,
+      "original": "JSR \tCHECKPIC",
+      "restored": "JSR\tCHECKPIC(PC)"
+    },
+    {
+      "upstream_line": 54,
+      "original": "JSR \tPutPicVerb",
+      "restored": "JSR\tPutPicVerb(PC)"
+    },
+    {
+      "upstream_line": 66,
+      "original": "JSR \tDPutPicByte",
+      "restored": "JSR\tDPutPicByte(PC)"
+    },
+    {
+      "upstream_line": 67,
+      "original": "JSR \tPutPicLong",
+      "restored": "JSR\tPutPicLong(PC)"
+    },
+    {
+      "upstream_line": 73,
+      "original": "JSR \tPutPicRect",
+      "restored": "JSR\tPutPicRect(PC)"
+    },
+    {
+      "upstream_line": 87,
+      "original": "JSR \tPutOval",
+      "restored": "JSR\tPutOval(PC)"
+    },
+    {
+      "upstream_line": 91,
+      "original": "JSR \tPushVerb",
+      "restored": "JSR\tPushVerb(PC)"
+    },
+    {
+      "upstream_line": 97,
+      "original": "JSR \tDrawArc",
+      "restored": "JSR\tDrawArc(PC)"
+    },
+    {
+      "upstream_line": 156,
+      "original": "BRA.S\tCallRRect",
+      "restored": "NOP"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 220,
+    "checked_entry_points": 7,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-rrects-verify",
+    "temporary_verifier": "/tmp/verify-shapes.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "469b3760af5e55db8e6d1a6ccb6a02109e73e7ae1db73638cc0f7977ecf65c39",
+    "assembled_sha256": "5b3864c87685ac21997d99020b1d19fbbf21f57ce6d546269c675679a19872ce",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

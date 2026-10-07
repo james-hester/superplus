@@ -1,0 +1,997 @@
+{
+  "module": "startup services and device search",
+  "source": "Reconstruction/Source/OS/StartMgr/StartupSystem.a",
+  "source_sha256": "e68258ab0a39feb58ab0f9285b103f8cd469c1e8175e2bc1037f7eaeb6520eb3",
+  "originals": [
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "declaration_lines": [
+        463
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "declaration_lines": [
+        130,
+        129
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "declaration_lines": [
+        654
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "declaration_lines": [
+        299,
+        311,
+        296,
+        220,
+        219,
+        235
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "declaration_lines": [
+        1261,
+        1008,
+        490,
+        1255,
+        956,
+        489,
+        660,
+        661,
+        1007,
+        1010,
+        746,
+        739,
+        737,
+        759,
+        749,
+        750,
+        730,
+        740,
+        754,
+        1250,
+        491,
+        1042,
+        1245,
+        524,
+        1044,
+        477,
+        478,
+        458,
+        457,
+        1219,
+        1216,
+        1221,
+        1174,
+        1045,
+        619,
+        617,
+        498,
+        701,
+        700,
+        1365
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "declaration_lines": [
+        266,
+        267
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "declaration_lines": [
+        586,
+        181,
+        352,
+        175
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "declaration_lines": []
+    },
+    {
+      "path": "Internal/Asm/HardwarePrivateEqu.a",
+      "sha256": "71312a5e2578d72aa979d38ff83e3c0f8b1ec49b5b048a248252ca7dbbc60a59",
+      "declaration_lines": [
+        3057,
+        3053,
+        3055,
+        3054
+      ]
+    },
+    {
+      "path": "Internal/Asm/InternalOnlyEqu.a",
+      "sha256": "2eab90672f1b0e223760ffa0b2e724ebb2a2b4b514c3cbac9f62d166fb76e38a",
+      "declaration_lines": [
+        589,
+        584
+      ]
+    },
+    {
+      "path": "OS/StartMgr/StartInit.a",
+      "sha256": "15a435c41f67bf4e517627c53333d520461594c80036fcd825b517c22c8e30b0",
+      "declaration_lines": [
+        997
+      ]
+    },
+    {
+      "path": "OS/StartMgr/StartSearch.a",
+      "sha256": "ddd46d97ebec9bac66ab0f2662ed95c0358415ec9eb41904da7a452a30f0de34",
+      "declaration_lines": []
+    },
+    {
+      "path": "Toolbox/NotificationMgr/PatchROMAlarmNotify.a",
+      "sha256": "594a1a2891f6425926c1b3a1e8891b397f80328e6dac4ecc28a9d93222074b2c",
+      "declaration_lines": []
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 179,
+  "rom": {
+    "start": "0x4005bc",
+    "end_exclusive": "0x400986",
+    "bytes": 970,
+    "sha256": "c1664e1611c9ee176a55ec19d8c11867aadeebccbe2f4dcee432f5d9898293be"
+  },
+  "instruction_count": 277,
+  "data_bytes": 106,
+  "source_operation_matches": 68,
+  "source_correspondence": {
+    "0x4005bc": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2633,
+      "original_code": "GetPRAM\t\t_InitUtil",
+      "comment": " seed low memory PRAM buffer",
+      "preceding_comments": [],
+      "op": "_INITUTIL",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4005ca": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2639,
+      "original_code": "MOVEQ\t#$0F,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#$0F,D0"
+    },
+    "0x4005d2": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2643,
+      "original_code": "@1\t\t\tADD.W\tD0,D0",
+      "comment": " Convert to ticks.",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "inline_comment_retained": true
+    },
+    "0x4005e2": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2656,
+      "original_code": "MOVEQ\t#$F,D0",
+      "comment": " Caret time is in low nibble",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#$F,D0",
+      "inline_comment_retained": true
+    },
+    "0x4005ec": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2659,
+      "original_code": "MOVE.L\tD0,CaretTime",
+      "comment": " Save caret time (in ticks)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,CaretTime",
+      "inline_comment_retained": true
+    },
+    "0x4005f6": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2664,
+      "original_code": "MOVE.L\tD0,DoubleTime",
+      "comment": " Save double click time",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,DoubleTime",
+      "inline_comment_retained": true
+    },
+    "0x400642": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2847,
+      "original_code": "CLR.W\tSysVersion",
+      "comment": " zero ram-patch version in low memory",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "SysVersion",
+      "inline_comment_retained": true
+    },
+    "0x400656": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2851,
+      "original_code": "MOVE.L\tA0,JGNEFilter",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,JGNEFilter"
+    },
+    "0x40065a": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2852,
+      "original_code": "CLR.L\tIAZNotify",
+      "comment": " no InitApplZone notify proc",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "IAZNotify",
+      "inline_comment_retained": true
+    },
+    "0x40065e": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2853,
+      "original_code": "MOVE.W\t#$FF7F, FlEvtMask",
+      "comment": " init for disable of DIP flushes (move to InitEvents??)",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#$FF7F, FlEvtMask",
+      "inline_comment_retained": true
+    },
+    "0x400692": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3064,
+      "original_code": "MOVEQ\t#SwitchLen,D0",
+      "comment": " allocate a switcher table in",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#SwitchLen,D0",
+      "inline_comment_retained": true
+    },
+    "0x400696": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3066,
+      "original_code": "MOVE.L\tA0,A1",
+      "comment": " make it the destination",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,A1",
+      "inline_comment_retained": true
+    },
+    "0x400698": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3067,
+      "original_code": "LEA \tOurSwitch,A0",
+      "comment": " template table",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "OurSwitch,A0",
+      "inline_comment_retained": true
+    },
+    "0x40069c": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3068,
+      "original_code": "MOVEQ\t#SwitchLen,D0",
+      "comment": " copy it - needs to be updated with",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#SwitchLen,D0",
+      "inline_comment_retained": true
+    },
+    "0x40069e": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3069,
+      "original_code": "_BlockMove",
+      "comment": "  WDCBSwitch, PMSPSwitch later",
+      "preceding_comments": [],
+      "op": "_BLOCKMOVE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4006a0": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3071,
+      "original_code": "MOVE.L\tA1,SwitcherTPtr",
+      "comment": " Set the pointer up for Switcher",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,SwitcherTPtr",
+      "inline_comment_retained": true
+    },
+    "0x4006a8": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3468,
+      "original_code": "PEA \t-4(A5)",
+      "comment": " set up QuickDraw global area",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "-4(A5)",
+      "inline_comment_retained": true
+    },
+    "0x4006ac": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3469,
+      "original_code": "_InitGraf",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_INITGRAF",
+      "operand": ""
+    },
+    "0x4006b4": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3474,
+      "original_code": "MOVE.L\t(A5),A2",
+      "comment": " point to QuickDraw globals",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A5),A2",
+      "inline_comment_retained": true
+    },
+    "0x4006b6": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3475,
+      "original_code": "PEA \tarrow(A2)",
+      "comment": " show the arrow cursor",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "arrow(A2)",
+      "inline_comment_retained": true
+    },
+    "0x4006ba": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3476,
+      "original_code": "_SetCursor",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_SETCURSOR",
+      "operand": ""
+    },
+    "0x4006c4": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3513,
+      "original_code": "MOVE.L\t#$00100010, -(SP)",
+      "comment": "  rounding factor",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$00100010, -(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4006ca": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3514,
+      "original_code": "PEA \tgray(A2)",
+      "comment": "  fill pattern",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "gray(A2)",
+      "inline_comment_retained": true
+    },
+    "0x4006ce": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3515,
+      "original_code": "_FillRoundRect",
+      "comment": " fill the screen with 50% gray",
+      "preceding_comments": [],
+      "op": "_FILLROUNDRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4006f6": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 892,
+      "original_code": "MOVE.W\t#1,IOPosMode(A0)",
+      "comment": " position relative to start",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#1,IOPosMode(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4006fc": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 893,
+      "original_code": "CLR.L\tIOPosOffset(A0)",
+      "comment": " start at byte position 0",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "IOPosOffset(A0)",
+      "inline_comment_retained": true
+    },
+    "0x400700": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 894,
+      "original_code": "MOVE.L\tA6,IOBuffer(A0)",
+      "comment": " load boot blocks at (A6)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,IOBuffer(A0)",
+      "inline_comment_retained": true
+    },
+    "0x400734": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 896,
+      "original_code": "_Read",
+      "comment": " read the boot blocks",
+      "preceding_comments": [],
+      "op": "_READ",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x400736": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 897,
+      "original_code": "BNE.S\t@Exit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@Exit"
+    },
+    "0x400738": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 901,
+      "original_code": "CMP.W\t#'LK',(A6)",
+      "comment": " check if it's a true boot block",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "#'LK',(A6)",
+      "inline_comment_retained": true
+    },
+    "0x400754": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 922,
+      "original_code": "CMP.W\t#OffLinErr,D0",
+      "comment": " is the disk present and up to speed?",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "#OffLinErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x400758": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 923,
+      "original_code": "BEQ.S\t@Exit",
+      "comment": " -> no, leave it alone so we can try it later",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@Exit",
+      "inline_comment_retained": true
+    },
+    "0x40075a": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 924,
+      "original_code": "CMP.W\t#NoDriveErr,D0",
+      "comment": " is the drive present?",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "#NoDriveErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x40075e": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 925,
+      "original_code": "BEQ.S\t@This1NoMo",
+      "comment": " -> no, don't talk to it again",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@This1NoMo",
+      "inline_comment_retained": true
+    },
+    "0x400772": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 932,
+      "original_code": "MOVE.W\tBootMask,D0",
+      "comment": " get failure info",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "BootMask,D0",
+      "inline_comment_retained": true
+    },
+    "0x400778": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 934,
+      "original_code": "MOVE.W\tD0,BootMask",
+      "comment": "  and update the failure info",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,BootMask",
+      "inline_comment_retained": true
+    },
+    "0x400792": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 776,
+      "original_code": "MOVE.W\tBootMask,D0",
+      "comment": " get failure info",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "BootMask,D0",
+      "inline_comment_retained": true
+    },
+    "0x400798": {
+      "path": "OS/StartMgr/StartSearch.a",
+      "line": 778,
+      "original_code": "BEQ.S\tFindNextCandidate",
+      "comment": " -> yes, skip it",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "FindNextCandidate",
+      "inline_comment_retained": true
+    },
+    "0x40085e": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2269,
+      "original_code": "JmpTblInit\tMOVE.L\tA0,D0",
+      "comment": " remember its address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,D0",
+      "inline_comment_retained": true
+    },
+    "0x400860": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2270,
+      "original_code": "JmpTbl2\t\tMOVEQ\t#0,D2",
+      "comment": " clear high part for arithmetic",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D2",
+      "inline_comment_retained": true
+    },
+    "0x400862": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2271,
+      "original_code": "MOVE.W\t(A0)+,D2",
+      "comment": " get the next offset",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,D2",
+      "inline_comment_retained": true
+    },
+    "0x400864": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2272,
+      "original_code": "ADD.L\tD0,D2",
+      "comment": " compute the address",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D0,D2",
+      "inline_comment_retained": true
+    },
+    "0x400866": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2273,
+      "original_code": "MOVE.L\tD2,(A1)+",
+      "comment": " install it in the jump table",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D2,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x400868": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2274,
+      "original_code": "DBRA\tD1,JmpTbl2",
+      "comment": " loop for all vectors",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D1,JmpTbl2",
+      "inline_comment_retained": true
+    },
+    "0x40086c": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2275,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x40088e": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3323,
+      "original_code": "MOVE.L\tSP,A0",
+      "comment": " iopb on the stack",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "inline_comment_retained": true
+    },
+    "0x400890": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3324,
+      "original_code": "CLR.B\tIOPermssn(A0)",
+      "comment": " r/w permissions",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "IOPermssn(A0)",
+      "inline_comment_retained": true
+    },
+    "0x400894": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3325,
+      "original_code": "LEA \tDiskName,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "DiskName,A1"
+    },
+    "0x400898": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3326,
+      "original_code": "MOVE.L\tA1,IOFileName(A0)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,IOFileName(A0)"
+    },
+    "0x40089c": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3327,
+      "original_code": "_Open",
+      "comment": "OPEN Floppy disk driver",
+      "preceding_comments": [],
+      "op": "_OPEN",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40089e": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3370,
+      "original_code": "LEA \tSndName,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SndName,A1"
+    },
+    "0x4008a2": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3371,
+      "original_code": "MOVE.L\tA1,IOFileName(A0)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,IOFileName(A0)"
+    },
+    "0x4008a6": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3372,
+      "original_code": "_Open",
+      "comment": " OPEN sound driver",
+      "preceding_comments": [],
+      "op": "_OPEN",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4008b4": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3400,
+      "original_code": "subq\t#4,sp",
+      "comment": " allocate space for return value",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#4,sp",
+      "inline_comment_retained": true
+    },
+    "0x4008b6": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3401,
+      "original_code": "move.l\t#'SERD',-(sp)",
+      "comment": " push serial driver resource type",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#'SERD',-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x4008bc": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3405,
+      "original_code": "clr.w\t-(sp)",
+      "comment": " classic serial driver is 'SERD' (0)",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x4008be": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3409,
+      "original_code": "@CallSERD\tmove.w\t#mapTrue,ROMMapInsert",
+      "comment": " get resource from ROM",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#mapTrue,ROMMapInsert",
+      "inline_comment_retained": true
+    },
+    "0x4008c4": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3410,
+      "original_code": "_GetResource",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_GETRESOURCE",
+      "operand": ""
+    },
+    "0x4008c6": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3411,
+      "original_code": "move.l\t(sp)+,d0",
+      "comment": " did it get the handle?",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(sp)+,d0",
+      "inline_comment_retained": true
+    },
+    "0x4008c8": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3412,
+      "original_code": "beq.b\t@exitDrivers",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.B",
+      "operand": "@exitDrivers"
+    },
+    "0x4008ca": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3413,
+      "original_code": "movea.l\td0,a0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "d0,a0"
+    },
+    "0x4008cc": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3414,
+      "original_code": "movea.l\t(a0),a0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "(a0),a0"
+    },
+    "0x4008ce": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3415,
+      "original_code": "jsr\t\t(a0)",
+      "comment": " call the install code",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "(a0)",
+      "inline_comment_retained": true
+    },
+    "0x4008d0": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 3418,
+      "original_code": "rts",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x400972": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2420,
+      "original_code": "_InitZone",
+      "comment": " set up initial system heap",
+      "preceding_comments": [],
+      "op": "_INITZONE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x400974": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2421,
+      "original_code": "Move.L\ttheZone,SysZone",
+      "comment": " save pointer to the new zone",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "theZone,SysZone",
+      "inline_comment_retained": true
+    },
+    "0x40097c": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2420,
+      "original_code": "_InitZone",
+      "comment": " set up initial system heap",
+      "preceding_comments": [],
+      "op": "_INITZONE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40097e": {
+      "path": "OS/StartMgr/StartInit.a",
+      "line": 2421,
+      "original_code": "Move.L\ttheZone,SysZone",
+      "comment": " save pointer to the new zone",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "theZone,SysZone",
+      "inline_comment_retained": true
+    }
+  },
+  "restored_equates": [
+    {
+      "name": "arrow",
+      "value": "-108",
+      "line": null,
+      "path": null,
+      "text": "arrow EQU -108"
+    },
+    {
+      "name": "bounds",
+      "value": "6",
+      "line": null,
+      "path": null,
+      "text": "bounds EQU 6"
+    },
+    {
+      "name": "gray",
+      "value": "-24",
+      "line": null,
+      "path": null,
+      "text": "gray EQU -24"
+    },
+    {
+      "name": "ResetAndReloadSCSI",
+      "value": "4325312",
+      "line": null,
+      "path": null,
+      "text": "ResetAndReloadSCSI EQU 4325312"
+    },
+    {
+      "name": "screenBits",
+      "value": "-122",
+      "line": null,
+      "path": null,
+      "text": "screenBits EQU -122"
+    },
+    {
+      "name": "SwitchLen",
+      "value": "32",
+      "line": null,
+      "path": null,
+      "text": "SwitchLen EQU 32"
+    }
+  ],
+  "changes": [
+    "GetPRAM restores the compact keyboard, caret, click, and mouse-scaling setup. It derives timing directly from PRAM without the later fallback for zero keyboard nibbles. The startup sequence initializes resources, the eighteen-byte Time Manager state, serial ports, the keyboard, and drivers before checking the diagnostic ROM signature.",
+    "OurSwitch retains the original thirty-two-byte switcher table. Its WDCB and PMSP entries use short addresses filled by InitFS. The later source adds switchable fields and extends the pointer slots. The ROM clears all eight package handles and initializes a temporary monochrome GrafPort.",
+    "The boot-device search restores the original drive-queue scan, mouse-button eject path, BootMask exclusions, SCSI loading, boot-block signature check, and disk-icon flashing. The later StartSearch history explicitly describes its origin in the Mac Plus boot code. The empty-drive-queue branch loops on unchanged condition codes; this behavior remains.",
+    "DrawBootDisk uses the restored compressed outline and symbol data at fixed positions in the startup screen. It waits for a tick before drawing. BadTrap reports system error 12; the captured Ghidra analysis assigns several other names to the same address.",
+    "InitSCC restores thirty-two register/value bytes and the original write loop. Two stack-to-stack moves delay each write. JmpTblInit retains the released instruction sequence, routine contract, and comments. LoadDrivers creates forty-eight unit-table entries, opens Sony and Sound, invokes the ROM-tail SCSI helper, and runs SERD resource zero.",
+    "GNEFilter restores the ROM alarm implementation. It checks alarm state, Window Manager activity, the menu list, and the first menu title before shielding the cursor, inverting eighteen rows, and optionally beeping. The later PatchROMAlarmNotify source removes this ROM filter through JGNEFilter; its complete original body was not found.",
+    "The memory template restores the twenty-four-bit pointer mask, 1024-byte minimum stack, 8192-byte default stack, zero default flags, and the initial heap from $1400 to $4E00. Both InitZone wrappers remain. The StartInit and StartSearch headers identify the later surviving sources; their attribution dates do not date this ROM implementation.",
+    "The source uses mnemonic instructions for all 277 decoded operations and declarations for 106 data bytes. Each code range was disassembled separately so adjacent tables could not consume the first opcode. Explicit branch widths and PC-relative references preserve the target encoding."
+  ],
+  "verification": {
+    "name": "startup-system",
+    "source": "Reconstruction/Source/OS/StartMgr/StartupSystem.a",
+    "source_sha256": "e68258ab0a39feb58ab0f9285b103f8cd469c1e8175e2bc1037f7eaeb6520eb3",
+    "start": "0x4005bc",
+    "end_exclusive": "0x400986",
+    "bytes": 970,
+    "sha256": "c1664e1611c9ee176a55ec19d8c11867aadeebccbe2f4dcee432f5d9898293be",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/StartMgr/StartupSystem.a",
+        "sha256": "e68258ab0a39feb58ab0f9285b103f8cd469c1e8175e2bc1037f7eaeb6520eb3"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "startup-system",
+    "source": "Reconstruction/Source/OS/StartMgr/StartupSystem.a",
+    "start": "0x4005bc",
+    "end_exclusive": "0x400986",
+    "entry_points": {
+      "GetPRAM": "0x4005bc",
+      "InitStartupServices": "0x4005fa",
+      "EnableStartupEvents": "0x40063e",
+      "ClearPackHandles": "0x400666",
+      "OurSwitch": "0x400672",
+      "InitSwitcherTable": "0x400692",
+      "DrawBeepScreen": "0x4006a4",
+      "SearchBootDevices": "0x4006d0",
+      "ReadBootBlocks": "0x4006f4",
+      "SelectBootDrive": "0x40070c",
+      "ReadBootDevice": "0x400734",
+      "BootDeviceFound": "0x40073e",
+      "ReactToFailure": "0x400754",
+      "RejectBootDevice": "0x400760",
+      "DisableBootDrive": "0x400772",
+      "TrySCSILoad": "0x40077c",
+      "CheckBootMask": "0x40078c",
+      "ShowBadDisk": "0x40079e",
+      "FlashDiskIcon": "0x4007a6",
+      "DrawBootDisk": "0x4007ce",
+      "BadTrap": "0x400806",
+      "InitSCCData": "0x40080c",
+      "InitSCC": "0x40082c",
+      "WriteSCC": "0x40084e",
+      "JmpTblInit": "0x40085e",
+      "DiskName": "0x40086e",
+      "SndName": "0x400874",
+      "LoadDrivers": "0x40087c",
+      "OpenSoundDriver": "0x40089e",
+      "LoadExtraDrivers": "0x4008ac",
+      "GNEFilter": "0x4008d2",
+      "InitialMaskPtr": "0x400946",
+      "InitialMinStack": "0x40094a",
+      "InitialDefltStack": "0x40094e",
+      "InitialMMDefFlags": "0x400952",
+      "SysHeap": "0x400954",
+      "InitSysZone": "0x400962",
+      "InitSysZoneFromParams": "0x40097c",
+      "ClearPackHandle": "0x40066a",
+      "WaitForBootDrive": "0x4006e8",
+      "EnterTheBoot": "0x40074c",
+      "EjectBootDevice": "0x400762",
+      "DrawFlashingDisk": "0x4007b0",
+      "BootFlashDelay": "0x4007ba",
+      "TryBootAgain": "0x4007ca",
+      "WaitForTick": "0x4007d4",
+      "DrawDiskSymbol": "0x4007ec",
+      "ShowBootCursor": "0x400802",
+      "WriteSCCByte": "0x400852",
+      "NextSCCByte": "0x400858",
+      "JmpTbl2": "0x400860",
+      "ExitDrivers": "0x4008d0",
+      "InvertAlarmRow": "0x400926",
+      "AlarmDone": "0x400944",
+      "CopyMemoryGlobals": "0x40096c",
+      "WDCBSwitch": "0x400686",
+      "PMSPSwitch": "0x40068a",
+      "StartupSystemEnd": "0x400986"
+    }
+  },
+  "historical_limits": "The byte comparison verifies emitted code and data. It does not establish lost source spelling or test startup, serial timing, or alarm behavior on hardware.",
+  "data_layout": [
+    {
+      "start": "0x400672",
+      "bytes": 32
+    },
+    {
+      "start": "0x40080c",
+      "bytes": 32
+    },
+    {
+      "start": "0x40086e",
+      "bytes": 6
+    },
+    {
+      "start": "0x400874",
+      "bytes": 8
+    },
+    {
+      "start": "0x400946",
+      "bytes": 4
+    },
+    {
+      "start": "0x40094a",
+      "bytes": 4
+    },
+    {
+      "start": "0x40094e",
+      "bytes": 4
+    },
+    {
+      "start": "0x400952",
+      "bytes": 2
+    },
+    {
+      "start": "0x400954",
+      "bytes": 14
+    }
+  ]
+}

@@ -1,0 +1,556 @@
+{
+  "comparison_date": "2026-10-03",
+  "reference_rom_sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+  "assembler": "GNU assembler (GNU Binutils) 2.39",
+  "native_mpw_tested": false,
+  "verified_modules": 29,
+  "verified_bytes": 25374,
+  "start": "0x4082c6",
+  "end_exclusive": "0x40e5e4",
+  "shared_include": {
+    "path": "Reconstruction/Source/QuickDraw/GrafTypes.a",
+    "sha256": "66770bdd15b2fece7a61d8195e46f4a12213e5a2ba522d21aa5329e7df3e75de",
+    "earlier_source": {
+      "path": "QuickDraw Source/GrafTypes.a",
+      "sha256": "2d621b5233dd1f61c47e00514bf572c99b9338b66232b92aec04cbc4921e974e"
+    },
+    "declarations": 173,
+    "replaced_declarations": 964
+  },
+  "verifier_adapter": {
+    "path": "Reconstruction/Source/QuickDraw/verify_quickdraw.py",
+    "sha256": "0812e2cec872cf437166bab7f800ebbe8a750cc426e2fb4af42d3b2a2555f192"
+  },
+  "verifier": {
+    "path": "Reconstruction/Tools/verify.py",
+    "sha256": "c7974c130db7d9ae6e109ec40f69a267ff03d650008f06287767dbba6da5b134"
+  },
+  "modules": [
+    {
+      "name": "lcursor",
+      "source": "Reconstruction/Source/QuickDraw/LCursor.a",
+      "source_sha256": "f5260367c13ebab5d51ab1509103f3a28397490cc4e2223e42863b107f48be11",
+      "start": "0x4082c6",
+      "end_exclusive": "0x408334",
+      "bytes": 110,
+      "sha256": "7664bc4ec88d8f7661c6f03284ffb5758f9dc413fa6e46ef92153e5e8bdb9af2",
+      "matches_rom": true,
+      "previous_source_sha256": "42ff9ce0b9e512e109c832cdcf05c9b66963f3bf25627bd721f71bb7b2e3b4fd",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/LCursor.a",
+          "sha256": "be67d3132661697ca49d56e05490b5e4e0d5b49039c948c3bda8dce322f17a6d"
+        }
+      ]
+    },
+    {
+      "name": "qdutil",
+      "source": "Reconstruction/Source/QuickDraw/QDUtil.a",
+      "source_sha256": "e62e89aed56b0300a4f9cf89192b5af57841121796bbe102cc6ba0fe41fbd38d",
+      "start": "0x408334",
+      "end_exclusive": "0x4083ee",
+      "bytes": 186,
+      "sha256": "0206570648460e4ee7b1f522104b95397317e2912e3433788f7d8623e098c06b",
+      "matches_rom": true,
+      "previous_source_sha256": "550e22bd670a07b967736e9223b32a0dd7bd131ea89ef7b8e04f786ee934d5b3",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Util.a",
+          "sha256": "114b3b1aac65ba456b0014cf0c0714e139bf39e4fa0d9b5184be7fc13f4658cf"
+        }
+      ]
+    },
+    {
+      "name": "util-extra",
+      "source": "Reconstruction/Source/QuickDraw/UtilExtra.a",
+      "source_sha256": "02d9c22748179ee4ce9fe8ae79c423cfc6da67d283ce12550b67895862aaace4",
+      "start": "0x4083ee",
+      "end_exclusive": "0x408784",
+      "bytes": 918,
+      "sha256": "22eea1f57a9622295f5e28f1e8e5977f951892b3f5f4d8bcef5c0935fbca20b5",
+      "matches_rom": true,
+      "previous_source_sha256": "06e0a8b725f739addfc742f0128f58ef9be3d7c921a0169b72ec3e99774a0442",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Util.a",
+          "sha256": "114b3b1aac65ba456b0014cf0c0714e139bf39e4fa0d9b5184be7fc13f4658cf"
+        }
+      ]
+    },
+    {
+      "name": "grafinit",
+      "source": "Reconstruction/Source/QuickDraw/GrafInit.a",
+      "source_sha256": "6ed278c64ae13e4b0432e81dca45365a5e62961bd18e986044cbb9329307c9bd",
+      "start": "0x408784",
+      "end_exclusive": "0x408956",
+      "bytes": 466,
+      "sha256": "f3589520926ef0f1e31bc8c37dec7eb76093aa1c7d85321b24eb632ea15c5080",
+      "matches_rom": true,
+      "previous_source_sha256": "8c90b2d6a13bd144a459c5aeef61380f6258b88920a283a440d063470c3394a9",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/GrafAsm.a",
+          "sha256": "91dddce61f4f4d8fe543ff6685f93674a443ebd32d1508536e5a6d801c249b0f"
+        },
+        {
+          "path": "QuickDraw Source/QuickGlue.a",
+          "sha256": "e6011b810672dda1ac8e2241589965539507848392f0b8b1cf39be48ae9d34b5"
+        }
+      ]
+    },
+    {
+      "name": "points",
+      "source": "Reconstruction/Source/QuickDraw/Points.a",
+      "source_sha256": "3b55edf5340537a3777b07c762dc7412b8b5279f10a5884febf351e1d95fc7a9",
+      "start": "0x408956",
+      "end_exclusive": "0x408ab6",
+      "bytes": 352,
+      "sha256": "b7a43b514cf73db64e4b0fec9706d5567a1cb4bff11e86d3266e96604e19ff31",
+      "matches_rom": true,
+      "previous_source_sha256": "850bb5ddadd98151518505cabf0840aa2b8692341e7b6658345235ff36a0df69",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/GrafAsm.a",
+          "sha256": "91dddce61f4f4d8fe543ff6685f93674a443ebd32d1508536e5a6d801c249b0f"
+        }
+      ]
+    },
+    {
+      "name": "text",
+      "source": "Reconstruction/Source/QuickDraw/Text.a",
+      "source_sha256": "6162b3c8530dfd211d4d33543fc3e4cf5634938be9e8730a594365d7796e1da2",
+      "start": "0x408ab6",
+      "end_exclusive": "0x408f26",
+      "bytes": 1136,
+      "sha256": "a8f999291887a5cff55b8f6413eac284131f00c713c6bde1f359f805766d55a4",
+      "matches_rom": true,
+      "previous_source_sha256": "63dbd2a4833703102fd53a5b7f7c6b1fda6278c2adcfcdf189fa882b86f17809",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Text.a",
+          "sha256": "791a6a5da37573549b9963e8331c0faaffa02816a81ef98f12f0710ecb47ae18"
+        }
+      ]
+    },
+    {
+      "name": "drawtext",
+      "source": "Reconstruction/Source/QuickDraw/DrawText.a",
+      "source_sha256": "4672a20cec72cfdf05b02bfdc33ab2f5cb312f917d57fbd35fbad5f75bfe8948",
+      "start": "0x408f26",
+      "end_exclusive": "0x409668",
+      "bytes": 1858,
+      "sha256": "4916f21b69b2b8a384acb5f158dc5614c4c2e2971563cbc02628ffa41745d5cb",
+      "matches_rom": true,
+      "previous_source_sha256": "2d3089fd2f69876d39fd5e3c1287515ebd2cb55de887841f475114855ee0b8e9",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/DrawText.a",
+          "sha256": "d8277a573475e26f8483201728a776cb5de8207d893757021f2189e469ceb753"
+        }
+      ]
+    },
+    {
+      "name": "lines",
+      "source": "Reconstruction/Source/QuickDraw/Lines.a",
+      "source_sha256": "913f6ac162e1672545ae0c43899f573f8721f289709c01c51abdb53636295a8a",
+      "start": "0x409668",
+      "end_exclusive": "0x40984c",
+      "bytes": 484,
+      "sha256": "1d3289331f05a390d87d851bdc5684232619a5450b63d0dfb6186c9390f314a2",
+      "matches_rom": true,
+      "previous_source_sha256": "48118a845e4dbdc93523c0216383a9e6756584477ada2b0c43d115ca8483b09e",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Lines.a",
+          "sha256": "8799cb28ea9405f61ae3880af67ba4cc5660914640242c4a9403fc2d668db89b"
+        }
+      ]
+    },
+    {
+      "name": "drawline",
+      "source": "Reconstruction/Source/QuickDraw/DrawLine.a",
+      "source_sha256": "c9ca8fa81e82c71a55f9f0ffa0921b55045575f6872467270d244f4909910182",
+      "start": "0x40984c",
+      "end_exclusive": "0x409d94",
+      "bytes": 1352,
+      "sha256": "33e648b0f328880e174c054bd026408c0811d74e096b3e101387fd8d6830667a",
+      "matches_rom": true,
+      "previous_source_sha256": "f775a82897c331e08b6b2528e54162bd93f69159ddc85b82296df5772f24f8e9",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/DrawLine.a",
+          "sha256": "1f8495f78b975c36c446faa231e8151d85048bdcc91a76260b07f4e9f9dd78ae"
+        }
+      ]
+    },
+    {
+      "name": "putline",
+      "source": "Reconstruction/Source/QuickDraw/PutLine.a",
+      "source_sha256": "b4a1c917b974333f90aebb2441d79fad52bb1f509dfe9aff9c4a829be2f8f7b9",
+      "start": "0x409d94",
+      "end_exclusive": "0x409e7e",
+      "bytes": 234,
+      "sha256": "27af9aa649dd06ddb2f734dd3a43fd62977b9e0cda012141964da53f2d73970a",
+      "matches_rom": true,
+      "previous_source_sha256": "45c3f1abd3ecce0dd18dd990c4b3ba1d1f7b4954f210f8eabb805c977bce6e71",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/PutLine.a",
+          "sha256": "9c3a42e79c9fc9f3c636a205a314a24192a862222eb6e6e9b18a89ac063f17e4"
+        }
+      ]
+    },
+    {
+      "name": "rects",
+      "source": "Reconstruction/Source/QuickDraw/Rects.a",
+      "source_sha256": "93193a6991e7da1a08723b23cf98fe79124ead9cd797bde4afc2724e43d578c7",
+      "start": "0x409e7e",
+      "end_exclusive": "0x40a284",
+      "bytes": 1030,
+      "sha256": "a75a8c40cf3061c9c41233d1e7a6af60c46f419e30a90a5579ce355f06c95f68",
+      "matches_rom": true,
+      "previous_source_sha256": "a7cda6114c6b1cd9e510b08723afbecb675dffa4643af89b86d1ff873d140a32",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Rects.a",
+          "sha256": "ac1b8e6544daddfb8c4ae7272e8803be1c73ce3a0bb5f4d9a18e030505fcc9b0"
+        }
+      ]
+    },
+    {
+      "name": "bitblt",
+      "source": "Reconstruction/Source/QuickDraw/BitBlt.a",
+      "source_sha256": "3b5e157a73d1482c314e5c643aa1a8cc75bf6ca7b7dd135fb4b5ed6fd02b2284",
+      "start": "0x40a284",
+      "end_exclusive": "0x40a732",
+      "bytes": 1198,
+      "sha256": "cbb6a1e4c4dd79cf4b1b3710126939c489a7fe947eb1307f34f8a4e057521419",
+      "matches_rom": true,
+      "previous_source_sha256": "737a7024ab6f36464ecfa7576d216eb92da8014817cfae7ec5152e469d1e36cc",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/BitBlt.a",
+          "sha256": "331e8a5299c646fc5bde0dc7a6facff514230bbb061678b2e02514f9702aa0e8"
+        }
+      ]
+    },
+    {
+      "name": "rgnblt",
+      "source": "Reconstruction/Source/QuickDraw/RgnBlt.a",
+      "source_sha256": "bcf47d635514fd41a2f85fe2fea82f9f457dde99f25acb051c5f37e7b7216a07",
+      "start": "0x40a732",
+      "end_exclusive": "0x40ac70",
+      "bytes": 1342,
+      "sha256": "18f9c558bba1f17a3eed2b2b083883e6c3e01eb57cd699531eacf54e91daa4a3",
+      "matches_rom": true,
+      "previous_source_sha256": "a629c0e3e37099f8f42af2538aae6ab4846261e195e87da1e302aa3611f1adb1",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/RgnBlt.a",
+          "sha256": "16c400510330c67c6db2b0e96601c3d9358e5ed2f13ee3c1319e7e765b06ea7f"
+        }
+      ]
+    },
+    {
+      "name": "rrects",
+      "source": "Reconstruction/Source/QuickDraw/RRects.a",
+      "source_sha256": "ec45376469613a7d7787077944907234e2c51a2f969fbab148d3a6c90922ce3d",
+      "start": "0x40ac70",
+      "end_exclusive": "0x40ad4c",
+      "bytes": 220,
+      "sha256": "5b3864c87685ac21997d99020b1d19fbbf21f57ce6d546269c675679a19872ce",
+      "matches_rom": true,
+      "previous_source_sha256": "469b3760af5e55db8e6d1a6ccb6a02109e73e7ae1db73638cc0f7977ecf65c39",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/RRects.a",
+          "sha256": "d73b0e74e5be5225a6910428c47772bedf96676c34dfb71ea95fb0d7ef6fb47b"
+        }
+      ]
+    },
+    {
+      "name": "ovals",
+      "source": "Reconstruction/Source/QuickDraw/Ovals.a",
+      "source_sha256": "76f2da871592f52c4a49198393f7a27cb30dff7fe5c5fdd4d9e7496059bf2793",
+      "start": "0x40ad4c",
+      "end_exclusive": "0x40ae1a",
+      "bytes": 206,
+      "sha256": "fd781c2412bc64437d541a2dbb845733b3915165adbca3c26275b68a0ce34128",
+      "matches_rom": true,
+      "previous_source_sha256": "87111d4f7baa6beb4fc5e932cc6e3afe310d2f557e1f8ae7e3e1607323b1b524",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Ovals.a",
+          "sha256": "770ffa8d74854b61a3860b1f46ba4068c1efc7d325589807bf408d5d329cfb45"
+        }
+      ]
+    },
+    {
+      "name": "putoval",
+      "source": "Reconstruction/Source/QuickDraw/PutOval.a",
+      "source_sha256": "66898ab52f00d1c373782a7747bf4e662f381e03e3c34f7967a746189831d1e6",
+      "start": "0x40ae1a",
+      "end_exclusive": "0x40af58",
+      "bytes": 318,
+      "sha256": "92e37148b86f4deabd7e426785160f4cd6e8440cf6d31fdf21d12ed798376b9a",
+      "matches_rom": true,
+      "previous_source_sha256": "a4237fa75c565d84673591a1821366af19aa6dd96c2d9e67ace07e66216e0cf4",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/PutOval.a",
+          "sha256": "71a1d6370e73dbb9a810121d3583194a3aa058f7460d66ebffde7a3d152cdca9"
+        }
+      ]
+    },
+    {
+      "name": "arcs",
+      "source": "Reconstruction/Source/QuickDraw/Arcs.a",
+      "source_sha256": "6b33374c926047b9f14b221ade6d31a0b39122a794346bb902f63c32d8794bcd",
+      "start": "0x40af58",
+      "end_exclusive": "0x40b020",
+      "bytes": 200,
+      "sha256": "9f6c4585c7eb9de612d02beca524653e8ece652e357c0a1f3fa650573248eccd",
+      "matches_rom": true,
+      "previous_source_sha256": "0fd1ab6281cc88269f55ef7d7572232dde1d5d3c25569d1b2d3cee750adbb914",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Arcs.a",
+          "sha256": "f37e4219669e8328dd44838382b106188d8e75e307f8288ad07421dee16abf50"
+        }
+      ]
+    },
+    {
+      "name": "drawarc",
+      "source": "Reconstruction/Source/QuickDraw/DrawArc.a",
+      "source_sha256": "5abfd5e4717e070e7b66fdafe7865bc28bef41387641942707d71a2dd5f49113",
+      "start": "0x40b020",
+      "end_exclusive": "0x40b790",
+      "bytes": 1904,
+      "sha256": "bbdb627821ba967d86613a03a73a8efdd924115e2cbba01ffb8f18e821a37067",
+      "matches_rom": true,
+      "previous_source_sha256": "90c8f51e96f0fb3257a17c58e9b39dda97d9a482b26df6a9170fb2f4b5a0b786",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/DrawArc.a",
+          "sha256": "f4a46b9d9435103c0eb71e732a73c84da6ea562b6c8d776da00bde86d4c04d3d"
+        }
+      ]
+    },
+    {
+      "name": "angles",
+      "source": "Reconstruction/Source/QuickDraw/Angles.a",
+      "source_sha256": "a021ccc45325a078bb900658557774c586c3e20c575ef3f402a77c52f4671abf",
+      "start": "0x40b790",
+      "end_exclusive": "0x40b982",
+      "bytes": 498,
+      "sha256": "e8bae6dc32af40b388bba8d1119531bb0fc3f2d487a9d49f72f0db494a319b2d",
+      "matches_rom": true,
+      "previous_source_sha256": "7d13980806266669456769799fec39c30aa7d55546c8aa2b1aaa75a242b76f44",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Angles.a",
+          "sha256": "4ccfa8521f5f20fb34145804988df4a93d6970e906015d4cb9fb150d4e080922"
+        }
+      ]
+    },
+    {
+      "name": "polygons",
+      "source": "Reconstruction/Source/QuickDraw/Polygons.a",
+      "source_sha256": "2fcb80ab51bcc655191606d73c52486ae12497eeb4d8bab04771145f5d6e0d0e",
+      "start": "0x40b982",
+      "end_exclusive": "0x40bbf6",
+      "bytes": 628,
+      "sha256": "4ac12d9a1c9c628f406c3d1ccf86c0c6380a1dff57bf3b1968e9f056612f5a98",
+      "matches_rom": true,
+      "previous_source_sha256": "ce19eafd99e13c96f5157aaf1c60c841744c98cfa123f4bd1869939aa4459117",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Polygons.a",
+          "sha256": "dc7666c1566c44329f135c8a3d534ef6487468ee85c84268dc600ef0d1befcb4"
+        }
+      ]
+    },
+    {
+      "name": "regions",
+      "source": "Reconstruction/Source/QuickDraw/Regions.a",
+      "source_sha256": "f3225d10f80a52f747792a02a5c5e9994751ff5441c0a5462b4b7c79ba40e552",
+      "start": "0x40bbf6",
+      "end_exclusive": "0x40c2c6",
+      "bytes": 1744,
+      "sha256": "8d7bd626982fb74201ecab23c9fc8c388b324bd010a64a7b6262d7882cbb9457",
+      "matches_rom": true,
+      "previous_source_sha256": "4cf43b05ac675780553e44568bd8310e939e0c4d8339eb94e1af2355c661b64e",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Regions.a",
+          "sha256": "e673b7a31f029541ccfbe0415d6cf52fd60dd17cd2f936c5e8605e24baae2748"
+        }
+      ]
+    },
+    {
+      "name": "seekrgn",
+      "source": "Reconstruction/Source/QuickDraw/SeekRgn.a",
+      "source_sha256": "563314af31c329d1cf9b8fe38d8ecf2c8365cddc707c2cbe7d6c3d06480bfef7",
+      "start": "0x40c2c6",
+      "end_exclusive": "0x40c3d6",
+      "bytes": 272,
+      "sha256": "ec48a272efac373d3642e624609d2e8a443f0f4eb4dbd867da389546ca270c85",
+      "matches_rom": true,
+      "previous_source_sha256": "8a44cc93306d437489b38f28e76cc6ff56006ba0f6c7a3eb91864b2e22928f8e",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/SeekRgn.a",
+          "sha256": "066b2e232133bebb8e6110479423f0d4f476924136ec9a0ea9e20d37685edf67"
+        }
+      ]
+    },
+    {
+      "name": "rgnop",
+      "source": "Reconstruction/Source/QuickDraw/RgnOp.a",
+      "source_sha256": "868400a524f5b21237373cb5f7880aa98e0a7eb100dfcbe0e8b25e99d0c0a108",
+      "start": "0x40c3d6",
+      "end_exclusive": "0x40c6a8",
+      "bytes": 722,
+      "sha256": "7700c4500ebb18a4d91b81ef96c36d8da080094b3879ad9403b66db8465f293d",
+      "matches_rom": true,
+      "previous_source_sha256": "f7148d916bf09ac0b0876a00bc5fcaddb5eb5e8e4007885a44f2a2c45dd9b170",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/RgnOp.a",
+          "sha256": "900364197e48f0445361d50839d844afc632b4942ac163cc55783a476f0abb6c"
+        }
+      ]
+    },
+    {
+      "name": "sortpoints",
+      "source": "Reconstruction/Source/QuickDraw/SortPoints.a",
+      "source_sha256": "251d177ec836c0bbda0e22151f86ec559631dba84279be275bccb5fd36a2f058",
+      "start": "0x40c6a8",
+      "end_exclusive": "0x40c78e",
+      "bytes": 230,
+      "sha256": "e58dd4ca2fb03f6554f573466cda30088d169b3a22f63b907d29104a6f3077e7",
+      "matches_rom": true,
+      "previous_source_sha256": "4c9cb6797875589b9afeb10cbfa9c55db32d90152a709b23d972fc2fc220e983",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/SortPoints.a",
+          "sha256": "c5577066a4db2532baed1e2a4272eca4d8e1e633971c97e8fb8d9ac5559bd7d3"
+        }
+      ]
+    },
+    {
+      "name": "packrgn",
+      "source": "Reconstruction/Source/QuickDraw/PackRgn.a",
+      "source_sha256": "2cc251d4a7ddfbcec575d8b4935178f2968c60034fe45bca11dbc69a191ef670",
+      "start": "0x40c78e",
+      "end_exclusive": "0x40c856",
+      "bytes": 200,
+      "sha256": "3d806d575ef68c29f67d9ad5163c76e5464c3bc78c2cb9ef7444ee9ce911d0f4",
+      "matches_rom": true,
+      "previous_source_sha256": "edc9fa60043a33a1cce25b348bd8e1ae4142e436c748754fd5345dccbab838eb",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/PackRgn.a",
+          "sha256": "67a0efddbd84ef5beaeb2adddfe53f0dbe19b4ac6b21dd68820226e7605b0727"
+        }
+      ]
+    },
+    {
+      "name": "putrgn",
+      "source": "Reconstruction/Source/QuickDraw/PutRgn.a",
+      "source_sha256": "bcea8b0fa3dcef37df7739816ef0bbd6a3e521fae548c8c2c6133ae116c6abeb",
+      "start": "0x40c856",
+      "end_exclusive": "0x40c8cc",
+      "bytes": 118,
+      "sha256": "5ec7b73fc734873a667e4390d59636bbcce92422b080c058f223c0ab717a6124",
+      "matches_rom": true,
+      "previous_source_sha256": "ac17bba18c471faf298d3f973ed609533bf7095ed9209cae83f78777402b955b",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/PutRgn.a",
+          "sha256": "a5fa7c115e648b9d6ecda08900538d439bbe0bf9cf7fd3b8a54d9add2dccb076"
+        }
+      ]
+    },
+    {
+      "name": "bitmaps",
+      "source": "Reconstruction/Source/QuickDraw/Bitmaps.a",
+      "source_sha256": "4f8c0a2d41a2cb63b0dd8e8ee1a4b16f52f5f297d729a56d70312591001f5678",
+      "start": "0x40c8cc",
+      "end_exclusive": "0x40d062",
+      "bytes": 1942,
+      "sha256": "9d03bffab08581d636d4a86bdd19c6c8cf60cdb2ced3695c038bab1ba47be15f",
+      "matches_rom": true,
+      "previous_source_sha256": "c8b972749454ffa7165cde2633f562b61d0ac46deaf07985441a7fc909d3c623",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Bitmaps.a",
+          "sha256": "745f6e7fd58de49e41e5644df319363959cb9b5689dee9a3193329678a53647e"
+        }
+      ]
+    },
+    {
+      "name": "stretch",
+      "source": "Reconstruction/Source/QuickDraw/Stretch.a",
+      "source_sha256": "9e4c0eec5c7893adc28704ce5bf5b9dd4eddb9c9e8a7446fff3565d87cd11129",
+      "start": "0x40d062",
+      "end_exclusive": "0x40d8d0",
+      "bytes": 2158,
+      "sha256": "e2824754f3c5fb0547d32408324f8811345920f8960556277894a81af9021e3d",
+      "matches_rom": true,
+      "previous_source_sha256": "e33493085380fea0f85ee223b097e573e751948e8f8529a1742b47c840ad7232",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Stretch.a",
+          "sha256": "30aea46aa01dc3e7401da37a5dd045033e82654fbe5159ae14f823d633b9d20c"
+        }
+      ]
+    },
+    {
+      "name": "pictures",
+      "source": "Reconstruction/Source/QuickDraw/Pictures.a",
+      "source_sha256": "efaa6278b49c501d70451efe944285bc601b44a2229f56d85492854d87298735",
+      "start": "0x40d8d0",
+      "end_exclusive": "0x40e5e4",
+      "bytes": 3348,
+      "sha256": "9790b292da68a913854c2ded7e448d367b1dd0d1a35decaadb24589b17512858",
+      "matches_rom": true,
+      "previous_source_sha256": "ba488555fda4812e87b9c2a2439f45a42398ce7aea35f2b0acc07d94e31abc5b",
+      "instruction_and_data_body_unchanged": true,
+      "earlier_sources": [
+        {
+          "path": "QuickDraw Source/Pictures.a",
+          "sha256": "cf5ca90eb0b6435790498b7ed96ffd743457e08ea488325c1137966469789040"
+        }
+      ]
+    }
+  ]
+}

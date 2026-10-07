@@ -1,0 +1,345 @@
+{
+  "module": "Toolbox/ScrapMgr.a",
+  "source_path": "Reconstruction/Source/Toolbox/ScrapMgr.a",
+  "source_sha256": "b102197468bf8d04410d5cd79189787ec22d0ea036005138c5827fe09ac452b2",
+  "upstream_source": {
+    "path": "Toolbox/ScrapMgr/ScrapMgr.a",
+    "sha256": "ab8ca6e91eb55612ab09ea37d9e551e8c430cb9cfe6947156abd5ef666f6c082",
+    "description": "The surviving source matches the Macintosh Plus routine order and instructions after removal of the later UnloadScrap guard and PutScrap rollback paths. Its original operands, labels, comments and stack declarations remain active."
+  },
+  "upstream_equates": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x416dac",
+      "end_address_exclusive": "0x416f90",
+      "rom_offset": "0x16dac",
+      "length": 484,
+      "sha256": "7309f16a53d25a88f046dbbc2a327b4203e509794312e2fed7ef22812417b860",
+      "first_symbol": "InfoScrap",
+      "last_symbol": "putDisk"
+    }
+  ],
+  "boundary_evidence": {
+    "description": "The reference symbol list places InfoScrap at $416DAC after the TextEdit scrolling helpers. The final putDisk path ends with RTS at $416F8E; InitPack starts at $416F90. The surviving ScrapMgr.a contains the same complete sequence of routines.",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv"
+  },
+  "symbols": {
+    "InfoScrap": "0x416dac",
+    "ScrapMgr": "0x416dac",
+    "StdEntry": "0x416dc2",
+    "StdSetup": "0x416dce",
+    "StdOpen": "0x416df4",
+    "UnloadScrap": "0x416e26",
+    "ok0Exit": "0x416e40",
+    "err0Exit": "0x416e42",
+    "StdExit": "0x416e4a",
+    "StdUNLK": "0x416e4e",
+    "stdRTS": "0x416e50",
+    "goHome0": "0x416e56",
+    "goHome": "0x416e58",
+    "LoadScrap": "0x416e5a",
+    "SetupRW": "0x416e76",
+    "SetupRW2": "0x416e78",
+    "ZeroScrap": "0x416e8e",
+    "zeroMem": "0x416eac",
+    "zsExit": "0x416eb0",
+    "zeroDisk": "0x416eb6",
+    "DoGet": "0x416ebe",
+    "getDisk": "0x416ecc",
+    "GetScrap": "0x416eda",
+    "readNext": "0x416ee8",
+    "okRead": "0x416ef6",
+    "notFound": "0x416f08",
+    "foundIt": "0x416f0c",
+    "err12Exit": "0x416f2c",
+    "err12LExit": "0x416f2e",
+    "go12Exit": "0x416f32",
+    "FailSafe": "0x416f38",
+    "PutScrap": "0x416f4a",
+    "DoPut": "0x416f72",
+    "putDisk": "0x416f82",
+    "ScrapMgrEnd": "0x416f90"
+  },
+  "changes": [
+    {
+      "kind": "history",
+      "description": "Retained the original header, the history through June 1985 and all applicable comments. Removed later revision history that describes changes absent from this ROM."
+    },
+    {
+      "kind": "unload_error_guard",
+      "description": "Removed the BNE.S err0Exit immediately after UnloadScrap calls StdOpen. The surviving source marks that additional error check C716, and its January 1987 history records the exit correction. The ROM proceeds to SetupRW and Write without the guard.",
+      "upstream_lines": [
+        281,
+        290
+      ],
+      "rom_address": "0x416e2e"
+    },
+    {
+      "kind": "memory_write_rollback",
+      "description": "Removed the later FixPutScrap path after PtrAndHand. The ROM returns immediately from DoPut and does not shrink the scrap handle or remove the caller return address after an error.",
+      "upstream_lines": [
+        613,
+        626
+      ],
+      "rom_address": "0x416f7e"
+    },
+    {
+      "kind": "disk_write_rollback",
+      "description": "Removed the later F2PutScrap path after Write. The ROM returns immediately from putDisk and does not truncate the file or bypass the scrap-size update after an error.",
+      "upstream_lines": [
+        635,
+        648
+      ],
+      "rom_address": "0x416f8c"
+    },
+    {
+      "kind": "standalone_equates",
+      "description": "Replaced the build-specific StandardEqu.d load with the original interface declarations used by this module. The original eighty-byte I/O parameter block and eight-byte disk-object header form an eighty-eight-byte stack frame."
+    },
+    {
+      "kind": "branch_sizes",
+      "description": "Made twenty-two branch sizes explicit to preserve the ROM encodings. Kept all original branch targets, registers and operands. Added a final boundary label for verification."
+    }
+  ],
+  "encoding_edits": [
+    {
+      "address": "0x416df2",
+      "original_operation": "BNE",
+      "reconstructed_operation": "BNE.S"
+    },
+    {
+      "address": "0x416e24",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.S"
+    },
+    {
+      "address": "0x416e26",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.S"
+    },
+    {
+      "address": "0x416e2e",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.S"
+    },
+    {
+      "address": "0x416e5a",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    },
+    {
+      "address": "0x416e5e",
+      "original_operation": "BNE",
+      "reconstructed_operation": "BNE.S"
+    },
+    {
+      "address": "0x416e68",
+      "original_operation": "BNE",
+      "reconstructed_operation": "BNE.S"
+    },
+    {
+      "address": "0x416e74",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.S"
+    },
+    {
+      "address": "0x416e8e",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    },
+    {
+      "address": "0x416e92",
+      "original_operation": "BNE",
+      "reconstructed_operation": "BNE.S"
+    },
+    {
+      "address": "0x416eb4",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.S"
+    },
+    {
+      "address": "0x416ebc",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.S"
+    },
+    {
+      "address": "0x416eca",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.S"
+    },
+    {
+      "address": "0x416ecc",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.S"
+    },
+    {
+      "address": "0x416eda",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    },
+    {
+      "address": "0x416ee0",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    },
+    {
+      "address": "0x416f06",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.S"
+    },
+    {
+      "address": "0x416f34",
+      "original_operation": "BRA",
+      "reconstructed_operation": "BRA.W"
+    },
+    {
+      "address": "0x416f44",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    },
+    {
+      "address": "0x416f4a",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    },
+    {
+      "address": "0x416f4e",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.S"
+    },
+    {
+      "address": "0x416f52",
+      "original_operation": "BSR",
+      "reconstructed_operation": "BSR.W"
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x416df0",
+      "description": "The code uses scrapState zero for disk storage, positive for memory and negative for an uninitialized scrap. The original state-summary comment reverses disk and memory; it remains exact with a reconstruction note above it."
+    },
+    {
+      "address": "0x416f56",
+      "description": "PutScrap ignores the result of writing the object header and proceeds to write the payload. It stores the updated length even when the final write fails. The later rollback patches were not applied."
+    },
+    {
+      "address": "0x416f68",
+      "description": "PutScrap rounds the payload length up to an even byte count and passes that count with the original source pointer. An odd payload therefore includes the following byte in the stored padding."
+    },
+    {
+      "address": "0x416f42",
+      "description": "FailSafe branches directly to the shared error exit after ZeroScrap fails. The reconstruction preserves this control flow."
+    },
+    {
+      "address": "0x416e98",
+      "description": "ZeroScrap adds eight to the validation word and negates a negative result, preserving the original count arithmetic."
+    }
+  ],
+  "limitations": [
+    "The exact 1985 source file is unavailable. The surviving assembly and full byte comparison establish this restoration.",
+    "Verification checks every instruction byte and all recorded global labels. It does not execute disk I/O or allocation-failure paths."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-scrapmgr.py",
+    "method": "Translated the final MPW source, assembled for the 68000, linked at $416DAC, rejected unresolved relocations and compared every byte against the ROM. Checked all recorded global labels.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 484,
+    "instruction_count": 186,
+    "data_bytes": 0,
+    "entry_points_checked": 35,
+    "preserved_original_comment_occurrences": 431,
+    "authored_comment_lines": 7,
+    "result": {
+      "name": "scrapmgr",
+      "source": "Reconstruction/Source/Toolbox/ScrapMgr.a",
+      "source_sha256": "b102197468bf8d04410d5cd79189787ec22d0ea036005138c5827fe09ac452b2",
+      "start": "0x416dac",
+      "end_exclusive": "0x416f90",
+      "bytes": 484,
+      "sha256": "7309f16a53d25a88f046dbbc2a327b4203e509794312e2fed7ef22812417b860",
+      "matches_rom": true,
+      "source_dependencies": [
+        {
+          "path": "Reconstruction/Source/Toolbox/ScrapMgr.a",
+          "sha256": "b102197468bf8d04410d5cd79189787ec22d0ea036005138c5827fe09ac452b2"
+        }
+      ]
+    },
+    "prose_lint": {
+      "command": "vale /tmp/scrapmgr-authored.md",
+      "config": "/Users/james/.vale.ini",
+      "result": "0 errors, 0 warnings, 0 suggestions",
+      "scope": "Authored source comments and evidence prose. Preserved original comments were excluded."
+    }
+  },
+  "integration_manifest": {
+    "name": "scrapmgr",
+    "source": "Reconstruction/Source/Toolbox/ScrapMgr.a",
+    "start": "0x416dac",
+    "end_exclusive": "0x416f90",
+    "entry_points": {
+      "InfoScrap": "0x416dac",
+      "ScrapMgr": "0x416dac",
+      "StdEntry": "0x416dc2",
+      "StdSetup": "0x416dce",
+      "StdOpen": "0x416df4",
+      "UnloadScrap": "0x416e26",
+      "ok0Exit": "0x416e40",
+      "err0Exit": "0x416e42",
+      "StdExit": "0x416e4a",
+      "StdUNLK": "0x416e4e",
+      "stdRTS": "0x416e50",
+      "goHome0": "0x416e56",
+      "goHome": "0x416e58",
+      "LoadScrap": "0x416e5a",
+      "SetupRW": "0x416e76",
+      "SetupRW2": "0x416e78",
+      "ZeroScrap": "0x416e8e",
+      "zeroMem": "0x416eac",
+      "zsExit": "0x416eb0",
+      "zeroDisk": "0x416eb6",
+      "DoGet": "0x416ebe",
+      "getDisk": "0x416ecc",
+      "GetScrap": "0x416eda",
+      "readNext": "0x416ee8",
+      "okRead": "0x416ef6",
+      "notFound": "0x416f08",
+      "foundIt": "0x416f0c",
+      "err12Exit": "0x416f2c",
+      "err12LExit": "0x416f2e",
+      "go12Exit": "0x416f32",
+      "FailSafe": "0x416f38",
+      "PutScrap": "0x416f4a",
+      "DoPut": "0x416f72",
+      "putDisk": "0x416f82",
+      "ScrapMgrEnd": "0x416f90"
+    }
+  }
+}

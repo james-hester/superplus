@@ -1,0 +1,162 @@
+{
+  "module": "sound-driver",
+  "source": "Reconstruction/Source/Resources/SoundDriver.a",
+  "source_sha256": "77e10f3fce4bb97fe89372280a696a26e78660504374bb99f4cabdb0387ce1e7",
+  "originals": [
+    {
+      "path": "Patches/PatchPlusROM.a",
+      "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470",
+      "declaration_lines": []
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "declaration_lines": [
+        634,
+        635,
+        367,
+        633,
+        371,
+        356,
+        360,
+        361
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "declaration_lines": [
+        313
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "declaration_lines": [
+        956,
+        957,
+        1466,
+        683,
+        681,
+        755,
+        746,
+        754,
+        704,
+        493,
+        1464,
+        1461,
+        1463,
+        1465,
+        1460,
+        1462,
+        1218,
+        1273,
+        1194
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "declaration_lines": [
+        1837,
+        1838
+      ]
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 35,
+  "rom": {
+    "start": "0x4179b8",
+    "end_exclusive": "0x417d28",
+    "bytes": 880,
+    "sha256": "82a1517109b299a44e13182837950cf8e0b06f5909f04f618db5682a41bf2692"
+  },
+  "changes": [
+    "The .Sound driver body is absent from the supplied source release. The restored 288 instructions implement opening, closing, control, square-wave playback, four-tone synthesis, free-form sample playback, and vertical-blank scheduling. Labels without a recorded source or Ghidra name describe reconstructed behavior.",
+    "Original SysEqu.a, ToolUtils.a, Private.a, HardwareEqu.a, and Traps.a declarations identify low-memory globals, driver fields, timer registers, VIA ports, and VBL calls. Hardware declarations use the Macintosh Plus conditional section.",
+    "PatchPlusROM.a identifies DoneVBL at $417B50, ROMBMap at $417C82, FmBMapStart at $417C84, and the ends of DeAlloc and DoneVBL. Its December 1985 comment is preserved as a historical follow-up.",
+    "The original queue defects remain: InstallVBL clears the queue link before checking SoundActive; ROMBMap returns on an empty queue without removing its task; and CheckBMapQueue calls DoneVBL when a request finishes. Later patch replacements are not included.",
+    "The header uses named entry offsets and the resource catalog master-pointer offset. ORI.B #192 retains the zero high byte of the immediate extension word; a signed -64 spelling would assemble differently with this GNU assembler."
+  ],
+  "verification": {
+    "name": "sound-driver",
+    "source": "Reconstruction/Source/Resources/SoundDriver.a",
+    "source_sha256": "77e10f3fce4bb97fe89372280a696a26e78660504374bb99f4cabdb0387ce1e7",
+    "start": "0x4179b8",
+    "end_exclusive": "0x417d28",
+    "bytes": 880,
+    "sha256": "82a1517109b299a44e13182837950cf8e0b06f5909f04f618db5682a41bf2692",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Resources/SoundDriver.a",
+        "sha256": "77e10f3fce4bb97fe89372280a696a26e78660504374bb99f4cabdb0387ce1e7"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "sound-driver",
+    "source": "Reconstruction/Source/Resources/SoundDriver.a",
+    "start": "0x4179b8",
+    "end_exclusive": "0x417d28",
+    "entry_points": {
+      "SoundResourceBlock": "0x4179b8",
+      "SoundHeader": "0x4179c0",
+      "SoundOpen": "0x4179da",
+      "SoundExitNoErr": "0x4179ec",
+      "SoundKillIO": "0x4179f0",
+      "SoundClose": "0x4179f4",
+      "ResetSound": "0x4179fa",
+      "ReleaseTimer": "0x4179fc",
+      "TimerExit": "0x417a10",
+      "DeAlloc": "0x417a12",
+      "DeAllocExit": "0x417a22",
+      "ResetBuffer": "0x417a24",
+      "FillBuffer": "0x417a2a",
+      "FillLoop": "0x417a40",
+      "SetVolume": "0x417a56",
+      "SoundControl": "0x417a7a",
+      "SoundStatus": "0x417a8e",
+      "VolumeControl": "0x417a92",
+      "SoundPrime": "0x417a9a",
+      "SquareWave": "0x417ab0",
+      "SetTimer": "0x417ace",
+      "SavePitch": "0x417aea",
+      "PrimeReturn": "0x417b02",
+      "InstallNextVBL": "0x417b06",
+      "InstallVBL": "0x417b08",
+      "InstallExit": "0x417b28",
+      "SquareWaveVBL": "0x417b2a",
+      "EndSquareWave": "0x417b48",
+      "DoneVBL": "0x417b50",
+      "GoToIODone": "0x417b58",
+      "FourTone": "0x417b64",
+      "PrimeInstall": "0x417b6c",
+      "EndFourTone": "0x417b70",
+      "FourToneVBL": "0x417b76",
+      "MixFour": "0x417ba4",
+      "MixFourSample": "0x417bb0",
+      "MixOne": "0x417c02",
+      "MixOneSample": "0x417c32",
+      "SavePhases": "0x417c60",
+      "BMapExit": "0x417c70",
+      "ByteMap": "0x417c72",
+      "ROMBMap": "0x417c82",
+      "FmBMapStart": "0x417c84",
+      "BMapPart": "0x417cb4",
+      "BMapSample": "0x417cb6",
+      "ClearTail": "0x417cd8",
+      "ClearSample": "0x417cda",
+      "ClearNext": "0x417ce6",
+      "SaveFraction": "0x417cea",
+      "CheckBMapQueue": "0x417cf4",
+      "BMapZero": "0x417d0e",
+      "BMapReturn": "0x417d10",
+      "BMapFirstPart": "0x417d12",
+      "BMapSecondPart": "0x417d1c",
+      "SoundResourceEnd": "0x417d28"
+    }
+  },
+  "historical_limits": "Exact assembly verifies the emitted bytes. It does not recover lost source spelling or test the driver against real devices.",
+  "instruction_count": 288,
+  "data_bytes": 34
+}

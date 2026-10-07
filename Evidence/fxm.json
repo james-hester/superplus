@@ -1,0 +1,319 @@
+{
+  "module": "FXM",
+  "source": "Reconstruction/Source/OS/HFS/FXM.a",
+  "originals": [
+    {
+      "path": "OS/HFS/FXM.a",
+      "sha256": "29f3b69f127191b02a64fc7c1bc21f52bd43d9a635d87e9bc6c1c79ce7f04a62",
+      "line_ranges": [
+        [
+          1,
+          1116
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/CMSVCS.a",
+      "sha256": "eebc64f3e3491acc1c698dd6cf6630656a1b6157ccb4259cee68c8d3bd47c262",
+      "line_ranges": [
+        [
+          1,
+          120
+        ]
+      ],
+      "role": "CMCreateCN establishes the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          286,
+          286
+        ],
+        [
+          288,
+          288
+        ],
+        [
+          329,
+          329
+        ],
+        [
+          336,
+          336
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          352,
+          352
+        ],
+        [
+          354,
+          354
+        ],
+        [
+          358,
+          358
+        ],
+        [
+          370,
+          370
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          183,
+          184
+        ],
+        [
+          192,
+          192
+        ],
+        [
+          202,
+          202
+        ],
+        [
+          220,
+          224
+        ],
+        [
+          229,
+          234
+        ],
+        [
+          239,
+          241
+        ],
+        [
+          243,
+          245
+        ],
+        [
+          407,
+          407
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          464,
+          464
+        ],
+        [
+          476,
+          477
+        ],
+        [
+          520,
+          520
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          359,
+          361
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          181,
+          181
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          815,
+          815
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x405aa8",
+      "end_exclusive": "0x406044",
+      "rom_offset": "0x5aa8",
+      "length": 1436,
+      "sha256": "d7eaf3a78d82bda68c3fbc120849325cb454c541c357fb7ae323925db0219eac",
+      "start_label": "FXM",
+      "end_label": "FXMEnd",
+      "boundary_evidence": "DeallocFile starts at 0x405aa8 after the VSM GetBMBlk return. XRUpdate returns at 0x406042. CMCreateCN starts CMSVCS at 0x406044."
+    }
+  ],
+  "entry_points": {
+    "FXM": "0x405aa8",
+    "DeallocFile": "0x405aa8",
+    "vDeallocFile": "0x405aae",
+    "ExtendFile": "0x405b7c",
+    "vExtendFile": "0x405b82",
+    "FXMKeyCmp": "0x405cde",
+    "MapFBlock": "0x405d1c",
+    "TruncateFile": "0x405d98",
+    "vTruncateFile": "0x405d9e",
+    "FXSetUp": "0x405ec6",
+    "XFFlush": "0x405ed0",
+    "XFSearch": "0x405f04",
+    "XRSearch": "0x405fda",
+    "XRUpdate": "0x406006",
+    "FXMEnd": "0x406044"
+  },
+  "integration_manifest": {
+    "name": "fxm",
+    "source": "Reconstruction/Source/OS/HFS/FXM.a",
+    "start": "0x405aa8",
+    "end_exclusive": "0x406044",
+    "entry_points": {
+      "FXM": "0x405aa8",
+      "DeallocFile": "0x405aa8",
+      "vDeallocFile": "0x405aae",
+      "ExtendFile": "0x405b7c",
+      "vExtendFile": "0x405b82",
+      "FXMKeyCmp": "0x405cde",
+      "MapFBlock": "0x405d1c",
+      "TruncateFile": "0x405d98",
+      "vTruncateFile": "0x405d9e",
+      "FXSetUp": "0x405ec6",
+      "XFFlush": "0x405ed0",
+      "XFSearch": "0x405f04",
+      "XRSearch": "0x405fda",
+      "XRUpdate": "0x406006",
+      "FXMEnd": "0x406044"
+    }
+  },
+  "changes": [
+    {
+      "location": "ExtendFile at 0x405b7c",
+      "change": "Restored the contiguous allocation flag before January 1986. Removed the all-or-nothing free-space check and moved flag setup before the FCB pointer and PEOF save. Revised the D3 API comment and marked its provenance.",
+      "evidence": "The ROM sets FXVTContig at 0x405b8c, tests D3.B directly at 0x405b90, and sets FXVFContig when D3 is nonzero. It then forms the FCB pointer at 0x405b98."
+    },
+    {
+      "location": "TruncateFile at 0x405d98",
+      "change": "Restored FlushOnly as the truncation option. Preserved D6 for the resource-fork flag, replacing the January 1986 option-byte interface and repeated fork test. Revised the API comments with a reconstruction note.",
+      "evidence": "The ROM tests FCBRscBit at 0x405dac and saves its result in D6. It tests FlushOnly at 0x405df6 and copies D6 to xkrFkType at 0x405e3e."
+    },
+    {
+      "location": "MapFBlock and XFSearch",
+      "change": "Removed the October 1986 vector stubs. Restored the word addition before the March 1987 mapping fix.",
+      "evidence": "MapFBlock at 0x405d1c and XFSearch at 0x405f04 begin by saving their return addresses on A6. The instruction at 0x405d76 is ADD.W D0,D3, which retains the original carry behavior."
+    },
+    {
+      "location": "Source and assembly forms",
+      "change": "Preserved the original header, applicable history, and surviving comments. Supplied original equates and external addresses, closed the procedure, and made call addressing and branch sizes explicit.",
+      "evidence": "All 1436 bytes and 15 recorded labels match. TFLoop uses a short backward branch at 0x405eb2; the XRSearch call at 0x405fc8 uses a word displacement."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "BTGetRecord",
+      "address": "0x406928"
+    },
+    {
+      "name": "BTDelete",
+      "address": "0x40671c"
+    },
+    {
+      "name": "BTFlush",
+      "address": "0x4068c2"
+    },
+    {
+      "name": "BTInsert",
+      "address": "0x4069ea"
+    },
+    {
+      "name": "BTSearch",
+      "address": "0x406d4a"
+    },
+    {
+      "name": "BTUpdate",
+      "address": "0x406dd6"
+    },
+    {
+      "name": "BlkAlloc",
+      "address": "0x4057d6"
+    },
+    {
+      "name": "BlkDealloc",
+      "address": "0x405932"
+    },
+    {
+      "name": "CMGetCN",
+      "address": "0x406238"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    },
+    {
+      "name": "FlushMDB",
+      "address": "0x402d2e"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x405aa8, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "8eddc4979913392b4c1a741b10308980bbc9edb7007bdd514f746b430042ee0f",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/FXM.a",
+        "sha256": "8eddc4979913392b4c1a741b10308980bbc9edb7007bdd514f746b430042ee0f"
+      }
+    ],
+    "assembled_length": 1436,
+    "matched_bytes": 1436,
+    "entry_points_checked": 15,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

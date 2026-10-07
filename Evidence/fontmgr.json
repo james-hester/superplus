@@ -1,0 +1,343 @@
+{
+  "module": "Toolbox/FontMgr.a",
+  "source_path": "Reconstruction/Source/Toolbox/FontMgr.a",
+  "source_sha256": "2ae459d0b49e65e61b067ee368d3635f241794b4c3eed6ed1c3d918a17cce233",
+  "upstream_sources": [
+    {
+      "path": "Toolbox/FontMgr/FontMgr.a",
+      "sha256": "077207f83069325cf98e8c56b6a817b7c36b10d185e291bec5af154b311f0532",
+      "header_lines": [
+        1,
+        31
+      ],
+      "routine_reference_lines": [
+        4872,
+        4949
+      ],
+      "history_reference_lines": [
+        497,
+        603
+      ]
+    },
+    {
+      "path": "Toolbox/FontMgr/FontMgrPatch.a",
+      "sha256": "208801a737d3d036da6aeb64cb1b9b5ab4128de865114a06f959a230624d4c6b",
+      "routine_reference_ranges": [
+        [
+          1503,
+          1542
+        ],
+        [
+          2362,
+          2539
+        ],
+        [
+          2550,
+          2916
+        ]
+      ],
+      "copied_equate_lines": [
+        149,
+        194
+      ]
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "copied_line_ranges": [
+        [
+          175,
+          182
+        ],
+        [
+          209,
+          229
+        ],
+        [
+          633,
+          647
+        ],
+        [
+          661,
+          676
+        ],
+        [
+          735,
+          742
+        ]
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "reference_line": 611
+    },
+    {
+      "path": "Internal/Asm/ColorEqu.a",
+      "sha256": "028ace54d87dd5711fa6a13d176e85fb4cf32b92f79ae91dc989479d1e3259ac",
+      "reference_line": 386
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40f0c0",
+      "end_address_exclusive": "0x40f456",
+      "rom_offset": "0xf0c0",
+      "length": 918,
+      "sha256": "fd9189e0ae0cb86829623f5acd487f89efc00b1d4eb334f2a67ba151bddee654",
+      "first_symbol": "GetFontName",
+      "last_symbol": "BuildCharTable",
+      "next_symbol": "LoadSeg"
+    }
+  ],
+  "symbols": {
+    "GetFontName": "0x40f0c0",
+    "GetFOND": "0x40f10c",
+    "GetFONDMap": "0x40f112",
+    "GetFNum": "0x40f166",
+    "SetFontLock": "0x40f1d8",
+    "RealFont": "0x40f20e",
+    "SetFScaleDisable": "0x40f260",
+    "FontMetrics": "0x40f274",
+    "ScaleVFVal": "0x40f2d0",
+    "ScaleFVal": "0x40f2d8",
+    "BuildCharTable": "0x40f30a",
+    "CharMasks": "0x40f3ae"
+  },
+  "manifest_entry": {
+    "name": "fontmgr",
+    "source": "Reconstruction/Source/Toolbox/FontMgr.a",
+    "start": "0x40f0c0",
+    "end_exclusive": "0x40f456",
+    "entry_points": {
+      "GetFontName": "0x40f0c0",
+      "GetFOND": "0x40f10c",
+      "GetFONDMap": "0x40f112",
+      "GetFNum": "0x40f166",
+      "SetFontLock": "0x40f1d8",
+      "RealFont": "0x40f20e",
+      "SetFScaleDisable": "0x40f260",
+      "FontMetrics": "0x40f274",
+      "ScaleVFVal": "0x40f2d0",
+      "ScaleFVal": "0x40f2d8",
+      "BuildCharTable": "0x40f30a",
+      "CharMasks": "0x40f3ae"
+    }
+  },
+  "external_routines": {
+    "GetStrike": "0x40ec9a",
+    "InValWidths": "0x40e682",
+    "FMFixMul": "0x40ec3c",
+    "FMFixRatio": "0x40ec7a"
+  },
+  "external_data": {
+    "FPointOne": "0x40ec38"
+  },
+  "data_spans": [
+    {
+      "label": "CharMasks",
+      "start": "0x40f3ae",
+      "end_exclusive": "0x40f3d0",
+      "length": 34,
+      "provenance": "Restored local mask table from the ROM."
+    }
+  ],
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Reconstructed GetFontName, GetFOND, GetFNum, SetFontLock, RealFont, SetFScaleDisable, FontMetrics, and BuildCharTable in ROM order. Preserved applicable original comments and the FontMgr.a descriptive header."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the D3 and stack use in GetFontName. The routine passes scratch addresses to GetResInfo, invalidates the cached FOND afterward, and clears a word for a missing name."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the cached GetFOND implementation. Family 1 maps to ApFontID. LastFOND stores the saved purge state in its high byte; WidthListHand stores the FOND flag byte. The return value masks out that high byte."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the 270-byte GetFNum stack frame, D3 flag, two resource searches, and scratch result fields. The later source history records the stack reduction in August 1986."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the direct handle purge-bit operations and stack use in SetFontLock. RealFont retains the older size search and rejects size zero for the FONT resource path."
+    },
+    {
+      "kind": "restoration",
+      "description": "SetFScaleDisable invalidates CurFMFamily and calls InValWidths. The ROM has no adjacent SetFractEnable routine."
+    },
+    {
+      "kind": "restoration",
+      "description": "FontMetrics saves A2 and A3, reads WidthPtr for the width-style adjustment, and calls the internal fixed-point helpers. ScaleFVal pushes the denominator before the numerator, as the ROM requires; the patch history records reversing those instructions in May 1986."
+    },
+    {
+      "kind": "restoration",
+      "description": "BuildCharTable saves A2 through A4 and uses a local mask table. It sign-extends the table size, omits the later extended offset handling, and calculates each band height before updating the character height. The later patch postpones the subtraction until all bands finish."
+    },
+    {
+      "kind": "data",
+      "description": "Defined the 17 local mask words from the ROM as DC.W values. They contain mask data."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required ToolUtils.a global and font-field equates and FontMgrPatch.a width-table and FOND equates. Added verified addresses for external routines, trap words, and supporting globals."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made the ROM branch sizes and PC addressing explicit. Used ADDQ for the one-pixel ascent adjustment."
+    },
+    {
+      "kind": "scope",
+      "description": "This file covers the Font Manager suffix. InitFonts, FMSwapFont, font selection, and preceding helper routines remain outside this module."
+    }
+  ],
+  "patch_instruction_edits": [
+    {
+      "original": "MOVE.L \tA2,-(SP)",
+      "restored": "MOVEM.L\tA2-A3,-(SP)"
+    },
+    {
+      "original": "MOVE.L\t8(SP),A2",
+      "restored": "MOVE.L\t12(SP),A2"
+    },
+    {
+      "original": "MOVE.L\tWidthTabHandle,A0\n\t\t\tMOVE.L\tA0,(A2)",
+      "restored": "MOVE.L\tWidthTabHandle,(A2)"
+    },
+    {
+      "original": "MOVE.L\t(A0),A0\t\t\t\t;pointer to widths",
+      "restored": "MOVE.L\tWidthPtr,A0\t\t\t\t;pointer to widths"
+    },
+    {
+      "original": "MOVE.L \t(SP)+,A2",
+      "restored": "MOVEM.L\t(SP)+,A2-A3"
+    },
+    {
+      "original": "ADD.W\t#1,(A2)",
+      "restored": "ADDQ.W\t#1,(A2)"
+    },
+    {
+      "original": "MOVE.L\tFPointOne,D1",
+      "restored": "MOVE.L\tFPointOne(PC),D1"
+    },
+    {
+      "original": "\t\t\t\t\t\t\t\t\t; reversed next 2 lines\t<28May86>\n\t\t\tMOVE.W\t(A1),-(SP)\t\t\t;push V output numer\n\t\t\tMOVE.W\t4(A1),-(SP) \t\t\t;push V output denom",
+      "restored": "\t\t\tMOVE.W\t4(A1),-(SP) \t\t\t;push V output denom\n\t\t\tMOVE.W\t(A1),-(SP)\t\t\t;push V output numer"
+    },
+    {
+      "original": "_FixRatio",
+      "restored": "BSR\tFMFixRatio"
+    },
+    {
+      "original": "_FixMul",
+      "restored": "BSR\tFMFixMul"
+    },
+    {
+      "original": "D3-D7/A2-A5",
+      "restored": "D3-D7/A2-A4"
+    },
+    {
+      "original": "\t\t\t_GetMaskTable\n\t\t\tMOVE.L\tA0,A5\t\t\t\t;keep pointer to left masks around\n",
+      "restored": ""
+    },
+    {
+      "original": "\t\t\tMOVEQ\t#0,D5\t\t\t\t;zero high word\n",
+      "restored": ""
+    },
+    {
+      "original": "ADD.W\tD5,D5\t\t\t\t;compute size of table",
+      "restored": "ADD.W\tD5,D5\t\t\t\t;compute size of table\n\t\t\tEXT.L\tD5"
+    },
+    {
+      "original": "\t\tIF\tbugFix\tTHEN\n\t\t\tMOVE.W\tfNDescent(A1),D0\t\t;possibly the high word of owTLoc\n\t\t\tBLE.S\t@negative\n\t\t\tSWAP\tD0\t\t\t\t\t;put it in the high word\n\t\tENDIF\n@negative\n",
+      "restored": ""
+    },
+    {
+      "original": "\t\t\tMOVE.L\tA3,A0\t\t\t\t;get the font handle\n",
+      "restored": ""
+    },
+    {
+      "original": "BEQ.S\tEmptyChar",
+      "restored": "BEQ\tEmptyChar"
+    },
+    {
+      "original": "MOVE.W\tLeftMask(A5,D1),D0",
+      "restored": "MOVE.W\tCharMasks(PC,D1),D0"
+    },
+    {
+      "original": "\t\t\tMOVEQ\t#16,D4\t\t\t\t;useful constant!\n\t\t\tMOVE\tD4,D1\t\t\t\t;at most 16 used",
+      "restored": "\t\t\tMOVEQ\t#16,D1\t\t\t\t;at most 16 used"
+    },
+    {
+      "original": "ADD.W\tD4,D1\t\t\t\t;compute 16-delta",
+      "restored": "ADD.W\t#16,D1\t\t\t\t;compute 16-delta"
+    },
+    {
+      "original": "MOVE.L\tRightMask(A5,D1),D2\t;get inverse mask in high word",
+      "restored": "MOVE.L\tCharMasks(PC,D1),D2\n\t\t\tNOT.L\tD2\t\t\t\t;get inverse mask in high word"
+    },
+    {
+      "original": "@moreMask\n\t\t\tMOVE.W",
+      "restored": "CharMoreMask\n\t\t\tMOVEQ\t#16,D4\t\t\t\t;useful constant!\n\t\t\tMOVE.W"
+    },
+    {
+      "original": "BPL.S\t@moreMask",
+      "restored": "BPL.S\tCharMoreMask"
+    },
+    {
+      "original": "MOVE.W\tRightMask(A5,D1),D2\t;get mask",
+      "restored": "MOVE.W\tCharMasks(PC,D1),D2\n\t\t\tNOT.W\tD2\t\t\t\t;get mask"
+    },
+    {
+      "original": "\t\t\tMOVE.L\t(A3),A0 \t\t\t\t;get font pointer",
+      "restored": "\t\t\tMOVEQ\t#0,D4\t\t\t\t;D4 is current top\n\t\t\tMOVE.L\t(A3),A0 \t\t\t\t;get font pointer"
+    },
+    {
+      "original": "\n\t\t\tMOVEQ\t#0,D4\t\t\t\t;D4 is current top\nTopMaskLoop",
+      "restored": "\nTopMaskLoop"
+    },
+    {
+      "original": "BHS.S\t@0",
+      "restored": "BHS\t@0"
+    },
+    {
+      "original": "\t\t\tADDQ.L\t#1,A4\t\t\t\t;skip top offset\t\t\t<28May86>",
+      "restored": "\t\t\tSUB.B\t(A4)+,D4"
+    },
+    {
+      "original": "BCS.S\tNextChar",
+      "restored": "BLE.S\tNextChar"
+    },
+    {
+      "original": "\t\t\tMOVE.B\t(A4)+,D0\t\t\t\t;high pt\t\t\t\t<28May86>\n\t\t\tSUB.B\tD0,(A4)+\t\t\t\t;low-high\t\t\t\t<28May86>",
+      "restored": "\t\t\tADDQ.L\t#2,A4"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 918,
+    "checked_entry_points": 12,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-fontmgr-verify",
+    "temporary_verifier": "/tmp/verify-fontmgr.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "2ae459d0b49e65e61b067ee368d3635f241794b4c3eed6ed1c3d918a17cce233",
+    "assembled_sha256": "fd9189e0ae0cb86829623f5acd487f89efc00b1d4eb334f2a67ba151bddee654",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

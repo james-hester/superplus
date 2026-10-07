@@ -1,0 +1,268 @@
+{
+  "module": "MFSDIR1",
+  "source": "Reconstruction/Source/OS/HFS/MFSDIR1.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSDIR1.a",
+      "sha256": "3bdc88f224ca197ff1b9c19d46b94bedda878f4ad21baa4faceba06452d43d41",
+      "line_ranges": [
+        [
+          1,
+          255
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/TFSDIR2.a",
+      "sha256": "18b76c57d096c73846a65694fe3c12405585b0112d18712a1f459173b757ae26",
+      "line_ranges": [
+        [
+          90,
+          98
+        ]
+      ],
+      "role": "Gt1stWDCB establishes the adjacent module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          278,
+          278
+        ],
+        [
+          287,
+          287
+        ],
+        [
+          290,
+          290
+        ],
+        [
+          301,
+          301
+        ],
+        [
+          305,
+          305
+        ],
+        [
+          345,
+          345
+        ],
+        [
+          348,
+          348
+        ],
+        [
+          368,
+          368
+        ],
+        [
+          434,
+          435
+        ],
+        [
+          437,
+          437
+        ],
+        [
+          444,
+          444
+        ],
+        [
+          446,
+          447
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          184,
+          184
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          101,
+          101
+        ],
+        [
+          150,
+          150
+        ],
+        [
+          155,
+          155
+        ],
+        [
+          521,
+          521
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          499,
+          499
+        ],
+        [
+          740,
+          741
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x404294",
+      "end_exclusive": "0x4043a0",
+      "rom_offset": "0x4294",
+      "length": 268,
+      "sha256": "d80cede44b9d46e69e6c0b5b1fd3921aa707c29b57b844c78b67e266d478dcb3",
+      "start_label": "MFSOpen",
+      "end_label": "MFSDIR1End",
+      "boundary_evidence": "MFSOpen begins after PopCName at 0x404294. The final GtNxEntry RTS ends at 0x4043a0, where Gt1stWDCB begins TFSDIR2."
+    }
+  ],
+  "entry_points": {
+    "MFSOpen": "0x404294",
+    "MFSOpnErr": "0x4042d6",
+    "MFSOpnExit": "0x4042da",
+    "MFSCreate": "0x4042de",
+    "MFSCrBdNm": "0x4042f0",
+    "MFSCrExit": "0x4042f2",
+    "MFSCrSt": "0x4042f6",
+    "MFSCtlFlush": "0x404340",
+    "FndFilSpc": "0x40434e",
+    "scnNxB": "0x40435e",
+    "scnNxB1": "0x404362",
+    "scnSp2": "0x404364",
+    "blkOpnng": "0x404370",
+    "fndFSExit": "0x404388",
+    "GtNxEntry": "0x40438a",
+    "MFSDIR1End": "0x4043a0"
+  },
+  "integration_manifest": {
+    "name": "mfsdir1",
+    "source": "Reconstruction/Source/OS/HFS/MFSDIR1.a",
+    "start": "0x404294",
+    "end_exclusive": "0x4043a0",
+    "entry_points": {
+      "MFSOpen": "0x404294",
+      "MFSOpnErr": "0x4042d6",
+      "MFSOpnExit": "0x4042da",
+      "MFSCreate": "0x4042de",
+      "MFSCrBdNm": "0x4042f0",
+      "MFSCrExit": "0x4042f2",
+      "MFSCrSt": "0x4042f6",
+      "MFSCtlFlush": "0x404340",
+      "FndFilSpc": "0x40434e",
+      "scnNxB": "0x40435e",
+      "scnNxB1": "0x404362",
+      "scnSp2": "0x404364",
+      "blkOpnng": "0x404370",
+      "fndFSExit": "0x404388",
+      "GtNxEntry": "0x40438a",
+      "MFSDIR1End": "0x4043a0"
+    }
+  },
+  "changes": [
+    {
+      "location": "MFSCreate",
+      "change": "Restored the CVFlgs call and error branch retained as comments in the surviving source.",
+      "evidence": "The ROM calls CVFlgs at 0x4042f6 and branches to MFSCrExit on error. The source history records moving this writability check into FileCreate in January 1986. The preceding reconstructed TFSDIR1 omits that later check."
+    },
+    {
+      "location": "Source definitions and addressing",
+      "change": "Copied required original equates, supplied external routine addresses, and made PC-relative JSR and JMP operands explicit. Preserved the original header, applicable history, and comments.",
+      "evidence": "The remaining instruction sequence matches the ROM. MFSCtlFlush jumps to FlushCache at 0x40434a, and FndFilSpc calls MarkA5Block at 0x40437a. Both use PC-relative addressing. The full module matches 268 bytes and all 16 recorded labels."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "PermssnChk",
+      "address": "0x40416c"
+    },
+    {
+      "name": "SetupFCB",
+      "address": "0x40410e"
+    },
+    {
+      "name": "CVFlgs",
+      "address": "0x403a76"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    },
+    {
+      "name": "FlushCache",
+      "address": "0x4076c6"
+    },
+    {
+      "name": "MFSRd1stDB",
+      "address": "0x4050fc"
+    },
+    {
+      "name": "MFSRdNxtDB",
+      "address": "0x40510c"
+    },
+    {
+      "name": "MarkA5Block",
+      "address": "0x407a02"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x404294, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "6f2d35669dc86038867bd1a155237d8e25a2ce0214e6ff7d95c27f03d98f2340",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/MFSDIR1.a",
+        "sha256": "6f2d35669dc86038867bd1a155237d8e25a2ce0214e6ff7d95c27f03d98f2340"
+      }
+    ],
+    "assembled_length": 268,
+    "matched_bytes": 268,
+    "entry_points_checked": 16,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

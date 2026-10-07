@@ -1,0 +1,218 @@
+{
+  "module": "OS/Keyboard.a",
+  "source_path": "Reconstruction/Source/OS/Keyboard.a",
+  "source_sha256": "25c91dd9dd1974c7a8510fb77fbce668afd016c5acdc6f25485037cbc71eac84",
+  "upstream_sources": [
+    {
+      "path": "OS/ADBMgr/ADBMgr.a",
+      "sha256": "cc401fbfd6abc4cd3bb931151676ea8bb23f406ea1f084c57cec51bdc6fa7e25",
+      "header_lines": [
+        1,
+        13
+      ],
+      "history_lines": [
+        120,
+        121
+      ],
+      "copied_instruction_range": [
+        1112,
+        1115
+      ],
+      "retained_comment_reference_ranges": [
+        [
+          794,
+          797
+        ],
+        [
+          1110,
+          1115
+        ],
+        [
+          1304,
+          1304
+        ],
+        [
+          1398,
+          1405
+        ],
+        [
+          1901,
+          1908
+        ]
+      ],
+      "source_relationship": "ADBMgr.a states that it was separated from the original Mac keyboard implementation. Its history names Kbd.a, which is absent from the released tree. The retained header identifies that later source; it is not a claim that ADBMgr.a supplied the serial protocol implementation."
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        464,
+        465,
+        466,
+        467,
+        498,
+        543,
+        544,
+        1185,
+        1194,
+        1203,
+        1243,
+        1244,
+        1246,
+        1248,
+        1249,
+        1498
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        366,
+        367,
+        368,
+        369,
+        370,
+        376
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "reference_lines": [
+        1803
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x402568",
+      "end_address_exclusive": "0x4026ec",
+      "rom_offset": "0x2568",
+      "length": 388,
+      "sha256": "016520c7c8e572dcdca75226fcff90d3948bc0c6903a0ccb87fe1cf155aa20b5"
+    }
+  ],
+  "symbols": {
+    "InitKeyboard": "0x402568",
+    "InitKeyboardPort": "0x402590",
+    "SendKeyboardCommand": "0x4025a4",
+    "KeyboardInt": "0x4025e4",
+    "TranslateKey": "0x40269c",
+    "KeyboardTask": "0x4026cc",
+    "RSetKMap": "0x4026da",
+    "KbdTaskDone": "0x4026e6"
+  },
+  "manifest_entry": {
+    "name": "keyboard",
+    "source": "Reconstruction/Source/OS/Keyboard.a",
+    "start": "0x402568",
+    "end_exclusive": "0x4026ec",
+    "entry_points": {
+      "InitKeyboard": "0x402568",
+      "InitKeyboardPort": "0x402590",
+      "SendKeyboardCommand": "0x4025a4",
+      "KeyboardInt": "0x4025e4",
+      "TranslateKey": "0x40269c",
+      "KeyboardTask": "0x4026cc",
+      "RSetKMap": "0x4026da",
+      "KbdTaskDone": "0x4026e6"
+    }
+  },
+  "boundary_evidence": {
+    "start": "AddDrive ends with RTS at $402566. The routine at $402568 clears KbdType and KbdVars and installs the keyboard interrupt and VBL task addresses.",
+    "end": "The keyboard task and reset path return at $4026EA. Ghidra identifies the following PostEvent entry at $4026EC."
+  },
+  "code_provenance": [
+    {
+      "start": "0x402568",
+      "end_exclusive": "0x4026da",
+      "length": 370,
+      "kind": "rom_reconstruction",
+      "description": "Initialization, VIA command transmission, interrupt handling, event construction, translation-hook dispatch, and timeout recovery come from the ROM. Matching later-source comments are retained where applicable."
+    },
+    {
+      "start": "0x4026da",
+      "end_exclusive": "0x4026e6",
+      "length": 12,
+      "kind": "retained_source",
+      "source_path": "OS/ADBMgr/ADBMgr.a",
+      "source_lines": [
+        1112,
+        1115
+      ],
+      "description": "The four-instruction RSetKMap loop matches the released source. It clears nine words, covering the keyboard and keypad maps and KeyLast."
+    },
+    {
+      "start": "0x4026e6",
+      "end_exclusive": "0x4026ec",
+      "length": 6,
+      "kind": "rom_reconstruction",
+      "description": "The shared return clears KbdActive. The later source clears HiKeyLast instead; this ROM uses that low-memory area as serial keyboard state."
+    }
+  ],
+  "edits": [
+    {
+      "kind": "scope",
+      "description": "Restored the complete keyboard interval as MC68000 instructions. No serial keyboard source body survives in the released tree. The source marks that limitation and preserves the related ADBMgr.a header, matching reset loop, and applicable comments."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored initialization of the keyboard state, Lvl1DT shift-register interrupt vector, translation hooks, and JKybdTask. Initialization falls through to the VIA setup and model query."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored the exact VIA auxiliary-control and shift-register sequence, including the NOP, saved status register, and $0300 interrupt mask. The interrupt delay loads a DBRA count of 200, shifted left three places when CPUFlag is nonzero."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored the model-query flag, $7B reply handling, and $79 keypad prefix. Normal key bytes become seven-bit key numbers divided by two; the keypad prefix adds $40. The next command uses $10 for an inquiry or $14 after a keypad prefix."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored repeat cancellation for a release matching the repeated key. The handler translates the key, forms a word containing its key number and character, records repeat timestamps for key-down events, and posts key-down or key-up events. Zero translation results follow the ROM fallback through ScrDmpType."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored KeyMap updates and the translation-hook call through the return stack. The wrapper selects Key2Trans for keypad input and Key1Trans otherwise. A null hook returns zero; a nonzero hook receives control through RTS."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the VBL timeout task. It clears the activity flag on each call. If the flag was already clear, it clears KbdType, restarts the port, and clears the key map before returning."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied low-memory and VIA-register equates from the released sources. KbdActive, KbdKeypad, and KbdIdentify name inferred bytes at KbdVars, KbdVars+1, and KbdVars+2. The command constants and routine names other than RSetKMap are reconstruction names."
+    },
+    {
+      "kind": "encoding",
+      "description": "Used explicit PC addressing for the installed interrupt and task pointers. Preserved branch widths, the VIA instruction order, and the loop counts measured from the ROM."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 388,
+    "checked_entry_points": 8,
+    "instruction_count": 124,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-keyboard-verify",
+    "temporary_verifier": "/tmp/verify-vbl.py",
+    "source_sha256": "25c91dd9dd1974c7a8510fb77fbce668afd016c5acdc6f25485037cbc71eac84",
+    "assembled_sha256": "016520c7c8e572dcdca75226fcff90d3948bc0c6903a0ccb87fe1cf155aa20b5",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original source formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

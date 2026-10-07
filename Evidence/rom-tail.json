@@ -1,0 +1,171 @@
+{
+  "module": "ROMTail.a",
+  "source_path": "Reconstruction/Source/ROMTail.a",
+  "source_sha256": "5dc2a2f07364ef0fbcbf52c5dfaa948a28e77d343bf69be5fd25e5b411a631e1",
+  "source_status": "The original helper source was not found. This module reconstructs its instructions from the ROM and identifies the operations through surviving SCSI interfaces. It also represents the ROM-end initials and date as data.",
+  "upstream_sources": [
+    {
+      "path": "Interfaces/AIncludes/SCSI.a",
+      "sha256": "9420495b6e83b3743419c6f7a02e40f91c26f9d92bcf3305e22684493bb15904",
+      "line": 46,
+      "description": "SCSIDrvrs names the word bitmap at $B2E. Selector scsiReset is zero at line 155. The _SCSIReset macro pushes that selector at lines 172 through 176."
+    },
+    {
+      "path": "Interfaces/PInterfaces/SCSI.p",
+      "sha256": "ce033b104cde4297bdd12fed7fdfd9aa6f202d87e755ed21daa456bd91d75232",
+      "line": 107,
+      "description": "SCSIReset uses inline words $4267 and $A815, which identify the CLR.W and SCSI dispatch sequence in this helper."
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "line": 2803,
+      "description": "_SCSIDispatch defines trap word $A815."
+    },
+    {
+      "path": "OS/SCSIMgr/SCSIBoot.a",
+      "sha256": "a16f53dd4f041cf9b12972a0cc34728901e4e64bfeca0fb72e711f9a51d047f0",
+      "line": 118,
+      "description": "The source describes SCSILoad as the driver loader. Its history from October 27, 1985 introduces the loaded-driver bitmap and repeated calls to discover devices."
+    },
+    {
+      "path": "Tools/hiram.c",
+      "sha256": "19eb09aa0d4921936eea0034f5928889cf68cff1e36808a439ffcab75dbe5c9f",
+      "line": 133,
+      "description": "The history from May 15, 1985 records a ROM-end date with a trailing length. The surviving readROMCode function, at line 608, fills the ROM with an initials string before loading code. Its current date and copyright format comes from later revisions."
+    },
+    {
+      "path": "Patches/PatchPlusROM.a",
+      "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470",
+      "line": 6520,
+      "description": "ROM75Load identifies $407D4E as an interior Mac Plus SCSILoad entry. The patch enters there to skip the old reset sequence. This ROM has two NOP instructions at $407D4A and $407D4C."
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x41ffc0",
+      "end_address_exclusive": "0x420000",
+      "rom_offset": "0x1ffc0",
+      "length": 64,
+      "sha256": "87bed9b1a96878b8eeda00477cf3995cb72291394edfc1f6a1e7e053a8e9f429",
+      "first_symbol": "ResetAndReloadSCSI",
+      "last_symbol": "ROMDateEnd"
+    }
+  ],
+  "code_spans": [
+    {
+      "start_address": "0x41ffc0",
+      "end_address_exclusive": "0x41ffd0",
+      "length": 16,
+      "description": "Five instructions clear the loaded-driver bitmap, push reset selector zero, invoke SCSI dispatch, call SCSILoad at $407D40 through an absolute long address, and return."
+    }
+  ],
+  "data_spans": [
+    {
+      "start_address": "0x41ffd0",
+      "end_address_exclusive": "0x41ffef",
+      "length": 31,
+      "description": "The exact initials text in the ROM is HB JTC SC DLD PWD KWK LAK SEL B. The final B is preserved without assigning it to a person."
+    },
+    {
+      "start_address": "0x41ffef",
+      "end_address_exclusive": "0x41ffff",
+      "length": 16,
+      "description": "The date text is Wed, Nov 6, 1985. It begins at an odd address and has no leading length or terminator."
+    },
+    {
+      "start_address": "0x41ffff",
+      "end_address_exclusive": "0x420000",
+      "length": 1,
+      "description": "The final byte is the date length, 16. The source derives it by subtracting the date labels."
+    }
+  ],
+  "boundary_evidence": {
+    "description": "The ROM calls the helper at $41FFC0 from $4008AC. Its RTS ends at $41FFD0, where readable initials begin. The date length occupies the final ROM byte. The earlier bytes before $41FFC0 are outside this module.",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv",
+    "uncertain_reference_label": "InstallDriver?",
+    "reference_label_description": "The reference label contains a question mark. ResetAndReloadSCSI is a descriptive reconstruction name. The original spelling is unknown. All data labels are also reconstruction names."
+  },
+  "changes": [
+    {
+      "change": "Express the helper as 68000 instructions with named equates and _SCSIDispatch.",
+      "reason": "SCSI.a, SCSI.p and Traps.a identify the operands and call sequence. The code contains no instruction bytes written as data."
+    },
+    {
+      "change": "Use CLR.W to push reset selector zero.",
+      "reason": "SCSI.p supplies this exact encoding. SCSI.a expresses the same macro operation with MOVE #scsiReset,-(sp), whose literal GNU assembly would be longer. No claim is made about the original assembler optimization."
+    },
+    {
+      "change": "Keep the absolute long call to SCSILoad.",
+      "reason": "The ROM encodes JSR $407D40 with a long address."
+    },
+    {
+      "change": "Keep the initials and date as strings, and calculate the trailing length.",
+      "reason": "The ROM establishes their exact bytes. The Hiram history supports the trailing-length format, while the later surviving implementation supports initials as ROM fill."
+    }
+  ],
+  "historical_limits": [
+    "No surviving source for this helper, original routine name or placement decision was found in the local OS, patch and build-tool sources.",
+    "The surviving Hiram implementation uses a later format. Its history establishes the trailing-length convention, but it cannot reproduce the exact 1985 date serializer.",
+    "The date is a build marker in this ROM. It does not establish when the helper was added.",
+    "The initials have no verified mapping to contributors in this reconstruction.",
+    "The Ghidra instruction table marks the trap at $41FFC6 as an unsupported one-byte instruction. The complete ROM word and two independent surviving interfaces identify it as $A815."
+  ],
+  "verification": {
+    "method": "Run shared verify_module on this module alone. Assemble, link at the ROM address, reject unresolved relocations, extract the text section, compare every byte, and check all five labels.",
+    "command": "python3 /tmp/verify-rom-tail.py",
+    "build_directory": "/tmp/rom-tail-build",
+    "assembler": "/Users/james/bin/Retro68/bin/m68k-apple-macos-as",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "bytes_compared": 64,
+    "entry_points_checked": 5,
+    "matches_rom": true,
+    "result": {
+      "name": "rom_tail",
+      "source": "Reconstruction/Source/ROMTail.a",
+      "source_sha256": "5dc2a2f07364ef0fbcbf52c5dfaa948a28e77d343bf69be5fd25e5b411a631e1",
+      "start": "0x41ffc0",
+      "end_exclusive": "0x420000",
+      "bytes": 64,
+      "sha256": "87bed9b1a96878b8eeda00477cf3995cb72291394edfc1f6a1e7e053a8e9f429",
+      "matches_rom": true
+    },
+    "vale": {
+      "command": "vale Reconstruction/Source/ROMTail.a Reconstruction/Evidence/rom-tail.json /tmp/rom-tail-authored.md",
+      "authored_prose_extraction": "/tmp/rom-tail-authored.md",
+      "errors": 0,
+      "warnings": 0,
+      "suggestions": 0,
+      "preserved_historical_comments_excluded": true
+    }
+  },
+  "preservation": {
+    "description": "The SCSIDrvrs equate retains its original comment. The other comments describe this reconstruction. Original source files and QuickDraw files were not edited.",
+    "original_comments_preserved": 1
+  },
+  "integration_manifest": {
+    "name": "rom_tail",
+    "source": "Reconstruction/Source/ROMTail.a",
+    "start": "0x41ffc0",
+    "end_exclusive": "0x420000",
+    "entry_points": {
+      "ResetAndReloadSCSI": "0x41ffc0",
+      "ROMInitials": "0x41ffd0",
+      "ROMDate": "0x41ffef",
+      "ROMDateEnd": "0x41ffff",
+      "ROMTailEnd": "0x420000"
+    }
+  }
+}

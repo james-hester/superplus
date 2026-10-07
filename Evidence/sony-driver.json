@@ -1,0 +1,1470 @@
+{
+  "module": "Sony disk driver",
+  "status": "complete",
+  "resource_block": {
+    "start": "0x417d28",
+    "body_start": "0x417d30",
+    "end_exclusive": "0x419d98",
+    "length": 8304,
+    "body_length": 8296,
+    "type": "DRVR",
+    "id": 4,
+    "name": ".Sony",
+    "master_pointer_offset": 92,
+    "sha256": "9896c28c8a4f4ccf814991664b31d87a539fba63a1e700024c132c1a8e440d25"
+  },
+  "source": "Reconstruction/Source/Resources/Sony/Sony.a",
+  "originals": [
+    {
+      "path": "Drivers/Sony/Sony.a",
+      "sha256": "8db4f8d58d5bf9aef2846acd3d2b5c0e31759be17b798e49a76b3be7f40d0f89",
+      "role": "Driver source and history, original field expressions, or the ROM resource map."
+    },
+    {
+      "path": "Drivers/Sony/SonyHdr.a",
+      "sha256": "8d4c698ef19a252d51f04874cab24c89357598cf943de884830f49a006aa7af6",
+      "role": "Driver source and history, original field expressions, or the ROM resource map."
+    },
+    {
+      "path": "Interfaces/AIncludes/SonyEqu.a",
+      "sha256": "a50475e8ab79e9a01cdb92877d382da56079d331fa76a411b63252ddd786029a",
+      "role": "Driver source and history, original field expressions, or the ROM resource map."
+    },
+    {
+      "path": "Reconstruction/Evidence/rom-resources.json",
+      "sha256": "5bae6faddaf8a73eebf6a2872d0f66c562147f4f5acc1fa05a022c4c1c9d9863",
+      "role": "Driver source and history, original field expressions, or the ROM resource map."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_numbers": [
+        205,
+        211
+      ],
+      "role": "Original system constants used by the reconstructed source."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_numbers": [
+        619,
+        637,
+        639,
+        700,
+        704,
+        795,
+        956,
+        957,
+        1330,
+        1349,
+        1447
+      ],
+      "role": "Original system constants used by the reconstructed source."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_numbers": [
+        133,
+        156,
+        157,
+        163,
+        202,
+        266
+      ],
+      "role": "Original system constants used by the reconstructed source."
+    },
+    {
+      "path": "Drivers/Sony/SonyRWT.a",
+      "sha256": "7af92d8fc3661787d60a51797ef4fc750dcfec166b61085e8b0244ec2a3ef063",
+      "role": "Routine bodies, surviving comments, and history for the restored source section."
+    },
+    {
+      "path": "Drivers/Sony/SonyUtil.a",
+      "sha256": "e61f11c58c6d0d57ee2c95ac49b795fd64880e06bc88bbfdee7aa2eafc8b960c",
+      "role": "Routine bodies, surviving comments, and history for the restored source section."
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "line_numbers": [
+        364,
+        365,
+        369,
+        371,
+        389,
+        390,
+        391,
+        392,
+        393,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        567,
+        570,
+        577,
+        595
+      ],
+      "role": "Original system or driver constants used by this source section."
+    },
+    {
+      "path": "Drivers/Sony/SonyRead.a",
+      "sha256": "05db36c424a769589d9196f61ee5d73034e13b79fe7bf98b0f61204764a5a376",
+      "role": "Routine bodies, surviving comments, and history for the restored source section."
+    },
+    {
+      "path": "Drivers/Sony/SonyWrite.a",
+      "sha256": "7ad9c70e863a9e6a5d1214a3448444053c0dcd2d87343bbceeaa80d9d4ecdce6",
+      "role": "Routine bodies, surviving comments, and history for the restored source section."
+    },
+    {
+      "path": "Drivers/Sony/SonyFormat.a",
+      "sha256": "b381380a3128ac489a8607c4f6ead02e7467d8b57b99a868656440de8aea3a92",
+      "role": "Routine bodies, surviving comments, and history for the restored source section."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_numbers": [
+        47
+      ],
+      "role": "Original system or driver constants used by this source section."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x417d28",
+      "end_exclusive": "0x41806a",
+      "length": 834,
+      "rom_offset": "0x17d28",
+      "sha256": "1948da9803381d7e2a5d3f1e0dbd0f0b7ce244d796d09a1a77d2022f023af825",
+      "boundary_evidence": "The resource block starts at $417D28. SonyHeader follows at $417D30. CkDrvNum ends at $41806A, where the next original source module starts with DiskPrime in SonyRWT.a."
+    },
+    {
+      "start": "0x41806a",
+      "end_exclusive": "0x41859e",
+      "length": 1332,
+      "rom_offset": "0x1806a",
+      "sha256": "9f4c3da1207a1a6afef2173dcf7eb2271addd8b077e2bdf1c94ab9051fb6cfea",
+      "boundary_evidence": "DiskPrime starts SonyRWT.a at $41806A. DoRecal ends with a word branch at $41859A. SonyUtil.a follows at $41859E with the complete seven-word DrvVarOS table; the provisional Ghidra label at $4185A8 falls inside that table."
+    },
+    {
+      "start": "0x41859e",
+      "end_exclusive": "0x418bde",
+      "length": 1600,
+      "rom_offset": "0x1859e",
+      "sha256": "f33fa2f107a3af901e56bacd2b04538e1eb61034209a92dcaf5d97a4c2c8f80e",
+      "boundary_evidence": "SonyUtil.a starts at $41859E with the seven-entry DrvVarOS table and ends at $418BDE after Check4Disk. The next bytes form the six-byte AdrMks table at the start of SonyRead.a."
+    },
+    {
+      "start": "0x418bde",
+      "end_exclusive": "0x418f2e",
+      "length": 848,
+      "rom_offset": "0x18bde",
+      "sha256": "b4dab3195464f25a55eeefec6393a5bd2404dc2135fe4b558e83ffe9f5e82ecd",
+      "boundary_evidence": "SonyRead.a begins at $418BDE with AdrMks and ends at $418F2E after the 106-byte DNib table. MarkTbl in SonyWrite.a starts at that boundary."
+    },
+    {
+      "start": "0x418f2e",
+      "end_exclusive": "0x4190ca",
+      "length": 412,
+      "rom_offset": "0x18f2e",
+      "sha256": "ce12ef2f5123d71121902e89f834743ad34fc298cebdc581f3afa8762f9bb24b",
+      "boundary_evidence": "SonyWrite.a begins at $418F2E with MarkTbl and ends at $4190CA after the 64-byte Nibl table. SonyFormat.a starts there with its sync and address-mark template."
+    },
+    {
+      "start": "0x4190ca",
+      "end_exclusive": "0x4194d6",
+      "length": 1036,
+      "rom_offset": "0x190ca",
+      "sha256": "4685561f4e5ed8e9a69813b9679bb498f107e52c38a84b4f1931a26758070588",
+      "boundary_evidence": "SonyFormat.a begins with the 28-byte address-mark skeleton at $4190CA. FVPowerUp ends at $4194D6, where DCDPrime starts the removed SonyDCD section."
+    },
+    {
+      "start": "0x4194d6",
+      "end_exclusive": "0x419d98",
+      "length": 2242,
+      "rom_offset": "0x194d6",
+      "sha256": "a6e3020b5488be6363a1ef7477a06f2cff03dfee29bc9bc6bc0205769cf4bcfc",
+      "boundary_evidence": "DCDPrime begins at $4194D6 after FVPowerUp. The status return path ends with JMP (A0) at $419D96, exactly at the $419D98 resource boundary recorded in the ROM map."
+    }
+  ],
+  "entry_points": {
+    "SonyResourceBlock": "0x417d28",
+    "SonyHeader": "0x417d30",
+    "DiskClose": "0x417d48",
+    "InitDskTbl": "0x417d4c",
+    "InitDsk2": "0x417d6a",
+    "InitParams": "0x417d70",
+    "DispSetUp": "0x417d90",
+    "DiskOpen": "0x417d9e",
+    "ChkConnect": "0x417e20",
+    "SonyGrowZone": "0x417ea4",
+    "TCdispose": "0x417ebe",
+    "CtlDCDEject": "0x417eda",
+    "DiskCtlErr": "0x417ede",
+    "DiskDone": "0x417ee0",
+    "CtlTbl": "0x417ef8",
+    "DiskControl": "0x417f12",
+    "jtControl": "0x417f18",
+    "CtlSonyEjc": "0x417fbe",
+    "CtlEjtOK": "0x417ff0",
+    "NewDrvEject": "0x417ffc",
+    "DiskStatus": "0x41801c",
+    "DriveStatus": "0x418032",
+    "CkDrvNum": "0x418040",
+    "SonyOpenEnd": "0x41806a",
+    "DiskPrime": "0x41806a",
+    "jtDiskPrime": "0x418070",
+    "CkWrProt": "0x4180e2",
+    "DskRWOff": "0x4180f6",
+    "DskImmOff": "0x4180fc",
+    "POffExit": "0x4180fe",
+    "DiskErr": "0x418108",
+    "RWPower": "0x418110",
+    "GetTrack": "0x41811c",
+    "CheckCache": "0x4181d4",
+    "TCRdEnbChk": "0x4182a2",
+    "CacheValid": "0x4182bc",
+    "ReSeek": "0x4182dc",
+    "jtReSeek": "0x4182e2",
+    "CheckSpeed": "0x418316",
+    "SpeedChecked": "0x418320",
+    "AdjustSpeed": "0x418336",
+    "CountAdjust": "0x418342",
+    "toDoRecal": "0x41834e",
+    "OnTrack": "0x418352",
+    "OnTrack1": "0x418358",
+    "OTSetUp": "0x41840a",
+    "OTWrite": "0x41843a",
+    "OTRead": "0x418462",
+    "GotSect": "0x418484",
+    "ToDskRWOff": "0x418500",
+    "CheckRead": "0x418504",
+    "EmptyPD": "0x41850c",
+    "AdrDtaErr": "0x41853a",
+    "WrgSectAdr": "0x41855c",
+    "WrgSideTrk": "0x41857e",
+    "DoRecal": "0x418582",
+    "SonyRWTEnd": "0x41859e",
+    "DrvVarOS": "0x41859e",
+    "GetDrive": "0x4185ac",
+    "GetDrv1": "0x4185b4",
+    "AdrDisk": "0x4185c4",
+    "AdrAndSense": "0x4185fe",
+    "Sense": "0x418600",
+    "AdrAndStrb": "0x418618",
+    "Pulse": "0x41861a",
+    "DCDSense": "0x418630",
+    "SetSpeed": "0x41864c",
+    "SetASpeed": "0x4186a6",
+    "PWMTable": "0x41870c",
+    "Seek": "0x418718",
+    "Seek1": "0x418720",
+    "jtSeek": "0x418726",
+    "SeekLp": "0x41873a",
+    "SeekStep": "0x41873e",
+    "SeekEnd": "0x41876c",
+    "SeekEnd1": "0x41877e",
+    "Wait100": "0x41878c",
+    "CheckNew": "0x4187a0",
+    "waitReady": "0x4187b2",
+    "WakeUp": "0x4187d4",
+    "jtWakeUp": "0x4187da",
+    "WakeGo": "0x4187dc",
+    "WakeSetUp": "0x4187ee",
+    "GoWakeIt": "0x418828",
+    "InvalTrkCache": "0x418842",
+    "Recal": "0x418852",
+    "jtRecal": "0x418858",
+    "SetIWMMode": "0x418860",
+    "RecalSteps": "0x4188a8",
+    "SlowLoop": "0x4188aa",
+    "ReCalled": "0x4188dc",
+    "RecalFail": "0x4188e0",
+    "RecalExit": "0x4188e2",
+    "PowerDown": "0x4188e8",
+    "FastPower": "0x418906",
+    "RWPowerUp": "0x41890a",
+    "PowerUp": "0x41890e",
+    "DiskSelect": "0x41892a",
+    "DiskSel1": "0x41892e",
+    "jtDiskSel": "0x418934",
+    "SpeedLimits": "0x4189d0",
+    "MakeSpdTbl": "0x4189e4",
+    "jtMakeSpdTbl": "0x4189ea",
+    "GetFreq": "0x418a5e",
+    "MeasureSpeed": "0x418a6c",
+    "FigTrkSpeed": "0x418a8a",
+    "jtFigTrkSpd": "0x418a90",
+    "StartTachTimer": "0x418ad4",
+    "GetTachEdge": "0x418b0a",
+    "DskRtn": "0x418b22",
+    "TachWaitHigh": "0x418b2a",
+    "DiskVBLTask": "0x418b40",
+    "DiskVBLBody": "0x418b46",
+    "DiskVBLExit": "0x418b84",
+    "Check4Disk": "0x418b88",
+    "CkDIP": "0x418ba4",
+    "CkInval": "0x418bd4",
+    "CkExit": "0x418bdc",
+    "SonyUtilEnd": "0x418bde",
+    "AdrMks": "0x418bde",
+    "SetUpPoll": "0x418be4",
+    "jtSetUpPoll": "0x418bea",
+    "RdAddrSetup": "0x418c04",
+    "RdAddr": "0x418c18",
+    "jtRdAddr": "0x418c22",
+    "RdAddr1": "0x418c5c",
+    "RdAddrMk": "0x418c7a",
+    "RdAddrEnd": "0x418cba",
+    "RdAddrXit": "0x418ccc",
+    "BadCkSum": "0x418cd0",
+    "NoSlip": "0x418cd4",
+    "DtaMks": "0x418cd8",
+    "RdData": "0x418cde",
+    "jtRdData": "0x418ce8",
+    "RdData1": "0x418cfe",
+    "RdData2": "0x418d28",
+    "RdData3": "0x418d8a",
+    "RdData3A": "0x418d90",
+    "RVerify": "0x418de6",
+    "RdVer1": "0x418dec",
+    "RdCkSum": "0x418e48",
+    "DCkSumBad": "0x418e9e",
+    "RdVerErr": "0x418ea2",
+    "RdSlip": "0x418ea6",
+    "RdDataXit": "0x418ebc",
+    "NoDSlip": "0x418ec0",
+    "DNib": "0x418ec4",
+    "SonyReadEnd": "0x418f2e",
+    "MarkTbl": "0x418f2e",
+    "WrData": "0x418f36",
+    "jtWrData": "0x418f40",
+    "WrHead": "0x418f68",
+    "WrDataSw": "0x418f8c",
+    "WrData1": "0x418f8e",
+    "WrData2": "0x418fb8",
+    "WrLast2": "0x418ff4",
+    "WrCkSum": "0x419026",
+    "WrSlip": "0x419062",
+    "TrailMks": "0x419086",
+    "Nibl": "0x41908a",
+    "SonyWriteEnd": "0x4190ca",
+    "SyncTbl": "0x4190ca",
+    "AdrMkTbl": "0x4190ca",
+    "CtlFormat": "0x4190e6",
+    "TrackLoop": "0x41913a",
+    "FmtVerOK": "0x41915a",
+    "FmtVerExit": "0x41915c",
+    "FmtSpeedLimits": "0x419168",
+    "SpdSeek": "0x41917c",
+    "FormatTrack": "0x4191e6",
+    "DoFormat": "0x419282",
+    "FillInMarks": "0x419362",
+    "CtlVerify": "0x4193ce",
+    "VerTrack": "0x419410",
+    "toEmptyPD": "0x4194ae",
+    "FmtVerSeek": "0x4194b6",
+    "SyncCall": "0x4194ba",
+    "FVPowerUp": "0x4194d0",
+    "SonyFormatEnd": "0x4194d6",
+    "DCDPrime": "0x4194d6",
+    "DCDSelectInterface": "0x4194ea",
+    "DCDDriveStatusReady": "0x419508",
+    "DCDSetBuffers": "0x419544",
+    "DCDSetCommand": "0x419586",
+    "DCDSetBlockCount": "0x419590",
+    "DCDStartBlocks": "0x41959e",
+    "DCDClearReset": "0x4195aa",
+    "DCDSendBlocks": "0x4195ae",
+    "DCDWaitResponse": "0x4195b8",
+    "DCDReadResponse": "0x4195d0",
+    "DCDRetryBlocks": "0x4195dc",
+    "DCDResetForRetry": "0x4195fe",
+    "DCDRetryCommand": "0x419608",
+    "DCDBlockError": "0x41960a",
+    "DCDReturnBlockError": "0x419616",
+    "DCDBlocksDone": "0x419618",
+    "DCDUpdateCount": "0x41962a",
+    "DCDDone": "0x419648",
+    "DCDWaitReady": "0x419658",
+    "DCDPollReady": "0x41965a",
+    "DCDQuickPoll": "0x41965c",
+    "DCDReadyReturn": "0x41967a",
+    "DCDSetBlockCommand": "0x41967c",
+    "DCDMaskCommand": "0x4196a4",
+    "SendCmd": "0x4196ac",
+    "jtSendCmd": "0x4196b2",
+    "DCDPrepareWriteTags": "0x4196d6",
+    "DCDSetGroupCounts": "0x4196fa",
+    "DCDNextBlock": "0x419712",
+    "DCDSendNextBlock": "0x419730",
+    "DCDSendPacket": "0x41974c",
+    "DCDSendReturn": "0x419754",
+    "DCDReceiveCmd": "0x419756",
+    "DCDCheckReadTags": "0x4197a2",
+    "DCDCopySystemTags": "0x4197b8",
+    "DCDCheckStatus": "0x4197d4",
+    "DCDResponseReturn": "0x4197f6",
+    "DCDCommunicationError": "0x4197fe",
+    "DCDRecordStatus": "0x419802",
+    "DCDReadPacket": "0x41980e",
+    "DCDReadSync": "0x419846",
+    "DCDReadGroupTimeout": "0x4198b6",
+    "DCDReadGroups": "0x4198bc",
+    "DCDReadGroupLoop": "0x4198c4",
+    "DCDReadHoldoff": "0x419974",
+    "DCDReadHoldoffTimeout": "0x41999c",
+    "DCDReadLastGroup": "0x4199a0",
+    "DCDReadPacketExit": "0x419a0e",
+    "DCDWritePacket": "0x419a20",
+    "DCDEncodeCommand": "0x419a40",
+    "DCDWriteWaitLow": "0x419ab0",
+    "DCDWriteDelay": "0x419ad4",
+    "DCDWriteGroups": "0x419afc",
+    "DCDWriteGroupCount": "0x419bae",
+    "DCDWriteHoldoff": "0x419bb4",
+    "DCDWriteLastGroup": "0x419bf0",
+    "DCDWriteWaitHigh": "0x419c4a",
+    "DCDWritePacketExit": "0x419c56",
+    "DCDReset": "0x419c66",
+    "jtDCDReset": "0x419c6c",
+    "DCDResetPoll": "0x419ca0",
+    "DCDResetOK": "0x419cb6",
+    "DCDResetTimeout": "0x419cba",
+    "DCDIconReady": "0x419cc2",
+    "DCDIconDone": "0x419cd2",
+    "ctlDCDIcon": "0x419cd6",
+    "DCDGetStatus": "0x419ce8",
+    "ctlDCDVerify": "0x419cec",
+    "ctlDCDFormat": "0x419cf0",
+    "DCDControl": "0x419cf2",
+    "DCDControlRetry": "0x419d04",
+    "DCDControlSend": "0x419d42",
+    "DCDControlError": "0x419d48",
+    "DCDControlReset": "0x419d60",
+    "DCDControlReceive": "0x419d70",
+    "DCDControlFailed": "0x419d82",
+    "DCDControlReturn": "0x419d84",
+    "DCDStatusReturn": "0x419d90",
+    "SonyDCDEnd": "0x419d98"
+  },
+  "integration_manifest": {
+    "name": "sony-open",
+    "source": "Reconstruction/Source/Resources/Sony/Sony.a",
+    "start": "0x417d28",
+    "end_exclusive": "0x41806a",
+    "entry_points": {
+      "SonyResourceBlock": "0x417d28",
+      "SonyHeader": "0x417d30",
+      "DiskClose": "0x417d48",
+      "InitDskTbl": "0x417d4c",
+      "InitDsk2": "0x417d6a",
+      "InitParams": "0x417d70",
+      "DispSetUp": "0x417d90",
+      "DiskOpen": "0x417d9e",
+      "ChkConnect": "0x417e20",
+      "SonyGrowZone": "0x417ea4",
+      "TCdispose": "0x417ebe",
+      "CtlDCDEject": "0x417eda",
+      "DiskCtlErr": "0x417ede",
+      "DiskDone": "0x417ee0",
+      "CtlTbl": "0x417ef8",
+      "DiskControl": "0x417f12",
+      "jtControl": "0x417f18",
+      "CtlSonyEjc": "0x417fbe",
+      "CtlEjtOK": "0x417ff0",
+      "NewDrvEject": "0x417ffc",
+      "DiskStatus": "0x41801c",
+      "DriveStatus": "0x418032",
+      "CkDrvNum": "0x418040",
+      "SonyOpenEnd": "0x41806a"
+    }
+  },
+  "changes": [
+    {
+      "change": "Restore the direct driver entry table and version 1. Include the eight-byte ROM resource block header.",
+      "evidence": "The ROM map gives DRVR 4, .Sony, an 8,296-byte body, flags $C0, and master-pointer offset $5C. SonyHdr.a history says the driver header moved from Sony.a in May 1989."
+    },
+    {
+      "change": "Restore six drive numbers: two floppy drives and four direct-connect disks. Retain the pass-through probe and shared DCE entry.",
+      "evidence": "DiskOpen tests drive 7, iterates drives 1 through 6, and selects the DCD path from drive 3. Sony.a history records drive-number translation and later removal of DCD conditionals."
+    },
+    {
+      "change": "Restore the track-cache GrowZone hook and original control dispatch table.",
+      "evidence": "The ROM saves the previous GrowZone procedure, releases the cache, and calls the saved procedure if necessary. Each control table entry has separate DCD and floppy offsets. Sony.a records removal of the GrowZone hook in November 1986 and dispatch changes in August 1986."
+    },
+    {
+      "change": "Restore the cache memory-size check, 12-sector buffer, 30 ms head-settle time, and original eject path.",
+      "evidence": "The ROM compares the high word of MemTop with 2, allocates 524 times 12 bytes, stores 300 in the 100-microsecond head-settle field, and uses a DBMI eject loop starting at 15. Later source adds MFM and power-manager behavior."
+    },
+    {
+      "change": "Preserve the surviving headers, applicable history, and comments; mark restored commentary as Reconstruction notes.",
+      "evidence": "Sony.a retains the pre-1986 history. Comments copied from later source remain only where the same code applies, so an inline revision tag does not date the target ROM."
+    },
+    {
+      "change": "Use explicit branch sizes, PC-relative operands, and a named end label for the parameter-table length.",
+      "evidence": "The shared verifier accepts a documented MPW subset. Source-relative EQU expressions keep table offsets in the same section and prevent GNU assembler jump-table stubs. These syntax choices describe the checked bytes without claiming the spelling of the unavailable original source."
+    },
+    {
+      "change": "Restore DCD dispatch, PWM speed selection, and thermal-drift adjustment in the read/write track path.",
+      "evidence": "DiskPrime branches to the DCD path for drives above 2. RWPower calls SetSpeed, and ReSeek checks elapsed ticks against CkDelta before measuring speed and adjusting the drive table. The 1992 history records removal of supportsPWM and supportsDCD paths."
+    },
+    {
+      "change": "Restore cache reads during writes and the older cache-read result handling.",
+      "evidence": "The ROM calls TCRdEnbChk after invalidating sectors written to the disk. SonyRWT.a records disabling that call in August 1986 because cached tags could become stale. After RdData, the target restores SonyVars without the GetDrv1 and D6 updates added in 1988."
+    },
+    {
+      "change": "Restore unconditional sector waits for unfinished writes and the original retry behavior.",
+      "evidence": "The target has no 1989 NewIntf exemption for one-to-one writes and no 1992 DisableRetries flag. It retains explicit word calls to EmptyPD in GotSect, with short calls in the later error paths."
+    },
+    {
+      "change": "Restore the complete PWM path, including speed-code buffer generation, five speed-class limits, calibration, and VIA timer 2 tach measurement.",
+      "evidence": "The surviving source retains the routine headings but removes supportsPWM paths in 1992. ROM instructions supply the removed bodies. SetASpeed writes both PWM buffers; MakeSpdTbl measures codes 128 and 256; FigTrkSpeed times tach transitions and polls the SCC inline."
+    },
+    {
+      "change": "Restore DCD presence sensing and external-port selection, with a seven-entry physical-drive offset table.",
+      "evidence": "GetDrv1 indexes DrvVarOS directly. The seventh entry duplicates drive 6 for the pass-through probe. The target has no later logical-drive translation or MFM paths."
+    },
+    {
+      "change": "Restore the earlier seek, recalibration, and wakeup sequences.",
+      "evidence": "The ROM sets seek direction on each step, keeps IWM mode setup inside Recal, and halves the timed recalibration delay for new-interface drives. WakeGo saves registers after WakeSetUp; the 1986 history records changing that order to address an interrupt race."
+    },
+    {
+      "change": "Restore the original VBL insertion checks and interrupt level.",
+      "evidence": "The ROM masks VIA interrupts with $0100 at entry and checks floppy and DCD insertion. It predates the 1986 eject-button polling and the later change to interrupt mask $0300. Reconstructed internal labels identify ROM control flow without claiming original source spelling."
+    },
+    {
+      "change": "Restore fixed hardware addresses and inline SCC polling at the original points in the read loops.",
+      "evidence": "SetUpPoll loads $9FFFFE and $EFFFFE directly. The address reader polls at four points; it has no later polling calls between each decoded header byte. SonyRead.a records replacing absolute hardware addresses in 1986 and 1988 and introducing the polling macro in 1991."
+    },
+    {
+      "change": "Restore the 127-count first-byte timeout and original short branches.",
+      "evidence": "The ROM loads D2 with MOVEQ #127 and addresses the IWM data register directly. Later source increases the timeout and adds processor-speed handling. All address marks, data marks, and DNib bytes match the surviving tables."
+    },
+    {
+      "change": "Restore the absolute IWM addresses and first-byte write order.",
+      "evidence": "The ROM loads A3 with $DFFBFF and writes the first slip byte to $DFFFFF before clearing D6 and D7. It leaves write mode by reading $DFFDFF. Later source uses hardware-base pointers and adds SWIM2 handling."
+    },
+    {
+      "change": "Retain the original checksum pipeline and tables, with inline SCC polling and no later serialization delays.",
+      "evidence": "All MarkTbl, TrailMks, and Nibl data match. The write loop instructions reproduce the ROM exactly after removing later MFM and SWIM2 dispatch and expanding the original poll sequence at the verified locations."
+    },
+    {
+      "change": "Restore the format setup and PWM speed check.",
+      "reason": "The ROM uses seven sync groups, a ten-word frequency table, and MeasureSpeed adjustment for older drives. Later format versions, write-protection checks, MFM paths, and power manager paths are absent."
+    },
+    {
+      "change": "Restore synchronous completion through DskErr and fixed IWM addresses.",
+      "reason": "The ROM predates the Active completion flag and relative IWM address changes. Inline SCC polling and the original format and verify loops match all 1036 bytes."
+    },
+    {
+      "change": "Reconstruct the removed SonyDCD section from ROM instructions.",
+      "reason": "SonyHdr.a records the removal of DCD support in April 1992, and this tree lacks SonyDCD.a. The reconstructed read/write, packet encoding, handshake, reset, and control routines retain the surviving SonyEqu.a field expressions and protocol constants."
+    },
+    {
+      "change": "Record the provenance of new DCD labels and comments.",
+      "reason": "Vector names and shared constants survive in the original files. Other labels and comments describe the recovered instructions; they do not claim to reproduce the missing source text."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "SonyResourceEnd",
+      "address": "0x419d98"
+    },
+    {
+      "name": "DiskPrime",
+      "address": "0x41806a"
+    },
+    {
+      "name": "jtDiskPrime",
+      "address": "0x418070"
+    },
+    {
+      "name": "jtFigTrkSpd",
+      "address": "0x418a90"
+    },
+    {
+      "name": "jtRdAddr",
+      "address": "0x418c22"
+    },
+    {
+      "name": "jtRdData",
+      "address": "0x418ce8"
+    },
+    {
+      "name": "jtWrData",
+      "address": "0x418f40"
+    },
+    {
+      "name": "jtSeek",
+      "address": "0x418726"
+    },
+    {
+      "name": "jtSetUpPoll",
+      "address": "0x418bea"
+    },
+    {
+      "name": "jtRecal",
+      "address": "0x418858"
+    },
+    {
+      "name": "jtWakeUp",
+      "address": "0x4187da"
+    },
+    {
+      "name": "jtReSeek",
+      "address": "0x4182e2"
+    },
+    {
+      "name": "jtMakeSpdTbl",
+      "address": "0x4189ea"
+    },
+    {
+      "name": "AdrDisk",
+      "address": "0x4185c4"
+    },
+    {
+      "name": "SetSpeed",
+      "address": "0x41864c"
+    },
+    {
+      "name": "Nibl",
+      "address": "0x41908a"
+    },
+    {
+      "name": "jtDiskSel",
+      "address": "0x418934"
+    },
+    {
+      "name": "jtSendCmd",
+      "address": "0x4196b2"
+    },
+    {
+      "name": "jtDCDReset",
+      "address": "0x419c6c"
+    },
+    {
+      "name": "DiskVBLTask",
+      "address": "0x418b40"
+    },
+    {
+      "name": "DiskSelect",
+      "address": "0x41892a"
+    },
+    {
+      "name": "DCDSense",
+      "address": "0x418630"
+    },
+    {
+      "name": "GetDrive",
+      "address": "0x4185ac"
+    },
+    {
+      "name": "AdrAndSense",
+      "address": "0x4185fe"
+    },
+    {
+      "name": "InvalTrkCache",
+      "address": "0x418842"
+    },
+    {
+      "name": "PowerDown",
+      "address": "0x4188e8"
+    },
+    {
+      "name": "WakeUp",
+      "address": "0x4187d4"
+    },
+    {
+      "name": "GetDrv1",
+      "address": "0x4185b4"
+    },
+    {
+      "name": "ctlDCDFormat",
+      "address": "0x419cf0"
+    },
+    {
+      "name": "ctlDCDVerify",
+      "address": "0x419cec"
+    },
+    {
+      "name": "ctlDCDIcon",
+      "address": "0x419cd6"
+    },
+    {
+      "name": "CtlFormat",
+      "address": "0x4190e6"
+    },
+    {
+      "name": "CtlVerify",
+      "address": "0x4193ce"
+    }
+  ],
+  "verification": {
+    "method": "The shared verifier assembles each completed section for the 68000, links it at its recorded address, and compares every emitted byte and each recorded label with the ROM.",
+    "result": "All seven source sections match the complete 8304-byte resource block.",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Resources/Sony/Sony.a",
+        "sha256": "d9104aa63b55b4e0855ad47980ed2d2105d2a44081a192015156efed1aae74e0"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyDCD.a",
+        "sha256": "2d18de2e8634fb3e1746329b6422d06856feb1cc139fda5cfb0344e58a97e5ce"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyDCDEqu.a",
+        "sha256": "aec4c4bcc2b189b3c9d976bc2f64612ee37a755d2b74754a7a11da8511709303"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+        "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyFormat.a",
+        "sha256": "fab15a7e9bb5cbfa583b43a18b666951999b863041866764a88ee38332f9d366"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyFormatEqu.a",
+        "sha256": "9ddba503a4fca54fef888a70462dc1d1aab068698940fb84180a15a88881ff03"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyRWT.a",
+        "sha256": "7d91f022456b70a659392d945d007c3ed156eb11c5a7810febb6eec55178f2c6"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyRWTEqu.a",
+        "sha256": "835a0d120cbe1424b9f799b4b367f2ecef5f797eb48d3a856f8c963aea239693"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyRead.a",
+        "sha256": "2f3805fd91ca1251d6c8a757d577a46da1483158694ba99d5e1d081b8a253584"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyReadEqu.a",
+        "sha256": "b106364fb4dd19e72b4f9937ea53804c7a9d6b79538c4252045f2e4712da2b6e"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyUtil.a",
+        "sha256": "5bbcadd180c68dc66e1ed8baf0e34350dbe484244826c7a32a367b1e4aad9048"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyUtilEqu.a",
+        "sha256": "409b9346820ac8390089d866cdea6e1cd2905bc984b7041085927757da218eb1"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyWrite.a",
+        "sha256": "c4a8ead7812b875c25b9e77f71e6e75ab3dccd2a20a8b6adade95874a60c49b2"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/Sony/SonyWriteEqu.a",
+        "sha256": "42356da024032c603ae938d3f98a49cf44ffcef223f4d3c0168a030aab7441ef"
+      }
+    ],
+    "matched_bytes": 8304,
+    "entry_points_checked": 259,
+    "limits": [
+      "The byte comparison does not execute floppy or DCD I/O, interrupts, cache disposal, or memory handling.",
+      "This comparison proves instruction and table bytes, including call targets. It does not establish hardware timing or the behavior of external traps.",
+      "The original Mac Plus source remains unavailable. Restored names and expressions do not establish its exact spelling."
+    ],
+    "sections": [
+      {
+        "name": "sony-open",
+        "source": "Reconstruction/Source/Resources/Sony/Sony.a",
+        "source_sha256": "d9104aa63b55b4e0855ad47980ed2d2105d2a44081a192015156efed1aae74e0",
+        "start": "0x417d28",
+        "end_exclusive": "0x41806a",
+        "bytes": 834,
+        "sha256": "1948da9803381d7e2a5d3f1e0dbd0f0b7ce244d796d09a1a77d2022f023af825",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/Sony.a",
+            "sha256": "d9104aa63b55b4e0855ad47980ed2d2105d2a44081a192015156efed1aae74e0"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          }
+        ]
+      },
+      {
+        "name": "sony-rwt",
+        "source": "Reconstruction/Source/Resources/Sony/SonyRWT.a",
+        "source_sha256": "7d91f022456b70a659392d945d007c3ed156eb11c5a7810febb6eec55178f2c6",
+        "start": "0x41806a",
+        "end_exclusive": "0x41859e",
+        "bytes": 1332,
+        "sha256": "9f4c3da1207a1a6afef2173dcf7eb2271addd8b077e2bdf1c94ab9051fb6cfea",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyRWT.a",
+            "sha256": "7d91f022456b70a659392d945d007c3ed156eb11c5a7810febb6eec55178f2c6"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyRWTEqu.a",
+            "sha256": "835a0d120cbe1424b9f799b4b367f2ecef5f797eb48d3a856f8c963aea239693"
+          }
+        ]
+      },
+      {
+        "name": "sony-util",
+        "source": "Reconstruction/Source/Resources/Sony/SonyUtil.a",
+        "source_sha256": "5bbcadd180c68dc66e1ed8baf0e34350dbe484244826c7a32a367b1e4aad9048",
+        "start": "0x41859e",
+        "end_exclusive": "0x418bde",
+        "bytes": 1600,
+        "sha256": "f33fa2f107a3af901e56bacd2b04538e1eb61034209a92dcaf5d97a4c2c8f80e",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyUtil.a",
+            "sha256": "5bbcadd180c68dc66e1ed8baf0e34350dbe484244826c7a32a367b1e4aad9048"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyUtilEqu.a",
+            "sha256": "409b9346820ac8390089d866cdea6e1cd2905bc984b7041085927757da218eb1"
+          }
+        ]
+      },
+      {
+        "name": "sony-read",
+        "source": "Reconstruction/Source/Resources/Sony/SonyRead.a",
+        "source_sha256": "2f3805fd91ca1251d6c8a757d577a46da1483158694ba99d5e1d081b8a253584",
+        "start": "0x418bde",
+        "end_exclusive": "0x418f2e",
+        "bytes": 848,
+        "sha256": "b4dab3195464f25a55eeefec6393a5bd2404dc2135fe4b558e83ffe9f5e82ecd",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyRead.a",
+            "sha256": "2f3805fd91ca1251d6c8a757d577a46da1483158694ba99d5e1d081b8a253584"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyReadEqu.a",
+            "sha256": "b106364fb4dd19e72b4f9937ea53804c7a9d6b79538c4252045f2e4712da2b6e"
+          }
+        ]
+      },
+      {
+        "name": "sony-write",
+        "source": "Reconstruction/Source/Resources/Sony/SonyWrite.a",
+        "source_sha256": "c4a8ead7812b875c25b9e77f71e6e75ab3dccd2a20a8b6adade95874a60c49b2",
+        "start": "0x418f2e",
+        "end_exclusive": "0x4190ca",
+        "bytes": 412,
+        "sha256": "ce12ef2f5123d71121902e89f834743ad34fc298cebdc581f3afa8762f9bb24b",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyWrite.a",
+            "sha256": "c4a8ead7812b875c25b9e77f71e6e75ab3dccd2a20a8b6adade95874a60c49b2"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyWriteEqu.a",
+            "sha256": "42356da024032c603ae938d3f98a49cf44ffcef223f4d3c0168a030aab7441ef"
+          }
+        ]
+      },
+      {
+        "name": "sony-format",
+        "source": "Reconstruction/Source/Resources/Sony/SonyFormat.a",
+        "source_sha256": "fab15a7e9bb5cbfa583b43a18b666951999b863041866764a88ee38332f9d366",
+        "start": "0x4190ca",
+        "end_exclusive": "0x4194d6",
+        "bytes": 1036,
+        "sha256": "4685561f4e5ed8e9a69813b9679bb498f107e52c38a84b4f1931a26758070588",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyFormat.a",
+            "sha256": "fab15a7e9bb5cbfa583b43a18b666951999b863041866764a88ee38332f9d366"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyFormatEqu.a",
+            "sha256": "9ddba503a4fca54fef888a70462dc1d1aab068698940fb84180a15a88881ff03"
+          }
+        ]
+      },
+      {
+        "name": "sony-dcd",
+        "source": "Reconstruction/Source/Resources/Sony/SonyDCD.a",
+        "source_sha256": "2d18de2e8634fb3e1746329b6422d06856feb1cc139fda5cfb0344e58a97e5ce",
+        "start": "0x4194d6",
+        "end_exclusive": "0x419d98",
+        "bytes": 2242,
+        "sha256": "a6e3020b5488be6363a1ef7477a06f2cff03dfee29bc9bc6bc0205769cf4bcfc",
+        "matches_rom": true,
+        "source_dependencies": [
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyDCD.a",
+            "sha256": "2d18de2e8634fb3e1746329b6422d06856feb1cc139fda5cfb0344e58a97e5ce"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyDCDEqu.a",
+            "sha256": "aec4c4bcc2b189b3c9d976bc2f64612ee37a755d2b74754a7a11da8511709303"
+          },
+          {
+            "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+            "sha256": "95c1e25b4a8d54cedef0c5b6adc2e929a10da8eaa5672d0830408ddc950b01fc"
+          }
+        ]
+      }
+    ],
+    "combined_output": {
+      "bytes": 8304,
+      "sha256": "9896c28c8a4f4ccf814991664b31d87a539fba63a1e700024c132c1a8e440d25",
+      "matches_rom": true,
+      "method": "Concatenate the seven assembled sections in address order and compare them with the complete resource block."
+    }
+  },
+  "remaining_source_sections": [],
+  "integration_manifests": [
+    {
+      "name": "sony-open",
+      "source": "Reconstruction/Source/Resources/Sony/Sony.a",
+      "start": "0x417d28",
+      "end_exclusive": "0x41806a",
+      "entry_points": {
+        "SonyResourceBlock": "0x417d28",
+        "SonyHeader": "0x417d30",
+        "DiskClose": "0x417d48",
+        "InitDskTbl": "0x417d4c",
+        "InitDsk2": "0x417d6a",
+        "InitParams": "0x417d70",
+        "DispSetUp": "0x417d90",
+        "DiskOpen": "0x417d9e",
+        "ChkConnect": "0x417e20",
+        "SonyGrowZone": "0x417ea4",
+        "TCdispose": "0x417ebe",
+        "CtlDCDEject": "0x417eda",
+        "DiskCtlErr": "0x417ede",
+        "DiskDone": "0x417ee0",
+        "CtlTbl": "0x417ef8",
+        "DiskControl": "0x417f12",
+        "jtControl": "0x417f18",
+        "CtlSonyEjc": "0x417fbe",
+        "CtlEjtOK": "0x417ff0",
+        "NewDrvEject": "0x417ffc",
+        "DiskStatus": "0x41801c",
+        "DriveStatus": "0x418032",
+        "CkDrvNum": "0x418040",
+        "SonyOpenEnd": "0x41806a"
+      }
+    },
+    {
+      "name": "sony-rwt",
+      "source": "Reconstruction/Source/Resources/Sony/SonyRWT.a",
+      "start": "0x41806a",
+      "end_exclusive": "0x41859e",
+      "entry_points": {
+        "DiskPrime": "0x41806a",
+        "jtDiskPrime": "0x418070",
+        "CkWrProt": "0x4180e2",
+        "DskRWOff": "0x4180f6",
+        "DskImmOff": "0x4180fc",
+        "POffExit": "0x4180fe",
+        "DiskErr": "0x418108",
+        "RWPower": "0x418110",
+        "GetTrack": "0x41811c",
+        "CheckCache": "0x4181d4",
+        "TCRdEnbChk": "0x4182a2",
+        "CacheValid": "0x4182bc",
+        "ReSeek": "0x4182dc",
+        "jtReSeek": "0x4182e2",
+        "CheckSpeed": "0x418316",
+        "SpeedChecked": "0x418320",
+        "AdjustSpeed": "0x418336",
+        "CountAdjust": "0x418342",
+        "toDoRecal": "0x41834e",
+        "OnTrack": "0x418352",
+        "OnTrack1": "0x418358",
+        "OTSetUp": "0x41840a",
+        "OTWrite": "0x41843a",
+        "OTRead": "0x418462",
+        "GotSect": "0x418484",
+        "ToDskRWOff": "0x418500",
+        "CheckRead": "0x418504",
+        "EmptyPD": "0x41850c",
+        "AdrDtaErr": "0x41853a",
+        "WrgSectAdr": "0x41855c",
+        "WrgSideTrk": "0x41857e",
+        "DoRecal": "0x418582",
+        "SonyRWTEnd": "0x41859e"
+      }
+    },
+    {
+      "name": "sony-util",
+      "source": "Reconstruction/Source/Resources/Sony/SonyUtil.a",
+      "start": "0x41859e",
+      "end_exclusive": "0x418bde",
+      "entry_points": {
+        "DrvVarOS": "0x41859e",
+        "GetDrive": "0x4185ac",
+        "GetDrv1": "0x4185b4",
+        "AdrDisk": "0x4185c4",
+        "AdrAndSense": "0x4185fe",
+        "Sense": "0x418600",
+        "AdrAndStrb": "0x418618",
+        "Pulse": "0x41861a",
+        "DCDSense": "0x418630",
+        "SetSpeed": "0x41864c",
+        "SetASpeed": "0x4186a6",
+        "PWMTable": "0x41870c",
+        "Seek": "0x418718",
+        "Seek1": "0x418720",
+        "jtSeek": "0x418726",
+        "SeekLp": "0x41873a",
+        "SeekStep": "0x41873e",
+        "SeekEnd": "0x41876c",
+        "SeekEnd1": "0x41877e",
+        "Wait100": "0x41878c",
+        "CheckNew": "0x4187a0",
+        "waitReady": "0x4187b2",
+        "WakeUp": "0x4187d4",
+        "jtWakeUp": "0x4187da",
+        "WakeGo": "0x4187dc",
+        "WakeSetUp": "0x4187ee",
+        "GoWakeIt": "0x418828",
+        "InvalTrkCache": "0x418842",
+        "Recal": "0x418852",
+        "jtRecal": "0x418858",
+        "SetIWMMode": "0x418860",
+        "RecalSteps": "0x4188a8",
+        "SlowLoop": "0x4188aa",
+        "ReCalled": "0x4188dc",
+        "RecalFail": "0x4188e0",
+        "RecalExit": "0x4188e2",
+        "PowerDown": "0x4188e8",
+        "FastPower": "0x418906",
+        "RWPowerUp": "0x41890a",
+        "PowerUp": "0x41890e",
+        "DiskSelect": "0x41892a",
+        "DiskSel1": "0x41892e",
+        "jtDiskSel": "0x418934",
+        "SpeedLimits": "0x4189d0",
+        "MakeSpdTbl": "0x4189e4",
+        "jtMakeSpdTbl": "0x4189ea",
+        "GetFreq": "0x418a5e",
+        "MeasureSpeed": "0x418a6c",
+        "FigTrkSpeed": "0x418a8a",
+        "jtFigTrkSpd": "0x418a90",
+        "StartTachTimer": "0x418ad4",
+        "GetTachEdge": "0x418b0a",
+        "DskRtn": "0x418b22",
+        "TachWaitHigh": "0x418b2a",
+        "DiskVBLTask": "0x418b40",
+        "DiskVBLBody": "0x418b46",
+        "DiskVBLExit": "0x418b84",
+        "Check4Disk": "0x418b88",
+        "CkDIP": "0x418ba4",
+        "CkInval": "0x418bd4",
+        "CkExit": "0x418bdc",
+        "SonyUtilEnd": "0x418bde"
+      }
+    },
+    {
+      "name": "sony-read",
+      "source": "Reconstruction/Source/Resources/Sony/SonyRead.a",
+      "start": "0x418bde",
+      "end_exclusive": "0x418f2e",
+      "entry_points": {
+        "AdrMks": "0x418bde",
+        "SetUpPoll": "0x418be4",
+        "jtSetUpPoll": "0x418bea",
+        "RdAddrSetup": "0x418c04",
+        "RdAddr": "0x418c18",
+        "jtRdAddr": "0x418c22",
+        "RdAddr1": "0x418c5c",
+        "RdAddrMk": "0x418c7a",
+        "RdAddrEnd": "0x418cba",
+        "RdAddrXit": "0x418ccc",
+        "BadCkSum": "0x418cd0",
+        "NoSlip": "0x418cd4",
+        "DtaMks": "0x418cd8",
+        "RdData": "0x418cde",
+        "jtRdData": "0x418ce8",
+        "RdData1": "0x418cfe",
+        "RdData2": "0x418d28",
+        "RdData3": "0x418d8a",
+        "RdData3A": "0x418d90",
+        "RVerify": "0x418de6",
+        "RdVer1": "0x418dec",
+        "RdCkSum": "0x418e48",
+        "DCkSumBad": "0x418e9e",
+        "RdVerErr": "0x418ea2",
+        "RdSlip": "0x418ea6",
+        "RdDataXit": "0x418ebc",
+        "NoDSlip": "0x418ec0",
+        "DNib": "0x418ec4",
+        "SonyReadEnd": "0x418f2e"
+      }
+    },
+    {
+      "name": "sony-write",
+      "source": "Reconstruction/Source/Resources/Sony/SonyWrite.a",
+      "start": "0x418f2e",
+      "end_exclusive": "0x4190ca",
+      "entry_points": {
+        "MarkTbl": "0x418f2e",
+        "WrData": "0x418f36",
+        "jtWrData": "0x418f40",
+        "WrHead": "0x418f68",
+        "WrDataSw": "0x418f8c",
+        "WrData1": "0x418f8e",
+        "WrData2": "0x418fb8",
+        "WrLast2": "0x418ff4",
+        "WrCkSum": "0x419026",
+        "WrSlip": "0x419062",
+        "TrailMks": "0x419086",
+        "Nibl": "0x41908a",
+        "SonyWriteEnd": "0x4190ca"
+      }
+    },
+    {
+      "name": "sony-format",
+      "source": "Reconstruction/Source/Resources/Sony/SonyFormat.a",
+      "start": "0x4190ca",
+      "end_exclusive": "0x4194d6",
+      "entry_points": {
+        "SyncTbl": "0x4190ca",
+        "AdrMkTbl": "0x4190ca",
+        "CtlFormat": "0x4190e6",
+        "TrackLoop": "0x41913a",
+        "FmtVerOK": "0x41915a",
+        "FmtVerExit": "0x41915c",
+        "FmtSpeedLimits": "0x419168",
+        "SpdSeek": "0x41917c",
+        "FormatTrack": "0x4191e6",
+        "DoFormat": "0x419282",
+        "FillInMarks": "0x419362",
+        "CtlVerify": "0x4193ce",
+        "VerTrack": "0x419410",
+        "toEmptyPD": "0x4194ae",
+        "FmtVerSeek": "0x4194b6",
+        "SyncCall": "0x4194ba",
+        "FVPowerUp": "0x4194d0",
+        "SonyFormatEnd": "0x4194d6"
+      }
+    },
+    {
+      "name": "sony-dcd",
+      "source": "Reconstruction/Source/Resources/Sony/SonyDCD.a",
+      "start": "0x4194d6",
+      "end_exclusive": "0x419d98",
+      "entry_points": {
+        "DCDPrime": "0x4194d6",
+        "DCDSelectInterface": "0x4194ea",
+        "DCDDriveStatusReady": "0x419508",
+        "DCDSetBuffers": "0x419544",
+        "DCDSetCommand": "0x419586",
+        "DCDSetBlockCount": "0x419590",
+        "DCDStartBlocks": "0x41959e",
+        "DCDClearReset": "0x4195aa",
+        "DCDSendBlocks": "0x4195ae",
+        "DCDWaitResponse": "0x4195b8",
+        "DCDReadResponse": "0x4195d0",
+        "DCDRetryBlocks": "0x4195dc",
+        "DCDResetForRetry": "0x4195fe",
+        "DCDRetryCommand": "0x419608",
+        "DCDBlockError": "0x41960a",
+        "DCDReturnBlockError": "0x419616",
+        "DCDBlocksDone": "0x419618",
+        "DCDUpdateCount": "0x41962a",
+        "DCDDone": "0x419648",
+        "DCDWaitReady": "0x419658",
+        "DCDPollReady": "0x41965a",
+        "DCDQuickPoll": "0x41965c",
+        "DCDReadyReturn": "0x41967a",
+        "DCDSetBlockCommand": "0x41967c",
+        "DCDMaskCommand": "0x4196a4",
+        "SendCmd": "0x4196ac",
+        "jtSendCmd": "0x4196b2",
+        "DCDPrepareWriteTags": "0x4196d6",
+        "DCDSetGroupCounts": "0x4196fa",
+        "DCDNextBlock": "0x419712",
+        "DCDSendNextBlock": "0x419730",
+        "DCDSendPacket": "0x41974c",
+        "DCDSendReturn": "0x419754",
+        "DCDReceiveCmd": "0x419756",
+        "DCDCheckReadTags": "0x4197a2",
+        "DCDCopySystemTags": "0x4197b8",
+        "DCDCheckStatus": "0x4197d4",
+        "DCDResponseReturn": "0x4197f6",
+        "DCDCommunicationError": "0x4197fe",
+        "DCDRecordStatus": "0x419802",
+        "DCDReadPacket": "0x41980e",
+        "DCDReadSync": "0x419846",
+        "DCDReadGroupTimeout": "0x4198b6",
+        "DCDReadGroups": "0x4198bc",
+        "DCDReadGroupLoop": "0x4198c4",
+        "DCDReadHoldoff": "0x419974",
+        "DCDReadHoldoffTimeout": "0x41999c",
+        "DCDReadLastGroup": "0x4199a0",
+        "DCDReadPacketExit": "0x419a0e",
+        "DCDWritePacket": "0x419a20",
+        "DCDEncodeCommand": "0x419a40",
+        "DCDWriteWaitLow": "0x419ab0",
+        "DCDWriteDelay": "0x419ad4",
+        "DCDWriteGroups": "0x419afc",
+        "DCDWriteGroupCount": "0x419bae",
+        "DCDWriteHoldoff": "0x419bb4",
+        "DCDWriteLastGroup": "0x419bf0",
+        "DCDWriteWaitHigh": "0x419c4a",
+        "DCDWritePacketExit": "0x419c56",
+        "DCDReset": "0x419c66",
+        "jtDCDReset": "0x419c6c",
+        "DCDResetPoll": "0x419ca0",
+        "DCDResetOK": "0x419cb6",
+        "DCDResetTimeout": "0x419cba",
+        "DCDIconReady": "0x419cc2",
+        "DCDIconDone": "0x419cd2",
+        "ctlDCDIcon": "0x419cd6",
+        "DCDGetStatus": "0x419ce8",
+        "ctlDCDVerify": "0x419cec",
+        "ctlDCDFormat": "0x419cf0",
+        "DCDControl": "0x419cf2",
+        "DCDControlRetry": "0x419d04",
+        "DCDControlSend": "0x419d42",
+        "DCDControlError": "0x419d48",
+        "DCDControlReset": "0x419d60",
+        "DCDControlReceive": "0x419d70",
+        "DCDControlFailed": "0x419d82",
+        "DCDControlReturn": "0x419d84",
+        "DCDStatusReturn": "0x419d90",
+        "SonyDCDEnd": "0x419d98"
+      }
+    }
+  ],
+  "section_external_references": {
+    "sony-rwt": [
+      {
+        "name": "CkDrvNum",
+        "address": "0x418040"
+      },
+      {
+        "name": "DiskDone",
+        "address": "0x417ee0"
+      },
+      {
+        "name": "DiskSelect",
+        "address": "0x41892a"
+      },
+      {
+        "name": "DCDPrime",
+        "address": "0x4194d6"
+      },
+      {
+        "name": "AdrAndSense",
+        "address": "0x4185fe"
+      },
+      {
+        "name": "FastPower",
+        "address": "0x418906"
+      },
+      {
+        "name": "Recal",
+        "address": "0x418852"
+      },
+      {
+        "name": "MakeSpdTbl",
+        "address": "0x4189e4"
+      },
+      {
+        "name": "PowerDown",
+        "address": "0x4188e8"
+      },
+      {
+        "name": "SetSpeed",
+        "address": "0x41864c"
+      },
+      {
+        "name": "RWPowerUp",
+        "address": "0x41890a"
+      },
+      {
+        "name": "Seek",
+        "address": "0x418718"
+      },
+      {
+        "name": "RdAddrSetup",
+        "address": "0x418c04"
+      },
+      {
+        "name": "jtRdData",
+        "address": "0x418ce8"
+      },
+      {
+        "name": "RdData",
+        "address": "0x418cde"
+      },
+      {
+        "name": "WakeSetUp",
+        "address": "0x4187ee"
+      },
+      {
+        "name": "WakeGo",
+        "address": "0x4187dc"
+      },
+      {
+        "name": "WrData",
+        "address": "0x418f36"
+      },
+      {
+        "name": "GetDrv1",
+        "address": "0x4185b4"
+      },
+      {
+        "name": "WakeUp",
+        "address": "0x4187d4"
+      },
+      {
+        "name": "MeasureSpeed",
+        "address": "0x418a6c"
+      },
+      {
+        "name": "SpeedLimits",
+        "address": "0x4189d0"
+      }
+    ],
+    "sony-util": [
+      {
+        "name": "EmptyPD",
+        "address": "0x41850c"
+      },
+      {
+        "name": "SetUpPoll",
+        "address": "0x418be4"
+      }
+    ],
+    "sony-read": [
+      {
+        "name": "AdrDisk",
+        "address": "0x4185c4"
+      },
+      {
+        "name": "DskRtn",
+        "address": "0x418b22"
+      }
+    ],
+    "sony-write": [
+      {
+        "name": "DskRtn",
+        "address": "0x418b22"
+      }
+    ],
+    "sony-format": [
+      {
+        "name": "GetDrv1",
+        "address": "0x4185b4"
+      },
+      {
+        "name": "POffExit",
+        "address": "0x4180fe"
+      },
+      {
+        "name": "MeasureSpeed",
+        "address": "0x418a6c"
+      },
+      {
+        "name": "RdAddr",
+        "address": "0x418c18"
+      },
+      {
+        "name": "RdAddrSetup",
+        "address": "0x418c04"
+      },
+      {
+        "name": "RdData",
+        "address": "0x418cde"
+      },
+      {
+        "name": "EmptyPD",
+        "address": "0x41850c"
+      },
+      {
+        "name": "Seek",
+        "address": "0x418718"
+      },
+      {
+        "name": "RWPowerUp",
+        "address": "0x41890a"
+      },
+      {
+        "name": "AdrDisk",
+        "address": "0x4185c4"
+      },
+      {
+        "name": "SetUpPoll",
+        "address": "0x418be4"
+      }
+    ],
+    "sony-dcd": [
+      {
+        "name": "WakeUp",
+        "address": "0x4187d4"
+      },
+      {
+        "name": "GetDrive",
+        "address": "0x4185ac"
+      },
+      {
+        "name": "CheckRead",
+        "address": "0x418504"
+      },
+      {
+        "name": "DiskDone",
+        "address": "0x417ee0"
+      },
+      {
+        "name": "DiskSelect",
+        "address": "0x41892a"
+      },
+      {
+        "name": "Sense",
+        "address": "0x418600"
+      },
+      {
+        "name": "DiskCtlErr",
+        "address": "0x417ede"
+      }
+    ]
+  }
+}

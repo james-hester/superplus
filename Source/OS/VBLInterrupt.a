@@ -1,0 +1,151 @@
+;
+;	File:		InterruptHandlers.a
+;
+;	Contains:	This module contains the receivers for all 68000-family auto-vectored
+;				interrupts. It decodes the interrupt source and calls the associated
+;				interrupt handler. A PowerPC Macintosh may run this code in emulation.
+;
+;	Written by:	Bud Tribble
+;	Re-written by: Gary G. Davidian 5-Mar-89
+;
+;	Copyright:	© 1981-1994 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				 8/19/83	LAK		StkLowPt now managed by VBL handler; calls SysError in case of
+;									stack crashing into heap.
+;				 8/17/83	LAK		Now calls cursor task via a lowmem vector.
+;				  8/6/83	LAK		Increments random number seed when mouse button changes. Saved
+;									some code by pointing Lvl1RTS and Lvl2RTS at an RTS and Spurious
+;									at an RTE.
+;				 2/16/83	LAK		VBL interrupt dispatcher calls keyboard manager thru KybdTask
+;									vector.
+;				 11/5/82	LAK		only high bit of MBState set now (just a little bit nicer)
+;				  6/4/82	LAK		changed VBL handler to call keyboard task only every 32
+;									interrupts.
+;
+*R This file restores the VBL interrupt handler at
+*R $401B12 through $401BD7. The later source moved this handler from
+*R OS/InterruptHandlers.a into OS/VerticalRetraceMgr.a. The stack checks and
+*R task queue retain comments from that source. The ROM supplies the removed
+*R cursor, mouse button, and keyboard service instructions.
+*R See Evidence/vbl-interrupt.json for source provenance and byte checks.
+;
+		IMPORT DEQUEUE,OneSecDone ;]
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+
+*R These addresses and trap words match the ROM.
+VIA1DataB EQU $EFE1FE ;]
+
+VBLInterrupt PROC ;]
+        EXPORT VBLInt ;]
+
+VBLInt
+			addq.l	#1,Ticks			; bump tick count
+			move.b	#1<<ifCA1,vIFR(a1)	; clear and re-enable vertical retrace interrupts
+        move.w #$2000,sr
+			bset.b	#inVBL,qFlags+VBLQueue ; already in the VBL mgr?
+; if so, skip it this time
+			bne.s	OneSecDone ;]
+
+			move.l	StkLowPt,d0
+			beq.s	@StackOk
+			cmpa.l	d0,sp				; new low?
+			bhs.w	@CheckStack
+			move.l	sp,StkLowPt 		; new low in stack movement
+
+@CheckStack	movea.l	ApplZone,a1
+			cmpa.l	BkLim(a1),sp
+			bhs.w	@StackOk			; br if no crash (always another time)
+			moveq.l	#dsStknHeap,d0
+			_SysError					; it may already be too late . .
+
+@StackOk
+
+; We call the cursor task every vertical retrace and the keyboard and mouse
+; button tasks every other one, so these calls are just "hardwired" in.
+
+*R The ROM calls the cursor task each frame, samples
+*R the mouse button on even ticks, and calls JKybdTask every 32 ticks.
+
+        movea.l JCrsrTask,a0
+        jsr (a0)
+        btst #0,Ticks+3 ;]
+        bne.s @RunQueue ;]
+        moveq #mButDwnEvt,d0 ;]
+        move.b VIA1DataB,d2 ;]
+        asl.b #4,d2 ;]
+        bpl.s @CheckButton ;]
+        moveq #mButUpEvt,d0 ;]
+@CheckButton ;]
+        move.b MBState,d1
+        eor.b d2,d1
+        bpl.s @CheckKeyboard ;]
+        move.l Ticks,d1
+        sub.l MBTicks,d1
+        cmpi.l #3,d1 ;]
+        blt.s @CheckKeyboard ;]
+        add.l d1,RndSeed
+        move.l Ticks,MBTicks
+        andi.b #$80,d2 ;]
+        move.b d2,MBState ;]
+        movea.l d0,a0
+        moveq #0,d0
+        _PostEvent
+@CheckKeyboard ;]
+        move.b Ticks+3,d0 ;]
+        andi.b #$1F,d0
+        bne.s @RunQueue ;]
+        move.l JKybdTask,d0 ;]
+        beq.s @RunQueue ;]
+        movea.l d0,a0
+        jsr (a0)
+
+; now we service the VBL queue . . .
+
+@RunQueue ;]
+        move.l qHead+VBLQueue,d0 ;]
+			beq.s	@VBLDone			; if queue is empty, exit
+
+; Here we update the counter in the vertical retrace control block and
+; call the appropriate routine when it times out. A0 points to the current
+; block.
+
+@VBLloop
+			movea.l	d0,a0				; get pointer to next VBL control block
+			subq.w	#1,vblCount(a0) 	; decrement the counter
+; if non-zero, don't bother
+			bne.s	@NextVBL ;]
+
+			move.l	a0,-(sp)			; preserve A0 (pointer to VBL ctl block)
+
+			movea.l	vblAddr(a0),a1		; get address of service routine
+			jsr 	(a1)				; call the routine with A0 pointing to the block
+			
+			movea.L (sp)+,a0 			; restore A0
+
+			tst.w 	vblCount(A0)		; did the routine reset count?
+; if not, leave it in the queue
+			bne.s	@NextVBL ;]
+
+; unlink the element since it timed out
+        lea VBLQueue,a1
+			jsr 	DEQUEUE	;] unlink it
+@NextVBL ;]
+         	move.l	vblink(a0),d0		; advance to next block
+        bne.s @VBLloop
+
+@VBLDone	bclr.b   #inVbl,qFlags+VBLQueue	; remember that we're done!
+			rts							; return with success
+
+        ENDPROC
+        END

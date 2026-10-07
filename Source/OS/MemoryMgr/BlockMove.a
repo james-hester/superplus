@@ -1,0 +1,556 @@
+;
+;	File:		BlockMove.a
+;
+;	Contains:	Here is the optimized Mac block move routine.  It handles overlapping
+;				blocks by moving left or right when appropriate.	It uses a MOVE.L
+;				loop when possible and uses a 12 register MOVEM.L loop for blocks
+;				longer than 124 bytes.
+;
+;	Written by:		Andy Hertzfeld
+;	Re-Written by:	Gary Davidian
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				 4/23/85	SC		Insure D0=0 upon exit(I told you there was an bug)
+;				 4/20/85	JTC		Added .DEF for routine name!
+;				 4/16/85	SC		Rewrote with no space consideration and new blockmove
+;									statistics. On the average, this is 30% faster than old one.
+;				 1/29/85	EHB		Check for negative lengths too!!
+;				 1/23/85	LAK		Adapted for new equate files.
+;				 8/18/83	JTC		Hacked for space by JTC
+;				  3/9/83	AJH		Fixed bug by making it add long for moving right
+;				10/31/82	AJH		Integrated for ROM
+;				 8/26/82	AJH		Modified it to support blocks > 64K
+;				 5/19/82	AJH		fixed bug Malloy found in cleaning up after MOVEM loop
+;				 5/12/82	AJH		re-organized things to make it cleaner
+;
+;
+;
+*R This file restores the 68000 BlockMove at $410CC0
+*R through $410F2F. The released source removed its 68000 paths in 1991.
+*R The ROM supplies the entry, byte loops, alignment, and MOVEM loops.
+*R Matching tail operations and their comments survive in BlockMove.a.
+*R The retained historical description says 124 bytes; this ROM reaches its
+*R MOVEM path when at least 192 bytes remain after the alignment byte.
+*R See Evidence/blockmove.json for source provenance and exact byte checks.
+;
+;_______________________________________________________________________
+;
+; BlockMove(SrcPtr,DstPtr: Ptr; nBytes: INTEGER);
+;
+; Here is the optimized Mac block move routine.  It handles overlapping
+; blocks by moving left or right when appropriate.	It uses a MOVE.L
+; loop when possible and uses a 12 register MOVEM.L loop for blocks
+; longer than 124 bytes.
+;
+; It uses a register interface.  A0 = source, A1 = destination, D0 = count.
+; The addresses are firsted masked with $00FFFFFF.
+;
+; Register mask during computation:
+;		D0 = count
+;		D1 = destination pointer - source pointer
+;		A0 = source pointer
+;		A1 = destination pointer
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+
+
+BlockMoves PROC ;]
+        EXPORT BlockMove ;]
+
+*R The ROM compares masked source and destination
+*R addresses, then selects direction and matching or mixed byte alignment.
+
+BlockMove
+        TST.L     D0
+        BLE.S     BlockMoveDone ;]
+        MOVE.L    A0,D2
+        AND.L     MaskBC,D2
+        MOVE.L    A1,D1
+        AND.L     MaskBC,D1
+        SUB.L     D2,D1
+        BLT.S     CheckAlignment ;]
+        ADD.L     D0,A0
+        ADD.L     D0,A1
+
+CheckAlignment
+        LSR.W     #1,D1
+        BCC.S     CopyAligned ;]
+        TST.L     D1
+        BPL.S     CopyBytesDec ;]
+
+CopyBytesInc ;]
+        SUBQ.L    #8,D0 ;]
+        BLE.S     ByteTailInc ;]
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        BRA.S     CopyBytesInc ;]
+
+ByteTailInc ;]
+        NEG.W     D0
+        ADD.W     D0,D0
+        JMP       COPYBYTETAILINC(PC,D0.W) ;]
+
+CopyByteTailInc ;]
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+        MOVE.B    (A0)+,(A1)+
+
+BlockMoveDone ;]
+        MOVEQ     #0,D0
+        RTS       
+
+CopyBytesDec ;]
+        SUBQ.L    #8,D0 ;]
+        BLE.S     ByteTailDec ;]
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        BRA.S     CopyBytesDec ;]
+
+ByteTailDec ;]
+        NEG.W     D0
+        ADD.W     D0,D0
+        JMP       COPYBYTETAILDEC(PC,D0.W) ;]
+
+CopyByteTailDec ;]
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVE.B    -(A0),-(A1)
+        MOVEQ     #0,D0
+        RTS       
+
+CopyAligned ;]
+        MOVE.W    A0,D2
+        TST.L     D1
+        BPL.W     AlignDec ;]
+        LSR.W     #1,D2
+        BCC.S     CopyLongInc ;]
+        MOVE.B    (A0)+,(A1)+
+        SUBQ.L    #1,D0
+*R The ROM copies aligned blocks in 32-byte groups.
+*R Larger blocks use 48-byte MOVEM transfers while preserving D3-D7/A2-A6.
+
+CopyLongInc ;]
+        SUBI.L    #32,D0
+        BMI.S     TailDispatchInc ;]
+        CMPI.L    #160,D0 ;]
+        BLT.S     LongLoopInc ;]
+        MOVEM.L   D3-D7/A2-A6,-(SP)
+        SUBI.L    #48,D0
+        ADD.W     #48,A1 ;]
+
+MovemLoopInc ;]
+        MOVEM.L   (A0)+,D1-D7/A2-A6 ;]
+        MOVEM.L   D1-D7/A2-A6,-(A1) ;]
+        ADD.W     #96,A1 ;]
+        SUBI.L    #48,D0
+        BGT.S     MovemLoopInc ;]
+        SUB.W     #48,A1 ;]
+        ADDI.W    #48,D0 ;]
+        MOVEM.L   (SP)+,D3-D7/A2-A6
+
+LongLoopInc ;]
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        MOVE.L    (A0)+,(A1)+
+        SUBI.W    #32,D0
+        BGE.S     LongLoopInc ;]
+
+TailDispatchInc ;]
+        ADD.W     D0,D0
+        JMP       TAILINC30(PC,D0.W) ;]
+
+TailInc28
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 28 bytes Incrementing
+
+TailInc24
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 24 bytes Incrementing
+
+TailInc20
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 20 bytes Incrementing
+
+TailInc16
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 16 bytes Incrementing
+
+TailInc12
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 12 bytes Incrementing
+
+TailInc08
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final  8 bytes Incrementing
+
+TailInc04
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final  4 bytes Incrementing
+
+TailInc00
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+;_______________________________________________________________________
+;
+;  Routine:		CopyTailInc
+;  Inputs:		A0 - source address
+;				A1 - destination address
+;  Outputs:		D0 - error code (noErr)
+;  Destroys:	A0, A1
+;
+;  Function:	Copy up to 31 bytes in incrementing address order using a direct
+;				sequence of moves.  This routine returns to the BlockMove caller
+;				with D0=noErr.
+;
+;  Calling Convention:
+;				D0 is setup with size-32, so that moving 0…31 bytes => d0 = -32…-1
+;				The trick is to double D0 and use it as an index into a table of
+;				branches to the appropriate code.  Thanks to Steve Capps for all this.
+;
+;				68000	add.w	d0,d0				68020	jmp	CopyTailInc(d0.w*2)
+;						jmp		CopyTailInc(d0.w)
+;
+;_______________________________________________________________________
+        BRA.S     TailInc00	; 10 2 0 0	copy final  0 bytes Incrementing
+        BRA.S     TailInc01	; 10 2 0 0	copy final  1 byte  Incrementing
+        BRA.S     TailInc02	; 10 2 0 0	copy final  2 bytes Incrementing
+        BRA.S     TailInc03	; 10 2 0 0	copy final  3 bytes Incrementing
+        BRA.S     TailInc04	; 10 2 0 0	copy final  4 bytes Incrementing
+        BRA.S     TailInc05	; 10 2 0 0	copy final  5 bytes Incrementing
+        BRA.S     TailInc06	; 10 2 0 0	copy final  6 bytes Incrementing
+        BRA.S     TailInc07	; 10 2 0 0	copy final  7 bytes Incrementing
+        BRA.S     TailInc08	; 10 2 0 0	copy final  8 bytes Incrementing
+        BRA.S     TailInc09	; 10 2 0 0	copy final  9 bytes Incrementing
+        BRA.S     TailInc10	; 10 2 0 0	copy final 10 bytes Incrementing
+        BRA.S     TailInc11	; 10 2 0 0	copy final 11 bytes Incrementing
+        BRA.S     TailInc12	; 10 2 0 0	copy final 12 bytes Incrementing
+        BRA.S     TailInc13	; 10 2 0 0	copy final 13 bytes Incrementing
+        BRA.S     TailInc14	; 10 2 0 0	copy final 14 bytes Incrementing
+        BRA.S     TailInc15	; 10 2 0 0	copy final 15 bytes Incrementing
+        BRA.S     TailInc16	; 10 2 0 0	copy final 16 bytes Incrementing
+        BRA.S     TailInc17	; 10 2 0 0	copy final 17 bytes Incrementing
+        BRA.S     TailInc18	; 10 2 0 0	copy final 18 bytes Incrementing
+        BRA.S     TailInc19	; 10 2 0 0	copy final 19 bytes Incrementing
+        BRA.S     TailInc20	; 10 2 0 0	copy final 20 bytes Incrementing
+        BRA.S     TailInc21	; 10 2 0 0	copy final 21 bytes Incrementing
+        BRA.S     TailInc22	; 10 2 0 0	copy final 22 bytes Incrementing
+        BRA.S     TailInc23	; 10 2 0 0	copy final 23 bytes Incrementing
+        BRA.S     TailInc24	; 10 2 0 0	copy final 24 bytes Incrementing
+        BRA.S     TailInc25	; 10 2 0 0	copy final 25 bytes Incrementing
+        BRA.S     TailInc26	; 10 2 0 0	copy final 26 bytes Incrementing
+        BRA.S     TailInc27	; 10 2 0 0	copy final 27 bytes Incrementing
+        BRA.S     TailInc28	; 10 2 0 0	copy final 28 bytes Incrementing
+        BRA.S     TailInc29	; 10 2 0 0	copy final 29 bytes Incrementing
+        BRA.S     TailInc30	; 10 2 0 0	copy final 30 bytes Incrementing
+        BRA.S     TailInc31 ;]
+
+TailInc30
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 30 bytes Incrementing
+
+TailInc26
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 26 bytes Incrementing
+
+TailInc22
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 22 bytes Incrementing
+
+TailInc18
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 18 bytes Incrementing
+
+TailInc14
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 14 bytes Incrementing
+
+TailInc10
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 10 bytes Incrementing
+
+TailInc06
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final  6 bytes Incrementing
+
+TailInc02
+        MOVE.W    (A0)+,(A1)+	; 12 1 1 1	copy final  2 bytes Incrementing
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+TailInc31
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 31 bytes Incrementing
+
+TailInc27
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 27 bytes Incrementing
+
+TailInc23
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 23 bytes Incrementing
+
+TailInc19
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 19 bytes Incrementing
+
+TailInc15
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 15 bytes Incrementing
+
+TailInc11
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 11 bytes Incrementing
+
+TailInc07
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final  7 bytes Incrementing
+
+TailInc03
+        MOVE.W    (A0)+,(A1)+	; 12 1 1 1	copy final  3 bytes Incrementing
+
+TailInc01
+        MOVE.B    (A0)+,(A1)+	; 12 1 1 1	copy final  1 byte  Incrementing
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+TailInc29
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 29 bytes Incrementing
+
+TailInc25
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 25 bytes Incrementing
+
+TailInc21
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 21 bytes Incrementing
+
+TailInc17
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 17 bytes Incrementing
+
+TailInc13
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final 13 bytes Incrementing
+
+TailInc09
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final  9 bytes Incrementing
+
+TailInc05
+        MOVE.L    (A0)+,(A1)+	; 20 1 2 2	copy final  5 bytes Incrementing
+        MOVE.B    (A0)+,(A1)+
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+AlignDec ;]
+        LSR.W     #1,D2
+        BCC.S     CopyLongDec ;]
+        MOVE.B    -(A0),-(A1)
+        SUBQ.L    #1,D0
+
+CopyLongDec ;]
+        SUBI.L    #32,D0
+        BMI.S     TailDispatchDec ;]
+        CMPI.L    #160,D0 ;]
+        BLT.S     LongLoopDec ;]
+        MOVEM.L   D3-D7/A2-A6,-(SP)
+        SUBI.L    #48,D0
+        SUB.W     #48,A0 ;]
+
+MovemLoopDec ;]
+        MOVEM.L   (A0)+,D1-D7/A2-A6 ;]
+        MOVEM.L   D1-D7/A2-A6,-(A1) ;]
+        SUB.W     #96,A0 ;]
+        SUBI.L    #48,D0
+        BGT.S     MovemLoopDec ;]
+        ADD.W     #48,A0 ;]
+        ADDI.W    #48,D0 ;]
+        MOVEM.L   (SP)+,D3-D7/A2-A6
+
+LongLoopDec ;]
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        MOVE.L    -(A0),-(A1)
+        SUBI.W    #32,D0
+        BGE.S     LongLoopDec ;]
+
+TailDispatchDec ;]
+        ADD.W     D0,D0
+        JMP       TAILDEC30(PC,D0.W) ;]
+
+TailDec28
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 28 bytes Decrementing
+
+TailDec24
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 24 bytes Decrementing
+
+TailDec20
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 20 bytes Decrementing
+
+TailDec16
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 16 bytes Decrementing
+
+TailDec12
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 12 bytes Decrementing
+
+TailDec08
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final  8 bytes Decrementing
+
+TailDec04
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final  4 bytes Decrementing
+
+TailDec00
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+;_______________________________________________________________________
+;
+;  Routine:		CopyTailDec
+;  Inputs:		A0 - source address+1
+;				A1 - destination address+1
+;  Outputs:		D0 - error code (noErr)
+;  Destroys:	A0, A1
+;
+;  Function:	Copy up to 31 bytes in decrementing address order using a direct
+;				sequence of moves.  This routine returns to the BlockMove caller
+;				with D0=noErr.
+;
+;  Calling Convention:
+;				D0 is setup with size-32, so that moving 0…31 bytes => d0 = -32…-1
+;				The trick is to double D0 and use it as an index into a table of
+;				branches to the appropriate code.  Thanks to Steve Capps for all this.
+;
+;				68000	add.w	d0,d0				68020	jmp	CopyTailDec(d0.w*2)
+;						jmp		CopyTailDec(d0.w)
+;
+;_______________________________________________________________________
+
+        BRA.S     TailDec00	; 10 2 0 0	copy final  0 bytes Decrementing
+        BRA.S     TailDec01	; 10 2 0 0	copy final  1 byte  Decrementing
+        BRA.S     TailDec02	; 10 2 0 0	copy final  2 bytes Decrementing
+        BRA.S     TailDec03	; 10 2 0 0	copy final  3 bytes Decrementing
+        BRA.S     TailDec04	; 10 2 0 0	copy final  4 bytes Decrementing
+        BRA.S     TailDec05	; 10 2 0 0	copy final  5 bytes Decrementing
+        BRA.S     TailDec06	; 10 2 0 0	copy final  6 bytes Decrementing
+        BRA.S     TailDec07	; 10 2 0 0	copy final  7 bytes Decrementing
+        BRA.S     TailDec08	; 10 2 0 0	copy final  8 bytes Decrementing
+        BRA.S     TailDec09	; 10 2 0 0	copy final  9 bytes Decrementing
+        BRA.S     TailDec10	; 10 2 0 0	copy final 10 bytes Decrementing
+        BRA.S     TailDec11	; 10 2 0 0	copy final 11 bytes Decrementing
+        BRA.S     TailDec12	; 10 2 0 0	copy final 12 bytes Decrementing
+        BRA.S     TailDec13	; 10 2 0 0	copy final 13 bytes Decrementing
+        BRA.S     TailDec14	; 10 2 0 0	copy final 14 bytes Decrementing
+        BRA.S     TailDec15	; 10 2 0 0	copy final 15 bytes Decrementing
+        BRA.S     TailDec16	; 10 2 0 0	copy final 16 bytes Decrementing
+        BRA.S     TailDec17	; 10 2 0 0	copy final 17 bytes Decrementing
+        BRA.S     TailDec18	; 10 2 0 0	copy final 18 bytes Decrementing
+        BRA.S     TailDec19	; 10 2 0 0	copy final 19 bytes Decrementing
+        BRA.S     TailDec20	; 10 2 0 0	copy final 20 bytes Decrementing
+        BRA.S     TailDec21	; 10 2 0 0	copy final 21 bytes Decrementing
+        BRA.S     TailDec22	; 10 2 0 0	copy final 22 bytes Decrementing
+        BRA.S     TailDec23	; 10 2 0 0	copy final 23 bytes Decrementing
+        BRA.S     TailDec24	; 10 2 0 0	copy final 24 bytes Decrementing
+        BRA.S     TailDec25	; 10 2 0 0	copy final 25 bytes Decrementing
+        BRA.S     TailDec26	; 10 2 0 0	copy final 26 bytes Decrementing
+        BRA.S     TailDec27	; 10 2 0 0	copy final 27 bytes Decrementing
+        BRA.S     TailDec28	; 10 2 0 0	copy final 28 bytes Decrementing
+        BRA.S     TailDec29	; 10 2 0 0	copy final 29 bytes Decrementing
+        BRA.S     TailDec30	; 10 2 0 0	copy final 30 bytes Decrementing
+        BRA.S     TailDec31 ;]
+
+TailDec30
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 30 bytes Decrementing
+
+TailDec26
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 26 bytes Decrementing
+
+TailDec22
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 22 bytes Decrementing
+
+TailDec18
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 18 bytes Decrementing
+
+TailDec14
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 14 bytes Decrementing
+
+TailDec10
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 10 bytes Decrementing
+
+TailDec06
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final  6 bytes Decrementing
+
+TailDec02
+        MOVE.W    -(A0),-(A1)	; 14 1 1 1	copy final  2 bytes Decrementing
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+TailDec31
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 31 bytes Decrementing
+
+TailDec27
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 27 bytes Decrementing
+
+TailDec23
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 23 bytes Decrementing
+
+TailDec19
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 19 bytes Decrementing
+
+TailDec15
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 15 bytes Decrementing
+
+TailDec11
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 11 bytes Decrementing
+
+TailDec07
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final  7 bytes Decrementing
+
+TailDec03
+        MOVE.W    -(A0),-(A1)	; 14 1 1 1	copy final  3 bytes Decrementing
+
+TailDec01
+        MOVE.B    -(A0),-(A1)	; 14 1 1 1	copy final  1 byte  Decrementing
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+TailDec29
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 29 bytes Decrementing
+
+TailDec25
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 25 bytes Decrementing
+
+TailDec21
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 21 bytes Decrementing
+
+TailDec17
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 17 bytes Decrementing
+
+TailDec13
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final 13 bytes Decrementing
+
+TailDec09
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final  9 bytes Decrementing
+
+TailDec05
+        MOVE.L    -(A0),-(A1)	; 22 1 2 2	copy final  5 bytes Decrementing
+        MOVE.B    -(A0),-(A1)
+        MOVEQ     #noErr,D0	;  4 1 0 0	return success status
+        RTS       	; 16 2 2 0	_BlockMove complete
+
+        ENDPROC
+        END

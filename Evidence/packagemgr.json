@@ -1,0 +1,107 @@
+{
+  "module": "PackageMgr",
+  "source": "Reconstruction/Source/Toolbox/PackageMgr.a",
+  "original": {
+    "path": "Toolbox/PackageMgr.a",
+    "sha256": "53114ba4a0c3a925281fd9977dfff4a296a2a6b565c0b5640a1f266ef19f30ca",
+    "encoding": "UTF-8",
+    "derivation": "Adapted the original PackageMgr source and retained applicable original comments, headings, authorship, copyright, and history through July 1985."
+  },
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x00416f90",
+      "end_exclusive": "0x00417052",
+      "rom_offset": "0x00016f90",
+      "length": 194,
+      "start_label": "InitPack",
+      "end_label": "PackMgrEnd",
+      "sha256": "df27f129995efc87996dcefcfa55a16c0769ba13476183f4118439998b886841",
+      "boundary_evidence": "The Ghidra symbol export names InitPack at 0x00416f90 and Secs2Date at 0x00417052. The final Pack15 BSR.S ends at that boundary."
+    }
+  ],
+  "symbols": {
+    "InitPack": "0x00416f90",
+    "InitAllPacks": "0x00416fb2",
+    "FPException": "0x00416fd2",
+    "GetPHand": "0x00416fd6",
+    "PackCom": "0x00416fea",
+    "GoToPack": "0x00417014",
+    "NoPack": "0x00417020",
+    "Pack0": "0x00417032",
+    "Pack1": "0x00417034",
+    "Pack2": "0x00417036",
+    "Pack3": "0x00417038",
+    "Pack4": "0x0041703a",
+    "Pack5": "0x0041703c",
+    "Pack6": "0x0041703e",
+    "Pack7": "0x00417040",
+    "Pack8": "0x00417042",
+    "Pack9": "0x00417044",
+    "Pack10": "0x00417046",
+    "Pack11": "0x00417048",
+    "Pack12": "0x0041704a",
+    "Pack13": "0x0041704c",
+    "Pack14": "0x0041704e",
+    "Pack15": "0x00417050",
+    "PackMgrEnd": "0x00417052"
+  },
+  "changes": [
+    {
+      "location": "GoToPack",
+      "rom_address": "0x00417014",
+      "change": "Replaced the later _StripAddress sequence with MOVE.L (A0),8(SP); MOVEM.L (SP)+,D0/A0; CLR.B (SP); RTS.",
+      "evidence": "ROM bytes 2f5000084cdf010142174e75 decode to this sequence. The original <C169> history says _StripAddress replaced CLR.B on September 23, 1986.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Pack0 through Pack15",
+      "rom_address": "0x00417032",
+      "change": "Restored the Pack4, Pack5, Pack8, Pack9, Pack11, Pack13, and Pack15 labels and exports.",
+      "evidence": "The ROM has 16 consecutive BSR.S instructions targeting PackCom. The Ghidra export names all 16 entries. Original <C636>, <SM2>, and <SM3> comments describe the later renaming and relocation of these entries.",
+      "confidence": "exact byte match; names supported by Ghidra and source history"
+    },
+    {
+      "location": "LEA instructions",
+      "change": "Wrote explicit (PC) operands for InitPack, FPException, and Pack1.",
+      "evidence": "All four ROM LEA instructions that reference these code labels use PC-relative addressing. The original source leaves this addressing choice implicit.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Assembly dependencies",
+      "change": "Replaced the StandardEqu.d load with the eight required equates and three named trap opcodes.",
+      "evidence": "Interfaces/AIncludes/ToolUtils.a defines MapFalse, MapTrue, ROMMapInsert, FPState, AppPacks, and App2Packs. Interfaces/AIncludes/SysErr.a defines DSFPErr and DSNoPackErr. Interfaces/AIncludes/Traps.a defines the three trap opcodes. The ROM encodes the same values.",
+      "confidence": "values verified against interfaces and ROM"
+    },
+    {
+      "location": "Comments and history",
+      "change": "Removed post-1985 changes and EASE bookkeeping. Filled the header placeholders from the original authorship and title. Updated obsolete descriptions of InitMath, resource loading, stack layout, eight package entries, and the handle-table calculation. Marked the revised API summary as reconstruction commentary.",
+      "evidence": "The ROM initializes 16 package handles and uses ROMMapInsert with MapFalse or MapTrue. The function stack does not contain a saved resLoad value. GetPHand selects AppPacks or App2Packs.",
+      "confidence": "comments checked against the verified instructions"
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "source_sha256": "8b2260d40c2d42ec10199193ccdde2e711d514ead115fd398c01d8f012d6906a",
+    "checked_bytes": 194,
+    "assembled_sha256": "df27f129995efc87996dcefcfa55a16c0769ba13476183f4118439998b886841",
+    "rom_span_sha256": "df27f129995efc87996dcefcfa55a16c0769ba13476183f4118439998b886841",
+    "linked_relocations": 0,
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Historical MPW assembly has not been tested.",
+      "The translator supports the constructs used by the current excerpts.",
+      "Byte equality does not establish the exact historical source text or prove completion of the ROM."
+    ]
+  },
+  "source_sha256": "8b2260d40c2d42ec10199193ccdde2e711d514ead115fd398c01d8f012d6906a"
+}

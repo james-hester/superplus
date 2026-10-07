@@ -1,0 +1,180 @@
+{
+  "module": "PACK 7 binary and decimal conversions",
+  "source": "Reconstruction/Source/Resources/SANE/BinDec.a",
+  "source_sha256": "0c759d30bc6fd71c740f7914d57f1cb422af90d43a1b699c7e7069942dc9cc3b",
+  "originals": [
+    {
+      "path": "Toolbox/SANE/BinDec.a",
+      "sha256": "e4c21022e3e53e6077069defa3c71f4155a90d571607c0781d37b2bf59a90c32",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/BinDec.a",
+      "reconstructed_sha256": "0c759d30bc6fd71c740f7914d57f1cb422af90d43a1b699c7e7069942dc9cc3b",
+      "retained_nonempty_comment_occurrences": 126
+    },
+    {
+      "path": "Toolbox/SANE/Str2Dec.a",
+      "sha256": "858aad7788c4f9aa990314b34ea39dfc615f9baec8aa38795ab9e76ea2f3d3d4",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/Str2Dec.a",
+      "reconstructed_sha256": "67af9f27d113f9a9ccb9bd7c1fee34eb66df5e7b5391e93300cfe85d12447db2",
+      "retained_nonempty_comment_occurrences": 521
+    },
+    {
+      "path": "Toolbox/SANE/Dec2Str.a",
+      "sha256": "6fdd83c6e05089e0f4f3515562ee7f20bf475348893556fb5f3a837727e87b11",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/Dec2Str.a",
+      "reconstructed_sha256": "40beb0ac63dae3886bb81a348f006eaea4ae57d6782e7ba477ff2a3dc2de8bd1",
+      "retained_nonempty_comment_occurrences": 175
+    }
+  ],
+  "equate_provenance": {
+    "path": "Interfaces/AIncludes/SysEqu.a",
+    "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+    "line": 1042,
+    "definition": "Lo3Bytes  \t\tEQU \t\t$31A  \t\t\t\t\t; constant $00FFFFFF [long]"
+  },
+  "rom": {
+    "start": "0x41c9d8",
+    "end_exclusive": "0x41cf26",
+    "body_start": "0x41c9e0",
+    "body_bytes": 1350,
+    "sha256": "f3a23df80514321c62c0f5464389357eaa269a1d0e92146ea206eaaaf5ab27a3"
+  },
+  "changes": [
+    "The resource block header derives its 1,358-byte length from labels and records master-pointer offset $74. The PACK header retains resource ID 7 and version 1.",
+    "The three dispatcher jumps use the ROM PC-relative encoding. The number formatter uses MOVEQ for the constant -80; its tens table uses PC-relative addressing.",
+    "Str2Dec restores AND.L Lo3Bytes,D6 followed by MOVEA.L D6,A0 at $41CAE4. The released source replaced that sequence with StripAddress in February 1989. Lo3Bytes is the low-memory address mask at $31A; the operation reads a longword.",
+    "Seven Str2Dec branches marked short in the released text require word displacements in the ROM. Their destination and operation remain the same.",
+    "FSymOK is zero. The original conditional assembly keeps both Lisa debugger-name blocks inactive, so they emit no bytes. Unused StandardEqu and SANEMacs build includes are omitted; the three code files keep their separate source boundaries.",
+    "Later EASE and build-wrapper history is omitted. The 1983\u20131985 routine histories and applicable comments remain. Corrections identify the actual address registers, fix the final dispatcher range comment, and describe the formatter parameters by address."
+  ],
+  "data_ranges": [
+    {
+      "start": "0x41c9d8",
+      "end_exclusive": "0x41c9e0",
+      "description": "Resource memory-block header."
+    },
+    {
+      "start": "0x41c9e2",
+      "end_exclusive": "0x41c9ec",
+      "description": "PACK flags, type, ID, and version."
+    },
+    {
+      "start": "0x41cf1e",
+      "end_exclusive": "0x41cf26",
+      "description": "Four powers of ten from the released formatter."
+    }
+  ],
+  "verification": {
+    "name": "pack7",
+    "source": "Reconstruction/Source/Resources/SANE/BinDec.a",
+    "source_sha256": "0c759d30bc6fd71c740f7914d57f1cb422af90d43a1b699c7e7069942dc9cc3b",
+    "start": "0x41c9d8",
+    "end_exclusive": "0x41cf26",
+    "bytes": 1358,
+    "sha256": "f3a23df80514321c62c0f5464389357eaa269a1d0e92146ea206eaaaf5ab27a3",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Resources/SANE/BinDec.a",
+        "sha256": "0c759d30bc6fd71c740f7914d57f1cb422af90d43a1b699c7e7069942dc9cc3b"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/SANE/Dec2Str.a",
+        "sha256": "40beb0ac63dae3886bb81a348f006eaea4ae57d6782e7ba477ff2a3dc2de8bd1"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/SANE/Str2Dec.a",
+        "sha256": "67af9f27d113f9a9ccb9bd7c1fee34eb66df5e7b5391e93300cfe85d12447db2"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "pack7",
+    "source": "Reconstruction/Source/Resources/SANE/BinDec.a",
+    "start": "0x41c9d8",
+    "end_exclusive": "0x41cf26",
+    "entry_points": {
+      "Pack7Block": "0x41c9d8",
+      "Pkg7": "0x41c9e0",
+      "LBIN2DEC": "0x41c9f8",
+      "LDEC2BIN": "0x41ca76",
+      "_cstr2dec": "0x41cace",
+      "_pstr2dec": "0x41cad4",
+      "_dec2str": "0x41cd70",
+      "Pack7End": "0x41cf26",
+      "adddigits": "0x41ce8a",
+      "addpoint": "0x41ce98",
+      "addzeros": "0x41ceaa",
+      "allafter": "0x41cee2",
+      "allbefore": "0x41ced0",
+      "appenddigit": "0x41cb94",
+      "bd1digout": "0x41ca54",
+      "bd1out": "0x41ca4e",
+      "bddoit": "0x41ca5e",
+      "bdfin": "0x41ca40",
+      "bdloop": "0x41ca1e",
+      "bdnegval": "0x41ca18",
+      "bdposval": "0x41ca1e",
+      "bdskipit": "0x41ca66",
+      "d2inc": "0x41cda8",
+      "dbfin": "0x41caae",
+      "dbloop": "0x41ca98",
+      "dbnosign": "0x41ca98",
+      "dbpossign": "0x41ca92",
+      "decmlfnd": "0x41ce06",
+      "digitsok": "0x41ce24",
+      "done": "0x41cf02",
+      "enddigits": "0x41ce96",
+      "endzeros": "0x41ceae",
+      "errxit": "0x41ceb0",
+      "finnan": "0x41cdf2",
+      "frommid": "0x41cef0",
+      "fromnan": "0x41ce5e",
+      "getchar": "0x41cbaa",
+      "getexpdigs": "0x41ce5c",
+      "getinloop": "0x41ce82",
+      "getmapped": "0x41cd44",
+      "hex2bin": "0x41cdf6",
+      "heyitsfxd": "0x41cdaa",
+      "heyitspos": "0x41cd9e",
+      "inf_2": "0x41cd24",
+      "inf_3": "0x41cd28",
+      "inffound": "0x41cf0e",
+      "initdec": "0x41cb10",
+      "itsanumber": "0x41ce0c",
+      "itsapass": "0x41cdb0",
+      "itsfixed": "0x41ceba",
+      "lastdig": "0x41ce74",
+      "lngthok": "0x41cde8",
+      "loopd": "0x41ce90",
+      "loopz": "0x41cea2",
+      "needpoint": "0x41ce36",
+      "negexp": "0x41ce56",
+      "nextcmp": "0x41ce62",
+      "nextdig": "0x41ce70",
+      "nibout": "0x41cd5c",
+      "nopoint": "0x41ce42",
+      "notazero": "0x41ce16",
+      "select1": "0x41ca68",
+      "select2": "0x41cab4",
+      "setlength": "0x41cef8",
+      "start": "0x41cad6",
+      "state0": "0x41cb1e",
+      "state1": "0x41cb34",
+      "state2": "0x41cb44",
+      "state4": "0x41cb78",
+      "state5": "0x41cb84",
+      "state6": "0x41cbd0",
+      "state7": "0x41cbee",
+      "state75": "0x41cbf6",
+      "state8": "0x41cbfc",
+      "state99": "0x41cca2",
+      "statebackup": "0x41cd12",
+      "statefin": "0x41cc7e",
+      "stateinf": "0x41cd18",
+      "statenum": "0x41cc4a",
+      "stnum2": "0x41cc4c",
+      "tens": "0x41cf1e"
+    }
+  },
+  "historical_limits": "Matching machine code confirms the emitted instructions and data. It does not recover the original source spelling or prove the ROM build date."
+}

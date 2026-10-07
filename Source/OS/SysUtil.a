@@ -1,0 +1,726 @@
+;__________________________________________________________________________________________________
+;
+;	File:		SysUtil.a
+;
+;	Contains:	This file contains system utility core routines: ReadParam, WriteParam,
+;				ReadDateTime, SetDateTime, InitUtil, Delay, CmpString
+;
+;	Written by:	Larry Kenyon
+;
+;	Copyright © 1982-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/30/85	LAK		Incorporated init of new parameter RAM into InitUtil. Set bit 5
+;									(13) of Hardware vector if parameter RAM was valid at boot.
+;				 10/3/85	BBM		added three new Defs for new clock.text
+;				 7/24/85	RDC		Deleted ClkRW routine (moved to new Clock.text) Changed BSR to
+;									JSR for ref's to ClkRW routine
+;				  6/7/85	JTC		Modified to return long to OS dispatcher. <07Jun85>
+;				 2/27/85	JTC		Add RelString to return -1,0,1 (<,=,>) rather than simply 0,1.
+;									Increase size, but speed, too. Marked... <27Feb85>
+;				 1/31/85	LAK		Removed false RTE. Exclude all ints when talking to clock chip.
+;				 1/23/85	LAK		Adapted for new equate files.
+;				  9/5/83	SC		Changed default volume control to 3; changed init.
+;				 8/22/83	LAK		Init port A parameter RAM to 9600 baud, etc.
+;				 8/21/83	SC		Fixed "" "".
+;				 8/20/83	LAK		Added new parameter ram stuff and changed init.
+;				 8/17/83	JTC		changed CmpString, UprString for international character sets.
+;				 8/17/83	LAK		initutil nolonger mucks with the time if param ram check byte is
+;									invalid. serial port a is no longer initialized to async.
+;				 5/25/83	LAK		changed CmpString, UprString to general-purpose string
+;									operators.
+;				 4/29/83	LAK		changed param ram cksum byte to $A6 to reset all machines.
+;				 4/27/83	LAK		corrected serial port init values for 2 stop bit (not 1 1/2)
+;				 4/19/83	LAK		added UprString routine; put in SCC config values for default
+;									param mem init (9600 baud, 8 data, 2 stop, no parity: both
+;									ports).
+;				  4/4/83	AJH		changed initial value of misc2 param byte
+;				 3/10/83	LAK		Updated defaults for font, menu flash, volume control.
+;				  3/8/83	LAK		Fixed bug in Delay.
+;				  3/3/83	LAK		Updated documentation on CmpString.
+;				 2/17/83	LAK		ReadParam and WriteParam now preserve A2. InitUtil writes
+;									initial values to clock chip if it was not initialized. Added
+;									read verify to WriteParam. InitUtil is now a trap and observes
+;									Pascal regsave conventions.
+;				 2/10/83	LAK		moved clock chip r/w procs here from boot code.
+;				  2/4/83	LAK		put delay back in.
+;				 1/12/83	LAK		removed Alert, Delay, and CoreWakeUp.
+;				 6/10/82	LAK		SetDateTime now sets CLasTime to Ticks value.
+;				  6/9/82	ALO		added Alert proc
+;				  6/7/82	LAK		added an initialization routine which reads the clock.
+;				 5/27/82	LAK		changed ReadDateTime, SetDateTime to use keyboard driver to do
+;									the work; ReadParam, WriteParam, ReadDateTime, SetDateTime
+;									interfaces have all been changed.
+;				 5/26/82	LAK		changed ReadParam to read copy in memory instead of clock ram
+;									changed WriteParam to use keyboard driver to do the work
+;__________________________________________________________________________________________________
+
+*R October 2026:
+*R This excerpt contains Delay, the string routines and their three tables.
+*R It matches Mac Plus v3 ROM addresses $40F7DC through $40FC89.
+*R OS/SysUtil.a supplied the original header, history and routine comments.
+*R History after 1985 and comments about later changes are omitted.
+*R Delay restores the ROM status-register write and signed comparison.
+*R UprString follows ExtString and uses short branches, as in the ROM.
+*R The original table macros and their invocations remain unchanged.
+*R The $60-to-$61 mapping in UpperTab remains unchanged.
+
+            BLANKS      ON
+            STRING      ASIS
+
+		INCLUDE 'SysEqu.a'
+
+
+SysUtil     PROC        EXPORT
+            EXPORT      Delay,CmpString,RelString,UprString ;]
+
+;______________________________________________________________________
+;
+; Routine:		  Delay
+; Arguments:		A0 (input)	--	number of tick counts to delay
+;					D0 (output) --	value of Ticks after delay
+;					interrupt level 0 is set
+; Function: 	  Delay is a simple routine which just waits the
+;				  specified number of ticks (each tick is 1/60 second).
+;
+;______________________________________________________________________
+
+Delay		MOVE.W	#$2000,SR			; have to let interrupts in
+			MOVE.L	Ticks,D0
+			ADD.L	A0,D0
+
+@DelayLoop			CMP.L	Ticks,D0			; have enough ticks ticked?
+; -> No. Keep waiting.
+			BGT.S	@DelayLoop ;]
+			RTS
+
+
+
+;______________________________________________________________________ 				<27Feb85>...
+;
+; Routine:		  CmpString, RelString
+; Arguments:		D0.L (input)  --  high-order word = string 0 length
+;									   low-order word = string 1 length
+;					A0.L (input)  --  pointer to string 0
+;					A1.L (input)  --  pointer to string 1
+;					D0.W (output) --
+;						CmpString --  result code = 0, 1 for equal, unequal.
+;						RelString --  result code = -1, 0, 1 according as string 0		<27Feb85>
+;										is <, =, > than string 1, respectively.
+;					Opcode bit 10 --  0 - map to upper case; 1 - case sensitive
+;					Opcode bit	9 --  0 - diacritical sensitive; 1 - strip diacrits
+;					Pascal register conventions are observed.
+;
+; Calling Sequence for Pascal strings:
+;					LEA 	  str0,A0
+;					LEA 	  str1,A1
+;					MOVEQ	  #0,D0
+;					MOVE.B	  (A0)+,D0
+;					SWAP	  D0
+;					MOVE.B	  (A1)+,D0
+;					_CmpString
+;
+; Function: 	  CmpString is a utility routine to compare two strings for
+;				  equality.  The strings are pointed to by A0 and A1
+;				  on entry; the result is returned in D0.
+;				  Two booleans determine the flavor of the compare:
+;					Marks --
+;						if set, all diacritical marks are ignored.
+;					Case --
+;						if set, all characters are mapped to upper case.
+;______________________________________________________________________
+
+;
+; To expedite CmpString, test for length differences first.  If they're the same,
+; use the absolute value of RelString's return.
+;
+CmpString
+				MOVE.W			D0,D2					; str 1 length
+				SWAP			D0						; str 0 length
+				CMP.W			D0,D2
+				BNE.S			CSQuickNE
+				SWAP			D0						; realign for fresh start in RelString
+; count on CCR from last D0 store
+				BSR.S			RelString ;]
+				BPL.S			@CmpDone ;]
+				NEG.L			D0						; -1 ---> 1
+@CmpDone ;]
+				RTS
+CSQuickNE
+				MOVEQ			#1,D0					; must differ since lengths do
+				RTS
+
+
+;
+; Register usage:
+;		D0 = shorter string length = loop index
+;		D1 = trap opcode, with embedded booleans
+;		D2 = string 0 input buffer
+;		D3 = string 1 input buffer
+;		D4 = -1, 0, 1 according to string lengths
+;
+;		A0 = string 0 pointer
+;		A1 = string 1 pointer
+;
+; Output:
+;		D0 = -1, 0, 1
+;		CCR reflects D0
+;		D1-D2/A0-A1 trash
+;
+RelString
+				BSR.S			EntString
+;
+; Prime D4 to be -1, 0, 1 according to string 0 being shorter, equal, longer than string 1.
+; Get shorter string length into D0.
+;
+				MOVEQ			#0,D4					; presume they're equal
+				MOVE.W			D0,D2					; str 1 length
+				SWAP			D0						; str 0 length
+				CMP.W			D0,D2					; str1len - str0len
+				BEQ.S			ICLoopEntry 			; D4 and D1 OK!
+				BHI.S			ICStr1Long				; str1len > str0len (unsigned, of course, Holmes)
+
+				MOVEQ			#1,D4					; str0 is longer
+				MOVE.W			D2,D0					; get shorter length
+				CMP.W			D4,D4					; set CCR to show EQ
+				BRA.S			ICLoopEntry
+ICStr1Long
+				MOVEQ			#-1,D4
+				CMP.W			D4,D4					; set CCR to show EQ
+				BRA.S			ICLoopEntry
+;
+; Get next characters, canonize, and compare them.
+; *********** NOTE: Must enter loop at ICLoopEntry with CCR indicated EQ!!!! **********
+;
+ICLoopTop
+				MOVEQ			#0,D2					; clear hi bits for Canonizer
+				MOVE.B			(A0)+,D2
+				BSR.S			Canonizer
+				ADD.W			D2,D2					; need word index
+				MOVE.W			0(A3,D2.W),D3			; D3.W := canonical string 0 char
+
+				MOVEQ			#0,D2
+				MOVE.B			(A1)+,D2
+				BSR.S			Canonizer
+				ADD.W			D2,D2
+				CMP.W			0(A3,D2.W),D3			; string 0 char - string 1 char
+ICLoopEntry
+				DBNE			D0,ICLoopTop			; fall through if NE or exhausted
+;
+; Falling through means chars found unequal above, or shorter string exhausted.
+; The DBNE leaves CCR untainted, so use it!
+;
+				BEQ.S			ICEqual 				; strings = to end; let D4 decide...
+				BHI.S			ICHigh
+
+				MOVEQ			#-1,D0					; str0 < str1
+				BRA.S			ICExit
+ICHigh
+				MOVEQ			#1,D4					; str0 > str1, fall through...
+ICEqual
+				MOVE.L			D4,D0
+ICExit
+				BRA.S			ExtString
+
+;______________________________________________________________________
+;
+; Utility Canonizer looks at bits in D1.W (Dxxx xxxx Cxx1 010x)
+; maps the character in D2.B to some canonical form.
+;
+; Input: D2.B = character to be mapped, with high bits of D2.W zero.
+; Output: D2.B
+;______________________________________________________________________
+Canonizer
+				TST.W			D1				; MI-strip PL-keep
+				BPL.S			dontStrip
+
+				MOVE.B			StripTab(PC,D2.W),D2 ;]
+dontStrip
+				TST.B			D1				; PL-upper MI-keep
+				BMI.S			dontUpper
+
+				MOVE.B			0(A2,D2.W),D2	; UpperTab in A2
+dontUpper
+				RTS
+
+
+;______________________________________________________________________
+;
+; Utility EntString saves regs D3-D4/A2-A3, sets up opword for quick
+; test in Canonizer, and primes A2 with UpperTab and A3 with CmpTab.
+; D2 is cleared for use by Canonizer.
+;
+; Utility ExtString cleans up and returns, leaving CCR.  It is jumped to...
+;______________________________________________________________________
+EntString
+				MOVE.L			(SP)+,D2				; return address
+				MOVEM.L 		D2-D4/A2-A3,-(SP)		; return on top
+				LEA 			UpperTab,A2
+				LEA 			CmpTab,A3
+;
+; Opword = 1010 xCDx xxxx xxxx , where C=caseBit and D=diacBit.  Align to form
+;		   Dxxx xxxx Cxx1 010x to facilitate testing D and C.
+;
+				ROL.W			#6,D1					; Dxxx xxxx xx10 10xC
+				ROR.B			#1,D1					; Dxxx xxxx Cxx1 010x
+				MOVEQ			#0,D2					; clear hi bits for Canonizer
+				RTS
+
+ExtString
+				MOVEM.L 		(SP)+,D3-D4/A2-A3
+				RTS
+
+
+;______________________________________________________________________
+;
+; Routine:		  UprString
+; Arguments:		D0.W (input)  --  string length
+;					A0.L (input)  --  pointer to string to canonize
+;					Opcode bit 10 --  0 - map to upper case; 1 - case sensitive
+;					Opcode bit	9 --  0 - diacritical sensitive; 1 - strip diacrits
+;					All registers are preserved.
+; Function: 	  UprString is a utility routine which, according to
+;				  a pair of input booleans, strips diacritical marks
+;				  and/or maps all characters to upper case.
+;
+;______________________________________________________________________
+
+UprString
+;
+; Register usage:
+;		D0 = string length = loop index
+;		D1 = trap opcode, with booleans
+;		D2 = string input/output buffer
+;
+;		A0 = string 0 pointer
+;
+				BSR.S			EntString
+
+				BRA.S			USLoopEntry
+USLoopTop
+;
+; Get next character, canonize it, and replace it.
+;
+				MOVE.B			(A0),D2
+				BSR.S			Canonizer
+				MOVE.B			D2,(A0)+
+USLoopEntry
+				DBRA			D0,USLoopTop
+				MOVEQ			#0,D0					; don't risk interp of error
+				BRA.S			ExtString
+
+
+;
+; Handy macro allows for ease in building big, regular tables.
+; ASSEMBLER WON'T ALLOW EIGHTH ARGUMENT ON SAME LINE!!!!!!!!!!!!!!
+;
+		MACRO		
+		crow
+		DC.B	(&Syslst[1]),( &Syslst[1]+1),( &Syslst[1]+2),( &Syslst[1]+3),( &Syslst[1]+4),( &Syslst[1]+5),( &Syslst[1]+6)
+		DC.B	(&Syslst[1]+7)
+		ENDM
+
+		MACRO		
+		dcrow
+		crow	&Syslst[1]
+		crow	&Syslst[1]+8
+		ENDM
+
+
+;_________________________________________________________________________________________________________
+;
+StripTab
+
+; No diacriticals in low ASCII.
+		dcrow	$00
+		dcrow	$10
+		dcrow	$20
+		dcrow	$30
+		dcrow	$40
+		dcrow	$50
+		dcrow	$60
+		dcrow	$70
+
+; Diacritical city.
+		DC.B	('A'),( 'A'),( 'C'),( 'E'),( 'N'),( 'O'),( 'U'),( 'a')
+		DC.B	('a'),( 'a'),( 'a'),( 'a'),( 'a'),( 'c'),( 'e'),( 'e')
+
+		DC.B	('e'),( 'e'),( 'i'),( 'i'),( 'i'),( 'i'),( 'n'),( 'o')
+		DC.B	('o'),( 'o'),( 'o'),( 'o'),( 'u'),( 'u'),( 'u'),( 'u')
+
+; O-slash at end.
+		crow	$A0
+		DC.B	$A8, $A9, $AA, $AB, $AC, $AD, $AE,( 'O')
+
+; a-under, o-under, and o-slash.
+		crow	$B0
+		DC.B	$B8, $B9, $BA,( 'a'),( 'o'), $BD, $BE,( 'o')
+
+; Diacrits at end.
+		crow	$C0
+		DC.B	$C8, $C9, $CA,( 'A'),( 'A'),( 'O'), $CE, $CF
+
+; Beware of y-umlaut, CHANGE  FROM MAC-1
+		crow	$D0
+		DC.B	('y'), $D9, $DA, $DB, $DC, $DD, $DE, $DF
+
+		dcrow	$E0
+		dcrow	$F0
+
+; End of StripTab
+;_________________________________________________________________________________________________________
+
+
+
+;_________________________________________________________________________________________________________
+;
+UpperTab
+; Special chars, punctuation, digits, upper-case letters.
+		dcrow	$00
+		dcrow	$10
+		dcrow	$20
+		dcrow	$30
+		dcrow	$40
+		dcrow	$50
+
+; Lower-case letters and some symbols.
+		DC.B	$61,( 'A'),( 'B'),( 'C'),( 'D'),( 'E'),( 'F'),( 'G')
+		crow	$48
+		crow	$50
+		DC.B	('X'),( 'Y'),( 'Z'), $7B, $7C, $7D, $7E, $7F
+
+; Accented characters.
+		crow	$80
+		DC.B	$CB, $89, $80, $CC, $81, $82, $83, $8F
+		DC.B	$90, $91, $92, $93, $94, $95, $84, $97
+		DC.B	$98, $99, $85, $CD, $9C, $9D, $9E, $86
+
+; Symbols and upper-case AE and O-slash
+		dcrow	$A0
+
+; Symbols and ae, o-slash
+		crow	$B0
+		DC.B	$B8, $B9, $BA, $BB, $BC, $BD, $AE, $AF
+
+; Symbols, upper A-acute, A-tilde, O-tilde, OE, and oe
+		crow	$C0
+		DC.B	$C8, $C9, $CA, $CB, $CC, $CD, $CE, $CE
+
+; Symbols and undefineds.  y-umlaut cannot map up.
+		dcrow	$D0
+		dcrow	$E0
+		dcrow	$F0
+
+; End of UpperTab
+;_________________________________________________________________________________________________________
+
+
+;
+; Entries in the CmpTab are given as words, with the "root" char in the high byte, and
+; fine tuning in the low byte.
+;
+		MACRO		
+		basec
+		DC.B	(&Syslst[1]),( $00)
+		ENDM
+
+		MACRO		
+		modc
+		DC.B	(&Syslst[1]),( &Syslst[2])
+		ENDM
+
+;
+; Macro baserow sets up a sequence of 8 base characters, that is, with modifier=0.
+; It's handy for setting up the punctuation and alphabetic characters.
+; Macro dbaserow just does two rows.
+;
+		MACRO		
+		baserow
+		basec	&Syslst[1]
+		basec	&Syslst[1]+1
+		basec	&Syslst[1]+2
+		basec	&Syslst[1]+3
+		basec	&Syslst[1]+4
+		basec	&Syslst[1]+5
+		basec	&Syslst[1]+6
+		basec	&Syslst[1]+7
+		ENDM
+
+		MACRO			
+		dbaserow
+		baserow &Syslst[1]
+		baserow &Syslst[1]+8
+		ENDM
+
+;
+; Macro lower11 is a convenience for setting up two-byte entries for a sequence of 11 lower-case
+; characters.  There are two such sequences: 'a'-'k' and 'p'-'z'.
+;
+		MACRO		
+		lower11
+		modc	&Syslst[1], $80
+		modc	&Syslst[1]+1, $80
+		modc	&Syslst[1]+2, $80
+		modc	&Syslst[1]+3, $80
+		modc	&Syslst[1]+4, $80
+		modc	&Syslst[1]+5, $80
+		modc	&Syslst[1]+6, $80
+		modc	&Syslst[1]+7, $80
+		modc	&Syslst[1]+8, $80
+		modc	&Syslst[1]+9, $80
+		modc	&Syslst[1]+$A, $80
+		ENDM
+
+;
+; Macro ldiac takes two args:  a lower case vanilla alphabetic and the name of a diacritical.
+; It sets up a two-byte table entry with the corresponding upper-case character and a low-order
+; modifier of the form $80+n where small n depends upon the diacritical in question.  They are ordered
+; plain < acute < grave < circumflex < umlaut < tilde < circle < slash < cedilla < under < ligature
+; in order to give as nearly the flavor of the international string comparisons as possible.
+;
+		MACRO		
+		ldiac
+.*
+		DC.B	(&Syslst[1]-$20)
+.*
+		IF		&Eval(&Syslst[2]) = 'acute' THEN
+			   DC.B    ($82)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'grave' THEN
+			   DC.B    ($84)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'circumflex' THEN
+			   DC.B    ($86)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'umlaut' THEN
+			   DC.B    ($88)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'tilde' THEN
+			   DC.B    ($8A)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'circle' THEN
+			   DC.B    ($8C)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'slash' THEN
+			   DC.B    ($8E)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'cedilla' THEN
+				DC.B   ($90)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'under' THEN
+			   DC.B    ($92)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'ligature' THEN
+			   DC.B    ($94)
+		ENDIF
+.*
+		ENDM
+
+
+
+
+;
+; Macro udiac takes two args:  an upper-case vanilla alphabetic and the name of a diacritical.
+; It sets up a two-byte table entry with the upper-case character and a low-order
+; modifier of the form n where small n depends upon the diacritical in question.  They are ordered
+; plain < acute < grave < circumflex < umlaut < tilde < circle < slash < under < ligature
+; in order to give as nearly the flavor of the international string comparisons as possible.
+;
+		MACRO		
+		udiac
+.*
+		DC.B	(&Syslst[1])
+.*
+		IF		&Eval(&Syslst[2]) = 'acute' THEN
+			   DC.B    ($02)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'grave' THEN
+			   DC.B    ($04)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'circumflex' THEN
+			   DC.B    ($06)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'umlaut' THEN
+			   DC.B    ($08)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'tilde' THEN
+			   DC.B    ($0A)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'circle' THEN
+			   DC.B    ($0C)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'slash' THEN
+			   DC.B    ($0E)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'cedilla' THEN
+			   DC.B    ($10)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'under' THEN
+			   DC.B    ($12)
+		ENDIF
+.*
+		IF		&Eval(&Syslst[2]) = 'ligature' THEN
+			   DC.B    ($14)
+		ENDIF
+.*
+		ENDM
+
+
+;_________________________________________________________________________________________________________
+;
+CmpTab
+
+; The control characters are vanilla
+		dbaserow	$00
+		dbaserow	$10
+
+; Punctuation, digits, and upper case are all base chars
+		dbaserow	$20
+		dbaserow	$30
+		dbaserow	$40
+		dbaserow	$50
+
+; Map lower case up and use punctuation as base chars.
+		basec		$61
+		lower11 	$41
+		modc		$4C, $80
+		modc		$4D, $80
+		modc		$4E, $80
+		modc		$4F, $80
+		lower11 	$50
+		basec		$7B
+		basec		$7C
+		basec		$7D
+		basec		$7E
+		basec		$7F
+
+; Grotesque diacriticals!
+		udiac	'A', 'umlaut'
+		udiac	'A', 'circle'
+		udiac	'C', 'cedilla'
+		udiac	'E', 'acute'
+		udiac	'N', 'tilde'
+		udiac	'O', 'umlaut'
+		udiac	'U', 'umlaut'
+		ldiac	'a', 'acute'
+
+		ldiac	'a', 'grave'
+		ldiac	'a', 'circumflex'
+		ldiac	'a', 'umlaut'
+		ldiac	'a', 'tilde'
+		ldiac	'a', 'circle'
+		ldiac	'c', 'cedilla'
+		ldiac	'e', 'acute'
+		ldiac	'e', 'grave'
+
+		ldiac	'e', 'circumflex'
+		ldiac	'e', 'umlaut'
+		ldiac	'i', 'acute'
+		ldiac	'i', 'grave'
+		ldiac	'i', 'circumflex'
+		ldiac	'i', 'umlaut'
+		ldiac	'n', 'tilde'
+		ldiac	'o', 'acute'
+
+		ldiac	'o', 'grave'
+		ldiac	'o', 'circumflex'
+		ldiac	'o', 'umlaut'
+		ldiac	'o', 'tilde'
+		ldiac	'u', 'acute'
+		ldiac	'u', 'grave'
+		ldiac	'u', 'circumflex'
+		ldiac	'u', 'umlaut'
+
+; Column $A is cool up to s-zet; then up to AE and O-slash.
+		basec	$A0
+		basec	$A1
+		basec	$A2
+		basec	$A3
+		basec	$A4
+		basec	$A5
+		basec	$A6
+		modc	'S', $82
+		basec	$A8
+		basec	$A9
+		basec	$AA
+		basec	$AB
+		basec	$AC
+		basec	$AD
+		udiac	'A', 'ligature'
+		udiac	'O', 'slash'
+
+; Column $B is cool up to last five.
+		baserow $B0
+		basec	$B8
+		basec	$B9
+		basec	$BA
+		ldiac	'a', 'under'
+		ldiac	'o', 'under'
+		basec	$BD
+		ldiac	'a', 'ligature'
+		ldiac	'o', 'slash'
+
+; Column $C has quote special case, non-breaking space, and 5 diacs
+		basec	$C0
+		basec	$C1
+		basec	$C2
+		basec	$C3
+		basec	$C4
+		basec	$C5
+		basec	$C6
+		modc	'"', $06
+		modc	'"', $08
+		basec	$C9
+		basec	' ', $02
+		udiac	'A', 'grave'
+		udiac	'A', 'tilde'
+		udiac	'O', 'tilde'
+		udiac	'O', 'ligature'
+		ldiac	'o', 'ligature'
+
+; Column $D has quotes and y.
+		basec	$D0
+		basec	$D1
+		modc	'"', $02
+		modc	'"', $04
+		modc	$27, $02
+		modc	$27, $04
+		basec	$D6
+		basec	$D7
+		ldiac	'y', 'umlaut'
+		basec	$D9
+		basec	$DA
+		basec	$DB
+		basec	$DC
+		basec	$DD
+		basec	$DE
+		basec	$DF
+
+; Columns $E and $F are vanilla
+		dbaserow	$E0
+		dbaserow	$F0
+
+; End of CmpTab
+;_________________________________________________________________________________________________________
+
+
+			ENDPROC
+			END

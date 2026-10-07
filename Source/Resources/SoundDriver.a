@@ -1,0 +1,436 @@
+*R Mac Plus .Sound driver resource.
+*R The driver body is absent from this source release. These instructions restore
+*R the square-wave, four-tone, and free-form playback routines from the ROM.
+*R Original interface declarations identify globals, driver fields, and VIA ports.
+*R PatchPlusROM.a confirms several entry addresses and describes later fixes.
+*R Names not found in that evidence describe the reconstructed routine behavior.
+*R See Evidence/sound-driver.json for provenance and the byte comparison.
+
+;] Historical follow-up from Patches/PatchPlusROM.a:
+; Copyright: © 1985-1992 by Apple Computer, Inc., all rights reserved.
+; (#13) New Sound Driver Patches
+; December 9th, 1985
+; Mark Lentczner
+;
+; Two things were patched: 1) The test at the begining of the byte
+; map VBL task should correctly deal with an empty queue by calling
+; DoneVBL.  2) The test at the end of the byte map VBL should NOT
+; call DoneVBL, but only GoToIODone instead.
+;
+;
+
+		EXPORT SoundHeader ;]
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'Traps.a'
+
+
+
+SoundResourceBlock ;]
+            DC.L $C0000000+SoundResourceEnd-SoundResourceBlock ;]
+            DC.L $58 ;]
+SoundHeader ;]
+            DC.W $4E00          ;] write, control, status, and interrupt-level locking
+            DC.W 0,0,0          ;] no time, events, or menu
+            DC.W SoundOpen-SoundHeader,SoundPrime-SoundHeader ;]
+            DC.W SoundControl-SoundHeader,SoundStatus-SoundHeader ;]
+            DC.W SoundClose-SoundHeader ;]
+            DC.B 6,'.Sound ' ;]
+            ALIGN 2
+
+;] SoundOpen saves the driver control entry and initializes volume and playback.
+SoundOpen ;]
+            MOVE.L     A1,SoundDCE ;]
+            BSR.S      ResetSound ;]
+            MOVE.B     SPVolCtl,D0
+            BSR.W      SetVolume ;]
+            CLR.B      SoundActive ;] The VBL task is inactive after opening.
+SoundExitNoErr ;]
+            MOVEQ      #0,D0
+            RTS        
+SoundKillIO ;]
+            CLR.W      CurPitch
+SoundClose ;]
+            BSR.S      DeAlloc ;]
+            BSR.S      ResetSound ;]
+            BRA.S      SoundExitNoErr ;]
+ResetSound ;]
+            BSR.S      ResetBuffer ;]
+
+;] ReleaseTimer disables the square-wave output only when this driver owns T1.
+ReleaseTimer ;]
+            MOVE.L     VIA,A0
+            TST.B      T1Arbitrate ;]
+            BNE.S      TimerExit ;]
+            ANDI.B     #63,vACR(A0) ;]
+            ST         T1Arbitrate ;]
+TimerExit ;]
+            RTS        
+
+;] DeAlloc removes the low-memory VBL element when SoundActive is set.
+DeAlloc ;]
+            TST.B      SoundActive
+            BEQ.S      DeAllocExit ;]
+            LEA        SoundVBL,A0
+            _VRemove   
+            CLR.B      SoundActive ;]
+DeAllocExit ;]
+            RTS        
+
+;] ResetBuffer repeats the first sound sample across the buffer.
+ResetBuffer ;]
+            MOVE.L     SoundBase,A0 ;]
+            MOVE.B     (A0),D0
+
+;] FillBuffer writes 370 bytes at the even sound-buffer addresses.
+FillBuffer ;]
+            MOVE.B     D0,SoundLevel ;]
+            MOVE.B     D0,D1
+            LSL.W      #8,D0
+            MOVE.B     D1,D0
+            MOVE.W     D0,D1
+            SWAP       D0
+            MOVE.W     D1,D0
+            MOVE.L     SoundBase,A0 ;]
+            MOVEQ      #45,D1 ;]
+FillLoop ;]
+            MOVEP.L    D0,0(A0)
+            MOVEP.L    D0,8(A0) ;]
+            ADD.W      #16,A0
+            DBRA       D1,FillLoop ;] 46 groups of eight samples
+            MOVEP.W    D0,0(A0) ;] two final samples
+            RTS        
+
+;] SetVolume changes the three VIA volume bits while interrupts are masked.
+SetVolume ;]
+            MOVE.W     SR,-(SP)
+            ORI.W      #768,SR
+            MOVE.B     AVBufA,D1 ;]
+            ANDI.W     #248,D1 ;]
+            ANDI.W     #7,D0
+            MOVE.B     D0,SdVolume
+            OR.W       D0,D1
+            MOVE.B     D1,AVBufA ;]
+            MOVE.W     (SP)+,SR
+            RTS        
+
+;] Control code one stops playback; code two sets volume.
+;] Other positive codes fill the buffer with the supplied sample.
+SoundControl ;]
+            MOVE.W     CSCode(A0),D0
+            BEQ.S      SoundStatus ;]
+            SUBQ.W     #2,D0
+            BEQ.S      VolumeControl ;]
+            BLT.W      SoundKillIO ;]
+            MOVE.W     CSParam(A0),D0
+            BSR.S      FillBuffer ;]
+SoundStatus ;]
+            BRA.W      GoToIODone ;]
+VolumeControl ;]
+            MOVE.W     CSParam(A0),D0
+            BSR.S      SetVolume ;]
+            BRA.S      SoundStatus ;]
+
+;] The signed mode word selects square-wave, four-tone, or byte-map playback.
+SoundPrime ;]
+            BCLR       #7,AVBufB ;]
+            MOVE.L     IOBuffer(A0),A1
+            TST.W      (A1)+
+            BEQ.W      ByteMap ;]
+            BPL.W      FourTone ;]
+
+;] SquareWave reads a pitch, amplitude, and duration from the queued buffer.
+SquareWave ;]
+            MOVEM.W    (A1)+,D0-D2 ;]
+            TST.W      D2
+            BEQ.W      EndSquareWave ;]
+            MOVE.L     A0,-(SP)
+
+;] The arbitration byte distinguishes an available timer from another owner.
+            TST.B      T1Arbitrate ;]
+            BEQ.S      SetTimer ;]
+            BCLR       #7,T1Arbitrate ;]
+            BEQ.S      SavePitch ;]
+            CLR.B      T1Arbitrate ;]
+SetTimer
+            MOVE.L     VIA,A0
+            ORI.B      #192,vACR(A0) ;]
+            CMP.W      CurPitch,D0 ;]
+            BEQ.S      SavePitch ;]
+            MOVE.B     D0,vT1C(A0) ;]
+            ROR.W      #8,D0
+            MOVE.B     D0,vT1CH(A0) ;]
+            ROR.W      #8,D0
+SavePitch ;]
+            MOVE.W     D0,CurPitch ;]
+            MOVE.W     D1,D0
+            BSR.W      FillBuffer ;]
+            MOVE.W     D2,D0
+
+;] The square-wave VBL task advances to the next six-byte note.
+            LEA        SQUAREWAVEVBL,A1 ;]
+            BSR.S      InstallVBL
+            MOVE.L     (SP)+,A0
+            ADDQ.L     #6,IOActCount(A0) ;]
+PrimeReturn ;]
+            MOVEQ      #0,D0
+            RTS        
+InstallNextVBL ;]
+            MOVEQ      #1,D0
+
+;] InstallVBL rewrites the low-memory queue element before testing SoundActive.
+;] This retains the queue-link bug described by the later <s263> patch.
+InstallVBL
+            LEA        SoundVBL,A0
+            MOVE.L     A0,D1
+            CLR.L      (A0)+
+            MOVE.W     #1,(A0)+
+            MOVE.L     A1,(A0)+
+            MOVE.W     D0,(A0)+
+            CLR.W      (A0)
+            TST.B      SoundActive
+            BNE.S      InstallExit ;]
+            ST         SoundActive ;]
+            MOVE.L     D1,A0
+            _VInstall  
+InstallExit ;]
+            RTS        
+SquareWaveVBL ;]
+            MOVE.L     SoundDCE,A1
+            MOVE.L     DCtlQHead(A1),A0
+            MOVE.L     IOActCount(A0),D0 ;]
+            MOVE.L     IOBuffer(A0),A1
+            ADD.L      D0,A1
+            ADDQ.L     #2,A1
+            ADDQ.W     #4,D0 ;] Allow four bytes before the note boundary.
+            CMP.L      IOReqCount(A0),D0 ;]
+            BLT.W      SquareWave ;]
+EndSquareWave ;]
+            BSR.W      ReleaseTimer ;]
+            CLR.W      CurPitch
+
+;] DoneVBL removes the task, resets the buffer, and completes the I/O request.
+DoneVBL
+            BSR.W      DeAlloc ;]
+            BSR.W      ResetBuffer ;]
+GoToIODone ;]
+            MOVEQ      #0,D0
+            MOVE.L     SoundDCE,A1
+            MOVE.L     JIODone,A0
+            JMP        (A0)
+
+;] FourTone keeps the parameter-record pointer in SoundPtr.
+FourTone ;]
+            MOVE.L     (A1)+,SoundPtr ;]
+            LEA        FOURTONEVBL,A1 ;]
+PrimeInstall ;]
+            BSR.S      InstallNextVBL ;]
+            BRA.S      PrimeReturn ;]
+EndFourTone ;]
+            MOVEM.L    (SP)+,D0-A6
+            BRA.S      DoneVBL ;]
+
+;] The four-tone record holds a duration, four increments, four phases,
+;] and four waveform pointers. The VBL task updates the phases in place.
+FourToneVBL ;]
+            MOVEM.L    D0-A6,-(SP)
+            MOVE.L     SoundPtr,A6 ;]
+            TST.W      (A6)
+            BEQ.S      EndFourTone ;]
+            MOVE.W     #1,SoundVBL+vblCount ;]
+            SUBQ.W     #1,(A6)+ ;]
+            MOVEM.L    (A6),D2-A5 ;] four increment/phase pairs and four waveform pointers
+            MOVE.L     SoundBase,A6 ;]
+            MOVE.L     #16711680,D1 ;] Mask for the waveform index in each fixed-point phase.
+
+;] Use the single advancing waveform loop when the other increments are zero.
+            MOVE.L     A0,D0
+            BNE.S      MixFour ;]
+            MOVE.L     D6,D0
+            BNE.S      MixFour ;]
+            MOVE.L     D4,D0
+            BEQ.S      MixOne ;]
+
+;] MixFour fills both halves of the buffer, starting at byte offset 370.
+MixFour ;]
+            ADD.W      #370,A6 ;]
+            MOVE.W     #2,-(SP)
+            MOVE.W     #185,-(SP) ;]
+MixFourSample ;]
+            CLR.W      D1
+            ADD.L      D2,D3
+            ADD.L      D4,D5
+            ADD.L      D6,D7
+            ADD.L      A0,A1
+            MOVE.L     D3,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A2,D0.W),D1
+            MOVE.L     D5,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A3,D0.W),D0
+            ADD.W      D0,D1
+            MOVE.L     D7,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A4,D0.W),D0 ;]
+            ADD.W      D0,D1
+            MOVE.L     A1,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A5,D0.W),D0 ;]
+            ADD.W      D0,D1
+            LSR.W      #2,D1 ;] Average four unsigned samples.
+            MOVE.B     D1,(A6) ;]
+            ADDQ.W     #2,A6 ;]
+            SUBQ.W     #1,(SP)
+            BNE.S      MixFourSample ;]
+            MOVE.L     SoundBase,A6 ;]
+            MOVE.W     #185,(SP) ;]
+            SUBQ.W     #1,2(SP)
+            BNE.S      MixFourSample ;]
+            BRA.S      SavePhases ;]
+
+;] MixOne holds the other three samples constant while advancing waveform one.
+MixOne ;]
+            ADD.W      #140,A6 ;]
+            MOVE.W     #2,-(SP)
+            MOVE.W     #300,-(SP)
+            MOVE.L     D5,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A3,D0.W),D0
+            MOVE.W     D0,-(SP)
+            MOVE.L     D7,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A4,D0.W),D0 ;]
+            ADD.W      D0,(SP)
+            MOVE.L     A1,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A5,D0.W),D0 ;]
+            ADD.W      D0,(SP)
+MixOneSample ;]
+            CLR.W      D1
+            ADD.L      D2,D3
+            MOVE.L     D3,D0
+            AND.L      D1,D0
+            SWAP       D0
+            MOVE.B     0(A2,D0.W),D1
+            ADD.W      (SP),D1 ;]
+            LSR.W      #2,D1 ;] Average the advancing sample and three constant samples.
+            MOVE.B     D1,(A6) ;]
+            ADDQ.W     #2,A6 ;]
+            SUBQ.W     #1,2(SP)
+            BNE.S      MixOneSample ;]
+            MOVE.L     SoundBase,A6 ;]
+            MOVE.W     #70,2(SP) ;]
+            SUBQ.W     #1,4(SP)
+            BNE.S      MixOneSample ;]
+            ADDQ.W     #2,SP
+SavePhases ;]
+            ADDQ.W     #4,SP
+            MOVE.L     SoundPtr,A6 ;]
+            ADDQ.W     #2,A6 ;]
+            MOVEM.L    D2-A1,(A6) ;]
+            MOVEM.L    (SP)+,D0-A6
+BMapExit ;]
+            RTS        
+
+;] ByteMap keeps the fractional sample position in DCtlPosition.
+ByteMap ;]
+            MOVE.L     SoundDCE,A1
+            CLR.L      DCtlPosition(A1) ;]
+            LEA        ROMBMAP,A1 ;]
+            BRA.W      PrimeInstall ;]
+
+*R The ROM returns immediately when the queue is empty. The December 1985
+*R patch calls DoneVBL first; those later instructions are not part of this ROM.
+ROMBMap
+            BSR.S      CheckBMapQueue ;]
+FmBMapStart
+            BEQ.S      BMapExit ;]
+            MOVE.L     DCtlPosition(A1),D3 ;]
+            MOVE.W     #1,SoundVBL+vblCount ;]
+
+;] Write 338 samples from buffer offset 64, then 32 samples from its start.
+            MOVE.L     A4,-(SP)
+            MOVE.L     IOBuffer(A0),A1
+            ADDQ.W     #2,A1
+            MOVE.L     (A1)+,D1
+            MOVE.L     A1,A3
+            ADD.L      IOReqCount(A0),A3 ;]
+            ADD.L      D0,A1
+            MOVE.L     SoundBase,A2 ;]
+            ADD.W      #64,A2 ;]
+            LEA        676(A2),A4 ;]
+            CLR.W      -(SP)
+            MOVE.W     #337,D2 ;]
+BMapPart ;]
+            MOVEQ      #0,D0
+
+;] Advance the input pointer by the integer part of the fixed-point rate.
+BMapSample ;]
+            MOVE.B     (A1),(A2) ;]
+            ADDQ.W     #2,A2
+            ADD.L      D1,D3
+            SWAP       D3
+            ADD.W      D3,A1
+            ADD.W      D3,D0
+            CLR.W      D3 ;] Keep only the fractional part for the next sample.
+            SWAP       D3
+            CMP.L      A1,A3
+            DBLE       D2,BMapSample ;]
+            ADD.L      D0,IOActCount(A0) ;] Update the number of consumed source bytes.
+            TST.W      (SP)+
+            BEQ.S      BMapFirstPart ;]
+            TST.W      D2
+            BMI.S      SaveFraction ;]
+
+;] Clear unused output samples when the input buffer runs out.
+ClearTail ;]
+            MOVEQ      #0,D0
+ClearSample ;]
+            MOVE.B     D0,(A2)
+            ADDQ.W     #2,A2
+            CMP.L      A2,A4
+            BGT.S      ClearNext ;]
+            MOVE.L     SoundBase,A2 ;]
+ClearNext ;]
+            DBRA       D2,ClearSample ;]
+SaveFraction ;]
+            MOVE.L     SoundDCE,A1
+            MOVE.L     D3,DCtlPosition(A1) ;]
+            MOVE.L     (SP)+,A4
+
+;] CheckBMapQueue completes a consumed request through DoneVBL.
+;] The later sound patch bypasses its task removal and buffer reset here.
+CheckBMapQueue ;]
+            MOVE.L     SoundDCE,A1
+            MOVE.L     DCtlQHead(A1),D0
+            BEQ.S      BMapZero ;]
+            MOVE.L     D0,A0
+            MOVE.L     IOActCount(A0),D0 ;]
+            CMP.L      IOReqCount(A0),D0 ;]
+            BLT.S      BMapReturn ;]
+            BSR.W      DoneVBL ;]
+BMapZero ;]
+            MOVEQ      #0,D0
+BMapReturn ;]
+            RTS        
+BMapFirstPart ;]
+            TST.W      D2
+            BMI.S      BMapSecondPart ;]
+            ADDI.W     #32,D2 ;] Include the unwritten second part in the zero fill.
+            BRA.S      ClearTail ;]
+BMapSecondPart ;]
+            MOVE.W     #1,-(SP)
+            MOVE.L     SoundBase,A2 ;]
+            MOVEQ      #31,D2
+            BRA.S      BMapPart ;]
+SoundResourceEnd ;]
+            END

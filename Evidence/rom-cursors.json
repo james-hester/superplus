@@ -1,0 +1,131 @@
+{
+  "module": "rom-cursors",
+  "source": "Reconstruction/Source/Resources/Cursors.r",
+  "source_sha256": "e6c862d66fc83243326db9bc93fe9c241f686dc0804fedf84c2688ba200fe00d",
+  "originals": [
+    {
+      "path": "Resources/ROMFonts.r",
+      "sha256": "62b5cad2583c34d78ff0e520582630cdeb235a467356d3dfdff0b89d72fbcf16",
+      "line_ranges": [
+        [
+          1,
+          20
+        ],
+        [
+          25,
+          30
+        ],
+        [
+          30,
+          36
+        ],
+        [
+          38,
+          44
+        ],
+        [
+          46,
+          52
+        ],
+        [
+          54,
+          60
+        ]
+      ],
+      "role": "Original header, history, cursor declarations, data, and comments."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "spans": [
+    {
+      "start": "0x41f14c",
+      "end_exclusive": "0x41f27c",
+      "length": 304,
+      "sha256": "674a9782ee83aa4c0fc3f6e4a00ac9fcfd985766e0ffc28da197ebe783617c18"
+    }
+  ],
+  "integration_manifest": {
+    "name": "rom-cursors",
+    "source": "Reconstruction/Source/Resources/Cursors.r",
+    "format": "rez-data",
+    "start": "0x41f14c",
+    "end_exclusive": "0x41f27c",
+    "block_flags": "0xc0",
+    "first_master_pointer_offset": "0x80",
+    "resources": [
+      {
+        "type": "CURS",
+        "id": 2,
+        "label": "Curs2",
+        "attributes": [
+          "sysheap",
+          "locked"
+        ]
+      },
+      {
+        "type": "CURS",
+        "id": 3,
+        "label": "Curs3",
+        "attributes": [
+          "sysheap",
+          "locked"
+        ]
+      },
+      {
+        "type": "CURS",
+        "id": 1,
+        "label": "Curs1",
+        "attributes": [
+          "sysheap",
+          "locked"
+        ]
+      },
+      {
+        "type": "CURS",
+        "id": 4,
+        "label": "Curs4",
+        "attributes": [
+          "sysheap",
+          "locked"
+        ]
+      }
+    ],
+    "entry_points": {
+      "Curs2Block": "0x41f14c",
+      "Curs2": "0x41f154",
+      "Curs2End": "0x41f198",
+      "Curs3Block": "0x41f198",
+      "Curs3": "0x41f1a0",
+      "Curs3End": "0x41f1e4",
+      "Curs1Block": "0x41f1e4",
+      "Curs1": "0x41f1ec",
+      "Curs1End": "0x41f230",
+      "Curs4Block": "0x41f230",
+      "Curs4": "0x41f238",
+      "Curs4End": "0x41f27c"
+    }
+  },
+  "changes": [
+    {
+      "change": "Copied the four CURS declarations and their data unchanged, retaining the source header and history. Omitted the include and unrelated resources.",
+      "evidence": "All four 68-byte data records match the ROM exactly."
+    },
+    {
+      "change": "Placed resource blocks in ROM order 2, 3, 1, 4, with eight-byte memory headers and relative master-pointer offsets $80, $84, $88, and $8C.",
+      "evidence": "Each header contains $C000004C followed by its master-pointer offset. The retained source attributes describe the released declarations. The ROM map separately records its $58 resource attributes."
+    }
+  ],
+  "verification": {
+    "method": "The shared verifier assembled the source, linked it at its ROM address, and compared every emitted byte and all recorded labels.",
+    "matched_bytes": 304,
+    "entry_points_checked": 12,
+    "result": "exact",
+    "limits": [
+      "The comparison establishes emitted bytes and labels. It does not execute ROM code or establish the exact text of the lost Mac Plus sources."
+    ],
+    "build_method": "The restricted Rez parser reads only data declarations, preserves their bytes, and emits named resource blocks with the recorded memory headers. It rejects unsupported source, omitted or repeated resources, and changed declaration metadata."
+  }
+}

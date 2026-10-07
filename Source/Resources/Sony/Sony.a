@@ -1,0 +1,554 @@
+*R This module restores the Sony resource header and the complete
+*R open, control, and status group for Mac Plus ROM v3. SonyHdr.a acquired the
+*R header in 1989; it appears here with the earlier Sony.a bodies.
+*R The ROM retains the DCD dispatcher and the cache GrowZone hook removed later.
+*R Original comments describe surviving code unless a reconstruction note says otherwise.
+*R Explicit branch sizes preserve the target encodings.
+*R See Evidence/sony-driver.json for source history and verification limits.
+
+;
+;	File:		SonyHdr.a
+;
+;	Written by:	Larry Kenyon	4-May-82
+;
+;	Copyright:	© 1982-1990, 1992-1994 by Apple Computer, Inc., all rights reserved.
+;
+;	MacIntosh OS Sony Disk Driver
+;
+;	  written by Larry Kenyon	4-May-82
+;
+;   Copyright © Apple Computer, Inc. 1982-1989
+;
+;	This is the official Mac disk driver.  It supports a
+;	Sony-type (16 us/nybble) 3-1/2 inch disk drive in both the internal
+;	and external ports.  It is fully asynchronous to
+;	allow processing during power-up, seek and rotational
+;	latency times.
+;
+;	Some of the lower level routines in this driver are
+;	very timing sensitive and therefore cannot be changed
+;	very easily.
+;
+;	Seek, Eject, and PowerOn wait times are returned to the
+;	caller;  the VIA timer 2 is used exclusively by this disk driver to
+;	measure these times and cause an interrupt back to this driver to
+;	continue or complete a task.  To do this, the code is very
+;	"level-specific".
+;
+;	A VBL task is used to look for disk-in-place and to power down
+;	disk drives after a couple second delay when they are no longer in
+;	use.
+;
+; Modification History:
+;
+; 04 May 83  LAK  Adapted from Twiggy driver.
+;
+;
+;	File:		Sony.a
+;
+;	Contains:	Sony Floppy Driver
+;
+;	Written by:	Larry Kenyon
+;
+;	Copyright:	© 1985-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/29/85	LAK		Fixed bug in control exit.
+;				10/27/85	LAK		Added routine DispSetUp to fix bug.
+;				10/25/85	LAK		CkDrvNum saves old Drive value in LastDrive. Ignore KillIO (DCD
+;									has no way to notify, new Time manager needs call to abort any
+;									current request - if we can't do it right, don't do it at all).
+;									Init NewIntf drive var. Use NewIntf rather than Sides to
+;									determine whether drive has new interface. Assert /enb for >150
+;									usec after /cstin goes away for new drive.
+;				10/24/85	LAK		Changed version number back to 1 because old format packages
+;									assume version 4 drivers have their correct size in drive queue
+;									entry. Invalidate any track cache data on ejects.
+;				  9/6/85	LAK		Only write DskErr if there WAS an error.
+;				 7/31/85	RDC		Modified control dispatch table and routine to remove DCD
+;									dependencies for MidMac
+;				 7/29/85	RDC		Changed interrupt level settings to use equates Eliminated DCD
+;									code for MidMac
+;				 7/24/85	LAK		Converted back from MDS to the WorkSlop. Old Mod history moved
+;									to SonyHdr file. SonyRAM now cuts back the driver after install.
+;_______________________________________________________________________
+
+
+		IMPORT AdrAndSense,AdrDisk,DCDSense,DiskSelect,DiskVBLTask,GetDrive ;]
+		IMPORT GetDrv1,InvalTrkCache,PowerDown,WakeUp ;]
+		EXPORT CkDrvNum,DiskCtlErr,DiskDone,SonyHeader ;]
+
+	INCLUDE 'SonyEqu.a'
+
+*R These routine addresses belong to later Sony source sections.
+SonyResourceEnd EQU SonyResourceBlock+$2070 ;]
+DiskPrime EQU SonyResourceBlock+$342 ;]
+jtDiskPrime EQU SonyResourceBlock+$348 ;]
+jtFigTrkSpd EQU SonyResourceBlock+$D68 ;]
+jtRdAddr EQU SonyResourceBlock+$EFA ;]
+jtRdData EQU SonyResourceBlock+$FC0 ;]
+jtWrData EQU SonyResourceBlock+$1218 ;]
+jtSeek EQU SonyResourceBlock+$9FE ;]
+jtSetUpPoll EQU SonyResourceBlock+$EC2 ;]
+jtRecal EQU SonyResourceBlock+$B30 ;]
+jtWakeUp EQU SonyResourceBlock+$AB2 ;]
+jtReSeek EQU SonyResourceBlock+$5BA ;]
+jtMakeSpdTbl EQU SonyResourceBlock+$CC2 ;]
+SetSpeed EQU SonyResourceBlock+$924 ;]
+Nibl EQU SonyResourceBlock+$1362 ;]
+jtDiskSel EQU SonyResourceBlock+$C0C ;]
+jtSendCmd EQU SonyResourceBlock+$198A ;]
+jtDCDReset EQU SonyResourceBlock+$1F44 ;]
+ctlDCDFormat EQU SonyResourceBlock+$1FC8 ;]
+ctlDCDVerify EQU SonyResourceBlock+$1FC4 ;]
+ctlDCDIcon EQU SonyResourceBlock+$1FAE ;]
+CtlFormat EQU SonyResourceBlock+$13BE ;]
+CtlVerify EQU SonyResourceBlock+$16A6 ;]
+
+ResourceBlockFlags EQU $C0 ;]
+MasterPointerOffset EQU $5C ;]
+Version EQU 1 ;]
+DCDRfN EQU -2
+SonyRfN EQU -5
+
+SonyResourceBlock ;]
+	DC.L ResourceBlockFlags*$1000000+SonyResourceEnd-SonyResourceBlock ;]
+	DC.L MasterPointerOffset ;]
+
+; Here is the driver header
+
+SonyHeader	DC.W $4F00		; read, write, control, status, needs lock
+	DC.W 0,0,0
+	DC.W DiskOpen-SonyHeader,DiskPrime-SonyHeader ;]
+	DC.W DiskControl-SonyHeader,DiskStatus-SonyHeader,DiskClose-SonyHeader ;]
+	DC.B 5,'.Sony' ;]
+
+; offset table for jump table initialization
+
+DiskClose	MOVEQ	#ClosErr,D0 		; report error: not closable at present
+			RTS
+
+InitDskTbl
+			DC.W	jtFigTrkSpd-InitDskTbl
+			DC.W	jtDiskPrime-InitDskTbl
+			DC.W	jtRdAddr-InitDskTbl
+			DC.W	jtRdData-InitDskTbl
+
+			DC.W	jtWrData-InitDskTbl
+			DC.W	jtSeek-InitDskTbl
+			DC.W	jtSetUpPoll-InitDskTbl
+			DC.W	jtRecal-InitDskTbl
+
+			DC.W	jtControl-InitDskTbl
+			DC.W	jtWakeUp-InitDskTbl
+			DC.W	jtReSeek-InitDskTbl
+			DC.W	jtMakeSpdTbl-InitDskTbl
+
+			DC.W	AdrDisk-InitDskTbl	; provide access to these routines
+			DC.W	SetSpeed-InitDskTbl ;]
+			DC.W	Nibl-InitDskTbl 	;  programs (not patchable)
+
+InitDsk2
+			DC.W	jtDiskSel-InitDskTbl ; interface select routine 		<25Oct85>
+
+			DC.W jtSendCmd-InitDskTbl ;]
+			DC.W jtDCDReset-InitDskTbl ;]
+
+InitParams
+			DC.B	8,0 				; max 8 soft errs per recal/track
+			DC.B	2,0 				; max 2 recals per track
+			DC.B	64,0				; max 64 wrong sectors per sector
+			DC.B	8,0 				; max 8 wrong speeds per track
+			DC.W	0					; I/O command 0
+			DC.W	KHdSetTime			; deflt head settle time = 30 ms
+			DC.W	KSpdChgTime 		; deflt speed chg wait time = 150 ms
+			DC.W	KPowerOn			; deflt pwr-on = .4 sec
+			DC.W	KRWPOff 			; deflt pwr-off = 2-2.5 sec
+			DC.W	KSeekTime			; deflt seek wait time = 12 ms
+			DC.W	KSectTime			; deflt sector time = 10 ms
+			DC.W	KDskVBLTime 		; deflt disk VBL time = .5 sec
+			DC.W	KEjectTime			; deflt eject time = .75 seconds
+			DC.L	KCkDelta			; deflt speed check time = 4 min
+			DC.B	KEjectWait,0		; deflt dip ck wait after eject = 1.5 sec
+
+InitParamsEnd ;]
+; 16 words to init (32 bytes)
+InitBCnt	EQU 	InitParamsEnd-InitParams ;]
+
+DispSetUp	MOVEQ	#0,D2				; clear high part for arithmetic	<27Oct85>
+			MOVE.W	(A0)+,D2			; get the next offset
+			ADD.L	D0,D2				; compute the address
+			MOVE.L	D2,(A1)+			; install it in the jump table
+			DBRA	D1,DispSetUp		; loop for vectors					<27Oct85>
+			RTS 						;									<27Oct85>
+
+; Disk Driver Initialization routine
+
+DiskOpen	MOVE.L #DiskVarLth,D0	; get memory for driver variables
+	_NewPtr ,SYS,CLEAR
+	MOVE.L A0,SonyVars		; and keep pointer in low memory
+	MOVE.L A1,(A0)			; DCE pointer
+*R The ROM shares the Sony DCE with the DCD unit-table entry.
+	MOVE.L UTableBase,A2
+	MOVE.L 16(A2),4(A2) ;]
+	MOVE.B #Version,DCtlQueue+1(A1) ; put our version number in
+	ST Active(A0)			; mark driver active for VBL exclusion
+	MOVE.L A0,A2			; save locals ptr for later
+
+; initialize the disk routine jump table
+
+	LEA InitDskTbl,A0	; point to the offset table
+	LEA JFigTrkSpd,A1		; point to 1st jump table entry
+	MOVEQ #14,D1			; there are 15 vectors
+	MOVE.L A0,D0			; remember its address
+	BSR.S DispSetUp			; do these							<27Oct85>
+	LEA JDiskSel,A1
+	MOVEQ #2,D1
+	BSR.S DispSetUp
+	ST OneToOne(A2)			; go 1 to 1 for now . . . ???
+	LEA ReadErrInit(A2),A1		; destination
+	LEA InitParams,A0	; source
+	MOVEQ #InitBCnt,D0
+	_BlockMove
+
+; allocate a VBL task to handle disk power-down and disk-in-place sensing
+; (note that VBL phase was cleared by disk variable initialization)
+
+	LEA DiskQVE(A2),A0		; get address of VBL ctl blk
+	MOVE.W #VType,QType(A0)		; init queuing fields
+	LEA DiskVBLTask,A1	; get addr of powerdown task
+	MOVE.L A1,VBLAddr(A0)		; set up address
+	MOVE.W #KDskVBLTime,VBLCount(A0)
+	_VInstall			; install the disk task
+
+; install the time manager queue element for use later by the wakeup routines.
+
+	LEA TimeQEl(A2),A0		; point at the time Q Element
+	_InsTime			; make the time manager aware of us
+
+; Check that pass-thru is working on the external connect - if a DCD is
+; connected which doesn't implement pass-thru, it will look like there
+; are an infinite number of hard disks connected (we assume 7=infinite).
+;
+; Pass thru logic is still used if only a single floppy is connected
+; externally (simplifies the logic and shouldn't matter).
+
+	MOVE.L SonyVars,A1
+	MOVE.W #7,Drive(A1) ;]
+	BSR.W DiskSelect
+	BSR.W DCDSense ;]
+	SPL PassThru(A1) ;]
+	MOVEQ #1,D2			; start with drive 1
+ChkConnect
+	MOVE.W D2,Drive(A1)
+	BSR.W GetDrive			; set up A0, A1, A2, D1
+	ST Installed(A1,D1)		; start by marking it 'not installed'
+	CMP.W #firstDCD,D2 ;]
+	BLE.S ChkSelect ;]
+	TST.B PassThru(A1) ;]
+	BMI.S ChkNext ;]
+ChkSelect ;]
+	BSR.W DiskSelect			; select the interface
+	CMP.W #firstDCD,D2 ;]
+	BLT.S ChkFloppy ;]
+	BSR.W DCDSense ;]
+	BMI.S ChkNext ;]
+	MOVE.W #1,DriveQVers(A1,D1) ;]
+	MOVEQ #DCDRfN,D3 ;]
+	BRA.S ChkAdd ;]
+ChkFloppy ;]
+	MOVEQ #DrvExstAdr,D0		; check floppy-exist sense bit
+	BSR.W AdrAndSense		; connected?
+; exit if not
+	BMI.S ChkNext ;]
+	MOVEQ #SidesAdr,D0		; see how many sides it has
+	BSR.W AdrAndSense
+	SMI Sides(A1,D1)			; $FF=two-sided
+	MOVEQ #NewIntfAdr,D0
+	BSR.W AdrAndSense
+	SMI NewIntf(A1,D1)		; $FF=new interface 				<25Oct85>
+	MOVEQ #SonyRfN,D3		; use regular refnum for floppies
+ChkAdd ;]
+	MOVE.B #1,Installed(A1,D1)	; mark 'installed' in Drive vars
+	MOVE.W D2,D0
+	SWAP D0
+	MOVE.W D3,D0			; driver refnum (-5 for Sony, -2 for DCD)
+	LEA DQEL(A1,D1),A0		; drive queue element for this drive
+	_AddDrive			; D0=[drive num][driver refnum]
+ChkNext
+	ADDQ.W #1,D2
+	CMP.W #maxDrvNum,D2
+	BLE.S ChkConnect
+*R The ROM installs a GrowZone hook that releases the track cache.
+	MOVE.L SysZone,A2 ;]
+	LEA SonyGrowZone,A0 ;]
+	MOVE.L gzProc(A2),NextGZProc(A1) ;]
+	MOVE.L A0,gzProc(A2) ;]
+	CLR.B Active(A1)			; no longer active
+	MOVEQ #0,D0
+DiskRTS RTS
+
+SonyGrowZone ;]
+	MOVE.L SonyVars,A1
+	BSR.S TCdispose
+	BNE.S GZReturn ;]
+	MOVE.L NextGZProc(A1),D1 ;]
+	BEQ.S GZReturn ;]
+	MOVE.L D1,A0
+	JMP (A0)
+GZReturn ;]
+	MOVE.L (SP)+,A0
+	ADDQ.W #4,SP
+	MOVE.L D0,(SP)
+	JMP (A0)
+
+TCdispose	CLR.L	-(SP)				; assume no space freed 			<A351/05nov86>
+			MOVE.L	TCBuffer(A1),D0 	; get buffer ptr					<A351/05nov86>
+			BEQ.S	@1					; br if none						<A351/05nov86>
+			MOVE.L	D0,A0				;									<A351/05nov86>
+			_GetPtrSize 				;									<A351/05nov86>
+			MOVE.L	D0,(SP) 			; size we free						<A351/05nov86>
+			_DisposPtr					; get rid of it 					<A351/05nov86>
+			CLR.L	TCBuffer(A1)		; no more buffer					<A351/05nov86>
+			CLR.B	TCInstalled(A1) 	; no more installed 				<A351/05nov86>
+@1			MOVE.L	(SP)+,D0			; space freed						<A351/05nov86>
+			RTS 						;									<A351/05nov86>
+
+*R The DCD eject slot clears the disk-in-place state and returns
+*R ControlErr; physical floppy ejection has a separate dispatch-table slot.
+CtlDCDEject ;]
+ CLR.B DiskInPlace(A1,D1)
+
+;_______________________________________________________________________
+;
+; DiskDone
+;
+;	D0:	return code
+;
+;	DiskDone is used to indicate IO completion to the device
+;manager, by dispatching through jIODone. The driver active flag
+;is cleared, and the error code in D0 is stored for debugging.
+;
+;_______________________________________________________________________
+
+DiskCtlErr	MOVEQ	#ControlErr,D0
+
+DiskDone	TST.W	D0					; error?							<06Sep85>
+			BEQ.S	@1					; br if not 						<06Sep85>
+			MOVE.W	D0,DskErr			; save last error for debugging
+@1			MOVE.L	SonyVars,A1 		; get pointer to locals
+			CLR.B	Active(A1)			; clear driver active indication
+			MOVE.L	DiskUnitPtr(A1),A1	; and pointer to disk DCE
+			MOVE.L	JIODone,-(SP)		; use IODone vector
+			RTS 						;
+
+;_______________________________________________________________________
+;
+; Routine:	DiskControl
+; Arguments:
+;		  A0 (input)  -- pointer to control call parameter block:
+;				 CSCode(A0) = 
+;					1 for KillIO
+;					5 for Verify
+;					6 for Format
+;					7 for Eject
+;					8 for setting tag buffer
+;					9 for track cache install/remove/enable/disable
+;
+;
+*R KillIO returns -1 directly without calling DiskDone.
+;		Opcode 5	Verify the drive specified by ioRefNum
+;		Opcode 6	Format drive (ioRefNum). CSParam = 0, except
+;					CSParam = 1 for 400K disks.
+;		Opcode 7 	Eject the diskette currently in the specified  drive.
+;					IODone is jumped to when the eject has been completed.
+;					The drive is immediately powered down.
+;					(26) = [$0007]
+;		Opcode 8	Set the buffer to store file tags.
+;					(26) = pointer to tag buffer or 0 to stop saving tags.
+;		Opcode 9	Cache control is used to control the track cache.
+;					(26) = [$0009]
+;					(28) = non-zero to enable, zero to disable
+;					(29)=  $00 for neither, $01 to install, $FF to remove
+; To Do:
+;	- report errors for immediate calls other than KillIO??
+;_______________________________________________________________________
+
+
+*R Each control entry holds the code, DCD offset, and floppy offset.
+CtlTbl
+	DC.W EjectCode,CtlDCDEject-CtlTbl,CtlSonyEjc-CtlTbl ;]
+	DC.W FormatCC,ctlDCDFormat-CtlTbl,CtlFormat-CtlTbl ;]
+	DC.W VerifyCC,ctlDCDVerify-CtlTbl,CtlVerify-CtlTbl ;]
+	DC.W IconCC,ctlDCDIcon-CtlTbl,DiskCtlErr-CtlTbl ;]
+	DC.W 0
+
+DiskControl MOVE.L JControl,-(SP)
+	RTS
+jtControl
+	MOVE.W CSCode(A0),D0
+	CMP.W #KillCode,D0 ;]
+	BNE.S CtlNotKill ;]
+	MOVEQ #-1,D0
+	RTS
+CtlNotKill ;]
+	MOVE.L SonyVars,A1
+	CMP.W #TagBufCC,D0 ;]
+	BNE.S CtlNotTag ;]
+	MOVE.L CSParam(A0),TagBufPtr(A1) ; set or clear ptr to separate buffer
+	BRA.W CtlOK ;]
+CtlNotTag ;]
+	CMP.W #TCacheCC,D0 ;]
+	BNE.S CtlDispatch ;]
+ctlTrkCache
+			ADD 	#CSParam,A0 		;									<25Oct85>
+			MOVE.B	(A0)+,D1			; get enable flag					<25Oct85>
+			MOVE.B	(A0)+,D0			; get install flag					<25Oct85>
+			BEQ.S	ctlTCEnb			; br if neither install/remove		<25Oct85>
+			BPL.S	ctlTCInst			; br for install					<25Oct85>
+			BSR.W	TCdispose			; get rid of any buffer 			<25Oct85><C437>
+			BRA.S	ctlTCEnb			; disable the cache 				<25Oct85>
+
+ctlTCInst	TST.L	TCBuffer(A1)		; already installed?				<25Oct85>
+			BNE.S	ctlTCEnb			; br if so							<25Oct85>
+
+*R The ROM requires more than two 64K memory units for the cache.
+			CMP.W #2,MemTop
+			BLE.S ctlTCEnb ;]
+			MOVE.L #524*maxGCRSectors,D0 ;]
+
+			_NewPtr ,SYS,CLEAR			;									<25Oct85>
+			BNE.S	ctlTCEnb			; br if we couldn't get it			<25Oct85>
+			MOVE.L	A0,TCBuffer(A1) 	;									<25Oct85>
+			CLR.W	TCDrive(A1) 		; inval drive number to start		<25Oct85>
+
+ctlTCEnb	TST.L	TCBuffer(A1)		; any buffer?						<25Oct85>
+			SNE 	TCInstalled(A1) 	; always disable if not 			<25Oct85>
+			BEQ.S	@1					; br if no buffer					<25Oct85>
+			TST.B	D1					; enable/disable?					<25Oct85>
+			SNE 	TCInstalled(A1) 	; turn it on or off 				<25Oct85>
+
+@1
+			BRA.W CtlOK ;]
+
+CtlDispatch ;]
+	MOVE.W D0,D2
+	BSR.W CkDrvNum
+	BNE.W DiskDone
+	TST.B Installed(A1,D1)
+	BPL.S CtlFind ;]
+	MOVEQ #NoDriveErr,D0
+	BRA.W DiskDone
+CtlFind ;]
+	LEA CtlTbl,A3
+	MOVE.L A3,A4
+CtlNext ;]
+	MOVE.W (A4)+,D4 ;]
+	BEQ.W DiskCtlErr ;]
+	CMP.W D4,D2
+	BEQ.S CtlFound ;]
+	ADDQ.W #4,A4
+	BRA.S CtlNext ;]
+CtlFound ;]
+	CMP.W #firstDCD-1,Drive(A1) ;]
+	BGT.S CtlJump ;]
+	ADDQ.W #2,A4
+CtlJump ;]
+	ADD.W (A4),A3
+	JMP (A3)
+
+CtlSonyEjc
+	BSR.W InvalTrkCache		; invalidate track cache buffer 	<24Oct85>
+	MOVEQ #0,D0			; immediate power off
+	BSR.W PowerDown			; make sure power is off
+	BSR.W DiskSelect			; but leave interface enabled
+	MOVE.W #2000,D0			; and wait 200 msec
+	BSR.W WakeUp
+	MOVEQ #EjectHAdr,D0		; addr eject
+	BSR.W AdrDisk
+	TST.B Ph3H(A0)			; set LSTRB high
+	TST.B NewIntf(A1,D1)		; set LSTRB low if new drive
+	BMI.S NewDrvEject
+;
+;Eject old style drive.
+;
+	MOVE.W EjectTime(A1),D0		; wait >.75 sec
+	BSR.W WakeUp
+	TST.B Ph3L(A0)			; set LSTRB low
+CtlEjtOK MOVE.B EjectWait(A1),DiskInPlace(A1,D1)
+CtlOK ;]
+ MOVEQ #noErr,D0
+	BRA.W DiskDone
+;
+;Eject new style drive.
+;
+NewDrvEject
+	TST.B Ph3L(A0)			; 1us < assert LSTRB < 300ms		<25Oct85>
+*R The ROM bounds this wait with DBMI starting at 15.
+	MOVEQ #15,D3
+NewEjectWait ;]
+	MOVE.W #1000,D0			; wait 100 msec 					<25Oct85>
+	BSR.W WakeUp
+	MOVEQ #DIPAdr,D0
+	BSR.W AdrAndSense
+	DBMI D3,NewEjectWait ;]
+	MOVEQ #10,D0			; wait 1ms							<25Oct85>
+	BSR.W WakeUp
+	BRA.S CtlEjtOK
+
+; Routine:	DiskStatus
+; Arguments:	  A0 (input)  -- pointer to status call parameter block:
+;					 CSCode = 8 for drive status
+;						CSParam:
+;						(0)	current track location
+;						(2)	bit7=1=write-protected
+;						(3)	$FC-$FF= just ejected, 0=no DIP,1=DIP, 2=clamped
+;						(4)	0=don't know, 1=inst.,  $FF=not inst.
+;						(5)	$FF for 2-sided drive, $00 for 1-sided
+;						(6)	drive queue element
+;						(18)	$FF for 2-sided format current diskette
+;						(19)	$FF for new interface drive
+;						(20)	soft error count (word)
+; Function: The status call returns current status for the drive requested.
+;_______________________________________________________________________
+;
+
+DiskStatus MOVEQ #StatusErr,D0
+	CMP.W #DrvStsCode,CSCode(A0) ;]
+	BNE.W DiskDone
+	BSR.S CkDrvNum
+	BNE.W DiskDone
+	LEA CSParam(A0),A0
+DriveStatus MOVEQ #11,D0		; return all drive vars except speeds
+	ADD.W D1,A1			; (11 words)
+@1 MOVE.W (A1)+,(A0)+		; move it in a word at a time
+	SUBQ.W #1,D0
+	BGT.S @1			; leave D0=0
+	BRA.W DiskDone
+
+; Set up A1/D1 to point to SonyVars and the drive locals, and error check the
+;drive number; returns an NSDrvErr if no such drive. (BNE error)
+;
+CkDrvNum
+			MOVEA.L	SonyVars,A1 		; get pointer to locals
+			ST		Active(A1)			; set active true to exclude VBL task
+
+			MOVE.W	IOVDrvNum(A0),D0
+			BEQ.S	@1					; drive number must be in 1..maxDrvNum
+			CMPI.W	#maxDrvNum,D0		; 
+			BGT.S	@1					;
+
+			MOVE.W	Drive(A1),LastDrive(A1) ; save the former drive 		<25Oct85>
+
+			MOVE.W	D0,Drive(A1)		; drive in question
+			BSR 	GetDrv1 			; get (A1,D1) to point to drive vars
+			MOVEQ	#0,D0
+			RTS
+
+@1			MOVEQ	#NSDrvErr,D0		; bad drive number
+			RTS
+
+
+SonyOpenEnd ;]
+	END

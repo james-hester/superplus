@@ -1,0 +1,32 @@
+*R SCSI call macros retain the surviving Traps.a definitions.
+*R SCSIBoot.a records the original SCSIMacs include name.
+
+  				MACRO
+  				_SCSIGet
+  				MOVE		#scsiGet,-(sp)
+  				_SCSIDispatch
+  				ENDM
+
+  				MACRO
+  				_SCSISelect
+  				MOVE		#scsiSelect,-(sp)
+  				_SCSIDispatch
+  				ENDM
+
+  				MACRO
+  				_SCSICmd
+  				MOVE		#scsiCmd,-(sp)
+  				_SCSIDispatch
+  				ENDM
+
+  				MACRO
+  				_SCSIComplete
+  				MOVE		#scsiComplete,-(sp)
+  				_SCSIDispatch
+  				ENDM
+
+  				MACRO
+  				_SCSIRead
+  				MOVE		#scsiRead,-(sp)
+  				_SCSIDispatch
+  				ENDM

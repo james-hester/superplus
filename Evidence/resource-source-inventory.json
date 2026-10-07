@@ -1,0 +1,10 @@
+[
+  {
+    "path": "Resources/ROMFonts.r",
+    "sha256": "62b5cad2583c34d78ff0e520582630cdeb235a467356d3dfdff0b89d72fbcf16"
+  },
+  {
+    "path": "Resources/SystemFonts.r",
+    "sha256": "bd2e7b7725727ed5dfad50aedd29db61ccdc8e39af6306b7c9b0fcf9c8f5b6b1"
+  }
+]

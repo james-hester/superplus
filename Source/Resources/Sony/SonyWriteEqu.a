@@ -1,0 +1,8 @@
+*R These additional equates retain the original include expressions.
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'HardwarePrivateEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+

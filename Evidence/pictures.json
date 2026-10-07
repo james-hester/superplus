@@ -1,0 +1,269 @@
+{
+  "module": "Pictures",
+  "source": "Reconstruction/Source/QuickDraw/Pictures.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/Pictures.m.a",
+      "sha256": "428838adfbd431a0ce4bdf6ca0a9b14dca58a283bb3265cedf0e3b2ba82cd141",
+      "line_ranges": [
+        [
+          1,
+          50
+        ],
+        [
+          92,
+          111
+        ],
+        [
+          112,
+          759
+        ],
+        [
+          818,
+          1551
+        ],
+        [
+          1572,
+          1697
+        ],
+        [
+          1783,
+          1972
+        ],
+        [
+          2030,
+          2052
+        ],
+        [
+          2506,
+          2987
+        ]
+      ],
+      "role": "The surviving module supplies the procedure structure, comments, field names, opcode tables, diagnostic raster, and most instructions. Later additions are removed where the ROM establishes the earlier behavior."
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+      "line_ranges": [
+        [
+          140,
+          190
+        ],
+        [
+          294,
+          319
+        ],
+        [
+          443,
+          487
+        ],
+        [
+          502,
+          535
+        ],
+        [
+          556,
+          573
+        ]
+      ],
+      "role": "QuickDraw field and color equates, picture recording fields, trap-table entry names, and the UNLINK macro interface."
+    },
+    {
+      "path": "Interfaces/AIncludes/QuickDraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "line_ranges": [
+        [
+          208,
+          269
+        ]
+      ],
+      "role": "Picture, QDProcs, and GrafPort field offsets."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40d8d0",
+      "end_exclusive": "0x40e5e4",
+      "rom_offset": "0xd8d0",
+      "length": 3348,
+      "sha256": "9790b292da68a913854c2ded7e448d367b1dd0d1a35decaadb24589b17512858",
+      "start_label": "StdComment",
+      "end_label": "PicturesEnd",
+      "boundary_evidence": "StdComment begins at its exported address 0x40d8d0. The module includes ScalePt, MapPt, and MapRect in the surviving source order. MapRect ends at 0x40e5e4, where InitFonts begins."
+    }
+  ],
+  "entry_points": {
+    "StdComment": "0x40d8d0",
+    "StdGetPic": "0x40d930",
+    "StdPutPic": "0x40d956",
+    "PicComment": "0x40d9d6",
+    "OpenPicture": "0x40d9ec",
+    "ClosePicture": "0x40daa8",
+    "KillPicture": "0x40dae4",
+    "DrawPicture": "0x40daec",
+    "PicItem": "0x40dc18",
+    "GetPicData": "0x40e278",
+    "PutPicData": "0x40e28e",
+    "DPutPicByte": "0x40e2a4",
+    "PutPicByte": "0x40e2aa",
+    "PutPicWord": "0x40e2bc",
+    "PutPicLong": "0x40e2ce",
+    "PutPicPat": "0x40e2de",
+    "PutPicRect": "0x40e2ea",
+    "PutPicRgn": "0x40e32c",
+    "PutPicVerb": "0x40e34a",
+    "CheckPic": "0x40e448",
+    "ScalePt": "0x40e512",
+    "MapPt": "0x40e56a",
+    "MapRect": "0x40e5cc",
+    "PicturesEnd": "0x40e5e4",
+    "NOUNJMP": "0x40dc64",
+    "PARMJMP": "0x40dc94",
+    "BITSOP": "0x40dffc",
+    "TABLE1": "0x40e132",
+    "GETUBYTE": "0x40e1a2",
+    "GETSBYTE": "0x40e1b4",
+    "GETWORD": "0x40e1c6",
+    "GETLONG": "0x40e1d6",
+    "GETRECT": "0x40e1e6",
+    "GETHNDL": "0x40e220"
+  },
+  "changes": [
+    {
+      "location": "Picture recording",
+      "change": "Restored the 98-byte PicSave record and removed Script Manager, font-list, version, and glyph fields. Retained the existing version-1 output opcode and the PutPicRgn unlock correction.",
+      "evidence": "OpenPicture allocates 98 bytes at 0x40da16 and emits 0x1101 at 0x40da96. PutPicRgn executes HUnlock at 0x40e344, matching the surviving April 14, 1986 history.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Picture input",
+      "change": "Restored PlayIndex updates inside StdGetPic and the direct GetPicData dispatcher. Removed the later index update and parameter copies from GetPicData.",
+      "evidence": "StdGetPic extends the count and adds it to PlayIndex at 0x40d93e. GetPicData occupies 22 bytes at 0x40e278 and ends with JMP (A0).",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "DrawPicture frame and state",
+      "change": "Restored the 52-byte play-state record and 160-byte stack frame. Removed later handle-state preservation, the additional null-pointer test, version state, and Script Manager and glyph state.",
+      "evidence": "The ROM begins DrawPicture with LINK A6,#-160. The saved GrafPort begins at -160, the play-state record at -52, and its UserClip field at -4. Calls to NewRgn use PC-relative JSR instructions.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "PicItem dispatch",
+      "change": "Restored the 312-byte frame, byte opcode reader, end-of-picture test, and original opcode dispatch. Restored all unused parameter and noun entries to DONE, including the extra trailing noun entry. Removed version-2 validation, color opcodes, and data-skipping helpers.",
+      "evidence": "The frame displacement is -312 at 0x40dc18. The ROM contains a 17-word noun table at 0x40dc64 and a 32-word parameter table at 0x40dc94. The noun index ranges from 0 through 30, leaving its final word unused.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Text ratio and graphics calls",
+      "change": "Removed the later MapRatio call and retained direct ScalePt scaling of the numerator. Restored direct calls to mapping routines in place of later trap invocations.",
+      "evidence": "TXRATIO at 0x40dd7a reads numerator and denominator, then calls ScalePt for the numerator. The source dates the MapRatio addition to October 26, 1986.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Bitmap playback",
+      "change": "Reconstructed the monochrome bitmap reader and packed-row loop that the later source replaced with color conversion. Kept the surviving drawing and cleanup instructions and their applicable comments.",
+      "evidence": "At 0x40dffc the ROM reads 26 bytes beginning at SRCBITS+ROWBYTES. It maps DSTRECT, reads the mode and optional mask region, allocates and locks the bitmap, and either reads all bytes or calls UnpackBits once per row. The packed-row loop at 0x40e078 uses a byte count and the 256-byte TXDATA buffer. The ROM does not map the mask region here.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Playback helpers",
+      "change": "Moved GETUBYTE, GETSBYTE, GETWORD, and GETLONG back inside PicItem before GETRECT. Restored the HANDLE1 reload after HLock and the second HLock at the end of GETHNDL.",
+      "evidence": "The helper addresses are 0x40e1a2, 0x40e1b4, 0x40e1c6, and 0x40e1d6. GETHNDL reloads HANDLE1 at 0x40e234 and executes HLock at 0x40e24c. The surviving source comments out the reload and changes the final trap to HUnlock.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Diagnostic raster",
+      "change": "Retained the original screen-writing loop and its 25-longword bitmap table.",
+      "evidence": "The source loop and all 100 data bytes at 0x40e132 match the ROM. These DC.L statements retain the original raster data.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Instruction encoding and build inputs",
+      "change": "Restored the 68000 UNLINK macro and explicit MOVEQ forms. Made PC-relative calls, jumps, table indexing, and the raster-table LEA explicit. Supplied local equates for the used fields, traps, and external ROM routines.",
+      "evidence": "Every branch width, displacement, return sequence, and trap word matches the ROM. The build expands UNLINK from the source definition and assembles with 16-bit index defaults.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Comments and history",
+      "change": "Preserved the original copyright, picture heading, applicable API and algorithm comments, and April 1986 history. Removed comments and history for reversed additions. Marked the new reconstruction notes and corrected the reversed ScalePt formulas.",
+      "evidence": "Most retained comments remain verbatim. The corrected ScalePt formulas multiply by the destination size and divide by the source size, as both the source instructions and ROM require.",
+      "confidence": "source provenance recorded"
+    }
+  ],
+  "external_references": [
+    {
+      "name": "HidePen",
+      "address": "0x4097c0",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "ShowPen",
+      "address": "0x4097c4",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "NewRgn",
+      "address": "0x40bd4e",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "CopyRgn",
+      "address": "0x40bdfe",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "SectRgn",
+      "address": "0x40bfde",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "EqualRgn",
+      "address": "0x40bfa0",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "MapPoly",
+      "address": "0x40bb04",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "MapRgn",
+      "address": "0x40c218",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "UnpackBits",
+      "address": "0x40d01c",
+      "evidence": "ROM target of the corresponding source call."
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py expanded the source macro, assembled for the 68000, linked at 0x40d8d0, and compared every emitted byte against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "ba488555fda4812e87b9c2a2439f45a42398ce7aea35f2b0acc07d94e31abc5b",
+    "assembled_length": 3348,
+    "matched_bytes": 3348,
+    "entry_points_checked": 34,
+    "result": "exact",
+    "limits": [
+      "The original Mac Plus source and historical assembler output remain unavailable. Exact historical spelling, helper labels, macro definitions, and build organization remain partly inferred.",
+      "The reconstructed bitmap block has exact ROM instructions, but its removed historical source text remains unavailable. PACKROW, PACKSTART, and NOTPACK are reconstruction labels.",
+      "The comparison verifies emitted bytes and recorded labels. It does not execute picture playback or establish the safety of malformed picture input.",
+      "External calls use recorded ROM addresses. This module does not verify region operations, polygon mapping, pen visibility, or UnpackBits implementations.",
+      "The zero-parameter case of the retained UNLINK macro emits no bytes in this module."
+    ]
+  },
+  "chronology_note": "The ROM contains the instruction described by the April 1986 source-history entry. The import filename says March 1986. This discrepancy remains unresolved and does not affect the byte match."
+}

@@ -1,0 +1,390 @@
+{
+  "module": "BTSVCS",
+  "source": "Reconstruction/Source/OS/HFS/BTSVCS.a",
+  "originals": [
+    {
+      "path": "OS/HFS/BTSVCS.a",
+      "sha256": "bd19f2d4cc36fb22e1c753ba9148703ee6825ebeef4a4923b71530fed255d364",
+      "line_ranges": [
+        [
+          1,
+          1429
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/BTALLOC.a",
+      "sha256": "5238de52c439ce42ad4e01a7658ff3e9ae96a3fd0d24ea7b29cec1a66fe260ad",
+      "line_ranges": [
+        [
+          97,
+          140
+        ]
+      ],
+      "role": "AllocNode and its vector establish the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          192,
+          193
+        ],
+        [
+          195,
+          195
+        ],
+        [
+          197,
+          197
+        ],
+        [
+          288,
+          288
+        ],
+        [
+          298,
+          298
+        ],
+        [
+          308,
+          308
+        ],
+        [
+          318,
+          318
+        ],
+        [
+          323,
+          326
+        ],
+        [
+          331,
+          333
+        ],
+        [
+          337,
+          339
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          346,
+          347
+        ],
+        [
+          349,
+          351
+        ],
+        [
+          353,
+          355
+        ],
+        [
+          362,
+          366
+        ],
+        [
+          368,
+          374
+        ],
+        [
+          378,
+          382
+        ],
+        [
+          386,
+          386
+        ],
+        [
+          392,
+          393
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          346,
+          353
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          298,
+          298
+        ],
+        [
+          358,
+          358
+        ],
+        [
+          361,
+          361
+        ],
+        [
+          369,
+          369
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4066dc",
+      "end_exclusive": "0x406e38",
+      "rom_offset": "0x66dc",
+      "length": 1884,
+      "sha256": "224ed4bf00ffa5438069228d1769e48f7402c3cbd210f26730d8f83b46202a75",
+      "start_label": "BTSvcs",
+      "end_label": "BTSVCSEnd",
+      "boundary_evidence": "BTClose starts at 0x4066dc after the CMMAINT return. CalBTVars returns at 0x406e36. The BTALLOC AllocNode vector begins at 0x406e38, six bytes before the provisional Ghidra AllocNode label."
+    }
+  ],
+  "entry_points": {
+    "BTSvcs": "0x4066dc",
+    "BTClose": "0x4066dc",
+    "vBTClose": "0x4066e2",
+    "BTDelete": "0x40671c",
+    "vBTDelete": "0x406722",
+    "BTFlush": "0x4068c2",
+    "vBTFlush": "0x4068c8",
+    "BTGetRecord": "0x406928",
+    "vBTGetRecord": "0x40692e",
+    "BTInsert": "0x4069ea",
+    "vBTInsert": "0x4069f0",
+    "BTOpen": "0x406c8a",
+    "vBTOpen": "0x406c90",
+    "BTSearch": "0x406d4a",
+    "vBTSearch": "0x406d50",
+    "BTUpdate": "0x406dd6",
+    "vBTUpdate": "0x406ddc",
+    "BTCleanUp": "0x406e02",
+    "BTSetUp": "0x406e10",
+    "CalBTVars": "0x406e2e",
+    "BTSVCSEnd": "0x406e38"
+  },
+  "integration_manifest": {
+    "name": "btsvcs",
+    "source": "Reconstruction/Source/OS/HFS/BTSVCS.a",
+    "start": "0x4066dc",
+    "end_exclusive": "0x406e38",
+    "entry_points": {
+      "BTSvcs": "0x4066dc",
+      "BTClose": "0x4066dc",
+      "vBTClose": "0x4066e2",
+      "BTDelete": "0x40671c",
+      "vBTDelete": "0x406722",
+      "BTFlush": "0x4068c2",
+      "vBTFlush": "0x4068c8",
+      "BTGetRecord": "0x406928",
+      "vBTGetRecord": "0x40692e",
+      "BTInsert": "0x4069ea",
+      "vBTInsert": "0x4069f0",
+      "BTOpen": "0x406c8a",
+      "vBTOpen": "0x406c90",
+      "BTSearch": "0x406d4a",
+      "vBTSearch": "0x406d50",
+      "BTUpdate": "0x406dd6",
+      "vBTUpdate": "0x406ddc",
+      "BTCleanUp": "0x406e02",
+      "BTSetUp": "0x406e10",
+      "CalBTVars": "0x406e2e",
+      "BTSVCSEnd": "0x406e38"
+    }
+  },
+  "changes": [
+    {
+      "location": "BTDelete",
+      "change": "Removed the November 1985 parent-read error check and repeated root reduction. Restored MOVE.W D2,D3 before the May 1989 fix and removed later write-count updates.",
+      "evidence": "The GetNode call at 0x40680a is followed directly by MOVEA.L A0,A2. The parent node number moves as a word at 0x406846. Root reduction ends after FreeNode at 0x40689e."
+    },
+    {
+      "location": "BTInsert",
+      "change": "Removed InitNode error checks added in December 1985 and write-count updates later integrated in April 1992.",
+      "evidence": "The InitNode calls at 0x406a80 and 0x406bec proceed directly to saving their returned pointers. The insertion path at 0x406b02 marks the node without updating a write count."
+    },
+    {
+      "location": "BTFlush",
+      "change": "Restored the offline return without clearing D0 and the NOP following FlushCache.",
+      "evidence": "The branch at 0x4068dc goes to BFExit at 0x40691e. NOP at 0x40691c occupies the former branch to the next instruction."
+    },
+    {
+      "location": "BTOpen and CalBTVars",
+      "change": "Restored the 54-byte BTCB allocation, omitted the later write-count signature, and removed the extra four bytes added to CalBTVars in January 1986.",
+      "evidence": "BTOpen allocates 54 bytes with the system-heap cleared-pointer trap. CalBTVars adds lenTPT, 48 bytes, to the maximum key size at 0x406e32."
+    },
+    {
+      "location": "Source provenance and instruction forms",
+      "change": "Preserved the original header, applicable history, and comments. Added original equates, explicit trap opcodes, external addresses, and instruction forms matching the ROM.",
+      "evidence": "All 1884 bytes and 21 labels match. The NewPtr system and clear modifiers are represented by the named opcode 0xa71e. Short and word branches, quick arithmetic, and CLR.B preserve the target encodings."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "AllocNode",
+      "address": "0x406e38"
+    },
+    {
+      "name": "ExtBTFile",
+      "address": "0x406ece"
+    },
+    {
+      "name": "FreeNode",
+      "address": "0x406fb4"
+    },
+    {
+      "name": "BuildIRec",
+      "address": "0x4072a0"
+    },
+    {
+      "name": "DeleteRec",
+      "address": "0x40736a"
+    },
+    {
+      "name": "GetLtSib",
+      "address": "0x4073ba"
+    },
+    {
+      "name": "GetMaxKey",
+      "address": "0x4073f6"
+    },
+    {
+      "name": "GetOffset",
+      "address": "0x407454"
+    },
+    {
+      "name": "GetRecA",
+      "address": "0x40746e"
+    },
+    {
+      "name": "GetRtSib",
+      "address": "0x4073c4"
+    },
+    {
+      "name": "InitNode",
+      "address": "0x40748a"
+    },
+    {
+      "name": "InsertRec",
+      "address": "0x4074bc"
+    },
+    {
+      "name": "LocRec",
+      "address": "0x407538"
+    },
+    {
+      "name": "LocTPR",
+      "address": "0x40756a"
+    },
+    {
+      "name": "SearchNode",
+      "address": "0x4075ea"
+    },
+    {
+      "name": "UpdDRec",
+      "address": "0x407646"
+    },
+    {
+      "name": "UpdIKey",
+      "address": "0x407668"
+    },
+    {
+      "name": "RotateLt",
+      "address": "0x40706c"
+    },
+    {
+      "name": "SplitLt",
+      "address": "0x40715c"
+    },
+    {
+      "name": "TreeSearch",
+      "address": "0x4071e4"
+    },
+    {
+      "name": "LocBTCB",
+      "address": "0x40752e"
+    },
+    {
+      "name": "ClrNode",
+      "address": "0x40734e"
+    },
+    {
+      "name": "GetNode",
+      "address": "0x407402"
+    },
+    {
+      "name": "RelNode",
+      "address": "0x4075d0"
+    },
+    {
+      "name": "FlushCache",
+      "address": "0x4076c6"
+    },
+    {
+      "name": "GetBlock",
+      "address": "0x4077b0"
+    },
+    {
+      "name": "MarkBlock",
+      "address": "0x4079f4"
+    },
+    {
+      "name": "RelBlock",
+      "address": "0x407a0a"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4066dc, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "88d988b67445dcede6543e6497a780a6a4387f1f0d18fd2104f98859ad814808",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/BTSVCS.a",
+        "sha256": "88d988b67445dcede6543e6497a780a6a4387f1f0d18fd2104f98859ad814808"
+      }
+    ],
+    "assembled_length": 1884,
+    "matched_bytes": 1884,
+    "entry_points_checked": 21,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

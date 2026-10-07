@@ -1,0 +1,103 @@
+{
+  "module": "QuickDraw/PutLine.a",
+  "source_path": "Reconstruction/Source/QuickDraw/PutLine.a",
+  "source_sha256": "45c3f1abd3ecce0dd18dd990c4b3ba1d1f7b4954f210f8eabb805c977bce6e71",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/PutLine.m.a",
+    "sha256": "5309d4636cf62bd5dfd0ef4706430684904bc3692aa400539b8a0df99546d744",
+    "instruction_lines": [
+      36,
+      236
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        162
+      ]
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x409d94",
+      "end_address_exclusive": "0x409e7e",
+      "rom_offset": "0x9d94",
+      "length": 234,
+      "sha256": "27af9aa649dd06ddb2f734dd3a43fd62977b9e0cda012141964da53f2d73970a",
+      "first_symbol": "PutLine",
+      "last_symbol": "PutLine"
+    }
+  ],
+  "symbols": {
+    "PutLine": "0x409d94"
+  },
+  "manifest_entry": {
+    "name": "putline",
+    "source": "Reconstruction/Source/QuickDraw/PutLine.a",
+    "start": "0x409d94",
+    "end_exclusive": "0x409e7e",
+    "entry_points": {
+      "PutLine": "0x409d94"
+    }
+  },
+  "external_routines": {
+    "SetHSize": "0x408798"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable PutLine.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved the original file name, copyright notice, drawing header, and routine comments. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made the word BEQ to GOHOME and the short BNE to LOOP explicit."
+    },
+    {
+      "kind": "traps",
+      "description": "Defined the existing _MFixRatio call as the ROM trap word $A869."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 234,
+    "checked_entry_points": 1,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-putline-verify",
+    "temporary_verifier": "/tmp/verify-lines-cluster.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "45c3f1abd3ecce0dd18dd990c4b3ba1d1f7b4954f210f8eabb805c977bce6e71",
+    "assembled_sha256": "27af9aa649dd06ddb2f734dd3a43fd62977b9e0cda012141964da53f2d73970a",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

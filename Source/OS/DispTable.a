@@ -1,0 +1,1112 @@
+*R Mac Plus compressed dispatch table.
+*R The table contains 512 Toolbox entries followed by 256 OS entries.
+*R Routine addresses are restored from the ROM and captured analysis.
+*R The build assembles ROM-relative long offsets, then compresses them.
+*R Zero entries become unimplemented-trap markers.
+*R The macros retain the original trap-number and handler arguments.
+*R See Evidence/dispatch-table.json for names, provenance, and encoding checks.
+
+;
+;	File:		DispTable.a
+;
+;	Copyright:	© 1986-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+
+; Info:	This file builds the long version of the dispatch table based on values
+;		calculated at link time.  In order to get a valid ROM image, a program
+;		run post link time will compact the dispatch table and calculate the
+;		new addresses.  Each table entry is either the value zero if it doesn't
+;		exist, or the offset from ROMStart to the start of the routine.
+;------------------------------------------------------------------------------
+
+
+		IMPORT AddDrive,AddPt,AddReference,AddResMenu,AddResource,Alert ;]
+		IMPORT AngleFromSlope,AppendMenu,BackColor,BackPat,BaseOfROM,BeginUpdate ;]
+		IMPORT BitAnd,BitClr,BitNot,BitOr,BitSet,BitShift ;]
+		IMPORT BitTst,BitXor,BlockMove,BringToFront,Button,CalcMask ;]
+		IMPORT CalcMenuSize,CalcVBehind,CalcVis,CautionAlert,Chain,ChangedResource ;]
+		IMPORT CharWidth,CheckItem,CheckUpdate,ClearMenuBar,ClipAbove,ClipRect ;]
+		IMPORT ClkNoMem,Close,CloseDeskAcc,CloseDialog,ClosePicture,ClosePoly ;]
+		IMPORT ClosePort,CloseResFile,CloseRgn,CloseWindow,CmpString,ColorBit ;]
+		IMPORT CompactMem,CopyBits,CopyMask,CopyRgn,CouldAlert,CouldDialog ;]
+		IMPORT Count1Resources,Count1Types,CountMItems,CountResources,CountTypes,CreateResFile ;]
+		IMPORT CurResFile,DATE2SECS,Delay,DeleteMenu,DelMenuItem,DeltaPoint ;]
+		IMPORT DEQUEUE,DetachResource,DeviceControl,DeviceStatus,DialogSelect,DiffRgn ;]
+		IMPORT DisableItem,DisposDialog,DisposeControl,DisposeMenu,DisposePtr,DisposeRgn ;]
+		IMPORT DisposeWindow,DragControl,DragGrayRgn,DragTheRgn,DragWindow,DrawChar ;]
+		IMPORT DrawControls,DrawDialog,DrawGrowIcon,DrawMenuBar,DrawNew,DrawOneControl ;]
+		IMPORT DrawPicture,DrawString,DrawText,DrvrInstall,DrvrRemove,DsposeHandle ;]
+		IMPORT Eject,EmptyHandle,EmptyRect,EmptyRgn,EnableItem,EndUpdate ;]
+		IMPORT ENQUEUE,EqualPt,EqualRect,EqualRgn,EraseArc,EraseOval ;]
+		IMPORT ErasePoly,EraseRect,EraseRgn,EraseRoundRect,ErrorSound,EventAvail ;]
+		IMPORT ExitToShell,FileAlloc,FileCreate,FileDelete,FillArc,FillOval ;]
+		IMPORT FillPoly,FillRect,FillRgn,FillRoundRect,FindControl,FindDItem ;]
+		IMPORT FindWindow,FInitQueue,Fix2Frac,Fix2Long,Fix2X,FixATan2 ;]
+		IMPORT FixDiv,FixMul,FixRatio,FixRound,FlashMenuBar,FlushEvents ;]
+		IMPORT FlushFile,FlushVol,FMSwapFont,FontMetrics,ForeColor,Frac2Fix ;]
+		IMPORT Frac2X,FracCos,FracDiv,FracMul,FracSin,FracSqrt ;]
+		IMPORT FrameArc,FrameOval,FramePoly,FrameRect,FrameRgn,FrameRoundRect ;]
+		IMPORT FreeAlert,FreeDialog,FreeMem,FrontWindow,Get1IndResource,Get1IndType ;]
+		IMPORT Get1NamedResource,Get1Resource,GetAppParms,GetClip,GetCRefCon,GetCTitle ;]
+		IMPORT GetCtlAction,GetCtlMax,GetCtlMin,GetCtlValue,GetCursor,GetDItem ;]
+		IMPORT GetEOF,GetFileInfo,GetFNum,GetFontInfo,GetFontName,GetFPos ;]
+		IMPORT GetHandleSize,GetIcon,GetIndResource,GetIndType,GetItem,GetItemIcon ;]
+		IMPORT GetItemMark,GetItemStyle,GetIText,GetKeys,GetMaskTab,GetMenu ;]
+		IMPORT GetMenuBar,GetMHandle,GetMouse,GetNamedResource,GetNewControl,GetNewDialog ;]
+		IMPORT GetNewMBar,GetNewWindow,GetNextEvent,GetOSEvent,GetPattern,GetPen ;]
+		IMPORT GetPenState,GetPicture,GetPixel,GetPort,GetPtrSize,GetResAttrs ;]
+		IMPORT GetResFileAttrs,GetResInfo,GetResource,GetScrap,GetString,GetTrapAddress ;]
+		IMPORT GetVol,GetVolInfo,GetWindowPic,GetWMgrPort,GetWRefCon,GetWTitle ;]
+		IMPORT GetZone,GlobalToLocal,GrafDevice,GrowWindow,HandAndHand,HandleZone ;]
+		IMPORT HandToHand,HideControl,HideCursor,HideDItem,HidePen,HideWindow ;]
+		IMPORT HiliteControl,HiliteMenu,HiliteWindow,HIWORD,HLock,HNoPurge ;]
+		IMPORT HomeResFile,HPurge,HUnlock,InfoScrap,InitAllPacks,InitApplZone ;]
+		IMPORT InitCursor,InitDialogs,InitEvents,InitFonts,InitFS,InitGraf ;]
+		IMPORT InitMenus,InitPack,InitPort,InitResources,InitUtil,InitWindows ;]
+		IMPORT InitZone,InsertMenu,InsetRect,InsetRgn,InsMenuItem,InsrtResMenu ;]
+		IMPORT InstallRDrivers,InvalRect,InvalRgn,InvertArc,InvertOval,InvertPoly ;]
+		IMPORT InvertRect,InvertRgn,InvertRoundRect,IsDialogEvent,KillControls,KillIO ;]
+		IMPORT KillPicture,KillPoly,Launch,Line,LineTo,LoadResource ;]
+		IMPORT LoadScrap,LoadSeg,LocalToGlobal,Long2Fix,LongMul,LOWORD ;]
+		IMPORT MapPoly,MapPt,MapRect,MapRgn,MaxApplZone,MaxBlock ;]
+		IMPORT MaxMem,MaxSizeRsrc,MeasureText,MenuKey,MenuSelect,MethodDispatch ;]
+		IMPORT ModalDialog,MOOV,MoreMasters,MountVol,MoveControl,MoveHHi ;]
+		IMPORT MovePortTo,MoveTo,MoveWindow,Munger,NewControl,NewDialog ;]
+		IMPORT NewEmptyHandle,NewMenu,NewPtr,NewRgn,NewString,NewWindow ;]
+		IMPORT NoteAlert,NwHandle,ObscureCursor,OffLine,OffsetPoly,OffsetRect ;]
+		IMPORT OffsetRgn,Open,OpenDeskAcc,OpenPicture,OpenPoly,OpenPort ;]
+		IMPORT OpenResFile,OpenRF,OpenRFPerm,OpenRgn,OSEventAvail,Pack0 ;]
+		IMPORT Pack1,Pack10,Pack11,Pack12,Pack13,Pack14 ;]
+		IMPORT Pack15,Pack2,Pack3,Pack4,Pack5,Pack6 ;]
+		IMPORT Pack7,Pack8,Pack9,PackBits,PaintArc,PaintBehind ;]
+		IMPORT PaintOne,PaintOval,PaintPoly,PaintRect,PaintRgn,PaintRoundRect ;]
+		IMPORT ParamText,PenMode,PenNormal,PenPat,PenSize,PicComment ;]
+		IMPORT PinRect,PlotIcon,PortSize,PostEvent,PrimeTime,Pt2Rect ;]
+		IMPORT PtInRect,PtInRgn,PtrAndHand,PtrToHand,PtrToXHand,PtrZone ;]
+		IMPORT PtToAngle,PurgeMem,PurgeSpace,PutIcon,PutScrap,Random ;]
+		IMPORT Read,ReadDateTime,ReadParam,ReadXPRam,RealFont,ReAllocHandle ;]
+		IMPORT RecoverHandle,RectInRgn,RectRgn,ReleaseResource,RelString,ReName ;]
+		IMPORT ResError,ResrvMem,RmveReference,RmveResource,RmvTime,RsrcMapEntry ;]
+		IMPORT RsrcZoneInit,RstFilLock,SaveOld,ScalePt,ScrnBitMap,ScrollRect ;]
+		IMPORT SCSIMgr,SECS2DATE,SectRect,SectRgn,SeedFill,SelectWindow ;]
+		IMPORT SelIText,SendBehind,SetApplBase,SetApplLimit,SetClip,SetCRefCon ;]
+		IMPORT SetCTitle,SetCtlAction,SetCtlMax,SetCtlMin,SetCtlValue,SetCursor ;]
+		IMPORT SetDateTime,SetDItem,SetEmptyRgn,SetEOF,SetFileInfo,SetFilLock ;]
+		IMPORT SetFilType,SetFontLock,SetFPos,SetFScaleDisable,SetGrowZone,SetHandleSize ;]
+		IMPORT SetItem,SetItemIcon,SetItemMark,SetItemStyle,SetIText,SetMenuBar ;]
+		IMPORT SetMenuFlash,SetOrigin,SetPenState,SetPort,SetPortBits,SetPt ;]
+		IMPORT SetPtrSize,SetRect,SetRectRgn,SetResAttrs,SetResFileAttrs,SetResInfo ;]
+		IMPORT SetResLoad,SetResPurge,SetStdProcs,SetString,SetTrapAddress,SetVol ;]
+		IMPORT SetWindowPic,SetWRefCon,SetWTitle,SetZone,ShieldCursor,ShowControl ;]
+		IMPORT ShowCursor,ShowDItem,ShowHide,ShowPen,ShowWindow,SizeControl ;]
+		IMPORT SizeResource,SizeWindow,SlopeFromAngle,SpaceExtra,StackSpace,StdArc ;]
+		IMPORT StdBits,StdComment,StdGetPic,StdLine,StdOval,StdPoly ;]
+		IMPORT StdPutPic,StdRect,StdRgn,StdRRect,StdText,StdTxMeas ;]
+		IMPORT StillDown,StopAlert,StringWidth,StuffHex,SubPt,SysBeep ;]
+		IMPORT SystemClick,SystemEdit,SystemError,SystemEvent,SystemMenu,SystemTask ;]
+		IMPORT TEActivate,TEAutoView,TECalText,TEClick,TECopy,TECut ;]
+		IMPORT TEDeactivate,TEDelete,TEDispose,TEGetText,TEIdle,TEInit ;]
+		IMPORT TEInsert,TEKey,TENew,TEPaste,TEPinScroll,TEScroll ;]
+		IMPORT TESelView,TESetJust,TESetSelect,TESetText,TestControl,TEUpdate ;]
+		IMPORT TextBox,TextFace,TextFont,TextMode,TextSize,TextWidth ;]
+		IMPORT TFSDispatch,TickCount,InsTime,TrackBox,TrackControl,TrackGoAway ;]
+		IMPORT UnionRect,UnionRgn,Unique1ID,UniqueID,UnloadScrap,UnloadSeg ;]
+		IMPORT UnMountVol,UnpackBits,UpdateResFile,UpdtControls,UpdtDialog,UprString ;]
+		IMPORT UseResFile,vAdjEOF,ValidRect,ValidRgn,vAllocNode,vBasicIO ;]
+		IMPORT vBlkAlloc,vBlkDeAlloc,vBTClose,vBTDelete,vBTFlush,vBTGetRecord ;]
+		IMPORT vBTInsert,vBTOpen,vBTSearch,vBTUpdate,vCacheRdIP,vCacheWrIP ;]
+		IMPORT vCheckLoad,vCmpFrm,vCMSetUp,vDeallocFile,vDtrmV1,vExtBTFile ;]
+		IMPORT vExtendFile,vFileOpen,vFlushCache,vFndFilName,vFreeNode,vGetBlock ;]
+		IMPORT vGetNode,VInstall,vLg2Phys,vMarkBlock,vNewMap,vPermssnChk ;]
+		IMPORT vRdBlocks,vRelBlock,vRelNode,VRemove,vRfNCall,vSegStack ;]
+		IMPORT vSetUpTags,vSuperLoad,vTrashBlocks,vTrashVBlks,vTruncateFile,vWrBlocks ;]
+		IMPORT WaitMouseUp,Write,WriteParam,WriteResource,WriteXPRam,X2Fix ;]
+		IMPORT X2Frac,XFindLine,XFindWord,XMunger,XorRgn,XTrimMeasure ;]
+		IMPORT ZeroScrap,ZoomWindow ;]
+
+        MACRO
+        ToolBox &num,&name ;]
+        IF '&name' = '0' THEN ;]
+        DC.L 0
+        ELSE
+        DC.L &name-BaseOfROM
+        ENDIF
+        ENDM
+
+        MACRO
+        OS &num,&name ;]
+        IF '&name' = '0' THEN ;]
+        DC.L 0
+        ELSE
+        DC.L &name-BaseOfROM
+        ENDIF
+        ENDM
+
+DispatchOffsets PROC ;]
+FirstTool
+; toolbox trap $000
+        ToolBox $000,0 ;]
+; toolbox trap $001
+        ToolBox $001,0 ;]
+; toolbox trap $002
+        ToolBox $002,0 ;]
+; toolbox trap $003
+        ToolBox $003,0 ;]
+; toolbox trap $004
+        ToolBox $004,0 ;]
+; toolbox trap $005
+        ToolBox $005,0 ;]
+; toolbox trap $006
+        ToolBox $006,0 ;]
+; toolbox trap $007
+        ToolBox $007,0 ;]
+; toolbox trap $008
+        ToolBox $008,0 ;]
+; toolbox trap $009
+        ToolBox $009,0 ;]
+; toolbox trap $00A
+        ToolBox $00A,0 ;]
+; toolbox trap $00B
+        ToolBox $00B,0 ;]
+; toolbox trap $00C
+        ToolBox $00C,0 ;]
+        ToolBox $00D,Count1Resources              ; toolbox trap $00D
+        ToolBox $00E,Get1IndResource               ; toolbox trap $00E
+        ToolBox $00F,Get1IndType                   ; toolbox trap $00F
+        ToolBox $010,Unique1ID                    ; toolbox trap $010
+        ToolBox $011,TESelView                    ; toolbox trap $011
+        ToolBox $012,TEPinScroll                  ; toolbox trap $012
+        ToolBox $013,TEAutoView                   ; toolbox trap $013
+; toolbox trap $014
+        ToolBox $014,0 ;]
+; toolbox trap $015
+        ToolBox $015,SCSIMgr ;]
+        ToolBox $016,Pack8                        ; toolbox trap $016
+        ToolBox $017,CopyMask                     ; toolbox trap $017
+        ToolBox $018,FixATan2                     ; toolbox trap $018
+        ToolBox $019,XMunger                      ; toolbox trap $019
+; toolbox trap $01A
+        ToolBox $01A,GetZone ;]
+; toolbox trap $01B
+        ToolBox $01B,SetZone ;]
+        ToolBox $01C,Count1Types                  ; toolbox trap $01C
+        ToolBox $01D,MaxMem                       ;] toolbox trap $01D
+        ToolBox $01E,NewPtr                       ;] toolbox trap $01E
+        ToolBox $01F,Get1Resource                 ; toolbox trap $01F
+        ToolBox $020,Get1NamedResource             ; toolbox trap $020
+        ToolBox $021,MaxSizeRsrc                  ; toolbox trap $021
+; toolbox trap $022
+        ToolBox $022,NwHandle ;]
+; toolbox trap $023
+        ToolBox $023,DsposeHandle ;]
+; toolbox trap $024
+        ToolBox $024,SetHandleSize ;]
+; toolbox trap $025
+        ToolBox $025,GetHandleSize ;]
+        ToolBox $026,InsMenuItem                  ; toolbox trap $026
+        ToolBox $027,HideDItem                    ; toolbox trap $027
+        ToolBox $028,ShowDItem                    ; toolbox trap $028
+; toolbox trap $029
+        ToolBox $029,HLock ;]
+; toolbox trap $02A
+        ToolBox $02A,HUnlock ;]
+        ToolBox $02B,Pack9                        ; toolbox trap $02B
+        ToolBox $02C,Pack10                       ; toolbox trap $02C
+        ToolBox $02D,Pack11                       ; toolbox trap $02D
+        ToolBox $02E,Pack12                       ; toolbox trap $02E
+        ToolBox $02F,Pack13                       ; toolbox trap $02F
+; toolbox trap $030
+        ToolBox $030,Pack14 ;]
+        ToolBox $031,Pack15                       ; toolbox trap $031
+; toolbox trap $032
+        ToolBox $032,FlushEvents ;]
+        ToolBox $033,ScrnBitMap                   ; toolbox trap $033
+        ToolBox $034,SetFScaleDisable             ; toolbox trap $034
+        ToolBox $035,FontMetrics                  ; toolbox trap $035
+        ToolBox $036,GetMaskTab                   ; toolbox trap $036
+        ToolBox $037,MeasureText                  ; toolbox trap $037
+        ToolBox $038,CalcMask                     ; toolbox trap $038
+        ToolBox $039,SeedFill                     ; toolbox trap $039
+; toolbox trap $03A
+        ToolBox $03A,ZoomWindow ;]
+        ToolBox $03B,TrackBox                     ; toolbox trap $03B
+; toolbox trap $03C
+        ToolBox $03C,0 ;]
+; toolbox trap $03D
+        ToolBox $03D,0 ;]
+; toolbox trap $03E
+        ToolBox $03E,0 ;]
+        ToolBox $03F,Long2Fix                     ; toolbox trap $03F
+        ToolBox $040,Fix2Long                     ; toolbox trap $040
+        ToolBox $041,Fix2Frac                     ; toolbox trap $041
+        ToolBox $042,Frac2Fix                     ; toolbox trap $042
+        ToolBox $043,Fix2X                        ; toolbox trap $043
+        ToolBox $044,X2Fix                        ; toolbox trap $044
+        ToolBox $045,Frac2X                       ; toolbox trap $045
+        ToolBox $046,X2Frac                       ; toolbox trap $046
+        ToolBox $047,FracCos                      ; toolbox trap $047
+        ToolBox $048,FracSin                      ; toolbox trap $048
+        ToolBox $049,FracSqrt                     ; toolbox trap $049
+        ToolBox $04A,FracMul                      ; toolbox trap $04A
+        ToolBox $04B,FracDiv                      ; toolbox trap $04B
+; toolbox trap $04C
+        ToolBox $04C,CompactMem ;]
+        ToolBox $04D,FixDiv                       ; toolbox trap $04D
+; toolbox trap $04E
+        ToolBox $04E,0 ;]
+; toolbox trap $04F
+        ToolBox $04F,0 ;]
+        ToolBox $050,InitCursor                   ; toolbox trap $050
+        ToolBox $051,SetCursor                    ; toolbox trap $051
+        ToolBox $052,HideCursor                   ; toolbox trap $052
+        ToolBox $053,ShowCursor                   ; toolbox trap $053
+; toolbox trap $054
+        ToolBox $054,UprString ;]
+        ToolBox $055,ShieldCursor                 ; toolbox trap $055
+        ToolBox $056,ObscureCursor                ; toolbox trap $056
+; toolbox trap $057
+        ToolBox $057,0 ;]
+        ToolBox $058,BitAnd                       ; toolbox trap $058
+        ToolBox $059,BitXor                       ; toolbox trap $059
+        ToolBox $05A,BitNot                       ; toolbox trap $05A
+        ToolBox $05B,BitOr                        ; toolbox trap $05B
+        ToolBox $05C,BitShift                     ; toolbox trap $05C
+        ToolBox $05D,BitTst                       ; toolbox trap $05D
+        ToolBox $05E,BitSet                       ; toolbox trap $05E
+        ToolBox $05F,BitClr                       ; toolbox trap $05F
+; toolbox trap $060
+        ToolBox $060,0 ;]
+        ToolBox $061,Random                       ; toolbox trap $061
+        ToolBox $062,ForeColor                    ; toolbox trap $062
+        ToolBox $063,BackColor                    ; toolbox trap $063
+        ToolBox $064,ColorBit                     ; toolbox trap $064
+        ToolBox $065,GetPixel                     ; toolbox trap $065
+        ToolBox $066,StuffHex                     ; toolbox trap $066
+        ToolBox $067,LongMul                      ; toolbox trap $067
+        ToolBox $068,FixMul                       ; toolbox trap $068
+        ToolBox $069,FixRatio                     ; toolbox trap $069
+        ToolBox $06A,HIWORD                       ; toolbox trap $06A
+        ToolBox $06B,LOWORD                       ; toolbox trap $06B
+        ToolBox $06C,FixRound                     ; toolbox trap $06C
+        ToolBox $06D,InitPort                     ; toolbox trap $06D
+        ToolBox $06E,InitGraf                     ; toolbox trap $06E
+        ToolBox $06F,OpenPort                     ; toolbox trap $06F
+        ToolBox $070,LocalToGlobal                ; toolbox trap $070
+        ToolBox $071,GlobalToLocal                ; toolbox trap $071
+        ToolBox $072,GrafDevice                   ; toolbox trap $072
+        ToolBox $073,SetPort                      ; toolbox trap $073
+        ToolBox $074,GetPort                      ; toolbox trap $074
+        ToolBox $075,SetPortBits                  ; toolbox trap $075
+        ToolBox $076,PortSize                     ; toolbox trap $076
+        ToolBox $077,MovePortTo                   ; toolbox trap $077
+        ToolBox $078,SetOrigin                    ; toolbox trap $078
+        ToolBox $079,SetClip                      ; toolbox trap $079
+        ToolBox $07A,GetClip                      ; toolbox trap $07A
+        ToolBox $07B,ClipRect                     ; toolbox trap $07B
+        ToolBox $07C,BackPat                      ; toolbox trap $07C
+        ToolBox $07D,ClosePort                    ; toolbox trap $07D
+        ToolBox $07E,AddPt                        ; toolbox trap $07E
+        ToolBox $07F,SubPt                        ; toolbox trap $07F
+        ToolBox $080,SetPt                        ; toolbox trap $080
+        ToolBox $081,EqualPt                      ; toolbox trap $081
+        ToolBox $082,StdText                      ; toolbox trap $082
+        ToolBox $083,DrawChar                     ; toolbox trap $083
+        ToolBox $084,DrawString                   ; toolbox trap $084
+        ToolBox $085,DrawText                     ; toolbox trap $085
+        ToolBox $086,TextWidth                    ; toolbox trap $086
+        ToolBox $087,TextFont                     ; toolbox trap $087
+        ToolBox $088,TextFace                     ; toolbox trap $088
+        ToolBox $089,TextMode                     ; toolbox trap $089
+        ToolBox $08A,TextSize                     ; toolbox trap $08A
+        ToolBox $08B,GetFontInfo                  ; toolbox trap $08B
+        ToolBox $08C,StringWidth                  ; toolbox trap $08C
+        ToolBox $08D,CharWidth                    ; toolbox trap $08D
+        ToolBox $08E,SpaceExtra                   ; toolbox trap $08E
+; toolbox trap $08F
+        ToolBox $08F,0 ;]
+        ToolBox $090,StdLine                      ; toolbox trap $090
+        ToolBox $091,LineTo                       ; toolbox trap $091
+        ToolBox $092,Line                         ; toolbox trap $092
+        ToolBox $093,MoveTo                       ; toolbox trap $093
+        ToolBox $094,MOOV                         ; toolbox trap $094
+; toolbox trap $095
+        ToolBox $095,0 ;]
+        ToolBox $096,HidePen                      ; toolbox trap $096
+        ToolBox $097,ShowPen                      ; toolbox trap $097
+        ToolBox $098,GetPenState                  ; toolbox trap $098
+        ToolBox $099,SetPenState                  ; toolbox trap $099
+        ToolBox $09A,GetPen                       ; toolbox trap $09A
+        ToolBox $09B,PenSize                      ; toolbox trap $09B
+        ToolBox $09C,PenMode                      ; toolbox trap $09C
+        ToolBox $09D,PenPat                       ; toolbox trap $09D
+        ToolBox $09E,PenNormal                    ; toolbox trap $09E
+; toolbox trap $09F
+        ToolBox $09F,0 ;]
+        ToolBox $0A0,StdRect                      ; toolbox trap $0A0
+        ToolBox $0A1,FrameRect                    ; toolbox trap $0A1
+        ToolBox $0A2,PaintRect                    ; toolbox trap $0A2
+        ToolBox $0A3,EraseRect                    ; toolbox trap $0A3
+        ToolBox $0A4,InvertRect                   ; toolbox trap $0A4
+        ToolBox $0A5,FillRect                     ; toolbox trap $0A5
+        ToolBox $0A6,EqualRect                    ; toolbox trap $0A6
+        ToolBox $0A7,SetRect                      ; toolbox trap $0A7
+        ToolBox $0A8,OffsetRect                   ; toolbox trap $0A8
+        ToolBox $0A9,InsetRect                    ; toolbox trap $0A9
+        ToolBox $0AA,SectRect                     ; toolbox trap $0AA
+        ToolBox $0AB,UnionRect                    ; toolbox trap $0AB
+        ToolBox $0AC,Pt2Rect                      ; toolbox trap $0AC
+        ToolBox $0AD,PtInRect                     ; toolbox trap $0AD
+        ToolBox $0AE,EmptyRect                    ; toolbox trap $0AE
+        ToolBox $0AF,StdRRect                     ; toolbox trap $0AF
+        ToolBox $0B0,FrameRoundRect               ; toolbox trap $0B0
+        ToolBox $0B1,PaintRoundRect               ; toolbox trap $0B1
+        ToolBox $0B2,EraseRoundRect               ; toolbox trap $0B2
+        ToolBox $0B3,InvertRoundRect              ; toolbox trap $0B3
+        ToolBox $0B4,FillRoundRect                ; toolbox trap $0B4
+; toolbox trap $0B5
+        ToolBox $0B5,0 ;]
+        ToolBox $0B6,StdOval                      ; toolbox trap $0B6
+        ToolBox $0B7,FrameOval                    ; toolbox trap $0B7
+        ToolBox $0B8,PaintOval                    ; toolbox trap $0B8
+        ToolBox $0B9,EraseOval                    ; toolbox trap $0B9
+        ToolBox $0BA,InvertOval                   ; toolbox trap $0BA
+        ToolBox $0BB,FillOval                     ; toolbox trap $0BB
+        ToolBox $0BC,SlopeFromAngle               ; toolbox trap $0BC
+        ToolBox $0BD,StdArc                       ; toolbox trap $0BD
+        ToolBox $0BE,FrameArc                     ; toolbox trap $0BE
+        ToolBox $0BF,PaintArc                     ; toolbox trap $0BF
+        ToolBox $0C0,EraseArc                     ; toolbox trap $0C0
+        ToolBox $0C1,InvertArc                    ; toolbox trap $0C1
+        ToolBox $0C2,FillArc                      ; toolbox trap $0C2
+        ToolBox $0C3,PtToAngle                    ; toolbox trap $0C3
+        ToolBox $0C4,AngleFromSlope               ; toolbox trap $0C4
+        ToolBox $0C5,StdPoly                      ; toolbox trap $0C5
+        ToolBox $0C6,FramePoly                    ; toolbox trap $0C6
+        ToolBox $0C7,PaintPoly                    ; toolbox trap $0C7
+        ToolBox $0C8,ErasePoly                    ; toolbox trap $0C8
+        ToolBox $0C9,InvertPoly                   ; toolbox trap $0C9
+        ToolBox $0CA,FillPoly                     ; toolbox trap $0CA
+        ToolBox $0CB,OpenPoly                     ; toolbox trap $0CB
+        ToolBox $0CC,ClosePoly                    ; toolbox trap $0CC
+        ToolBox $0CD,KillPoly                     ; toolbox trap $0CD
+        ToolBox $0CE,OffsetPoly                   ; toolbox trap $0CE
+        ToolBox $0CF,PackBits                     ; toolbox trap $0CF
+        ToolBox $0D0,UnpackBits                   ; toolbox trap $0D0
+        ToolBox $0D1,StdRgn                       ; toolbox trap $0D1
+        ToolBox $0D2,FrameRgn                     ; toolbox trap $0D2
+        ToolBox $0D3,PaintRgn                     ; toolbox trap $0D3
+        ToolBox $0D4,EraseRgn                     ; toolbox trap $0D4
+        ToolBox $0D5,InvertRgn                    ; toolbox trap $0D5
+        ToolBox $0D6,FillRgn                      ; toolbox trap $0D6
+; toolbox trap $0D7
+        ToolBox $0D7,0 ;]
+        ToolBox $0D8,NewRgn                       ; toolbox trap $0D8
+        ToolBox $0D9,DisposeRgn                   ; toolbox trap $0D9
+        ToolBox $0DA,OpenRgn                      ; toolbox trap $0DA
+        ToolBox $0DB,CloseRgn                     ; toolbox trap $0DB
+        ToolBox $0DC,CopyRgn                      ; toolbox trap $0DC
+        ToolBox $0DD,SetEmptyRgn                  ; toolbox trap $0DD
+        ToolBox $0DE,SetRectRgn                   ; toolbox trap $0DE
+        ToolBox $0DF,RectRgn                      ; toolbox trap $0DF
+        ToolBox $0E0,OffsetRgn                    ; toolbox trap $0E0
+        ToolBox $0E1,InsetRgn                     ; toolbox trap $0E1
+        ToolBox $0E2,EmptyRgn                     ; toolbox trap $0E2
+        ToolBox $0E3,EqualRgn                     ; toolbox trap $0E3
+        ToolBox $0E4,SectRgn                      ; toolbox trap $0E4
+        ToolBox $0E5,UnionRgn                     ; toolbox trap $0E5
+        ToolBox $0E6,DiffRgn                      ; toolbox trap $0E6
+        ToolBox $0E7,XorRgn                       ; toolbox trap $0E7
+        ToolBox $0E8,PtInRgn                      ; toolbox trap $0E8
+        ToolBox $0E9,RectInRgn                    ; toolbox trap $0E8
+        ToolBox $0EA,SetStdProcs                  ; toolbox trap $0EA
+        ToolBox $0EB,StdBits                      ; toolbox trap $0EB
+        ToolBox $0EC,CopyBits                     ; toolbox trap $0EC
+        ToolBox $0ED,StdTxMeas                    ; toolbox trap $0ED
+        ToolBox $0EE,StdGetPic                    ; toolbox trap $0EE
+        ToolBox $0EF,ScrollRect                   ; toolbox trap $0EF
+        ToolBox $0F0,StdPutPic                    ; toolbox trap $0F0
+        ToolBox $0F1,StdComment                   ; toolbox trap $0F1
+        ToolBox $0F2,PicComment                   ; toolbox trap $0F2
+        ToolBox $0F3,OpenPicture                  ; toolbox trap $0F3
+        ToolBox $0F4,ClosePicture                 ; toolbox trap $0F4
+        ToolBox $0F5,KillPicture                  ; toolbox trap $0F5
+        ToolBox $0F6,DrawPicture                  ; toolbox trap $0F6
+; toolbox trap $0F7
+        ToolBox $0F7,0 ;]
+        ToolBox $0F8,ScalePt                      ; toolbox trap $0F8
+        ToolBox $0F9,MapPt                        ; toolbox trap $0F9
+        ToolBox $0FA,MapRect                      ; toolbox trap $0FA
+        ToolBox $0FB,MapRgn                       ; toolbox trap $0FB
+        ToolBox $0FC,MapPoly                      ; toolbox trap $0FC
+; toolbox trap $0FD
+        ToolBox $0FD,0 ;]
+        ToolBox $0FE,InitFonts                    ; toolbox trap $0FE
+        ToolBox $0FF,GetFontName                  ; toolbox trap $0FF
+        ToolBox $100,GetFNum                      ; toolbox trap $100
+        ToolBox $101,FMSwapFont                   ; toolbox trap $101
+        ToolBox $102,RealFont                     ; toolbox trap $102
+        ToolBox $103,SetFontLock                  ; toolbox trap $103
+        ToolBox $104,DrawGrowIcon                 ; toolbox trap $104
+        ToolBox $105,DragGrayRgn                  ; toolbox trap $105
+        ToolBox $106,NewString                    ; toolbox trap $106
+        ToolBox $107,SetString                    ; toolbox trap $107
+        ToolBox $108,ShowHide                     ; toolbox trap $108
+; toolbox trap $109
+        ToolBox $109,CalcVis ;]
+; toolbox trap $10A
+        ToolBox $10A,CalcVBehind ;]
+; toolbox trap $10B
+        ToolBox $10B,ClipAbove ;]
+; toolbox trap $10C
+        ToolBox $10C,PaintOne ;]
+; toolbox trap $10D
+        ToolBox $10D,PaintBehind ;]
+        ToolBox $10E,SaveOld                      ; toolbox trap $10E
+; toolbox trap $10F
+        ToolBox $10F,DrawNew ;]
+        ToolBox $110,GetWMgrPort                  ; toolbox trap $110
+; toolbox trap $111
+        ToolBox $111,CheckUpdate ;]
+        ToolBox $112,InitWindows                  ; toolbox trap $112
+        ToolBox $113,NewWindow                    ; toolbox trap $113
+        ToolBox $114,DisposeWindow                ; toolbox trap $114
+; toolbox trap $115
+        ToolBox $115,ShowWindow ;]
+        ToolBox $116,HideWindow                   ; toolbox trap $116
+        ToolBox $117,GetWRefCon                   ; toolbox trap $117
+        ToolBox $118,SetWRefCon                   ; toolbox trap $118
+        ToolBox $119,GetWTitle                    ; toolbox trap $119
+        ToolBox $11A,SetWTitle                    ; toolbox trap $11A
+; toolbox trap $11B
+        ToolBox $11B,MoveWindow ;]
+        ToolBox $11C,HiliteWindow                 ; toolbox trap $11C
+        ToolBox $11D,SizeWindow                   ; toolbox trap $11D
+        ToolBox $11E,TrackGoAway                  ; toolbox trap $11E
+; toolbox trap $11F
+        ToolBox $11F,SelectWindow ;]
+; toolbox trap $120
+        ToolBox $120,BringToFront ;]
+; toolbox trap $121
+        ToolBox $121,SendBehind ;]
+        ToolBox $122,BeginUpdate                  ; toolbox trap $122
+        ToolBox $123,EndUpdate                    ; toolbox trap $123
+; toolbox trap $124
+        ToolBox $124,FrontWindow ;]
+; toolbox trap $125
+        ToolBox $125,DragWindow ;]
+        ToolBox $126,DragTheRgn                   ; toolbox trap $126
+        ToolBox $127,InvalRgn                     ; toolbox trap $127
+; toolbox trap $128
+        ToolBox $128,InvalRect ;]
+        ToolBox $129,ValidRgn                     ; toolbox trap $129
+; toolbox trap $12A
+        ToolBox $12A,ValidRect ;]
+        ToolBox $12B,GrowWindow                   ; toolbox trap $12B
+; toolbox trap $12C
+        ToolBox $12C,FindWindow ;]
+; toolbox trap $12D
+        ToolBox $12D,CloseWindow ;]
+        ToolBox $12E,SetWindowPic                 ; toolbox trap $12E
+        ToolBox $12F,GetWindowPic                 ; toolbox trap $12F
+        ToolBox $130,InitMenus                    ; toolbox trap $130
+        ToolBox $131,NewMenu                      ; toolbox trap $131
+        ToolBox $132,DisposeMenu                  ; toolbox trap $132
+        ToolBox $133,AppendMenu                   ; toolbox trap $133
+        ToolBox $134,ClearMenuBar                 ; toolbox trap $134
+        ToolBox $135,InsertMenu                   ; toolbox trap $135
+        ToolBox $136,DeleteMenu                   ; toolbox trap $136
+        ToolBox $137,DrawMenuBar                  ; toolbox trap $137
+        ToolBox $138,HiliteMenu                   ; toolbox trap $138
+        ToolBox $139,EnableItem                   ; toolbox trap $139
+        ToolBox $13A,DisableItem                  ; toolbox trap $13A
+        ToolBox $13B,GetMenuBar                   ; toolbox trap $13B
+        ToolBox $13C,SetMenuBar                   ; toolbox trap $13C
+        ToolBox $13D,MenuSelect                   ; toolbox trap $13D
+        ToolBox $13E,MenuKey                      ; toolbox trap $13E
+        ToolBox $13F,GetItemIcon                  ; toolbox trap $13F
+        ToolBox $140,SetItemIcon                  ; toolbox trap $140
+; toolbox trap $141
+        ToolBox $141,GetItemStyle ;]
+        ToolBox $142,SetItemStyle                 ; toolbox trap $142
+        ToolBox $143,GetItemMark                  ; toolbox trap $143
+        ToolBox $144,SetItemMark                  ; toolbox trap $144
+        ToolBox $145,CheckItem                    ; toolbox trap $145
+        ToolBox $146,GetItem                      ; toolbox trap $146
+        ToolBox $147,SetItem                      ; toolbox trap $147
+        ToolBox $148,CalcMenuSize                 ; toolbox trap $148
+        ToolBox $149,GetMHandle                   ; toolbox trap $149
+        ToolBox $14A,SetMenuFlash                 ; toolbox trap $14A
+        ToolBox $14B,PlotIcon                     ; toolbox trap $14B
+        ToolBox $14C,FlashMenuBar                 ; toolbox trap $14C
+        ToolBox $14D,AddResMenu                   ; toolbox trap $14D
+        ToolBox $14E,PinRect                      ; toolbox trap $14E
+        ToolBox $14F,DeltaPoint                   ; toolbox trap $14F
+        ToolBox $150,CountMItems                  ; toolbox trap $150
+        ToolBox $151,InsrtResMenu                 ; toolbox trap $151
+        ToolBox $152,DelMenuItem                  ; toolbox trap $152
+        ToolBox $153,UpdtControls                 ; toolbox trap $153
+        ToolBox $154,NewControl                   ; toolbox trap $154
+        ToolBox $155,DisposeControl               ; toolbox trap $155
+        ToolBox $156,KillControls                 ; toolbox trap $156
+        ToolBox $157,ShowControl                  ; toolbox trap $157
+        ToolBox $158,HideControl                  ; toolbox trap $158
+        ToolBox $159,MoveControl                  ; toolbox trap $159
+        ToolBox $15A,GetCRefCon                   ; toolbox trap $15A
+        ToolBox $15B,SetCRefCon                   ; toolbox trap $15B
+        ToolBox $15C,SizeControl                  ; toolbox trap $15C
+        ToolBox $15D,HiliteControl                ; toolbox trap $15D
+        ToolBox $15E,GetCTitle                    ; toolbox trap $15E
+        ToolBox $15F,SetCTitle                    ; toolbox trap $15F
+        ToolBox $160,GetCtlValue                  ; toolbox trap $160
+        ToolBox $161,GetCtlMin                    ; toolbox trap $161
+        ToolBox $162,GetCtlMax                    ; toolbox trap $162
+        ToolBox $163,SetCtlValue                  ; toolbox trap $163
+        ToolBox $164,SetCtlMin                    ; toolbox trap $164
+        ToolBox $165,SetCtlMax                    ; toolbox trap $165
+        ToolBox $166,TestControl                  ; toolbox trap $166
+        ToolBox $167,DragControl                  ; toolbox trap $167
+        ToolBox $168,TrackControl                 ; toolbox trap $168
+        ToolBox $169,DrawControls                 ; toolbox trap $169
+        ToolBox $16A,GetCtlAction                 ; toolbox trap $16A
+        ToolBox $16B,SetCtlAction                 ; toolbox trap $16B
+        ToolBox $16C,FindControl                  ; toolbox trap $16C
+        ToolBox $16D,DrawOneControl               ; toolbox trap $16D
+; toolbox trap $16E
+        ToolBox $16E,DEQUEUE ;]
+; toolbox trap $16F
+        ToolBox $16F,ENQUEUE ;]
+; toolbox trap $170
+        ToolBox $170,GetNextEvent ;]
+        ToolBox $171,EventAvail                   ; toolbox trap $171
+        ToolBox $172,GetMouse                     ; toolbox trap $172
+        ToolBox $173,StillDown                    ; toolbox trap $173
+        ToolBox $174,Button                       ; toolbox trap $174
+        ToolBox $175,TickCount                    ; toolbox trap $175
+        ToolBox $176,GetKeys                      ; toolbox trap $176
+        ToolBox $177,WaitMouseUp                  ; toolbox trap $177
+        ToolBox $178,UpdtDialog                   ; toolbox trap $178
+        ToolBox $179,CouldDialog                  ; toolbox trap $179
+        ToolBox $17A,FreeDialog                   ; toolbox trap $17A
+        ToolBox $17B,InitDialogs                  ; toolbox trap $17B
+        ToolBox $17C,GetNewDialog                 ; toolbox trap $17C
+        ToolBox $17D,NewDialog                    ; toolbox trap $17D
+        ToolBox $17E,SelIText                     ; toolbox trap $17E
+        ToolBox $17F,IsDialogEvent                ; toolbox trap $17F
+        ToolBox $180,DialogSelect                 ; toolbox trap $180
+        ToolBox $181,DrawDialog                   ; toolbox trap $181
+        ToolBox $182,CloseDialog                  ; toolbox trap $182
+        ToolBox $183,DisposDialog                 ; toolbox trap $183
+        ToolBox $184,FindDItem                    ; toolbox trap $184
+        ToolBox $185,Alert                        ; toolbox trap $185
+        ToolBox $186,StopAlert                    ; toolbox trap $186
+        ToolBox $187,NoteAlert                    ; toolbox trap $187
+        ToolBox $188,CautionAlert                 ; toolbox trap $188
+        ToolBox $189,CouldAlert                   ; toolbox trap $189
+        ToolBox $18A,FreeAlert                    ; toolbox trap $18A
+        ToolBox $18B,ParamText                    ; toolbox trap $18B
+        ToolBox $18C,ErrorSound                   ; toolbox trap $18C
+        ToolBox $18D,GetDItem                     ; toolbox trap $18D
+        ToolBox $18E,SetDItem                     ; toolbox trap $18E
+        ToolBox $18F,SetIText                     ; toolbox trap $18F
+        ToolBox $190,GetIText                     ; toolbox trap $190
+        ToolBox $191,ModalDialog                  ; toolbox trap $191
+        ToolBox $192,DetachResource               ; toolbox trap $192
+        ToolBox $193,SetResPurge                  ; toolbox trap $193
+        ToolBox $194,CurResFile                   ; toolbox trap $194
+        ToolBox $195,InitResources                ; toolbox trap $195
+        ToolBox $196,RsrcZoneInit                 ; toolbox trap $196
+        ToolBox $197,OpenResFile                  ; toolbox trap $197
+        ToolBox $198,UseResFile                   ; toolbox trap $198
+        ToolBox $199,UpdateResFile                ; toolbox trap $199
+        ToolBox $19A,CloseResFile                 ; toolbox trap $19A
+        ToolBox $19B,SetResLoad                   ; toolbox trap $19B
+        ToolBox $19C,CountResources               ; toolbox trap $19C
+        ToolBox $19D,GetIndResource   ; toolbox trap $19D
+        ToolBox $19E,CountTypes                   ; toolbox trap $19E
+        ToolBox $19F,GetIndType       ; toolbox trap $19F
+        ToolBox $1A0,GetResource                  ; toolbox trap $1A0
+        ToolBox $1A1,GetNamedResource ; toolbox trap $1A1
+        ToolBox $1A2,LoadResource                 ; toolbox trap $1A2
+        ToolBox $1A3,ReleaseResource              ; toolbox trap $1A3
+        ToolBox $1A4,HomeResFile                  ; toolbox trap $1A4
+        ToolBox $1A5,SizeResource                     ; toolbox trap $1A5
+        ToolBox $1A6,GetResAttrs                  ; toolbox trap $1A6
+        ToolBox $1A7,SetResAttrs                  ; toolbox trap $1A7
+        ToolBox $1A8,GetResInfo                   ; toolbox trap $1A8
+        ToolBox $1A9,SetResInfo                   ; toolbox trap $1A9
+        ToolBox $1AA,ChangedResource              ; toolbox trap $1AA
+        ToolBox $1AB,AddResource                  ; toolbox trap $1AB
+; toolbox trap $1AC
+        ToolBox $1AC,AddReference ;]
+        ToolBox $1AD,RmveResource                 ; toolbox trap $1AD
+; toolbox trap $1AE
+        ToolBox $1AE,RmveReference ;]
+        ToolBox $1AF,ResError                     ; toolbox trap $1AF
+        ToolBox $1B0,WriteResource                ; toolbox trap $1B0
+        ToolBox $1B1,CreateResFile                ; toolbox trap $1B1
+        ToolBox $1B2,SystemEvent                  ; toolbox trap $1B2
+        ToolBox $1B3,SystemClick                  ; toolbox trap $1B3
+        ToolBox $1B4,SystemTask                   ; toolbox trap $1B4
+        ToolBox $1B5,SystemMenu                   ; toolbox trap $1B5
+        ToolBox $1B6,OpenDeskAcc                  ; toolbox trap $1B6
+        ToolBox $1B7,CloseDeskAcc                 ; toolbox trap $1B7
+        ToolBox $1B8,GetPattern                   ; toolbox trap $1B8
+        ToolBox $1B9,GetCursor                    ; toolbox trap $1B9
+        ToolBox $1BA,GetString                    ; toolbox trap $1BA
+        ToolBox $1BB,GetIcon                      ; toolbox trap $1BB
+        ToolBox $1BC,GetPicture                   ; toolbox trap $1BC
+        ToolBox $1BD,GetNewWindow                 ; toolbox trap $1BD
+        ToolBox $1BE,GetNewControl                ; toolbox trap $1BE
+        ToolBox $1BF,GetMenu                      ; toolbox trap $1BF
+        ToolBox $1C0,GetNewMBar                   ; toolbox trap $1C0
+        ToolBox $1C1,UniqueID                     ; toolbox trap $1C1
+        ToolBox $1C2,SystemEdit                   ; toolbox trap $1C2
+; toolbox trap $1C3
+        ToolBox $1C3,0 ;]
+        ToolBox $1C4,OpenRFPerm                   ; toolbox trap $1C4
+        ToolBox $1C5,RsrcMapEntry                 ; toolbox trap $1C5
+        ToolBox $1C6,SECS2DATE                    ; toolbox trap $1C6
+        ToolBox $1C7,DATE2SECS                    ; toolbox trap $1C7
+; toolbox trap $1C8
+        ToolBox $1C8,SysBeep ;]
+        ToolBox $1C9,SystemError                     ; toolbox trap $1C9
+        ToolBox $1CA,PutIcon                      ; toolbox trap $1CA
+        ToolBox $1CB,TEGetText                    ; toolbox trap $1CB
+        ToolBox $1CC,TEInit                       ; toolbox trap $1CC
+        ToolBox $1CD,TEDispose                    ; toolbox trap $1CD
+        ToolBox $1CE,TextBox                      ; toolbox trap $1CE
+        ToolBox $1CF,TESetText                    ; toolbox trap $1CF
+        ToolBox $1D0,TECalText                    ; toolbox trap $1D0
+        ToolBox $1D1,TESetSelect                  ; toolbox trap $1D1
+        ToolBox $1D2,TENew                        ; toolbox trap $1D2
+        ToolBox $1D3,TEUpdate                     ; toolbox trap $1D3
+        ToolBox $1D4,TEClick                      ; toolbox trap $1D4
+        ToolBox $1D5,TECopy                       ; toolbox trap $1D5
+        ToolBox $1D6,TECut                        ; toolbox trap $1D6
+        ToolBox $1D7,TEDelete                     ; toolbox trap $1D7
+        ToolBox $1D8,TEActivate                   ; toolbox trap $1D8
+        ToolBox $1D9,TEDeactivate                 ; toolbox trap $1D9
+        ToolBox $1DA,TEIdle                       ; toolbox trap $1DA
+        ToolBox $1DB,TEPaste                      ; toolbox trap $1DB
+        ToolBox $1DC,TEKey                        ; toolbox trap $1DC
+        ToolBox $1DD,TEScroll                     ; toolbox trap $1DD
+        ToolBox $1DE,TEInsert                     ; toolbox trap $1DE
+        ToolBox $1DF,TESetJust                    ; toolbox trap $1DF
+        ToolBox $1E0,Munger                       ; toolbox trap $1E0
+; toolbox trap $1E1
+        ToolBox $1E1,HandToHand ;]
+; toolbox trap $1E2
+        ToolBox $1E2,PtrToXHand ;]
+; toolbox trap $1E3
+        ToolBox $1E3,PtrToHand ;]
+; toolbox trap $1E4
+        ToolBox $1E4,HandAndHand ;]
+        ToolBox $1E5,InitPack                     ; toolbox trap $1E5
+        ToolBox $1E6,InitAllPacks                 ; toolbox trap $1E6
+        ToolBox $1E7,Pack0                        ; toolbox trap $1E7
+        ToolBox $1E8,Pack1                        ; toolbox trap $1E8
+        ToolBox $1E9,Pack2                        ; toolbox trap $1E9
+        ToolBox $1EA,Pack3                        ; toolbox trap $1EA
+        ToolBox $1EB,Pack4                        ;] toolbox trap $1EB
+        ToolBox $1EC,Pack5                        ;] toolbox trap $1EC
+        ToolBox $1ED,Pack6                        ; toolbox trap $1ED
+        ToolBox $1EE,Pack7                        ; toolbox trap $1EE
+; toolbox trap $1EF
+        ToolBox $1EF,PtrAndHand ;]
+        ToolBox $1F0,LoadSeg                      ; toolbox trap $1F0
+        ToolBox $1F1,UnloadSeg                    ; toolbox trap $1F1
+        ToolBox $1F2,Launch                       ; toolbox trap $1F2
+        ToolBox $1F3,Chain                        ; toolbox trap $1F3
+        ToolBox $1F4,ExitToShell                  ; toolbox trap $1F4
+        ToolBox $1F5,GetAppParms                  ; toolbox trap $1F5
+        ToolBox $1F6,GetResFileAttrs              ; toolbox trap $1F6
+        ToolBox $1F7,SetResFileAttrs              ; toolbox trap $1F7
+        ToolBox $1F8,MethodDispatch               ; toolbox trap $1F8
+        ToolBox $1F9,InfoScrap                    ; toolbox trap $1F9
+        ToolBox $1FA,UnloadScrap                  ; toolbox trap $1FA
+        ToolBox $1FB,LoadScrap                    ; toolbox trap $1FB
+        ToolBox $1FC,ZeroScrap                    ; toolbox trap $1FC
+        ToolBox $1FD,GetScrap                     ; toolbox trap $1FD
+        ToolBox $1FE,PutScrap                     ; toolbox trap $1FE
+; toolbox trap $1FF
+        ToolBox $1FF,0 ;]
+
+FirstOS
+        OS      $000,Open                         ; OS trap $00
+        OS      $001,Close                        ; OS trap $01
+        OS      $002,Read                         ; OS trap $02
+        OS      $003,Write                        ; OS trap $03
+; OS trap $04
+        OS      $004,DeviceControl ;]
+; OS trap $05
+        OS      $005,DeviceStatus ;]
+; OS trap $06
+        OS      $006,KillIO ;]
+        OS      $007,GetVolInfo                   ; OS trap $07
+        OS      $008,FileCreate                   ; OS trap $08
+        OS      $009,FileDelete                   ; OS trap $09
+; OS trap $0A
+        OS      $00A,OpenRF ;]
+; OS trap $0B
+        OS      $00B,ReName ;]
+        OS      $00C,GetFileInfo                  ; OS trap $0C
+        OS      $00D,SetFileInfo                  ; OS trap $0D
+; OS trap $0E
+        OS      $00E,UnMountVol ;]
+        OS      $00F,MountVol                     ; OS trap $0F
+        OS      $010,FileAlloc                    ; OS trap $10
+; OS trap $11
+        OS      $011,GetEOF ;]
+; OS trap $12
+        OS      $012,SetEOF ;]
+; OS trap $13
+        OS      $013,FlushVol ;]
+; OS trap $14
+        OS      $014,GetVol ;]
+; OS trap $15
+        OS      $015,SetVol ;]
+        OS      $016,FInitQueue                    ; OS trap $16
+; OS trap $17
+        OS      $017,Eject ;]
+; OS trap $18
+        OS      $018,GetFPos ;]
+; OS trap $19
+        OS      $019,InitZone ;]
+        OS      $01A,GetZone                      ; OS trap $1A
+        OS      $01B,SetZone                      ; OS trap $1B
+        OS      $01C,FreeMem                      ; OS trap $1C
+; OS trap $1D
+        OS      $01D,MaxMem ;]
+; OS trap $1E
+        OS      $01E,NewPtr ;]
+        OS      $01F,DisposePtr                   ; OS trap $1F
+; OS trap $20
+        OS      $020,SetPtrSize ;]
+; OS trap $21
+        OS      $021,GetPtrSize ;]
+        OS      $022,NwHandle                     ; OS trap $22
+        OS      $023,DsposeHandle                 ; OS trap $23
+; OS trap $24
+        OS      $024,SetHandleSize ;]
+; OS trap $25
+        OS      $025,GetHandleSize ;]
+; OS trap $26
+        OS      $026,HandleZone ;]
+; OS trap $27
+        OS      $027,ReAllocHandle ;]
+; OS trap $28
+        OS      $028,RecoverHandle ;]
+        OS      $029,HLock                        ; OS trap $29
+        OS      $02A,HUnlock                      ; OS trap $2A
+        OS      $02B,EmptyHandle                  ; OS trap $2B
+        OS      $02C,InitApplZone                 ; OS trap $2C
+        OS      $02D,SetApplLimit                 ; OS trap $2D
+; OS trap $2E
+        OS      $02E,BlockMove ;]
+; OS trap $2F
+        OS      $02F,PostEvent ;]
+; OS trap $30
+        OS      $030,OSEventAvail ;]
+; OS trap $31
+        OS      $031,GetOSEvent ;]
+        OS      $032,FlushEvents                  ; OS trap $32
+        OS      $033,VInstall                     ; OS trap $33
+        OS      $034,VRemove                      ; OS trap $34
+        OS      $035,OffLine                      ; OS trap $35
+        OS      $036,MoreMasters                  ; OS trap $36
+        OS      $037,ReadParam                    ; OS trap $37
+; OS trap $38
+        OS      $038,WriteParam ;]
+; OS trap $39
+        OS      $039,ReadDateTime ;]
+; OS trap $3A
+        OS      $03A,SetDateTime ;]
+; OS trap $3B
+        OS      $03B,Delay ;]
+        OS      $03C,CmpString                    ; OS trap $3C
+        OS      $03D,DrvrInstall                  ; OS trap $3D
+        OS      $03E,DrvrRemove                   ; OS trap $3E
+        OS      $03F,InitUtil                     ; OS trap $3F
+        OS      $040,ResrvMem                     ; OS trap $40
+        OS      $041,SetFilLock                   ; OS trap $41 new from extensionHFS
+        OS      $042,RstFilLock                   ; OS trap $42 new from extensionHFS
+        OS      $043,SetFilType                   ; OS trap $43
+; OS trap $44
+        OS      $044,SetFPos ;]
+        OS      $045,FlushFile                    ; OS trap $45
+; OS trap $46
+        OS      $046,GetTrapAddress ;]
+; OS trap $47
+        OS      $047,SetTrapAddress ;]
+; OS trap $48
+        OS      $048,PtrZone ;]
+        OS      $049,HPurge                       ; OS trap $49
+        OS      $04A,HNoPurge                     ; OS trap $4A
+        OS      $04B,SetGrowZone                  ; OS trap $4B
+; OS trap $4C
+        OS      $04C,CompactMem ;]
+        OS      $04D,PurgeMem                     ; OS trap $4D
+; OS trap $4E
+        OS      $04E,AddDrive ;]
+        OS      $04F,InstallRDrivers              ; OS trap $4F
+; OS trap $50
+        OS      $050,RelString ;]
+        OS      $051,ReadXPRam                    ; OS trap $51
+        OS      $052,WriteXPRam                   ; OS trap $52
+        OS      $053,ClkNoMem                     ; OS trap $53
+; OS trap $54
+        OS      $054,UprString ;]
+; OS trap $55
+        OS      $055,0 ;]
+; OS trap $56
+        OS      $056,0 ;]
+        OS      $057,SetApplBase                  ; OS trap $57
+; OS trap $58
+        OS      $058,InsTime ;]
+; OS trap $59
+        OS      $059,RmvTime ;]
+; OS trap $5A
+        OS      $05A,PrimeTime ;]
+; OS trap $5B
+        OS      $05B,0 ;]
+; OS trap $5C
+        OS      $05C,0 ;]
+; OS trap $5D
+        OS      $05D,0 ;]
+; OS trap $5E
+        OS      $05E,0 ;]
+; OS trap $5F
+        OS      $05F,0 ;]
+        OS      $060,TFSDispatch                  ; OS trap $60
+; OS trap $61
+        OS      $061,MaxBlock ;]
+; OS trap $62
+        OS      $062,PurgeSpace ;]
+        OS      $063,MaxApplZone                  ; OS trap $63
+        OS      $064,MoveHHi                      ; OS trap $64
+; OS trap $65
+        OS      $065,StackSpace ;]
+; OS trap $66
+        OS      $066,NewEmptyHandle ;]
+; OS trap $67
+        OS      $067,0 ;]
+; OS trap $68
+        OS      $068,0 ;]
+; OS trap $69
+        OS      $069,0 ;]
+; OS trap $6A
+        OS      $06A,0 ;]
+; OS trap $6B
+        OS      $06B,0 ;]
+        OS      $06C,InitFS                       ; OS trap $6C
+        OS      $06D,InitEvents                   ; OS trap $6D
+; OS trap $6E
+        OS      $06E,0 ;]
+; OS trap $6F
+        OS      $06F,0 ;]
+; OS trap $70
+        OS      $070,0 ;]
+; OS trap $71
+        OS      $071,0 ;]
+; OS trap $72
+        OS      $072,0 ;]
+; OS trap $73
+        OS      $073,0 ;]
+; OS trap $74
+        OS      $074,0 ;]
+; OS trap $75
+        OS      $075,0 ;]
+; OS trap $76
+        OS      $076,0 ;]
+; OS trap $77
+        OS      $077,0 ;]
+; OS trap $78
+        OS      $078,0 ;]
+; OS trap $79
+        OS      $079,0 ;]
+; OS trap $7A
+        OS      $07A,0 ;]
+; OS trap $7B
+        OS      $07B,0 ;]
+; OS trap $7C
+        OS      $07C,0 ;]
+; OS trap $7D
+        OS      $07D,0 ;]
+; OS trap $7E
+        OS      $07E,0 ;]
+; OS trap $7F
+        OS      $07F,0 ;]
+; OS trap $80
+        OS      $080,0 ;]
+; OS trap $81
+        OS      $081,0 ;]
+; OS trap $82
+        OS      $082,0 ;]
+; OS trap $83
+        OS      $083,0 ;]
+; OS trap $84
+        OS      $084,0 ;]
+; OS trap $85
+        OS      $085,0 ;]
+        OS      $086,0                            ;] OS trap $86
+        OS      $087,0                            ;] OS trap $87
+        OS      $088,0                            ;] OS trap $88
+; OS trap $89
+        OS      $089,0 ;]
+; OS trap $8A
+        OS      $08A,0 ;]
+; OS trap $8B
+        OS      $08B,0 ;]
+; OS trap $8C
+        OS      $08C,0 ;]
+; OS trap $8D
+        OS      $08D,0 ;]
+; OS trap $8E
+        OS      $08E,0 ;]
+; OS trap $8F
+        OS      $08F,0 ;]
+; OS trap $90
+        OS      $090,0 ;]
+; OS trap $91
+        OS      $091,0 ;]
+; OS trap $92
+        OS      $092,0 ;]
+; OS trap $93
+        OS      $093,0 ;]
+; OS trap $94
+        OS      $094,0 ;]
+; OS trap $95
+        OS      $095,0 ;]
+; OS trap $96
+        OS      $096,0 ;]
+; OS trap $97
+        OS      $097,0 ;]
+; OS trap $98
+        OS      $098,0 ;]
+; OS trap $99
+        OS      $099,0 ;]
+; OS trap $9A
+        OS      $09A,0 ;]
+; OS trap $9B
+        OS      $09B,0 ;]
+; OS trap $9C
+        OS      $09C,0 ;]
+; OS trap $9D
+        OS      $09D,0 ;]
+; OS trap $9E
+        OS      $09E,0 ;]
+; OS trap $9F
+        OS      $09F,0 ;]
+; OS trap $A0
+        OS      $0A0,0 ;]
+; OS trap $A1
+        OS      $0A1,0 ;]
+; OS trap $A2
+        OS      $0A2,0 ;]
+; OS trap $A3
+        OS      $0A3,0 ;]
+; OS trap $A4
+        OS      $0A4,0 ;]
+; OS trap $A5
+        OS      $0A5,0 ;]
+        OS      $0A6,0                            ;] OS trap $A6
+        OS      $0A7,0                            ;] OS trap $A7
+; OS trap $A8
+        OS      $0A8,0 ;]
+; OS trap $A9
+        OS      $0A9,0 ;]
+; OS trap $AA
+        OS      $0AA,0 ;]
+; OS trap $AB
+        OS      $0AB,0 ;]
+; OS trap $AC
+        OS      $0AC,0 ;]
+; OS trap $AD
+        OS      $0AD,0 ;]
+; OS trap $AE
+        OS      $0AE,0 ;]
+        OS      $0AF,0                            ;] OS trap $AF
+        OS      $0B0,0                            ;] OS trap $B0
+        OS      $0B1,0                            ;] OS trap $B1
+        OS      $0B2,0                            ;] OS trap $B2
+        OS      $0B3,0                            ;] OS trap $B3
+        OS      $0B4,0                            ;] OS trap $B4
+        OS      $0B5,0                            ;] OS trap $B5
+        OS      $0B6,0                            ;] OS trap $B6
+        OS      $0B7,0                            ;] OS trap $B7
+        OS      $0B8,0                            ;] OS trap $B8
+        OS      $0B9,0                            ;] OS trap $B9
+        OS      $0BA,0                            ;] OS trap $BA
+        OS      $0BB,0                            ;] OS trap $BB
+        OS      $0BC,0                            ;] OS trap $BC
+        OS      $0BD,0                            ;] OS trap $BD
+        OS      $0BE,0                            ;] OS trap $BE
+        OS      $0BF,vLg2Phys                     ; vector $BF
+        OS      $0C0,vFlushCache                  ; vector $C0
+        OS      $0C1,vGetBlock                    ; vector $C1
+        OS      $0C2,vMarkBlock                   ; vector $C2
+        OS      $0C3,vRelBlock                    ; vector $C3
+        OS      $0C4,vTrashBlocks                 ; vector $C4
+        OS      $0C5,vTrashVBlks                  ; vector $C5
+        OS      $0C6,vCacheWrIP                   ; vector $C6
+        OS      $0C7,vCacheRdIP                   ; vector $C7
+        OS      $0C8,vBasicIO                     ; vector $C8
+        OS      $0C9,vRdBlocks                    ; vector $C9
+        OS      $0CA,vWrBlocks                    ; vector $CA
+        OS      $0CB,vSetUpTags                   ; vector $CB
+        OS      $0CC,vBTClose                     ; vector $CC
+        OS      $0CD,vBTDelete                    ; vector $CD
+        OS      $0CE,vBTFlush                     ; vector $CE
+        OS      $0CF,vBTGetRecord                 ; vector $CF
+        OS      $0D0,vBTInsert                    ; vector $D0
+        OS      $0D1,vBTOpen                      ; vector $D1
+        OS      $0D2,vBTSearch                    ; vector $D2
+        OS      $0D3,vBTUpdate                    ; vector $D3
+        OS      $0D4,vGetNode                     ; vector $D4
+        OS      $0D5,vRelNode                     ; vector $D5
+        OS      $0D6,vAllocNode                   ; vector $D6
+        OS      $0D7,vFreeNode                    ; vector $D7
+        OS      $0D8,vExtBTFile                   ; vector $D8
+        OS      $0D9,vDeallocFile                 ; vector $D9
+        OS      $0DA,vExtendFile                  ; vector $DA
+        OS      $0DB,vTruncateFile                ; vector $DB
+        OS      $0DC,vCMSetUp                     ; vector $DC
+        OS      $0DD,0                            ;] OS trap $DD
+        OS      $0DE,vDtrmV1                      ; vector $DE
+        OS      $0DF,vBlkAlloc                    ; vector $DF
+        OS      $0E0,vBlkDeAlloc                  ; vector $E0
+        OS      $0E1,vFileOpen                    ; vector $E1
+        OS      $0E2,vPermssnChk                  ; vector $E2
+        OS      $0E3,vFndFilName                  ; vector $E3
+        OS      $0E4,vRfNCall                     ; vector $E4
+        OS      $0E5,vAdjEOF                      ; vector $E5
+        OS      $0E6,0                            ;] OS trap $E6
+        OS      $0E7,0                            ;] OS trap $E7
+        OS      $0E8,0                            ;] OS trap $E8
+        OS      $0E9,0                            ;] OS trap $E9
+        OS      $0EA,0                            ;] OS trap $EA
+        OS      $0EB,0                            ;] OS trap $EB
+; OS trap $EC
+        OS      $0EC,0 ;]
+        OS      $0ED,0                            ;] OS trap $ED
+        OS      $0EE,0                            ;] OS trap $EE
+        OS      $0EF,0                            ;] OS trap $EF
+        OS      $0F0,0                            ;] OS trap $F0
+        OS      $0F1,0                            ;] OS trap $F1
+        OS      $0F2,0                            ;] OS trap $F2
+        OS      $0F3,0                            ;] OS trap $F3
+        OS      $0F4,0                            ;] OS trap $F4
+        OS      $0F5,0                            ;] OS trap $F5
+        OS      $0F6,0                            ;] OS trap $F6
+        OS      $0F7,0                            ;] OS trap $F7
+        OS      $0F8,vSegStack                    ; vector $F8
+        OS      $0F9,vSuperLoad                   ; vector $F9
+        OS      $0FA,vCmpFrm                      ; vector $FA
+        OS      $0FB,vNewMap                      ; vector $FB
+        OS      $0FC,vCheckLoad                   ; vector $FC
+        OS      $0FD,XTrimMeasure                 ; vector $FD
+        OS      $0FE,XFindWord                    ; vector $FE
+        OS      $0FF,XFindLine                    ; vector $FF
+UncompressedTableEnd ;]
+        END

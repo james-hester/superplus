@@ -1,0 +1,139 @@
+{
+  "module": "MFSRFN2",
+  "source": "Reconstruction/Source/OS/HFS/MFSRFN2.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSRFN2.a",
+      "sha256": "f17b3486cc4e42f1981689ba0d756c30ea64227d0c37c73af5b4df82677a05c6",
+      "line_ranges": [
+        [
+          1,
+          59
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/TFSRFN3.a",
+      "sha256": "4c37ad70b5390a66047364bf7670ad484426ce4a4d9956b266eb2fff4add97c1",
+      "line_ranges": [
+        [
+          78,
+          95
+        ]
+      ],
+      "role": "Alloc establishes the next module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          286,
+          286
+        ],
+        [
+          356,
+          356
+        ],
+        [
+          358,
+          358
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40557e",
+      "end_exclusive": "0x4055be",
+      "rom_offset": "0x557e",
+      "length": 64,
+      "sha256": "c253f121df0b27b2a26de9ad1adcac1b168760def3571c107ab64160d8d96493",
+      "start_label": "MFSShrtnF",
+      "end_label": "MFSRFN2End",
+      "boundary_evidence": "MFSShrtnF follows the TFSRFN2 AdjEOF return at 0x40557e. Its final branch to ShrtnTrash ends at 0x4055be, where Alloc begins TFSRFN3."
+    }
+  ],
+  "entry_points": {
+    "MFSShrtnF": "0x40557e",
+    "MFSRFN2End": "0x4055be"
+  },
+  "integration_manifest": {
+    "name": "mfsrfn2",
+    "source": "Reconstruction/Source/OS/HFS/MFSRFN2.a",
+    "start": "0x40557e",
+    "end_exclusive": "0x4055be",
+    "entry_points": {
+      "MFSShrtnF": "0x40557e",
+      "MFSRFN2End": "0x4055be"
+    }
+  },
+  "changes": [
+    {
+      "location": "Instruction body and definitions",
+      "change": "Retained the surviving instruction sequence without behavioral reversions. Copied required original equates and supplied external routine addresses.",
+      "evidence": "All 64 bytes match. The code follows the MFS allocation chain, frees the remaining blocks, updates physical EOF, and rejoins ShrtnTrash at 0x405512. MFSShrtnF and the end label match their ROM addresses."
+    },
+    {
+      "location": "Source provenance",
+      "change": "Preserved the original header, applicable history, and comments.",
+      "evidence": "The surviving source retains the October 1985 split that moved common close and allocation routines to the TFS module. The remaining shorten-file helper matches this ROM."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "GtNxBlk",
+      "address": "0x40566e"
+    },
+    {
+      "name": "SEOFOK",
+      "address": "0x4054d8"
+    },
+    {
+      "name": "SubMrk",
+      "address": "0x40577e"
+    },
+    {
+      "name": "DAlBlks",
+      "address": "0x4057b6"
+    },
+    {
+      "name": "ShrtnTrash",
+      "address": "0x405512"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x40557e, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "3cf974471c007971b3b5e435faf5f2aed62ea572ff10f86b229f20b2844d7e8b",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/MFSRFN2.a",
+        "sha256": "3cf974471c007971b3b5e435faf5f2aed62ea572ff10f86b229f20b2844d7e8b"
+      }
+    ],
+    "assembled_length": 64,
+    "matched_bytes": 64,
+    "entry_points_checked": 2,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

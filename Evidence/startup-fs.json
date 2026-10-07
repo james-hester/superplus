@@ -1,0 +1,150 @@
+{
+  "module": "Mac Plus startup file-system and event initialization",
+  "status": "complete",
+  "source": "Reconstruction/Source/OS/StartMgr/StartupFS.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFS.a",
+      "sha256": "d73c5f139d529dbd33ba71abfbac80ba64177766690055bf61e3b73de764fdea",
+      "line_ranges": [
+        [
+          1,
+          14
+        ],
+        [
+          75,
+          76
+        ],
+        [
+          1296,
+          1406
+        ],
+        [
+          1428,
+          1432
+        ]
+      ],
+      "role": "The later file-system source preserves InitFS and its allocation, cache initialization, and disk-switch hook setup. The history records its move from StartBoot."
+    },
+    {
+      "path": "OS/OSEventMgr.a",
+      "sha256": "ab93d2ad511a6c3f253933f9af4dc48e47d3300ec060ba987ec5d86d7321e61e",
+      "line_ranges": [
+        [
+          1,
+          23
+        ],
+        [
+          144,
+          184
+        ]
+      ],
+      "role": "The later event manager preserves InitEvents. Its history records the move from StartBoot and the later guard against repeated initialization."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "role": "Original low-memory, record-size, or trap definitions used by the restored source."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "role": "Original low-memory, record-size, or trap definitions used by the restored source."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "role": "Original low-memory, record-size, or trap definitions used by the restored source."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "role": "Original low-memory, record-size, or trap definitions used by the restored source."
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "role": "Original low-memory, record-size, or trap definitions used by the restored source."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x400c76",
+      "end_exclusive": "0x400d76",
+      "length": 256,
+      "sha256": "2d2f06b3d6c1c2abdbebe5ae329b48f30cd3d78ec862d11f2c3ed42d94531362",
+      "boundary_evidence": "FSInitErr precedes InitFS at $400C76. InitFS ends with FSInitOK at $400D4A. InitEvents starts at $400D4C and ends with RTS at $400D74, immediately before the startup hardware test at $400D76."
+    }
+  ],
+  "entry_points": {
+    "FSInitErr": "0x400c76",
+    "InitFS": "0x400c7a",
+    "InitFSClear": "0x400c8e",
+    "InitFSAlloc": "0x400ca4",
+    "InitFSVolCache": "0x400d1c",
+    "InitFSCtlCache": "0x400d34",
+    "FSInitOK": "0x400d48",
+    "InitEvents": "0x400d4c",
+    "InitEvLoop": "0x400d66",
+    "StartupFSEnd": "0x400d76"
+  },
+  "changes": [
+    {
+      "change": "Restore the short switch-table entries.",
+      "reason": "The ROM stores the WDCB pointer and length at offsets 20 and 22 and the PMSP pointer at offset 24. Later TFS code reads table offsets from ROM and stores complemented long pointers."
+    },
+    {
+      "change": "Restore the original stack size and omit later file-system state.",
+      "reason": "The target allocates $500 bytes for the HFS stack plus 16 temporary bytes. FSPrivate.a records the later increase to $700. The target returns after installing DSHook and has none of the later FSVars or expanded-memory setup."
+    },
+    {
+      "change": "Restore unconditional event-queue initialization.",
+      "reason": "The target allocates 22 bytes per event, clears the queue links, fills the storage with ones, and enables all events except key-up. It lacks the SM9 guard added to preserve an existing queue after a failed boot."
+    },
+    {
+      "change": "Preserve source comments and specify the target assembly encodings.",
+      "reason": "Original routine headers, applicable inline comments, and relevant later history remain. The shared failure return moves before InitFS. Explicit branch widths, PC-relative calls, and the $A71E NewPtr trap reproduce the SYS,CLEAR form."
+    }
+  ],
+  "verification": {
+    "method": "The common verifier assembled the MPW source for the 68000, linked it at $400C76, and compared every byte and each recorded label with the ROM.",
+    "result": "All 256 bytes match the ROM.",
+    "source_sha256": "ec4a7e6b500ba6303a613797a6d84b9c26ca15f655469e54a97c093bbdaafc9c",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/StartMgr/StartupFS.a",
+        "sha256": "ec4a7e6b500ba6303a613797a6d84b9c26ca15f655469e54a97c093bbdaafc9c"
+      }
+    ],
+    "matched_bytes": 256,
+    "entry_points_checked": 10,
+    "limits": [
+      "The comparison does not execute allocation, cache setup, event posting, or a complete boot.",
+      "Original comments describe the retained source operations; newly named internal labels and restored expressions do not establish the spelling of the missing startup source."
+    ]
+  },
+  "integration_manifest": {
+    "name": "startup-fs",
+    "source": "Reconstruction/Source/OS/StartMgr/StartupFS.a",
+    "start": "0x400c76",
+    "end_exclusive": "0x400d76",
+    "entry_points": {
+      "FSInitErr": "0x400c76",
+      "InitFS": "0x400c7a",
+      "InitFSClear": "0x400c8e",
+      "InitFSAlloc": "0x400ca4",
+      "InitFSVolCache": "0x400d1c",
+      "InitFSCtlCache": "0x400d34",
+      "FSInitOK": "0x400d48",
+      "InitEvents": "0x400d4c",
+      "InitEvLoop": "0x400d66",
+      "StartupFSEnd": "0x400d76"
+    }
+  }
+}

@@ -1,0 +1,371 @@
+{
+  "module": "ToolboxEventMgr",
+  "source": "Reconstruction/Source/Toolbox/ToolboxEventMgr.a",
+  "source_sha256": "d3546da8cadec0ed5f3b0906e9b0f1cf83e641fbb62a983df03792a84a715a76",
+  "originals": [
+    {
+      "path": "Toolbox/ToolboxEventMgr/ToolboxEventMgr.a",
+      "sha256": "99cdf7fee78add5ab11cf8bc2f6833c496720ff8ca7fe81ac01973eda82807b3",
+      "line_ranges": [
+        [
+          1,
+          7
+        ],
+        [
+          80,
+          617
+        ]
+      ],
+      "role": "Routine bodies, headers, comments, and retained revision tags."
+    },
+    {
+      "path": "Toolbox/ToolboxEventMgr/ToolboxEventMgrPatches.a",
+      "sha256": "316ab964b9d78379a00e7a963c7f73d708dfe481a4cf7ab301245fde42f5ac99",
+      "line_ranges": [
+        [
+          149,
+          179
+        ]
+      ],
+      "role": "Explanation of the removed system/application activation bit and later journaling-port changes."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          498,
+          498
+        ],
+        [
+          543,
+          543
+        ],
+        [
+          544,
+          544
+        ],
+        [
+          546,
+          546
+        ],
+        [
+          548,
+          548
+        ],
+        [
+          585,
+          585
+        ],
+        [
+          586,
+          586
+        ],
+        [
+          589,
+          589
+        ],
+        [
+          593,
+          593
+        ],
+        [
+          594,
+          594
+        ],
+        [
+          595,
+          595
+        ],
+        [
+          740,
+          740
+        ],
+        [
+          1245,
+          1245
+        ],
+        [
+          1246,
+          1246
+        ],
+        [
+          1250,
+          1250
+        ],
+        [
+          1252,
+          1252
+        ],
+        [
+          1254,
+          1254
+        ],
+        [
+          1279,
+          1279
+        ],
+        [
+          1280,
+          1280
+        ],
+        [
+          1281,
+          1281
+        ],
+        [
+          1282,
+          1282
+        ],
+        [
+          1283,
+          1283
+        ],
+        [
+          1284,
+          1284
+        ],
+        [
+          1285,
+          1285
+        ],
+        [
+          1362,
+          1362
+        ],
+        [
+          1364,
+          1364
+        ],
+        [
+          1365,
+          1365
+        ]
+      ],
+      "role": "Low-memory fields, event constants, and trap words."
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "line_ranges": [
+        [
+          275,
+          275
+        ],
+        [
+          303,
+          303
+        ],
+        [
+          305,
+          305
+        ],
+        [
+          306,
+          306
+        ],
+        [
+          601,
+          601
+        ],
+        [
+          763,
+          763
+        ]
+      ],
+      "role": "Low-memory fields, event constants, and trap words."
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "line_ranges": [
+        [
+          405,
+          405
+        ],
+        [
+          407,
+          407
+        ],
+        [
+          408,
+          408
+        ],
+        [
+          550,
+          550
+        ],
+        [
+          551,
+          551
+        ],
+        [
+          558,
+          558
+        ],
+        [
+          656,
+          656
+        ],
+        [
+          671,
+          671
+        ],
+        [
+          691,
+          691
+        ],
+        [
+          776,
+          776
+        ],
+        [
+          779,
+          779
+        ],
+        [
+          780,
+          780
+        ],
+        [
+          781,
+          781
+        ],
+        [
+          782,
+          782
+        ],
+        [
+          895,
+          895
+        ],
+        [
+          937,
+          937
+        ],
+        [
+          1049,
+          1049
+        ],
+        [
+          1807,
+          1807
+        ],
+        [
+          1808,
+          1808
+        ]
+      ],
+      "role": "Low-memory fields, event constants, and trap words."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "spans": [
+    {
+      "start": "0x410f30",
+      "end_exclusive": "0x4111ac",
+      "length": 636,
+      "sha256": "19f03662f12a8dbd2375e8b0d204d4db2e07d03591cb71db6e0ba1e8e4b58200",
+      "boundary_evidence": "GetKeys begins at $410F30. GotDActive ends at $4111AC, where the Window Manager NewString routine begins."
+    }
+  ],
+  "integration_manifest": {
+    "name": "toolbox-events",
+    "source": "Reconstruction/Source/Toolbox/ToolboxEventMgr.a",
+    "start": "0x410f30",
+    "end_exclusive": "0x4111ac",
+    "entry_points": {
+      "GetKeys": "0x410f30",
+      "Button": "0x410f4c",
+      "itsUp": "0x410f5a",
+      "TickCount": "0x410f5e",
+      "GetJournal": "0x410f68",
+      "ItsRecord": "0x410f74",
+      "CallJournal": "0x410f76",
+      "BadJournal": "0x410f96",
+      "adios": "0x410f9e",
+      "GetMouse": "0x410fa0",
+      "StillDown": "0x410fb6",
+      "SDDONE": "0x410fda",
+      "WaitMouseUp": "0x410fde",
+      "ItStillDown": "0x410ff8",
+      "EventAvail": "0x410ffc",
+      "GetNextEvent": "0x411000",
+      "GNECommon": "0x411024",
+      "Dormant": "0x41107e",
+      "DontPeek": "0x41108c",
+      "noneYet": "0x4110a0",
+      "PassToSystem": "0x4110b4",
+      "TryFKey": "0x4110ce",
+      "DoneFKey": "0x411126",
+      "HandBySys": "0x411128",
+      "DoneGNE": "0x41112c",
+      "NeverMind": "0x411136",
+      "CheckActivate": "0x411142",
+      "GotActCommon": "0x411156",
+      "GotDone1": "0x411198",
+      "DoneChkActive": "0x41119c",
+      "ClearDAct": "0x4111a0",
+      "GotDActive": "0x4111a8",
+      "GoCheckJournal": "0x41108e",
+      "ToolboxEventsEnd": "0x4111ac"
+    }
+  },
+  "changes": [
+    {
+      "location": "GetKeys through GNECommon",
+      "change": "Retained the surviving instruction sequence and its comments. Restored the non-immediate Control trap in CallJournal.",
+      "evidence": "The ROM contains trap $A004 at $410F8C. The released history dates immediate journaling to November 1988."
+    },
+    {
+      "location": "Dormant and GoCheckJournal",
+      "change": "Removed high-level event and Process Manager code. Kept the journal call immediately after the OS event calls.",
+      "evidence": "Both OS event paths meet at $41108E, which moves A3 to A1, selects jcEvent, and calls GetJournal. Ghidra names this address GoCheckHLE, but this ROM has no high-level event path there."
+    },
+    {
+      "location": "PassToSystem and TryFKey",
+      "change": "Restored SystemEvent before FKey handling, removed keypad and ASCII conversion checks, and restored the two-drive eject fallback.",
+      "evidence": "The ROM calls SystemEvent at $4110C8 before entering TryFKey at $4110CE. The source comments date the opposite order to January 1986. FKey codes are already in the range zero through nine. A missing resource for code one or two calls the ROM Eject vector at $40001E."
+    },
+    {
+      "location": "FKey resource handling",
+      "change": "Removed ScrDmpEnb and ROM-map insertion checks. Restored direct high-bit setting and clearing in the master pointer around the call.",
+      "evidence": "The ROM uses BSET and BCLR on bit seven of (A0), instead of the HLock and HUnlock traps dated October 1986 in the released source."
+    },
+    {
+      "location": "DoneGNE",
+      "change": "Removed delayed SCSI polling and the later window-port checks and changes.",
+      "evidence": "A null event causes GetMouse to write into TempRect, followed directly by the register restore and return. The source dates polling to October 1986 and the port change to September 1991."
+    },
+    {
+      "location": "CheckActivate",
+      "change": "Restored the removed comparison of the deactivated and activated window kinds, including the original pointer behavior.",
+      "evidence": "The ROM instructions at $411160 through $41117A set the system/application modifier bit when the kind signs differ. The later patch describes this removed block and its failure in 32-bit mode."
+    },
+    {
+      "location": "Source form",
+      "change": "Preserved the original header and applicable comments, selected the matching branch widths, and removed revision tags from reverted statements. Corrected three inherited comments: KeyMap contains four longwords, CallJournal receives its result pointer in A1, and the branch to Dormant means no activation event.",
+      "evidence": "The ROM reads four successive longwords from KeyMap, stores A1 in the journal parameter block, and branches to Dormant when CheckActivate returns zero. No instruction bytes changed for these comment corrections."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "ROMEject",
+      "address": "0x40001e",
+      "basis": "Absolute JSR at $411108. The restored startup prefix verifies this vector."
+    }
+  ],
+  "verification": {
+    "method": "The shared verifier assembled and linked the module, then checked every emitted byte and every recorded entry point.",
+    "matched_bytes": 636,
+    "entry_points_checked": 34,
+    "result": "exact",
+    "limits": [
+      "The comparison does not execute event delivery, journaling drivers, window activation, or FKey resources.",
+      "The original Mac Plus source text remains unavailable. Patch dates do not by themselves establish when a change entered this ROM."
+    ]
+  }
+}

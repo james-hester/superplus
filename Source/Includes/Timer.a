@@ -1,0 +1,12 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Interfaces/AIncludes/Timer.a
+;
+;	File:		Timer.a
+;
+;	Copyright:	© 1991-1992 by Apple Computer, Inc., all rights reserved.
+;
+
+tmAddr			EQU 		6         				; service routine [pointer]
+tmCount   		EQU 		$A        				; timeout count [long]

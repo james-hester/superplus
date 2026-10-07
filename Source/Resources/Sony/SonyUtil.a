@@ -1,0 +1,954 @@
+*R This module restores the complete Mac Plus Sony utility section.
+*R The original headers and surviving comments accompany retained routines.
+*R Reconstruction notes identify the restored PWM and DCD paths and earlier behavior.
+*R ROM operands establish instruction sizes, hardware addresses, and table values.
+
+;
+;	File:		SonyUtil.a
+;
+;	Contains:	This file contains various utility routines used by the
+;				disk driver.  It includes the powerup/powerdown logic, wakeup timing,
+;				seek, eject, recal, and speed determination.
+;
+;	Written by:	Larry Kenyon
+;
+;	Copyright:	© 1982-1990, 1992-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/25/85	LAK		PowerDown sets up TimeOutDrive. DiskSelect calls PowerDown if
+;									TimeOut nonzero and TimeOutDrive is not Drive. Vectored
+;									DiskSelect for ROM. Use NewIntf rather than Sides to determine
+;									whether drive has new interface. Split WakeUp into WakeSetUp and
+;									WakeGo for RWT fix.
+;				10/24/85	LAK		WakeUp now uses new timer routines. Added routine InvalTrkCache.
+;				 7/29/85	RDC		Added changes for MidMac: - changed interrupt level settings to
+;									use equates - removed DCD code - changed VIA timer and timing
+;									loops to use equates - adjusted tach frequency tables - replaced
+;									make speed table routine w/ 800 ms delay
+;
+		IMPORT EmptyPD,SetUpPoll ;]
+		EXPORT AdrAndSense,AdrDisk,DCDSense,DiskSelect,DiskVBLTask,DskRtn ;]
+		EXPORT FastPower,GetDrive,GetDrv1,InvalTrkCache,MakeSpdTbl,MeasureSpeed ;]
+		EXPORT PowerDown,Recal,RWPowerUp,Seek,Sense,SetSpeed ;]
+		EXPORT SpeedLimits,WakeGo,WakeSetUp,WakeUp ;]
+
+		INCLUDE 'Traps.a'
+
+
+	INCLUDE 'SonyEqu.a'
+	INCLUDE 'SonyUtilEqu.a' ;]
+
+
+;_______________________________________________________________________
+;
+; Routines:  GetDrive, GetDrv1, AdrAndSense, AdrAndStrb, AdrDisk, Pulse, Sense,
+;			 SetSpeed, SetASpeed, Eject, Seek, Seek1,	WakeUp, Recal, SetIWMMode,
+;			 PowerDown, PowerUp, DiskSelect, MakeSpdTbl, FigTrkSpeed,
+;			 DiskVBLTask.
+;
+; Register Conventions:
+;			A3,A4: used for return addresses, highest level (MakeSpdTbl)
+;		 	also use D3-D4 to keep values, may trash all other regs
+;			A5,A6: used for return addresses, lowest level (Seek, Recal)
+;		 	also use D5,D6,D7 to keep values, must preserve A3-A4/D3-D4.
+;			DskRtnAdr: used by RdAddr,RdData,WrData,WakeUp to store return address.
+;			Utility routines must preserve registers D3-D7/A3-A6 (though many
+;		 	preserve all regs except D0).
+;_______________________________________________________________________
+
+
+*R The seventh drive-offset entry repeats drive 6 for the
+*R pass-through probe. This code predates logical drive-number translation.
+DrvVarOS
+ DC.W Drive1,Drive2,Drive3,Drive4,Drive5,Drive6,Drive6 ;]
+GetDrive MOVE.L IWM,A0		;set up pointers to hardware
+	MOVE.L VIA,A2
+GetDrv1 MOVE.L SonyVars,A1
+	MOVE.W Drive(A1),D1
+	ADD.W D1,D1
+	MOVE.W DrvVarOS-2(PC,D1.W),D1 ;]
+	RTS
+
+;_______________________________________________________________________
+;
+; Routine:	AdrAndSense, AdrAndStrb, AdrDisk, Pulse, Sense
+; Arguments: A1 (output) -- pointer to driver variables (input for	GetOther)
+;			 D1 (output) -- word offset of	current drive's specific vars
+;			 A0 (output) -- IWM base ptr
+;			 A2 (output) -- VIA base ptr
+; Called By:(AdrDisk): RdAddrSetup,AdrAndSense,AdrAndStrb,FigTrkSpeed,Eject
+;			(AdrAndStrb): Seek,Recal,PowerDown,Check4Disk
+;			(AdrAndSense): Seek,Recal(2x),PowerUp,Check4Disk(3x),CkInstll(2x),
+;				CkDIP(2x),CkWrProt
+;			(Pulse): AdrAndStrb,Seek,Recal,PowerUp
+;			(Sense): AdrAndSense
+; Function: Utility routines used in addressing and configuring disk.
+;_______________________________________________________________________
+
+; D0 is 'address' (ca1-ca0-sel-ca2)
+
+AdrDisk 	BSR.S	GetDrive			; setup A0,A1,A2,D1
+
+			TST.B	Ph0H(A0)			; when changing SEL from 1 to 0,
+			TST.B	Ph1H(A0)			;  CA0=CA1=1 must be true
+
+			LSR.B	#1,D0				; CA2 state
+			BCC.S	@0
+			TST.B	Ph2H(A0)			; set high
+			BRA.S	@1
+@0			TST.B	Ph2L(A0)			; set low
+
+@1			LSR.B	#1,D0				; SEL state
+			BCC.S	@2
+			BSET	#VHeadSel,VBufD(A2) ; set high
+			BRA.S	@3
+@2			BCLR	#VHeadSel,VBufD(A2) ; set low
+
+@3			LSR.B	#1,D0				; CA0 state
+			BCS.S	@4
+			;TST.B	Ph0L(A0)
+			TST.B	(A0)
+
+@4			LSR.B	#1,D0				; CA1 state
+			BCS.S	@5
+			TST.B	Ph1L(A0)
+
+@5			RTS
+
+AdrAndSense BSR.S	AdrDisk
+Sense
+
+			MOVE	SR,-(SP)
+			ORI 	#HiIntMask,SR		; no interrupts 					<29Jul85>
+			TST.B	Q6H(A0) 			; get into sense mode
+			MOVE.B	Q7L(A0),D0			; sense it
+			TST.B	Q6L(A0) 			; back to read mode
+			MOVE	(SP)+,SR
+			TST.B	D0
+			RTS
+
+AdrAndStrb	BSR.S	AdrDisk
+Pulse
+
+			MOVE	SR,-(SP)
+			ORI 	#HiIntMask,SR		; no interrupts 					<29Jul85>
+			TST.B	Ph3H(A0)			; pulse it high, then low
+*R The ROM uses two NOPs for the LSTRB pulse delay.
+	NOP
+	NOP
+			TST.B	Ph3L(A0)
+			MOVE	(SP)+, SR
+			RTS
+
+
+*R Restore DCD presence sensing and PWM speed control removed
+*R when the surviving source dropped supportsDCD and supportsPWM paths.
+DCDSense ;]
+	MOVEQ #DrvExstAdr,D0
+	BSR.S AdrAndSense
+	BPL.S SU_418648 ;]
+	TST.B (A0)
+	BSR.S Sense ;]
+	BPL.S SU_418648 ;]
+	TST.B Ph0H(A0)
+	TST.B Ph1L(A0)
+	BSR.S Sense ;]
+	BRA.S SU_41864A ;]
+SU_418648 ;]
+	MOVEQ #-1,D0
+SU_41864A ;]
+	RTS
+SetSpeed ;]
+	BSR.W GetDrv1
+	MOVE.W D6,D2
+	LSR.W #4,D2
+	LSL.W #3,D2
+	ADD.W D1,D2
+	MOVE.W TrkSpeedTbl(A1,D2.W),D2 ;]
+	TST.B NewIntf(A1,D1.W) ;]
+	BMI.S SU_418666 ;]
+	TST.W D2
+	BPL.S SU_418668 ;]
+SU_418666 ;]
+	MOVEQ #0,D2
+SU_418668 ;]
+	CMP.W #440,D2 ;]
+	BLE.S SU_418672 ;]
+	MOVE.W #440,D2 ;]
+SU_418672 ;]
+	MOVE.W PWMValue,D0 ;]
+	BPL.S SU_41867E ;]
+	MOVE.W PwrOnTime(A1),D0
+	BRA.S SU_418694 ;]
+SU_41867E ;]
+	SUB.W D2,D0
+	BEQ.W GetDrv1 ;]
+	BPL.S SU_418688 ;]
+	NEG.W D0
+SU_418688 ;]
+	LSL.W #5,D0
+	CMP.W SpdChgTime(A1),D0 ;]
+	BGT.S SU_418694 ;]
+	MOVE.W SpdChgTime(A1),D0 ;]
+SU_418694 ;]
+	ADD.W Wait(A1),D0 ;]
+	CMP.W PwrOnTime(A1),D0 ;]
+	BLT.S SU_4186A2 ;]
+	MOVE.W PwrOnTime(A1),D0
+SU_4186A2 ;]
+	MOVE.W D0,Wait(A1) ;]
+SetASpeed ;]
+	MOVE.W D2,PWMValue ;]
+	MOVEM.L D3-D6/A2,-(SP)
+	SUB.W #440,D2 ;]
+	NEG.W D2
+	EXT.L D2
+	DIVU #10,D2
+	MOVEQ #30,D0
+SU_4186BC ;]
+	MOVE.B D0,D1
+	MOVE.B D0,D3
+	LSR.B #1,D0
+	EOR.B D0,D3 ;]
+	LSR.B #1,D3
+	BCC.S SU_4186CC ;]
+	BSET #5,D0 ;]
+SU_4186CC ;]
+	DBRA D2,SU_4186BC ;]
+	SWAP D2
+	MOVE.B PWMTable(PC,D2.W),D5 ;]
+	ASL.W #8,D5
+	MOVE.B PWMTable+1(PC,D2.W),D5 ;]
+	MOVEQ #36,D3
+	MOVE.L PWMBuf1,A0 ;]
+	MOVE.L PWMBuf2,A2 ;]
+SU_4186E6 ;]
+	MOVEQ #9,D2
+	MOVE.W D5,D4
+SU_4186EA ;]
+	LSL.W #1,D4
+	BCC.S SU_4186F2 ;]
+	MOVE.B D0,D6
+	BRA.S SU_4186F4 ;]
+SU_4186F2 ;]
+	MOVE.B D1,D6
+SU_4186F4 ;]
+	MOVE.B D6,(A0)
+	MOVE.B D6,(A2) ;]
+	ADDQ.W #2,A0
+	ADDQ.W #2,A2
+	DBRA D2,SU_4186EA ;]
+	DBRA D3,SU_4186E6 ;]
+	MOVEM.L (SP)+,D3-D6/A2
+	BRA.W GetDrv1
+
+*R These packed PWM patterns select adjacent speed codes while
+*R the buffer loop distributes the remainder across each ten-sample group.
+PWMTable DC.B $00,$20,$21,$24,$94,$AA,$B5,$B7,$7B,$FF,$40,$00 ;]
+
+;_______________________________________________________________________
+;
+; Routine:	Seek,Seek1
+; Arguments:	  D6.W (input)	-- track to seek to (bit 11=1 means side 1)
+;		  D0 (output) -- result code
+;		  Disk speed is set appropriately for the track.
+;		  A3-A4/D3-D4 are preserved. D6, bit 11 is cleared.
+;		  All other registers are clobbered
+;		  This routine returns to one level above the caller during
+;		   the seek (unless no seek is required).
+;		  Seek1 is used when the speed table is not valid.
+; Called By:	(Seek1): MakeSpdTbl
+;		(Seek): ReSeek (in RWT logic)
+; Function: Seek to a track.
+;_______________________________________________________________________
+
+Seek		BCLR	#11,D6				; clear side bit (for now . . .)
+
+	BSR.W SetSpeed ;]
+
+Seek1		MOVE.L	JSeek,-(SP)
+			RTS
+
+jtSeek		MOVE.L	(SP)+,A6			; save caller's address
+
+; D6 holds the track sought . .
+
+			BSR 	GetDrv1
+			MOVE.W	Track(A1,D1),D7 	; current track
+			BPL.S	SeekLp				; br if curTrack is valid
+
+			BSR 	ReCal				; recal to get into a known state
+			MOVE.W	D0,D7				; current track
+			BRA.S	SeekEnd 			; exit after recal to avoid slipped cog
+
+*R The ROM sets direction for each step and updates the track before pulsing.
+SeekLp
+	CMP.W D6,D7
+	BEQ.S SeekEnd1
+SeekStep ;]
+	MOVEQ #0,D0
+	MOVEQ #1,D1
+	MOVE.W D7,D2
+	SUB.W D6,D2
+	BEQ.S SeekEnd ;]
+	BMI.S SU_41874E ;]
+	MOVEQ #1,D0
+	MOVEQ #-1,D1
+SU_41874E ;]
+	ADD.W D1,D7
+	BSR.W AdrAndStrb
+	MOVE.W D7,Track(A1,D1.W) ;]
+	MOVEQ #StepLAdr,D0
+	BSR.W AdrAndSense
+	BMI.S SU_418764 ;]
+	MOVEQ #-75,D7 ;]
+	BRA.S SeekEnd
+SU_418764 ;]
+	BSR.W Pulse
+	BSR.S Wait100
+	BRA.S SeekStep ;]
+SeekEnd
+	BSR.W GetDrv1
+	MOVE.W D7,Track(A1,D1.W) ;]
+	MOVE.W HeadSettle(A1),D0
+	MOVEQ #5,D2
+	BSR.W waitReady
+SeekEnd1	MOVE.W	Wait(A1),D0 		; wait any speed change, power-on time
+			MOVEQ	#0,D2				; wait 0 time, first time
+			BSR.W	WaitReady			;										<C437>
+
+			MOVE.W	D7,D0				; positive value = success
+SeekExit	JMP 	(A6)				; A6 has return address
+
+Wait100 	MOVE.W	SeekTime(A1),D0 	; wait 12 ms for old drive
+			BSR.S	CheckNew			; go to WakeUp for the old interface
+; wait until step goes hi or timeout	<C437/15dec87>
+			MOVEQ	#80, D5 ;]
+@1			MOVEQ	#StepLAdr,D0
+			BSR 	AdrAndSense
+;										<C437/15dec87>
+			DBMI	D5, @1 ;]
+
+
+			RTS
+
+*R The old-interface path discards its caller and waits only for nonzero time.
+CheckNew
+	TST.B NewIntf(A1,D1.W) ;]
+	BPL.S SU_4187A8 ;]
+	RTS
+SU_4187A8 ;]
+	ADDQ.W #4,SP
+	TST.W D0
+	BEQ.S SU_4187B0 ;]
+	BRA.S WakeUp
+SU_4187B0 ;]
+	RTS
+waitReady	BSR.S	CheckNew			; go to WakeUp for the old interface
+			MOVE.L	(SP)+, A4			; get return address
+			MOVE.W	#1000, D5			; timeout (1 sec max to ready, any case)
+
+			MOVE.W	D2, D0				; first time wait
+			BEQ.S	@2					; check ready immediately if 0
+
+@1			BSR.S	WakeUp				; wait D0 * 100usec
+@2			MOVEQ	#ReadyAdr, D0		; /Ready sense address
+			BSR 	AdrAndSense
+			BPL.S	@3					; br if /Ready asserted
+			MOVEQ	#10,D0				; check every millisec? - tune for seek
+			DBRA	D5, @1				; if we timeout, we must be ready?? Sony won't gate
+										;  writes off if not ready (in case of bouncy ready line . . .)
+@3			CLR.W	Wait(A1)			; no extra wait time
+			JMP 	(A4)
+;_______________________________________________________________________
+;
+; Routine:	WakeUp,WakeSetUp,WakeGo
+; Arguments:	  D0 (input)  -- number of 100 usec intervals to wait (<65536)
+;		  registers A3-A5 and D3-D7 are preserved.
+; Called By:	(WakeUp): Seek(3x),Eject,Recal,PowerUp
+;		(WakeSetUp,WakeGo): GotSect(RWT),WrgSectAdr(RWT)
+; Function: Saves the return address in DskRtnAdr; it will call this
+;		routine after the timer interrupt in which the count is
+;		exhausted.	Since the timer ticks away at 780 KHz,
+;		there are 78 timer ticks in each 100 microsecond interval.
+;		For MidMac timer ticks at 1.57 MHz so timer ticks = 157.
+;_______________________________________________________________________
+
+WakeUp MOVE.L JWakeUp,-(SP)
+	RTS
+*R The ROM saves the caller after WakeSetUp. The 1986 source
+*R changed this ordering to address an interrupt race.
+jtWakeUp BSR.S WakeSetUp
+WakeGo MOVE.L (SP)+,DskRtnAdr
+	MOVEQ #0,D0
+	MOVEM.L D3-D7/A3-A6,SaveRegs(A1)
+	ANDI #$F8FF,SR
+	RTS
+
+WakeSetUp								; New WakeUp uses T2 Timer manager		<25Oct85>
+			MOVE.L	SonyVars,A1 		;										<27Oct85>
+
+			SUB.W	D0,Wait(A1) 		; decrement any Wait time . . .
+			BGT.S	@1					;
+			CLR.W	Wait(A1)			; pin at 0
+
+@1			LEA 	TimeQEl(A1),A0		; point at queue element
+			LEA 	GoWakeIt,A1	; <27Oct85>
+			MOVE.L	A1,tmAddr(A0)		; want to come here first				<27Oct85>
+			AND.L	#$0000FFFF,D0		; clear high word of D0
+			CMP.W	#10,D0				; need to pin D0 to 10 (100usec intervals)
+			BCC.S	@2
+			MOVEQ	#10,D0
+@2			DIVU	#10,D0				; divide by ten for msec
+			EXT.L	D0					; PrimeTime takes count in D0 long
+
+			MOVE.L	jPrimeTime,A1		; use dispatch table vector
+			JSR 	(A1)				; to start the timer (pass A0=TimeQEl ptr)
+
+			BSR.W GetDrv1
+			RTS
+
+GoWakeIt	MOVEM.L D0-D7/A0-A6,-(SP)	; save ALL regs
+			BSR 	GetDrive			;
+			MOVEM.L SaveRegs(A1),D3-D7/A3-A6	; get back regs we saved
+			MOVEQ	#0,D0				; D0 = for RWT-MakeSpdTbl new intf path <25Oct85>
+			BSR 	DskRtn				; call DskRtnAdr
+			MOVEM.L (SP)+,D0-D7/A0-A6	; restore registers
+			RTS 						; we're done with it!
+
+;_______________________________________________________________________
+;
+; Routine:	InvalTrkCache
+; Arguments:
+;		  A1 (input)  -- SonyVars ptr
+;		  D0 trashed
+; Called By:	Recal, Eject
+; Function: Invalidates the track cache if it holds data for the current
+;			drive.
+;_______________________________________________________________________
+
+InvalTrkCache
+			MOVE.W	TCDrive(A1),D0		; get current track-cache drive 	<24Oct85>
+			CMP.W	Drive(A1),D0		; this drive?						<24Oct85>
+			BNE.S	@1					; br if not 						<24Oct85>
+			CLR.W	TCDrive(A1) 		; invalidate it if so				<24Oct85>
+@1			RTS
+
+;_______________________________________________________________________
+;
+; Routine:	Recal
+; Arguments:
+;		  D0 (output) -- result code
+;		  This routine returns to one level above the caller during
+;		   the recal (unless no seek is required).
+; Called By:	(Recal): Seek,DiskPrime,DoRecal
+; Function: Recal to track 0.  Leaves drive powered up.  Sets IWM mode
+;		register.
+;_______________________________________________________________________
+
+Recal MOVE.L JRecal,-(SP)
+	RTS
+jtRecal MOVE.L (SP)+,A5		; save return address
+	BSR.W GetDrive
+	BSR.S InvalTrkCache
+*R IWM mode setup remains inside Recal, before the 1986 split.
+*R The ROM uses timed stepping and halves the delay for new-interface drives.
+SetIWMMode
+	MOVEQ #63,D1
+	TST.B Q6H(A0)
+	MOVE.B Q7L(A0),D0
+	TST.B Q6L(A0)
+	AND.B D1,D0
+	CMP.B D1,D0
+	BEQ.S RecalSteps ;]
+	MOVEQ #2,D2
+	SWAP D2
+SU_418878 ;]
+	MOVEQ #31,D1
+	MOVEQ #initIWMErr,D0
+	SUBQ.L #1,D2
+	BMI.S RecalExit ;]
+	TST.B MtrOff(A0)
+	TST.B Q6H(A0)
+	MOVE.B Q7L(A0),D0
+	BTST #5,D0
+	BNE.S SU_418878 ;]
+	AND.B D1,D0
+	CMP.B D1,D0
+	BEQ.S SU_4188A2 ;]
+	MOVE.B D1,Q7H(A0) ;]
+	TST.B Q7L(A0)
+	BRA.S SU_418878 ;]
+SU_4188A2 ;]
+	TST.B Q6L(A0)
+	BSR.S RWPowerUp
+RecalSteps ;]
+	MOVEQ #80,D7
+SlowLoop
+	MOVE.W SeekTime(A1),D0
+	TST.B NewIntf(A1,D1.W) ;]
+	BPL.S SU_4188B6 ;]
+	LSR.W #1,D0
+SU_4188B6 ;]
+	BSR.W WakeUp
+	MOVEQ #Tk0Adr,D0
+	BSR.W AdrAndSense
+	BPL.S ReCalled
+	MOVEQ #DirHAdr,D0
+	BSR.W AdrAndStrb
+	MOVEQ #StepLAdr,D0
+	BSR.W AdrAndSense
+	BPL.S RecalFail
+	MOVEQ #tk0BadErr,D0
+	SUBQ.W #1,D7
+	BEQ.S RecalExit
+	BSR.W Pulse
+	BRA.S SlowLoop
+ReCalled
+	MOVEQ #0,D0
+	BRA.S RecalExit
+RecalFail
+	MOVEQ #cantStepErr,D0
+RecalExit
+	MOVE.W D0,Track(A1,D1.W) ;]
+	JMP (A5)
+;_______________________________________________________________________
+;
+; Routine:		PowerDown,RWPowerDown
+; Arguments:	 D0 (input)  -- power-down time
+;				 TimeOut (out) -- set to D0 input value
+;				 TimeOutDrive (out) -- set to Drive if D0 nonzero
+*R Callers include floppy eject, read/write completion, and DiskSelect.
+; Function: 	Does VBL task stuff; just powers off current drive if D0=0.
+;_______________________________________________________________________
+
+PowerDown	BSR 	GetDrv1 			;
+			MOVE.W	D0,TimeOut(A1)		; set up timeout
+			BEQ.S	@1					; branch if immediate power-down
+			MOVE.W	Drive(A1),TimeOutDrive(A1) ; remember drive with timeout	<25Oct85>
+			RTS
+
+@1			MOVEQ	#MtrOffAdr,D0
+			BSR 	AdrAndStrb			; turn it off both ways: PAL
+
+			TST.B	MtrOff(A0)			; cut the enable to power it down
+			RTS
+
+;_______________________________________________________________________
+;
+; Routine:		RWPowerUp,PowerUp
+; Arguments:	 D0 (input)  -- power-up time
+;				Timeout, Power, Wait, Drive
+;				Sets interrupt level 0 if powers up; uses A0-A2,D0-D2 (by wakeup) .
+;				'Active' should be true when this routine is called.
+; Called By:	(RWPowerUp): RWPower,SetIWMMode
+;				(Fast Power): DiskControl(Eject call),DiskPrime
+; Function: PowerUp is called to power up a disk drive. Waits out D0 time
+;			unless disk is already powered . . .
+;_______________________________________________________________________
+
+FastPower MOVEQ #0,D0
+	BRA.S PowerUp
+RWPowerUp MOVE.W PwrOnTime(A1),D0
+PowerUp MOVE.W D0,D2		; save wait time
+	BSR.S DiskSelect		; go enable the interface
+	MOVEQ #MtrOnAdr,D0
+	BSR.W AdrAndSense	; is it already powered up?
+	BPL.S PowerAlreadyOn ;]
+	BSR.W Pulse		; turn power on
+	MOVE.W D2,D0		; get back wait time
+	MOVE.W #750,D2		; wait at least 75ms the first time
+	BRA.W waitReady ;]
+PowerAlreadyOn ;]
+ RTS
+
+;_______________________________________________________________________
+;
+; Routine:		DiskSelect,DiskSel1
+; Arguments:	 Drive	--	drive to enable
+;				 D1,A0,A1,A2 set up per GetDrive
+;				 Clobbers D0.
+;				 TimeOut cleared and TimeOutDrive powered off if not Drive.
+;				DiskSel1 is a quick entry for DiskSense
+; Called By:	(DiskSelect): PowerUp,DiskPrime,DiskOpen(2x),DiskControl,
+;					DCDStatus(Format/Verify),DCDHardReset.
+;				(DiskSel1): Ck4Disk
+; Function: Assert the IWM enable to a drive. For DCDs, this is functionally
+;			equivalent to PowerOn since that function is not called.  Whenever
+;			the enable to a floppy drive is cut, it is powered down automatically.
+;
+;_______________________________________________________________________
+
+DiskSelect	BSR 	GetDrive
+
+DiskSel1	
+			MOVE.L	JDiskSel,-(SP)		; vector this routine
+			RTS
+jtDiskSel	
+
+			TST.W	TimeOut(A1) 		; timeout pending?						<25Oct85>
+			BEQ.S	@0					; br if not 							<25Oct85>
+			MOVE.W	TimeOutDrive(A1),D0 ; see if it's us                        <25Oct85>
+			CMP.W	Drive(A1),D0		; ? 									<25Oct85>
+			BEQ.S	@0					; br if so								<25Oct85>
+			MOVEQ	#0,D0				; turn it off immediately				<25Oct85>
+			BSR.S	PowerDown			; (it will still be selected)			<25Oct85>
+
+@0			CLR.W	TimeOut(A1) 		; clear pending timeout 				<11Jun85>
+
+			CMP.W	#drive1,D1			; if Drive=1, it's internal
+			BNE.S	@1					; br if not
+
+			TST.B	IntDrive(A0)		; select internal drive
+			TST.B	MtrOn(A0)			; assert /enb
+			RTS
+
+@1			TST.B	Ph2H(A0)			; we may already be enabled in
+			TST.B	Ph1H(A0)			;  state 2, so go safely thru 6
+			TST.B	Ph0H(A0)			;  to state 7 (Ph0=Ph1=Ph2=1)
+			BCLR	#vHeadSel,VBufD(A2) ; set HdSel low (/Exists addr)
+
+@2			TST.B	ExtDrive(A0)		; select the external
+
+*R Restore the external-port pass-through selection sequence.
+	TST.B PassThru(A1) ;]
+	BEQ.S SU_41897E ;]
+	TST.B MtrOn(A0)
+	RTS
+SU_41897E ;]
+	CMP.W #Drive2,D1
+	BNE.S SU_4189BE ;]
+	TST.B MtrOn(A0)
+	MOVEQ #4,D0
+SU_41898A ;]
+	MOVE.W SR,-(SP)
+	ORI #HiIntMask,SR
+	TST.B Q6H(A0)
+SU_418994 ;]
+	TST.B Q7L(A0)
+	DBPL D0,SU_4189A4 ;]
+	TST.B Q6L(A0)
+	MOVE.W (SP)+,SR
+	RTS
+SU_4189A4 ;]
+	TST.B Ph3H(A0)
+	MOVE.L (SP),(SP)
+	TST.B Ph3L(A0)
+	MOVE.L (SP),(SP)
+	TST.B Ph1L(A0)
+	MOVE.L (SP),(SP)
+	TST.B Ph1H(A0)
+	MOVE.L (SP),(SP)
+	BRA.S SU_418994 ;]
+SU_4189BE ;]
+	TST.B MtrOff(A0)
+	MOVE.W Drive(A1),D0
+	MOVE.L (SP),(SP)
+	TST.B MtrOn(A0)
+	SUBQ.W #3,D0
+	BRA.S SU_41898A ;]
+;_______________________________________________________________________
+;
+; Routine:	MakeSpdTbl,GetFreq1
+; Arguments:	  Drive (input) -- current drive
+;		  D0 (output) -- error code (-1 = drive not installed)
+;		  all registers are used.
+;		  current drive is powered up and recal'ed.
+; Called By:	(MakeSpdTbl) CheckDIP,DoRecal
+;				(GetFreq1) RWT, Format
+; Function: Makes a speed table for the current drive.
+;
+; Note: 	Drive must spin at speed codes 128 and 256 for this routine
+;		to work.
+;
+; Note: Speed variation has three major factors, temperature drift, speed
+;	drift, and load variation.	Temperature drift occurs as the drive gets
+;	warmer and generally? is a negative factor (drive slows) accounting for
+;	up tp 6%? of speed variation.  Speed drift occurs during
+;	the first minute the drive is powered and is a negative factor accounting
+;	for less than 1/2 of 1% of speed variation.  Load is a factor which
+;	varies between inside and outside tracks of a drive: the inner tracks
+;	present less loading to the head than the outer tracks; speed variation
+;	due to loading may be as much as 1%.
+;
+;	The main read/write track logic adjusts for speed drift by periodically
+;	checking the disk speed and adjusting the speed code if the speed is off
+;	by more than 2% using a speed code delta figured out by this routine:  this
+;	should also catch any speed drift problems, depending upon the period
+;	of the check.
+;
+;	We ignore loading variation since it is only 1% max and we will recheck
+;	each speed class when we first seek to it.	Temperature and speed drift
+;	are not as easy to compensate for, but since they are both negative factors,
+;	this routine rounds to higher speed values.
+;
+;_______________________________________________________________________
+			
+*R The ROM stores upper and lower frequency limits for five speed classes.
+SpeedLimits DC.W $11E9,$1135,$138A,$12C6,$157F,$14A7,$17E2,$16F2,$1ADE,$19D0 ;]
+MakeSpdTbl MOVE.L JMakeSpdTbl,-(SP)
+	RTS
+*R New-interface drives use the 800 ms wait. Older drives build
+*R the PWM table from measurements at speed codes 128 and 256.
+jtMakeSpdTbl
+	TST.B NewIntf(A1,D1.W) ;]
+	BPL.S SU_4189F8 ;]
+	MOVE.W #8000,D0
+	BRA.W WakeUp
+SU_4189F8 ;]
+	MOVE.L (SP)+,A4
+	MOVE.W #128,D2 ;]
+	BSR.S GetFreq ;]
+	BMI.S SU_418A5A ;]
+	MOVE.L D4,D3
+	MOVE.W #256,D2
+	BSR.S GetFreq ;]
+	BMI.S SU_418A5A ;]
+	MOVE.L D4,D5
+	SUB.L D3,D5
+	BGT.S SU_418A14 ;]
+	MOVEQ #1,D5
+SU_418A14 ;]
+	LSL.L #1,D3
+	MOVEQ #4,D6
+	LEA SpeedLimits,A5 ;]
+	BSR.W GetDrv1
+	LEA TrkSpeedTbl(A1,D1.W),A3 ;]
+SU_418A24 ;]
+	MOVEQ #0,D2
+	MOVE.W (A5)+,D2
+	MOVE.L D2,D7
+	ADD.W (A5)+,D2 ;]
+	LSR.W #1,D2
+SU_418A2E ;]
+	ADD.L D4,D2
+	SUB.L D3,D2
+	LSL.L #7,D2
+	BGT.S SU_418A38 ;]
+	MOVEQ #1,D2
+SU_418A38 ;]
+	DIVU D5,D2 ;]
+	ADDQ.W #1,D2
+	CMP.W #399,D2 ;]
+	BLE.S SU_418A46 ;]
+	MOVE.W #399,D2 ;]
+SU_418A46 ;]
+	MOVE.W D2,(A3)+
+	EXG D7,D2 ;]
+	NOT.W D0
+	BNE.S SU_418A2E ;]
+	SUBQ.W #4,A3
+	SUB.W (A3)+,D7 ;]
+	MOVE.W D7,(A3)+
+	CLR.L (A3)+
+	DBRA D6,SU_418A24 ;]
+SU_418A5A ;]
+	TST.W D0
+	JMP (A4)
+GetFreq ;]
+	MOVE.L (SP)+,A3
+	BSR.W SetASpeed ;]
+	MOVE.W PwrOnTime(A1),D0
+	BSR.W WakeUp
+MeasureSpeed ;]
+	MOVEQ #0,D4
+	MOVEQ #3,D5
+SU_418A70 ;]
+	BSR.S FigTrkSpeed ;]
+	BMI.S SU_418A88 ;]
+	ADD.L D0,D4
+	DBRA D5,SU_418A70 ;]
+	LSR.L #3,D4
+	MOVE.L #67108864,D0 ;]
+	DIVU D4,D0
+	MOVE.W D0,D4
+	MOVEQ #0,D0
+SU_418A88 ;]
+	JMP (A3)
+;_______________________________________________________________________
+;
+; Routine:	FigTrkSpeed,DskRtn
+; Arguments:	  D0 (output) -- -1=timeout reached or long VIA count for one rev
+; Called By:	(FigTrkSpeed): MakeSpdTBL
+;		(DskRtn): WrData,RdAddr,RdData,GoWakeIt(WakeUp)
+; Function: This routine measures the time (in VIA counts) it takes
+;		for the disk to revolve .25 times; this test looks for the tach
+;		pulse which occurs 60 times per rev.  VIA timer 2 is used; if
+;		15 tach pulses are not seen in 78 msec, this routine
+;		will time out and take the error exit.
+;
+;		The drive should be powered when this is called.  Speeds as
+;		low as 192 RPM may be measured.
+;_______________________________________________________________________
+
+FigTrkSpeed MOVE.L JFigTrkSpd,-(SP)
+	RTS
+*R Restore VIA timer 2 tach measurements and inline SCC polling.
+jtFigTrkSpd
+	MOVE.W SR,-(SP)
+	MOVEM.L D1-D7/A0-A6,-(SP)
+	MOVEQ #4,D0
+	BSR.W SetUpPoll
+	MOVEQ #TachAdr,D0
+	BSR.W AdrDisk
+	LEA DBase,A0 ;]
+	TST.B Q6H(A0)
+	MOVEQ #-1,D1
+	MOVEQ #5,D3
+	MOVE.L VIA,A2
+	LEA vIFR(A2),A3
+	LEA Q7L(A0),A1 ;]
+	BSR.S StartTachTimer ;]
+	BSR.S GetTachEdge ;]
+	BEQ.S SU_418ADE ;]
+SU_418AC2 ;]
+	TST.B Q6L(A0)
+	BSR.W EmptyPD
+	MOVEM.L (SP)+,D1-D7/A0-A6
+	MOVE.W (SP)+,SR
+	TST.L D0
+	RTS
+StartTachTimer ;]
+	MOVE.B D1,VT2C(A2)
+	MOVE.B D1,VT2CH(A2)
+	RTS
+SU_418ADE ;]
+	BSR.S StartTachTimer ;]
+	MOVEQ #14,D2
+SU_418AE2 ;]
+	BSR.S GetTachEdge ;]
+	BNE.S SU_418AC2 ;]
+	DBRA D2,SU_418AE2 ;]
+	MOVE.B VT2CH(A2),D2
+	MOVE.B VT2C(A2),D1
+	CMP.B VT2CH(A2),D2
+	BEQ.S SU_418AFA ;]
+	MOVEQ #0,D1
+SU_418AFA ;]
+	BTST D3,(A3)
+	BNE.S SU_418AC2 ;]
+	LSL.W #8,D2
+	OR.B D1,D2
+	NOT.W D2
+	MOVEQ #0,D0
+	MOVE.W D2,D0
+	BRA.S SU_418AC2 ;]
+GetTachEdge ;]
+	MOVE.L (SP)+,DskRtnAdr
+SU_418B0E ;]
+	TST.B (A5)
+	BMI.S SU_418B14 ;]
+	MOVE.B (A6),-(SP)
+SU_418B14 ;]
+	TST.B (A1)
+	BMI.S SU_418B1C ;]
+	TST.B (A1)
+	BPL.S TachWaitHigh ;]
+SU_418B1C ;]
+	BTST D3,(A3)
+	BEQ.S SU_418B0E ;]
+SU_418B20 ;]
+	MOVEQ #NoDriveErr,D0
+DskRtn
+	MOVE.L DskRtnAdr,-(SP)
+	TST.W D0
+	RTS
+TachWaitHigh ;]
+	TST.B (A5)
+	BMI.S SU_418B30 ;]
+	MOVE.B (A6),-(SP)
+SU_418B30 ;]
+	BTST D3,(A3)
+	BNE.S SU_418B20 ;]
+	TST.B (A1)
+	BPL.S TachWaitHigh ;]
+	TST.B (A1)
+	BPL.S TachWaitHigh ;]
+	MOVEQ #0,D0
+	BRA.S DskRtn
+;_______________________________________________________________________
+;
+; Routine:	DiskVBLTask
+; Arguments:	  A0.L (input)	-- disk VBL queue block ptr
+;		  This routine MUST preserve A4-A6 and D4-D7 (like any VBL task)
+;		  TimeOut		non-zero, positive value if power-down is pending
+;		  DiskInPlace	drive variable
+;		  Power			drive variable
+;
+*R This VBL task handles power-down delays and disk insertion.
+*R It has no eject-switch polling in this ROM.
+;
+; - on power-down delays, add a check for a flag which says "call flush volume
+;	 first . . ."; this could be the paranoia bit . . .
+;_______________________________________________________________________
+
+*R The ROM masks VIA interrupts at entry and scans floppy and
+*R DCD drives for insertion. It predates the 1986 eject-button polling path.
+DiskVBLTask
+	MOVE.W SR,-(SP)
+	ORI #VIAIntMask,SR
+DiskVBLBody ;]
+	MOVE.L SonyVars,A1
+	MOVE.W DskVBLTime(A1),10(A0) ;]
+	TST.B Active(A1)
+	BNE.S DiskVBLExit
+	TST.W TimeOut(A1)
+	BEQ.S SU_418B68 ;]
+	SUBQ.W #1,TimeOut(A1)
+	BNE.S DiskVBLExit
+	MOVEQ #9,D0
+	BSR.W AdrAndStrb
+SU_418B68 ;]
+	MOVEQ #1,D3
+SU_418B6A ;]
+	BSR.S Check4Disk
+	ADDQ.W #1,D3
+	CMP.W #6,D3
+	BGT.S SU_418B80 ;]
+	TST.B PassThru(A1) ;]
+	BEQ.S SU_418B6A ;]
+	CMP.W #3,D3
+	BLE.S SU_418B6A ;]
+SU_418B80 ;]
+	TST.B MtrOff(A0)
+DiskVBLExit
+	MOVE.W (SP)+,SR
+	RTS
+Check4Disk
+	MOVE.W D3,Drive(A1)
+	BSR.W GetDrive
+	TST.B Installed(A1,D1.W)
+	BMI.S CkExit
+	TST.B DiskInPlace(A1,D1.W)
+	BGT.S CkExit ;]
+	BEQ.S CkDIP
+	ADDQ.B #1,DiskInPlace(A1,D1.W) ;]
+	BMI.S CkInval
+CkDIP
+	BSR.W DiskSel1
+	CMP.W #2,Drive(A1) ;]
+	BLE.S SU_418BBE ;]
+	TST.B (A0)
+	TST.B Ph2L(A0)
+	BSR.W Sense ;]
+	BMI.S SU_418BC6 ;]
+	BRA.S CkInval
+SU_418BBE ;]
+	MOVEQ #DIPAdr,D0
+	BSR.W AdrAndSense
+	BMI.S CkInval
+SU_418BC6 ;]
+	MOVE.W #7,A0
+	MOVE.L D3,D0
+	_PostEvent
+	BNE.S CkInval
+	ADDQ.B #1,DiskInPlace(A1,D1.W) ;]
+CkInval
+	ST Track(A1,D1.W) ;]
+	MOVE.L IWM,A0
+CkExit
+	RTS
+
+SonyUtilEnd ;]
+	END

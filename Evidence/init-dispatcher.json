@@ -1,0 +1,141 @@
+{
+  "module": "OS/InitDispatcher.a",
+  "source_path": "Reconstruction/Source/OS/InitDispatcher.a",
+  "source_sha256": "3f9ff01c28690cba1f1ef2d74e22751ddc0fe5a65c3972be05c34ec64b51cf2f",
+  "upstream_sources": [
+    {
+      "path": "OS/TrapDispatcher/Dispatch.a",
+      "sha256": "31956670deb21407c16c71b3c2e35ec96ad0c7cb56423c86b464c7ff88c2179e"
+    }
+  ],
+  "retained_preamble": [
+    [
+      1,
+      8
+    ],
+    [
+      506,
+      521
+    ]
+  ],
+  "retained_routine_comments": {},
+  "retained_body_comments": {},
+  "equate_sources": [],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x400516",
+      "end_address_exclusive": "0x4005bc",
+      "rom_offset": "0x516",
+      "length": 166,
+      "sha256": "ab24f4ee5cf86a5568631cf38087e34de6309e91f635da259ab95b7a47131d26"
+    }
+  ],
+  "manifest_entry": {
+    "name": "init-dispatcher",
+    "source": "Reconstruction/Source/OS/InitDispatcher.a",
+    "start": "0x400516",
+    "end_exclusive": "0x4005bc",
+    "entry_points": {
+      "InitDispatcher": "0x400516",
+      "FillToolTable": "0x400522",
+      "FillOSTable": "0x400530",
+      "DecodeDispatchTable": "0x400536",
+      "TablesLoop": "0x400548",
+      "DoubleOffset": "0x400550",
+      "AddOffset": "0x400556",
+      "WriteEntry": "0x400558",
+      "NextEntry": "0x40055a",
+      "NotSignedWord": "0x400568",
+      "ReadAbsoluteOffset": "0x400572",
+      "DetectCPU": "0x400580",
+      "IllegalCPUProbe": "0x40059a",
+      "FinishCPUProbe": "0x4005a6",
+      "InstallDispatcher": "0x4005b8"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "init-dispatcher",
+      "source": "Reconstruction/Source/OS/InitDispatcher.a",
+      "start": "0x400516",
+      "end_exclusive": "0x4005bc",
+      "entry_points": {
+        "InitDispatcher": "0x400516",
+        "FillToolTable": "0x400522",
+        "FillOSTable": "0x400530",
+        "DecodeDispatchTable": "0x400536",
+        "TablesLoop": "0x400548",
+        "DoubleOffset": "0x400550",
+        "AddOffset": "0x400556",
+        "WriteEntry": "0x400558",
+        "NextEntry": "0x40055a",
+        "NotSignedWord": "0x400568",
+        "ReadAbsoluteOffset": "0x400572",
+        "DetectCPU": "0x400580",
+        "IllegalCPUProbe": "0x40059a",
+        "FinishCPUProbe": "0x4005a6",
+        "InstallDispatcher": "0x4005b8"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "The startup code begins initializing Toolbox and OS tables at $400516, after installing interrupt vectors.",
+    "end": "The CPU probe installs Line1010 at $4005B8 and continues at $4005BC with InitUtil."
+  },
+  "edits": [
+    {
+      "kind": "restored_body",
+      "description": "Restored the startup table decoder and CPU probe from the ROM. The released Dispatch.a retains the compressed format and later decoder at lines 619 through 667, but later code changed register use and combined initialization with decoding."
+    },
+    {
+      "kind": "restoration",
+      "description": "The ROM fills both RAM tables with BadTrap before decoding. A skipped entry leaves that value in place. Positive byte offsets and signed word offsets update the preceding address; absolute entries add the stored offset to ROMBase. A zero word terminates the stream."
+    },
+    {
+      "kind": "cpu_probe",
+      "description": "Retained the real MOVEC D0,CACR instruction under a scoped MACHINE MC68020 directive. The illegal-instruction handler distinguishes 68000 and 68010 exception frames; a successful MOVEC selects CPUFlag 2. Both paths restore the saved stack and exception vector before installing the dispatcher."
+    },
+    {
+      "kind": "build",
+      "description": "Every instruction is assembled. This fragment falls through into the remaining startup code at $4005BC and defines its external routine and table addresses explicitly."
+    }
+  ],
+  "source_instruction_pairs": {},
+  "rom_only_instructions": [],
+  "restored_equates": {},
+  "restored_symbolic_operands": {},
+  "retained_data": {},
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 166,
+    "checked_entry_points": 15,
+    "instruction_count": 60,
+    "source_operation_matches": 0,
+    "rom_only_operation_count": 60,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-init-dispatcher-verify",
+    "source_sha256": "3f9ff01c28690cba1f1ef2d74e22751ddc0fe5a65c3972be05c34ec64b51cf2f",
+    "assembled_sha256": "ab24f4ee5cf86a5568631cf38087e34de6309e91f635da259ab95b7a47131d26",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "decoder_reference_range": [
+    619,
+    667
+  ],
+  "format_reference_range": [
+    508,
+    518
+  ]
+}

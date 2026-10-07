@@ -1,0 +1,264 @@
+{
+  "module": "BTMAINT2",
+  "source": "Reconstruction/Source/OS/HFS/BTMAINT2.a",
+  "originals": [
+    {
+      "path": "OS/HFS/BTMAINT2.a",
+      "sha256": "6b089ca75b49f47071992ac8d701df3fa2987c6f65eb6be16351e8ce2a62dcaa",
+      "line_ranges": [
+        [
+          1,
+          1171
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/Cache.a",
+      "sha256": "61b37d7bfc541281ce5da0eb0ba680de177edda1f022c34dd2e58270a9b84a1c",
+      "line_ranges": [
+        [
+          187,
+          207
+        ]
+      ],
+      "role": "GetOwnBuf and FlushOwnBuf establish the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          192,
+          192
+        ],
+        [
+          196,
+          196
+        ],
+        [
+          297,
+          297
+        ],
+        [
+          309,
+          309
+        ],
+        [
+          318,
+          318
+        ],
+        [
+          325,
+          326
+        ],
+        [
+          331,
+          333
+        ],
+        [
+          335,
+          335
+        ],
+        [
+          338,
+          339
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          368,
+          371
+        ],
+        [
+          378,
+          378
+        ],
+        [
+          383,
+          384
+        ],
+        [
+          392,
+          393
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          358,
+          358
+        ],
+        [
+          369,
+          369
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          354,
+          355
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4072a0",
+      "end_exclusive": "0x40769a",
+      "rom_offset": "0x72a0",
+      "length": 1018,
+      "sha256": "f0e5450dfdfec8e416688679a41a422920e8838c3229831d5a96bd85e25af2e0",
+      "start_label": "BTMaint2",
+      "end_label": "BTMAINT2End",
+      "boundary_evidence": "BuildIRec begins at 0x4072a0 after RotRecLt. UpdIKey returns at 0x407698. Cache GetOwnBuf begins at 0x40769a, before its FlushCache vector at 0x4076c6."
+    }
+  ],
+  "entry_points": {
+    "BTMaint2": "0x4072a0",
+    "BuildIRec": "0x4072a0",
+    "ChkNode": "0x4072c2",
+    "ClrNode": "0x40734e",
+    "DeleteRec": "0x40736a",
+    "GetLtSib": "0x4073ba",
+    "GetRtSib": "0x4073c4",
+    "GetMaxKey": "0x4073f6",
+    "GetNode": "0x407402",
+    "vGetNode": "0x407408",
+    "GetNodeSiz": "0x40743c",
+    "GetOffset": "0x407454",
+    "GetOffA": "0x40745c",
+    "GetRecA": "0x40746e",
+    "InitNode": "0x40748a",
+    "InsertRec": "0x4074bc",
+    "LocBTCB": "0x40752e",
+    "LocRec": "0x407538",
+    "LocTPR": "0x40756a",
+    "MovOffLt": "0x40757a",
+    "MovOffRt": "0x40758a",
+    "MovRecLt": "0x4075a0",
+    "MovRecRt": "0x4075b6",
+    "RelNode": "0x4075d0",
+    "vRelNode": "0x4075d6",
+    "SearchNode": "0x4075ea",
+    "UpdDRec": "0x407646",
+    "UpdIKey": "0x407668",
+    "BTMAINT2End": "0x40769a"
+  },
+  "integration_manifest": {
+    "name": "btmaint2",
+    "source": "Reconstruction/Source/OS/HFS/BTMAINT2.a",
+    "start": "0x4072a0",
+    "end_exclusive": "0x40769a",
+    "entry_points": {
+      "BTMaint2": "0x4072a0",
+      "BuildIRec": "0x4072a0",
+      "ChkNode": "0x4072c2",
+      "ClrNode": "0x40734e",
+      "DeleteRec": "0x40736a",
+      "GetLtSib": "0x4073ba",
+      "GetRtSib": "0x4073c4",
+      "GetMaxKey": "0x4073f6",
+      "GetNode": "0x407402",
+      "vGetNode": "0x407408",
+      "GetNodeSiz": "0x40743c",
+      "GetOffset": "0x407454",
+      "GetOffA": "0x40745c",
+      "GetRecA": "0x40746e",
+      "InitNode": "0x40748a",
+      "InsertRec": "0x4074bc",
+      "LocBTCB": "0x40752e",
+      "LocRec": "0x407538",
+      "LocTPR": "0x40756a",
+      "MovOffLt": "0x40757a",
+      "MovOffRt": "0x40758a",
+      "MovRecLt": "0x4075a0",
+      "MovRecRt": "0x4075b6",
+      "RelNode": "0x4075d0",
+      "vRelNode": "0x4075d6",
+      "SearchNode": "0x4075ea",
+      "UpdDRec": "0x407646",
+      "UpdIKey": "0x407668",
+      "BTMAINT2End": "0x40769a"
+    }
+  },
+  "changes": [
+    {
+      "location": "GetMaxKey at 0x4073f6",
+      "change": "Restored the addition of one before the May 1989 key-length fix.",
+      "evidence": "GetMaxKey starts with MOVEQ #1,D0, adds BTCKeyLen, then rounds down to an even size by shifting right and left."
+    },
+    {
+      "location": "RelNode debug configuration",
+      "change": "Kept the inactive node validation and debug-error trap as comments.",
+      "evidence": "After checking for a null node buffer, the ROM proceeds directly to loading the cache queue and calling RelBlock. It does not run ChkNode in this path."
+    },
+    {
+      "location": "Single-node maintenance bodies",
+      "change": "Preserved the original header, applicable history, and comments. Retained record and offset movement, node checks, search, and update routines with original equates and trap opcodes.",
+      "evidence": "All 1018 bytes and 29 labels match. Explicit word branches at 0x4072e2, 0x40730e, 0x40732e, and 0x407334, and word calls at 0x4073e0 and 0x407454, retain the ROM forms."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "GetBlock",
+      "address": "0x4077b0"
+    },
+    {
+      "name": "RelBlock",
+      "address": "0x407a0a"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4072a0, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "b0da24b4a2dafecb2194e6bf4b80776e694c3a06f17422df8e5baee87b6a717e",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/BTMAINT2.a",
+        "sha256": "b0da24b4a2dafecb2194e6bf4b80776e694c3a06f17422df8e5baee87b6a717e"
+      }
+    ],
+    "assembled_length": 1018,
+    "matched_bytes": 1018,
+    "entry_points_checked": 29,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

@@ -1,0 +1,2688 @@
+;
+;	File:		MemoryMgrInternal.a
+;
+;	Contains:	Macintosh Assembly Language Memory Manager Internals
+;
+;	Written by:	Martin P. Haeberli      October 1982,  to June 1983
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;	  <SM13>	 6/14/93	kc		Roll in Ludwig.
+;				 5/21/85	JTC		Check for carry-out in GrowZone when new heapEnd is computed.
+;									This is <21May85> place where 'negative' values of D0 will burn
+;									us. Need to distinguish empty handle and NIL in MMHPrologue, for
+;									sake of DisposeHandle.
+;				 5/20/85	JTC		Change continuation code in MakePtrSpc from original ROM patch.
+;									Instead <20May85> of holding out till next fixed block after a
+;									failed try in MakeSpc, <20May85> just get to first thing after
+;									current block. This could be slower when <20May85> a raft of
+;									small relocs cannot be moved to make way, but this is rare!
+;									<20May85>
+;				 5/16/85	JTC		In DerefHandle return 0 if 0 passed in from MMHPrologue
+;									<16May85>
+;				 5/13/85	JTC		Patched ad nauseum. <13May85>
+;				  5/6/85	JTC		Change to preserve high nibble information in RelocRel.
+;									<06May85>
+;				 4/27/85	JTC		Add bogus label MemMgrEnd for RAM-based builds. <27Apr85> Fixed
+;									CompactHp to all free block to be first in zone. Changed
+;									ZoneCheck to look for free block at bkLim.
+;				 4/25/85	JTC		Extend MMEpilogue to set MemErr -- except for RecoverHandle.
+;									<25Apr85>
+;				 4/24/85	JTC		Pull out checking changes. <24Apr85 PULLOUT> But then
+;									reinstalled, same day...
+;				 4/23/85	JTC		Change MMHPrologue and DerefHandle to watch for Nil passed as
+;									handle (along <23Apr85> with current checking for empty handles,
+;									themselves). It will return an error in D0, much like the
+;									obsolete Checking code.
+;				 4/23/85	LAK		Fixed RelocRel to preserve block flags (for SafeReloc case).
+;									<23Apr85>
+;				 4/23/85	JTC		Adjustments to keep roving ptr valid. <23Apr85>
+;				 4/18/85	JTC		Change SetHandleSize algorithm to allow downward sliding to find
+;									free space <18Apr85>
+;				 4/17/85	JTC		Added TotePurgeables utility to support PurgeSpace call.
+;									<17Apr85>
+;				 4/16/85	JTC		Fix bug in BFindS: now checks against bkLim(A6) before
+;									Is-It-Free? test. <16Apr85>
+;				 4/14/85	JTC		Added MakePtrSpc comment to GrowZone. <14Apr85> Modify
+;									MakePtrSpc so that if GrowDown is nonzero and zone is ApplZone,
+;									then run loop with OrgApplZone first, and then real ApplZone.
+;									BIG CHANGE to GrowZone to grow downward if no space upward.
+;									<14Apr85> Controlled by GrowDown conditional assembly flag.
+;				 4/13/85	JTC		Add ZoneCheck call to prologues. <13Apr85>
+;				 4/10/85	JTC		Move BClr/BSet of #Purge bit of block to be relocated from
+;									RelocRel to SetSize as per LAK's suggestion. Reason is, when
+;									called by SafeReloc, Purgeability doesn't matter. Saves code and
+;									time. <10Apr85> Alter EH to simply clear the MP of a ROZ.
+;				  3/4/85	JTC		See comments in Heap.TEXT. Changes marked <04Mar85> to EH and
+;									SetSize.
+;				  1/29/85	JTC		See comment in Heap.TEXT. Changes here are marked <29jan85> : 1)
+;									Modify CallGZProc to go to StdGZ in spare1(Zone) first. 2) Add
+;									StdGZ code from MSMiscFix file. 3) Add code to MakePtrSpc after
+;									call to MakeSpace.
+;				 9/12/83 	LAK		Added GZroot/move stuff for using the GZ handle/ pointer for
+;									notifying the GrowZone proc about forbidden blocks.  This entails:
+;									Added ClearGZStuff for common clearing; Changed SetSize to set
+;									up/clearing root in > case;  Changed RelocRel to "" "" "" ""  move.
+;									Changed RelocRel for GZ purging object to be moved
+;				 9/10/83 	LAK		made MakePtrSpc look harder for space before giving up.
+;				 9/7/83 	LAK		simplified CallGZProc.
+;				 9/1/83 	LAK		made MakePtrSpc grow the zone if needed.
+;				 8/22/83 	LAK		fixed growZone interface (it's a Pascal function)
+;				 8/11/83 	LAK		Changed to save fewer regs when calling purge proc (assume Pascal
+;									regsave conventions are followed).
+;				 7/31/83 	LAK		Rover allocation, smart heap compact and purge now enabled by bits
+;									in zone Flags word.
+;				 7/30/83	LAK		Added MakePtrSpace; changed GetSpaceAfter to MakeSpace; RelocRel
+;									now allocates an NRel block for the move to avoid invoking NewMaster;
+;									purge algorithm changed to do a roving minimal purge if possible;
+;									compact algorithm changed to compact only if it buys us success; AllocBk
+;									bug fixed (if handle offset=zone address value) and BFindS search
+;									algorithm changed to use a roving pointer.
+;				 7/19/83	LAK		Added documentation (called by:); updated checking code interface;
+;									removed all trace of free list . . . removed DeleteBkF and all calls
+;									to it. Changed WhichZone to really return masked pointer.
+;				 6/21/83	MPH		Put FreeList code under assembly switch: FList.
+;				 6/18/83	MPH		Space Saving Changes: In MMHPrologue, saved D3-D7 instead of D1-D7,
+;									In MMFail, Tst.L (SP)+ => AddQ.L #4,SP, In MMExit, removed useless
+;									Tst.L D0, restore D3-D7 instead of D1-D7, In GetSize, saved code in
+;									delta field extract, In AdjustFree, maintain minCBFree only if
+;									Statistics is on, In BFindS, moved And.L MaskBC,D1 down,
+;									saved code in free block merge loop, In SetLogSize,
+;									And.L #$F,x => And.B #$F,x, In MakeBk, removed block type safety code,
+;									In BkFLow, rewrote inner loop per Steve Capps ideas to save code,
+;									In BlockMove, change to save only D0, In CompactHp, Removed unneeded
+;									Add.L D0,A1, added Label: CHNextRel, and added branch to it,
+;									In ZoneAdjustEnd, removed redundant Move.L D0,TagBC(A0), In GrowZone,
+;									And.L #x,y => And.W #x,y, In HMakeMoreMasters, changed safety checking
+;									code in MoreMasters, Changed HMLoop code to make it tighter, In FreeBk,
+;									repackaged Statistics code to make it smaller, In SetSize, changed MP
+;									flag save code to use Move.B (A1),-(SP), Changed all internal JSRs to BSRs.
+;				 6/17/83	MPH		Space Saving Changes:  Removed CallMoveProc definition, In WhichZone,
+;									used Tst.B TagBC(A0), In MMPrologue, saved D3-D7 instead of D1-D7,
+;									In MMPPrologue, saved D3-D7 instead of D1-D7.
+;				 6/16/83	MPH		Removed unused .Defs from .Defs list, In AdjustFree, label AFTest
+;									unused, In AllocBk, label ABDone unused, In GetSpaceAfter, fixed
+;									error in PurgeBlock call, In RelocRel, fixed register bug involving
+;									use of A5 where A3 was intended.
+;				 6/10/83	MPH		Included GrafTypes so that Nil is defined.
+;				 6/5/83		MPH		Fixed InitApplZone by moving IAZCommon to module Heap.
+;				 6/2/83		MPH		Fixed incorrect free list bug.
+;				 6/1/83		MPH		Cleaned up comments and code.
+;				 4/12/83	MPH		Revisions for final release.
+;				 3/20/83	MPH		Fixed SetSize to return an error code.  Added masking of ptrs and
+;									handles to MMPPrologue and MMHPrologue, respectively.  Fixed
+;									HMakeMoreMasters to always create a new block.
+;
+*R This file restores the Mac Plus ROM's 24-bit
+*R Memory Manager. It retains applicable released comments and symbolic
+*R operands. The ROM supplies the older control flow, register frames,
+*R call encodings, and code changed by later patches. Evidence records
+*R each matched source instruction and the remaining ROM-derived code.
+*R The 32-bit paths, indirect dispatch tables, 68040 alignment, bus-error
+*R handlers, and later heap-manager patches are outside this ROM version.
+*R Historical contracts mention optional checks absent from this ROM.
+*R Evidence/memory-manager-internal.json records provenance and exact byte checks.
+;
+
+		EXPORT MMNoErrEpilogue
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'InternalOnlyEqu.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+FGZAlways		EQU 	2
+FNGZResrv		EQU 	3
+
+
+HeapGuts PROC EXPORT
+        EXPORT MMPPrologue
+        EXPORT MMHPrologue
+        EXPORT MMPrologue
+        EXPORT MMEpilogue
+        EXPORT MakeBkF ;]
+        EXPORT EH ;]
+        EXPORT PurgeHeap ;]
+        EXPORT TotePurgeables ;]
+        EXPORT BkCompactS ;]
+        EXPORT AllocBk ;]
+        EXPORT CompactHp ;]
+        EXPORT ToMaxLimit
+        EXPORT MaxLimit ;]
+        EXPORT ZoneAdjustEnd ;]
+        EXPORT ActualS ;]
+        EXPORT GetSize ;]
+        EXPORT ClearGZStuff
+        EXPORT SetSize
+        EXPORT AdjustFree
+        EXPORT NextMaster ;]
+        EXPORT HMakeMoreMasters ;]
+        EXPORT ReleaseMP
+        EXPORT MakePtrSpc ;]
+        EXPORT FreeBk ;]
+        EXPORT StdGZ
+
+
+;----------------------------------------------------------------------
+;
+; Function DerefHandle(h: Handle): [p: RelPtr; h: Handle; ec: ErrCode];
+;
+; Dereferences a handle, safely.  That is: mask the Handle, check
+;	that the address is good, and get the master pointer (MP) from
+;	that address.
+; Check for Nil values passed in (as opposed to empty handles). 					<23Apr85>
+; Watch that A1 is returned Nil when Nil passed in. 								<21May85>
+;
+; Argument:
+;		A0: 	h:		handle for block.
+;
+; Results:
+;		D0: 	ec: 	error code.
+;								memAdrErr:		Address is bad. (chking)
+;								nilHandleErr:	Handle=0 passed.							<23Apr85>
+;								0:				All is well, MP = Nil.
+;							   #0:				All is well, MP not Nil. (no chking)
+;								1:				All is well, MP not Nil. (chking)
+;		A0: 	p:		de-referenced handle
+;		A1: 	h:		masked handle
+;
+; Registers:
+;		D0: 	t:		temporary
+;		D0: 	ec: 	error code
+;		A0: 	h:		handle, masked handle
+;		A0: 	p:		de-referenced handle
+;		A1: 	h:		masked handle
+;
+; Called By: MMHPrologue
+*R This ROM masks and dereferences the handle without a bus-error handler.
+
+DerefHandle
+        MOVE.L    A0,D0	;Move h to D0
+        AND.L     MaskHandle,D0	;Mask out high bits
+        MOVE.L    D0,A0	;Move masked h to A0
+        MOVE.L    D0,A1	;and to A1 right here, in case of error 	<21May85>
+;Quit here sans error if 0 passed			<16May85>
+        BEQ.S     MM_41046E ;]
+        MOVE.L    (A1),A0	;Move MP to A0, maybe NIL
+        MOVE.L    A0,D0	;Test whether p is NIL, setting CCR	<C836>
+
+MM_41046E ;]
+        RTS       	;Return to caller
+
+;----------------------------------------------------------------------
+;
+; Function WhichZone(p: Ptr; h: Handle): [z: Zone; ec: ErrCode];
+;
+; Returns the zone in which a memory block belongs.  If the block
+;	is a Non-Relocatable block, the Handle field of the block header
+;	points directly at the zone object.  If the block is a Relocatable
+;	block, the Handle field is the offset from the zone object to the
+;	Handle.  Thus, for a Relocatable block, this offset is subtracted
+;	from the Handle used to find the block, in order to find the zone.
+;
+; Note that this routine clears the high byte of the pointer; this may
+;  appear to violate the convention that routines preserve this byte, but
+;  we are saved by the fact that the dispatcher has already saved the
+;  original argument (A0) in all cases except HandleZone and PtrZone which
+;  pass back the zone pointer in A0 anyways.
+;
+; Zone validity check added, via ZoneCheck. 												<13Apr85>
+;
+;
+; Arguments:
+;		A0: 	p:		points to block text region
+;		A1: 	h:		handle for block or NIL
+;
+; Results:
+;		D0: 	ec: 	error code.
+;								memAdrErr:		Address is bad. (chking)
+;								memWZErr:		WhichZone failed, block is free!.
+;								0:				ok, A6 points to zone.
+;		A0: 	p:		high byte of pointer has been cleared
+;		A6: 	z:		zone in which block belongs
+;
+; Registers:
+;		D0: 	t:		temporary
+;		D0: 	tag:	tag from block
+;		D0: 	ec: 	error code
+;		A0: 	b:		points to block header
+;
+; Called By: MMPPrologue,MMHPrologue
+; for 24 bit zone				
+
+WhichZone
+        MOVE.L    A0,D0	;Move p to D0 for masking.
+        AND.L     MaskPtr,D0	;Mask pointer.
+        MOVE.L    D0,A0	;Move masked p to A0.
+        SUBQ.L    #BlkData24,A0	;Convert p to b (block pointer).
+        TST.B     TagBC24(A0)	;Test tag field.
+;Tag = 0 => Free block, fail!
+        BEQ.S     MM_410492 ;]
+;Tag < 0 => Rel. block.
+        BMI.S     MM_410486 ;]
+        MOVE.L    Handle24(A0),A6	;Actually points to zone
+;Checking exit path.					<13Apr85>
+        BRA.S     MM_41048C ;]
+
+MM_410486 ;]
+        MOVE.L    A1,A6	;h to A6.
+        SUB.L     Handle24(A0),A6	;Offset back to zone pointer.
+
+MM_41048C ;]
+        BSR.S     ZoneCheck	;leaving error code in D0				<13Apr85>
+
+MM_41048E ;]
+        ADDQ.L    #BlkData24,A0	;Convert b to p (text pointer).
+        RTS       	;Return.
+
+MM_410492 ;]
+        MOVEQ     #memWZErr,D0	;WhichZone can't take a free
+;block, fail return.
+        BRA.S     MM_41048E ;]
+
+;----------------------------------------------------------------------
+;
+; Function ZoneCheck(z: Zone): [ec: ErrCode];											<13Apr85>
+;
+; Checks whether z is valid by looking at block at first block in zone, which			<16May85>
+; should be an MP block.  Note that this is incompatible with the GrowDown scheme!		<16May85>
+;
+; Arguments:
+;		A6: 	z:		points to alleged heap zone
+;
+; Results:
+;		A6: 	z:		stripped of high byte
+;		D0: 	ec: 	error code.
+;								memAZErr:		Address of zone is bad.
+;								0:				ok, A6 points to zone.
+;		CCR:	flags set according to ec in D0.
+;
+; Registers:
+;		D0: 	t:		temporary
+;
+; Called By: WhichZone, MMHPrologue (in case of NIL input handle), and MMPrologue.
+
+ZoneCheck
+        MOVE.L    A0,-(SP)
+        MOVE.L    A6,D0	;Move z to D0 for masking.
+        AND.L     Lo3Bytes,D0	;Mask pointer.
+        MOVE.L    D0,A6	;Return pointer
+        MOVE.L    (HeapData+4)(A6),D0	;relative handle of MP block			<16May85>
+        AND.L     Lo3Bytes,D0	;devoid of tag stuff					<16May85>
+        SUB.L     A6,D0	;if zero, that's our return code        <16May85>
+        BEQ.S     MM_4104AE ;]
+        MOVEQ     #memAZErr,D0
+
+MM_4104AE ;]
+        MOVE.L    (SP)+,A0
+        RTS       
+
+;----------------------------------------------------------------------
+;
+; Function MMPPrologue(p: Ptr): [z: Zone; p: Ptr; h: Handle];
+;
+; Standard prefix for memory manager procedures using Pointers.  Saves
+;	registers, sets z to the zone the block is in, sets h to Nil,
+;	checks the zone, checks the pointer, and returns to caller.
+;	If WhichZone fails, returns an error code.	If ZC fails,
+;	invokes trouble alert.
+;
+; Argument:
+;		A0: 	p:		points to block text.
+;
+; Results:
+;		A0: 	p:		masked pointer to block text.
+;		A1: 	h:		set to Nil.
+;		A6: 	z:		zone in which block belongs.
+;
+; Registers:
+;		A0: 	p:		points to block text
+;		A1: 	t1: 	temporary.
+;		A1: 	h:		set to Nil.
+;		D2: 	t2: 	temporary.
+;
+; Called By: DisposePtr,GetPtrSize,SetPtrSize,PtrZone
+*R The three prologues save the direct return address and registers. They return errors without the later dispatch vectors or retries.
+
+MMPPrologue
+        MOVE.L    (SP)+,A1
+        MOVEM.L   A2-A6/D3-D7,-(SP)	;Save Registers
+        MOVE.L    A1,-(SP)
+        MOVE.L    D0,D2	;Save D0
+        SUB.L     A1,A1	;Set h to Nil.
+        BSR.S     WhichZone	;Get zone from p.
+        BMI.S     MMFail ;]
+        MOVE.L    D2,D0	;Restore D0.
+        RTS       	; proceed to routine
+
+;----------------------------------------------------------------------
+;
+; Procedure MMHPrologue(h: Handle): [z: Zone; p: Ptr; h: Handle];
+;
+; Standard prefix for memory manager procedures using Handle.  Saves
+;	registers, dereferences the Handle, which sets p to point to the
+;	block text, sets z to the zone the block is in,
+;	checks the zone, checks the handle, and returns to caller.
+;	If WhichZone or HC fails, returns an error code.
+;	If ZC fails, invokes trouble alert.
+;
+; If dereferenced handle turns out to be NIL, check default zone (theZone) via ZoneCheck.	<13Apr85>
+; If passed a Nil value for handle (otherwise known as 0!), return an error.					<23Apr85>
+;
+; Argument:
+;		A0: 	h:		handle for block.
+;
+; Results:
+;		cond. codes:	Zero => handle is empty, Not Zero => handle in memory.
+;		A0: 	p:		masked pointer for block or Nil.
+;		A1: 	h:		masked handle for block.
+;		A6: 	z:		zone in which block belongs.
+;
+; Registers:
+;		A0: 	p:		points to block text.
+;		A1: 	t1: 	temporary.
+;		A1: 	h:		handle for block.
+;		D2: 	t2: 	temporary.
+;		D7: 	t3: 	temporary.
+;
+; Called By: HLock,HUnLock,HPurge,HNoPurge,
+;			 DsposeHandle,GetHandleSize,SetHandleSize,
+;			 HandleZone,EmptyHandle,ReAllocHandle
+
+MMHPrologue
+        MOVE.L    (SP)+,A1
+        MOVEM.L   A2-A6/D3-D7,-(SP)	;Save Registers.
+        MOVE.L    A1,-(SP)
+        MOVE.L    D0,D2	;Save D0.
+        MOVE.L    theZone,A6	;default to theZone.
+        BSR.S     DerefHandle	;Dereference the Handle.
+;No block, zone better be good. 			<13Apr85>
+        BEQ.S     MM_4104E2 ;]
+        BSR.S     WhichZone	;Get zone from p, h.
+
+MM_4104DA ;]
+;WhichZone or ZoneCheck failed		<v1.3>			<13Apr85>
+        BMI.S     MMFail ;]
+        MOVE.L    D2,D0	;Restore D0.
+        MOVE.L    A0,D7	;Set condition codes
+        RTS       	;Return to caller
+
+MM_4104E2 ;]
+        BSR.S     ZoneCheck	;Set D0 and CCR according to theZone in A6	<13Apr85>
+;And resume 								<13Apr85>
+        BRA.S     MM_4104DA ;]
+
+MMFail
+        ADDQ.L    #4,SP
+        BRA.S     MMExit	;Restore regs, and return.
+
+;----------------------------------------------------------------------
+;
+; Function MMPrologue: [z: Zone];
+;
+; Standard prefix for memory manager procedures for which zone must
+; be explicitly set before the call.
+;
+;	A number of memory allocator functions use the System Global variable
+;	theZone to indicate which zone should be used for that function.
+;	It is often convenient for system programs to be able to specify that
+;	sysZone should be used for the current operation, whatever the current
+;	state of theZone is.  On the other hand, most applications programs
+;	want to use whatever zone is currently specified by theZone.  To
+;	permit this choice, the memory manager examines bit 10
+;	(the SysOrCurZone bit) of the OS trap.	If this bit is clear
+;	(current zone), then A6 is set from theZone.  If this bit is set
+;	(system zone), then A6 is set to sysZone.
+;
+;	Once the registers have been saved, and the zone state has been set
+;	as desired, we call ZC, to ensure that the zone is
+;	internally consistent.	We then return to the memory manager procedure
+;	which called us.
+;
+;	ZoneCheck is used to verify the zone to be used.  If it fails, off to MMFail.		<13Apr85>
+;
+; Argument:
+;		D1		trap:	value of trap instruction.
+;
+; Result:
+;		A6: 	z:		zone for memory manager call.
+;
+; Registers:
+;		A1: 	t:		temporary.
+;		D2: 	t:		temporary copy of D0 (usually an argument to the caller).		<13Apr85>
+;
+; Called By: NewPtr,NwHandle,RecoverHandle,CompactMem,PurgeMem,FreeMem,
+;				MaxMem,ResrvMem
+
+MMPrologue
+        MOVE.L    (SP)+,A1
+        MOVEM.L   A2-A6/D3-D7,-(SP)	;Save Registers.
+        MOVE.L    A1,-(SP)
+        MOVE.L    D0,D2	;Save D0.								<13Apr85>
+        MOVE.L    theZone,A6	;Return current zone in A6.
+        BTST      #TSysOrCurZone,D1	;System or current zone?
+;Use current zone.
+        BEQ.S     MM_410502 ;]
+        MOVE.L    sysZone,A6	;Use system zone.
+
+MM_410502 ;]
+        BSR.S     ZoneCheck	;Is A6 kosher?							<13Apr85>
+;Bail out if not.						<13Apr85>
+        BMI.S     MMFail ;]
+        MOVE.L    D2,D0	;Restore D0.							<13Apr85>
+        RTS       	; go to routine directly
+
+;----------------------------------------------------------------------
+;
+; Entry MMEpilogue;
+;
+; Standard Epilogue for many memory allocator entry points.
+;	This routine does a number of services for those memory allocator
+;	entry points which use it: it checks that the zone is still
+;	consistent restores the registers, and returns to caller of
+;	the entry point.
+;
+; Amended to stuff error code in global MemErr.  There are three classes of routines:	<25Apr85>
+;	1) Typical -- long error code <= 0 in D0											<25Apr85>
+;	2) GetHandleSize, etc. -- long result >= 0 or error code <= in D0					<25Apr85>
+;	3) Bizarre RecoverHandle -- preserved, irrelevant value in D0, but error code = 0	<25Apr85>
+; First two may be handled by simple Tst.L; in latter case just stuff MemErr.			<25Apr85>
+;
+; Argument:
+;		D0: 	ec: 	error code, or 0 for success, or, possibly,
+;						  a byte count or other + result.
+;
+; Result:
+;		None
+;
+; Register:
+;		D0: 	ec: 	error code.
+;
+; MMEpilogue called By: HLock,HUnLock,HPurge,HNoPurge,NewPtr,NwHandle,
+;			 DisposePtr,GetPtrSize,SetPtrSize,PtrZone
+;			 DsposeHandle,GetHandleSize,SetHandleSize,
+;			 HandleZone, ** not RecoverHandle ** ,EmptyHandle,ReAllocHandle 		<25Apr85>
+;			 CompactMem,PurgeMem,FreeMem,MaxMem ,ResrvMem
+; MMNoErrEpilogue called by: RecoverHandle											<25Apr85>
+
+MMEpilogue
+        CLR.W     MemErr
+        TST.L     D0
+        BGE.S     MMNoErrEpilogue
+
+MMExit
+        MOVE.W    D0,MemErr
+
+MMNoErrEpilogue
+        MOVEM.L   (SP)+,A2-A6/D3-D7	;Restore Registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure MakeBkf(b: Block; s: Size);
+;
+; Makes block b into a free block s bytes long.
+;	S must be even, and already includes the block overhead bytes.
+;
+; Arguments:
+;		D0: 	s:		size of new free block.
+;		A0: 	b:		points to block header of block
+;		A6: 	z:		zone for block.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		D0: 	s:		size of new free block.
+;		D0: 	t:		temporary, used for masking b.
+;		A1: 	bFirst: first block on free list.
+;		A1: 	bPrev:	block before one being added.
+;		A1: 	bFirst: first block on free list.
+;
+; Called By: InitZone,MakeBk,MakeFree,ZoneAdjustEnd,MakeSpace,SetSize,Purgeblock
+
+MakeBkF ;]
+        MOVE.L    D0,TagBC24(A0)	;Set tag and byte count.
+        CLR.B     TagBC24(A0)	;Clear tag and offset.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function EH(p: Ptr; h: Handle): ErrCode;
+;
+; Tests whether block is locked.  If it is, then returns with an error.
+;	Otherwise, the block is purged.
+;
+; Arguments:
+;		A0: 	p:		pointer for block.
+;		A1: 	h:		handle for block.
+;		A6: 	z:		zone containing block.
+;
+; Result:
+;		D0: 	ec: 	error code.
+;								memPurErr:		Block is locked.
+;								0:				Success.
+;
+; Register:
+;		A0: 	b:		points to block header.
+;
+; Called By: EmptyHandle,ReAllocHandle
+
+EH ;]
+        BTST      #Lock,(A1)	; Handle locked?
+; Yes, fail.
+        BNE.S     EH_EHNoPurge ;]
+        BTST      #ROZ,flags(A6)	; just clear the MP if ROZ				<10Apr85>
+;										<10Apr85>
+        BNE.S     EH_EHSkip ;]
+        SUBQ.L    #BlkData24,A0	; Adjust to point to block head.
+; Purge this block.
+        BSR.S     PurgeBlock ;]
+        ADDQ.L    #BlkData24,A0	; Point again to block text.
+
+EH_EHOK ;]
+        MOVEQ     #0,D0	; Success result.
+
+EH_EHExit ;]
+        RTS       	; Return to caller.
+
+EH_EHNoPurge ;]
+        MOVEQ     #memPurErr,D0	; Block is locked, can't purge.
+; Use common exit code.
+        BRA.S     EH_EHExit ;]
+
+EH_EHSkip ;]
+        CLR.L     (A1)	; Wipe out the (bogus) MP				<10Apr85>
+; error-free exit						<10Apr85>
+        BRA.S     EH_EHOK ;]
+
+;----------------------------------------------------------------------
+;
+; Procedure CallPurgeProc(h: Handle);
+;
+; Calls the zone's Purge Warning Procedure.  This procedure is called
+;	by the memory manager routines just before a block is purged.
+;
+; Arguments:
+;		A1: 	h:		Handle for block about to be purged.
+;		A6: 	z:		Zone containing block to be purged.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		A1: 	prPur:	Address of Purge Warning Procedure.
+;
+; Called By: PurgeBlock
+
+CallPurgeProc
+        TST.L     purgeProc(A6)	;PurgeProc defined?
+        BEQ.S     CPgReturn	;No, return directly.
+        MOVEM.L   D0-D2/A0-A1,-(SP)	;Save registers.
+        MOVE.L    A1,-(SP)	;Push h as argument.
+        MOVE.L    purgeProc(A6),A1	;Points to Purge Warning proc.
+        JSR       (A1)	;Call Purge Warning proc.
+        MOVEM.L   (SP)+,D0-D2/A0-A1	;Restore registers.
+
+CPgReturn
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure PurgeBlock(p: Ptr; h: Handle);
+;
+; Purge the referenced block and adjust counters.
+;
+; Arguments:
+;		A0: 	p:		points to block.
+;		A1: 	h:		handle for block.
+;		A6: 	z:		Zone to be searched.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		D0: 	s:		Physical size of block being purged.
+;
+; Called By: PurgeHeap,MakeSpace,EH
+
+PurgeBlock
+        MOVE.L    D0,-(SP)	;Save register.
+        MOVE.L    TagBC24(A0),D0	;Get block header.
+        AND.L     MaskBC,D0	;Extract physical block size.
+        BSR.S     CallPurgeProc	;Invoke the purge warning.
+        CLR.L     (A1)	;Set the Master Pointer to Nil.
+;Make a free block.
+        BSR.S     MakeBkF ;]
+        BSR.W     AdjustFree	;Increase zone free count.
+        MOVE.L    (SP)+,D0	;Restore register.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function PurgeHeap(s: Size): Ptr;
+;
+; This procedure first scans the heap for a region containing unlocked
+;	relocatables (purgeable and non-purgeable) and free blocks with enough
+;	free and purgeable space to satisfy the request.  This is done using
+;	a roving purge pointer so that the first blocks are not always purged.
+;	If no region satisfying the request is found, all purgeable blocks in
+;	the heap are purged; otherwise, only those purgeable blocks within the
+;	identified region are purged.  After purging the heap is compacted.
+;
+; Arguments:
+;		D0: 	s:		Number of adjacent bytes needed by caller.
+;		A6: 	z:		Zone to be purged.
+;
+; Result:
+;		A0: 	b:		points to available free space, or Nil if none found.
+;		D1: 			contains largest free space found.
+;
+; Registers:
+;		D0: 	s:		Size needed.
+;		D1: 			temporary
+;		D2: 	sRgn:	cumulative count of bytes in current region.
+;		A0: 	bPrg:	points to purge start
+;		A1: 	h:		handle for block, temporary.
+;		A2: 	bNxt:	points to next block, purge end.
+;		A3: 	bLim:	points to last block in zone
+;		A4: 	bCur:	points to current block.
+;
+; Called By: BkCompactS,PurgeMem
+
+PurgeHeap ;]
+        MOVEM.L   D2/A1-A4,-(SP)	;Save registers.
+
+PurgeHeap_PurgeScan ;]
+        MOVE.L    BkLim(A6),A3	;Last block in zone
+        LEA       HeapData(A6),A0	;First block in zone.
+        BTST      #FNSelPurge,Flags(A6)	;Use non-selective purge?
+;Br if so.
+        BNE.S     PurgeHeap_PHPrgAll ;]
+        MOVE.L    A0,A2	;bPrg := first zone block ptr.
+        MOVEQ     #0,D2	;sRgn := 0.
+
+PurgeHeap_PrgScanLoop ;]
+        MOVE.L    TagBC24(A2),D1	;Block header
+        AND.L     MaskBC,D1	;Byte count only
+        MOVE.L    A2,A4	;Current block ptr.
+        ADD.L     D1,A2	;Next block ptr.
+        TST.B     TagBC24(A4)	;Is this block free?
+;Br if so (add to region)
+        BEQ.S     PurgeHeap_PrgSFree ;]
+;Br if non-rel (start next region)
+        BPL.S     PurgeHeap_PrgSNRel ;]
+        MOVE.L    Handle24(A4),A1	;Handle offset.
+        ADD.L     A6,A1	;Handle
+        TST.B     (A1)	;Is block locked?
+;Br if so (start next region)
+        BMI.S     PurgeHeap_PrgSNRel ;]
+        BTST      #Purge,(A1)	;Unlocked, test purge flag.
+;Not purgeable, don't purge.
+        BEQ.S     PurgeHeap_PrgSEnd ;]
+        CMP.L     PurgePtr(A6),A4	;Past the purge rover yet?
+;Br if not (advance purge start)
+        BCS.S     PurgeHeap_PrgSAdv ;]
+
+PurgeHeap_PrgSFree ;]
+        ADD.L     D1,D2	;Add to sRgn
+        CMP.L     D0,D2	;Do we have enough?
+;Br if not
+        BCS.S     PurgeHeap_PrgSEnd ;]
+;Purge purgeable blocks between
+        BRA.S     PurgeHeap_PHLoop ;]
+												; A0 and A2, then compact . . .
+
+PurgeHeap_PrgSNRel ;]
+        MOVEQ     #0,D2	;sRgn := 0. (next region)
+
+PurgeHeap_PrgSAdv ;]
+        MOVE.L    A2,A0	;Advance purge start ptr.
+
+PurgeHeap_PrgSEnd ;]
+        CMP.L     A3,A2	;End of zone reached?
+;Loop if not
+        BCS.S     PurgeHeap_PrgScanLoop ;]
+        LEA       HeapData(A6),A0
+        CMP.L     PurgePtr(A6),A0	;Did rover start at heap start?
+;Br if so.
+        BEQ.S     PurgeHeap_PHPrgAll ;]
+        MOVE.L    A0,PurgePtr(A6)	;Otherwise, set the rover back
+;And scan again.
+        BRA.S     PurgeHeap_PurgeScan ;]
+
+PurgeHeap_PHPrgAll ;]
+        MOVE.L    A3,A2	;No luck. So purge all purgables.
+; now that we've pre-scanned, it's time to do the actual purging; we purge all
+; purgeable blocks from (A0) up to but not including (A2).	We have to test for
+; locked relocatables and non-relocatables because of the case in which we are
+; purging all purgeables in the heap.
+
+PurgeHeap_PHLoop ;]
+        MOVE.L    TagBC24(A0),D1	;Block header
+        AND.L     MaskBC,D1	;Byte count only
+        TST.B     TagBC24(A0)	;Is this block free?
+;Br if Free or Non-Rel
+        BPL.S     PurgeHeap_PHSkip ;]
+        MOVE.L    Handle24(A0),A1	;Handle offset for rel. block.
+        ADD.L     A6,A1	;Convert to true handle.
+        TST.B     (A1)	;Test lock, purge flags byte.
+;Locked, can't purge it.
+        BMI.S     PurgeHeap_PHSkip ;]
+        BTST      #Purge,(A1)	;Unlocked, test purge flag.
+;Not purgeable, don't purge.
+        BEQ.S     PurgeHeap_PHSkip ;]
+;Go ahead and purge this one.
+        BSR.W     PurgeBlock ;]
+        CMP.L     D0,D1	;Is sBlock >= s? check for
+; standard purge scheme . . .
+        BCC.S     PurgeHeap_PHDone ;]
+
+PurgeHeap_PHSkip ;]
+        ADD.L     D1,A0	;Point to next block.
+        MOVE.L    A0,PurgePtr(A6)	;Advance purge rover.
+        CMP.L     A2,A0	;At end of purge zone?
+;No, do next block.
+        BCS.S     PurgeHeap_PHLoop ;]
+
+PurgeHeap_PHDone ;]
+        BSR.S     CompactHeapCall ;]
+        MOVEM.L   (SP)+,D2/A1-A4	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function TotePurgeables: [totFreeAndPurge, contigFreeAndPurge : LongInt]; 				<17Apr85>
+;																							<17Apr85>
+; Scan each region (between successive ptrs and locked relocatables) for the free			<17Apr85>
+; and purgeable space.	Accumulate the total for the zone and the max region within 		<17Apr85>
+; the zone. 																				<17Apr85>
+;
+; Argument:
+;		A6: 	z:		Zone to be totaled..
+;
+; Result:
+;		A0: 			maximum free plus purge space in any one region
+;		D0: 			total free plus purge space in zone
+;
+; Registers:
+;		D0: 			accumulate total free and purge
+;		D1: 			accumulate total free and purge by region
+;		D2: 			length of current block
+;		A0: 			save max region so far
+;		A1: 			ptr to current block
+;		A2: 			handle to current block, if relocatable
+;
+; Trashes D1-D2/A1-A2.
+; Called By: PurgeSpace (outer-level routine)
+
+TotePurgeables ;]
+        MOVEQ     #0,D0	;init total
+        MOVE.L    D0,D1	;init region count
+        MOVE.L    D0,A0	;init max so far
+        LEA       heapData(A6),A1	;pt to first data block
+
+TotePurgeables_PMLoop ;]
+        CMP.L     bkLim(A6),A1	;Carry Clear if beyond end
+;...in which case exit loop
+        BCC.S     TotePurgeables_PMExit ;]
+        MOVE.L    tagBC24(A1),D2
+        AND.L     Lo3Bytes,D2	;isolate block size
+        TST.B     (A1)	;check tags nibble
+;Eq => free, so got some space
+        BEQ.S     TotePurgeables_PMGotSome ;]
+;Pl => ptr, a sandbar
+        BPL.S     TotePurgeables_PMSandBar ;]
+        MOVE.L    handle24(A1),A2	;relative handle from beginning of zone
+        ADD.L     A6,A2	;true handle to block pointed to by A1
+        TST.B     (A2)
+;locked handle is like a pointer here
+        BMI.S     TotePurgeables_PMSandBar ;]
+        BTST      #Purge,(A2)
+;Eq => slider, which doesn't affect totals
+        BEQ.S     TotePurgeables_PMLEnd ;]
+
+TotePurgeables_PMGotSome ;]
+        ADD.L     D2,D1	;add block size into region total
+
+TotePurgeables_PMLEnd ;]
+        ADD.L     D2,A1	;bump A1 to next block in zone
+;and keep looking
+        BRA.S     TotePurgeables_PMLoop ;]
+
+TotePurgeables_PMSandBar ;]
+        PEA       TOTEPURGEABLES_PMLEND ;]
+
+TotePurgeables_PMExit ;]
+        ADD.L     D1,D0	;accumulate grand total by adding this region's space	<2> kc.start
+        CMP.L     D1,A0	;Carry Clear => max is still max!
+        BCC.S     TotePurgeables_0 ;]
+        MOVE.L    D1,A0
+
+TotePurgeables_0 ;]
+        MOVEQ     #0,D1	;clear out the region total -- we're starting a new one
+        RTS       
+
+;----------------------------------------------------------------------
+;
+; Function CallGZProc(s: Size): Size;
+;
+; Calls the system GrowZone Function in spare1(Zone).				;<29jan85>
+;
+; Arguments:
+;		D0: 	s:		Number of contiguous bytes needed.
+;		A6: 	z:		Zone in which block will be made.
+;
+; Result:
+;		D2: 	dSize:	Number of bytes added to zone by GrowZone Function.
+;
+; Registers:
+;		A1: 	prGZ:	Address of GrowZone Function.
+;
+; Called By: BkCompactS
+
+CallGZProc
+        MOVE.L    44(A6),D2 ;]
+        BEQ.S     CGZReturn	;No, return dSize of 0.
+        MOVEM.L   D0-D1/D3-A6,-(SP)
+        MOVE.L    44(A6),A1 ;]
+        CLR.L     -(SP)	;we're not hackers! (function result)
+        MOVE.L    D0,-(SP)	;Push s as argument.
+        JSR       (A1)	;Call GrowZone Function.
+        MOVE.L    (SP)+,D2	;Get GrowZone result.
+        MOVEM.L   (SP)+,D0-D1/D3-A6
+
+CGZReturn
+        RTS       	;Return to caller.
+
+CompactHeapCall ;]
+        BRA.W     CompactHp ;]
+
+;----------------------------------------------------------------------
+;
+; Function BkCompactS(s: Size; tryGrw: Boolean):
+;	[sMax: Size; b: Block];
+;
+; Compacts the zone until room is made for a block s bytes long.  If
+;	it is not possible to make enough room by compaction, the tryGrow
+;	flag is true, and the zone is the application zone, then the
+;	GrowZone procedure is called to make more space in the zone.
+;	BkCompactS returns a pointer to a block at least s bytes long,
+;	or Nil, if it is impossible to create room for one.  sMax is
+;	returned with the size of the largest block found during
+;	compaction.
+;
+; Arguments:
+;		D0: 	s:		Size of free block needed.
+;		D2: 	tryGrw: Indicates whether to try growing the zone.
+;		A6: 	z:		Zone which might experience heap motion.
+;
+; Results:
+;		A0: 	b:		Address of block s bytes long, or Nil.
+;		D1: 	sMax:	Size of largest free block found.
+;
+; Registers:
+;		D1: 	sMax:	Size of largest free block found.
+;		D2: 	dSize:	Number of bytes added to zone by User's GrowZone proc.
+;
+; Called By: MaxMem,AllocBk
+
+BkCompactS ;]
+        MOVEM.L   D0/D2,-(SP)	;Save registers.
+        BSR.S     CompactHeapCall ;]
+        CMP.L     D1,D0	;Did we find enough space?
+;Yes, return.
+        BLS.S     BkCompactS_BCCDone ;]
+        CMP.L     applZone,A6	;Is this the application zone?
+;No, don't try to grow it.
+        BNE.S     BkCompactS_BCCPurge ;]
+        TST.L     D2	;May we grow the zone?
+;No, try purging the heap.
+        BEQ.S     BkCompactS_BCCPurge ;]
+;Grow the zone.
+        BSR.W     GrowZone ;]
+        BSR.S     CompactHeapCall ;]
+        CMP.L     D1,D0	;Enough room for block?
+;Yes, return.
+        BLS.S     BkCompactS_BCCDone ;]
+
+BkCompactS_BCCPurge ;]
+;Purge heap to make room.
+        BSR.W     PurgeHeap ;]
+        CMP.L     D1,D0	;Enough room for block?
+;Yes, return.
+        BLS.S     BkCompactS_BCCDone ;]
+        TST.L     D2	;Is tryGrw false?
+;Yes, MaxMem must be calling.
+        BEQ.S     BkCompactS_BCCDone ;]
+
+BkCompactS_BCCCallGZ ;]
+        BSR.S     CallGZProc	;Call the Grow Zone procedure.
+        BSR.S     CompactHeapCall ;]
+        CMP.L     D1,D0	;Enough room for block?
+;Yes, return.
+        BLS.S     BkCompactS_BCCDone ;]
+        TST.L     D2	;Did Grow Zone add room last time?
+;Yes, call it again.
+        BNE.S     BkCompactS_BCCCallGZ ;]
+        SUB.L     A0,A0	;No joy, fail return.
+
+BkCompactS_BCCDone ;]
+        MOVE.L    A0,D2	;Set Condition Codes.
+        MOVEM.L   (SP)+,D0/D2	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function BFindS(s: Size): Block;
+;
+; Finds the next free block in the zone with size >= s.  Searches
+;	through zone from the alloc rover, merging adjacent free blocks,
+;	until the entire zone has been searched or a free block large enough
+;	to hold s bytes is found.  Returns Nil if no free block large enough
+;	can be found.
+; Changed to check A1 against bkLim(A6) at BFSLoop, rather than after check for free.	<16Apr85>
+;
+; Arguments:
+;		D0: 	s:		size of free block needed.
+;		A6: 	z:		zone to be searched for the free block.
+;
+; Result:
+;		A0: 	b:		points to block >= s bytes long, or Nil if
+;						  none big enough found.
+;
+; Registers:
+;		D0: 	s:		size of free block needed.
+;		D1: 	sCur:	size of current block.
+;		D2: 	mBC:	mask for byte count field of header only.
+;		A0: 	bSrch:	Address of block after bMerge.
+;		A1: 	bMerge: Address of free block used for merges.
+;		A2: 	APtr:	Address of roving allocation pointer.
+;
+; Called By: AllocBk
+
+BFindS ;]
+        MOVEM.L   D1-D2/A1-A2,-(SP)	;Save registers.
+        MOVE.L    MaskBC,D2	;We will need this soon.
+        LEA       AllocPtr(A6),A2
+        BTST      #FNoRvrAlloc,Flags(A6)	;Use rover?
+;Br if so.
+        BEQ.S     BFindS_BFindSS ;]
+        CLR.L     (A2)	;Invalidate it otherwise.
+
+BFindS_BFindSS ;]
+        MOVE.L    (A2),D1	;Is rover valid?
+        MOVE.L    D1,A1
+;Br if so.
+        BNE.S     BFindS_BFSLoop ;]
+        LEA       HeapData(A6),A1	;Start from beginning if not.
+
+BFindS_BFSLoop ;]
+        CMP.L     BkLim(A6),A1	;Past or at limit block?				<16Apr85>
+;Br if so.								<16Apr85>
+        BCC.S     BFindS_BFSFail ;]
+        MOVE.L    TagBC24(A1),D1	;Get byte count.
+        TST.B     TagBC24(A1)	;Is this block free?
+;Yes, start building onto it.			<16Apr85>
+        BEQ.S     BFindS_BFSFLoop ;]
+
+BFindS_BFSNext ;]
+        AND.L     D2,D1	;Extract only byte count.
+        ADD.L     D1,A1	;Address of next block.
+;Look for free block.
+        BRA.S     BFindS_BFSLoop ;]
+; This loop used to have a header that checked agains bkLim(A6).  That check is at BFSLoop. <16Apr85>
+
+BFindS_BFSFLoop ;]
+        MOVE.L    A1,A0	;Address of current block.
+        ADD.L     D1,A0	;Point to next block.
+        TST.B     TagBC24(A0)	;Is next block free?
+;Skip if not free.
+        BNE.S     BFindS_1 ;]
+        CMP.L     BkLim(A6),A0	;Past limit block?
+;Yes, skip.
+        BCC.S     BFindS_1 ;]
+        ADD.L     TagBC24(A0),D1	;Merge next with current block.
+        MOVE.L    D1,TagBC24(A1)	;Length of new block at bMerge.
+;And loop, to do more blocks.
+        BRA.S     BFindS_BFSFLoop ;]
+
+BFindS_1 ;]
+        CMP.L     D0,D1	;Free bytes >= s?
+;No, skip.
+        BCS.S     BFindS_BFSNext ;]
+        MOVE.L    A1,A0	;Else return bMerge.
+;Success return.
+        BRA.S     BFindS_BFSDone ;]
+
+BFindS_BFSFail ;]
+        TST.L     (A2)	;Did we start at the beginning?
+;Br if so (searched entire heap)
+        BEQ.S     BFindS_2 ;]
+        CLR.L     (A2)	;Otherwise, go again.
+        BRA.S     BFindS_BFindSS ;]
+
+BFindS_2 ;]
+        SUB.L     A0,A0	;Return Nil.
+
+BFindS_BFSDone ;]
+        MOVE.L    A0,(A2)	;Set condition codes and
+												; update allocation rover.
+        MOVEM.L   (SP)+,D1-D2/A1-A2	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function AllocBk(h: Handle; s: Size): Ptr;
+;
+; Finds and allocates a block of size s.  If h is not Nil, then
+;	the block will be a relocatable block, and h^ will be filled in
+;	to point to the allocated block.  If s is less than minFree, a
+;	block minFree long will be allocated, and the offset field will
+;	be correctly filled in.
+;
+; Arguments:
+;		D0: 	s:		size of block desired.
+;		A1: 	h:		handle for block, or Nil.
+;
+; Result:
+;		A0: 	p:		points to new block, or Nil if no room for block.
+;
+; Registers:
+;		D1: 	tyBk:	Block type for MakeBk.
+;		D2: 	tryGrw: Allows heap to grow in order to make space.
+;		D3: 	endPck: True => Put block at end of free space.
+;		D4: 	s:		Size of block desired.
+;		D5: 			Zone pointer (nrel) or handle offset (rel)
+;		A1: 	relH:	Relative handle.
+;
+; Called By: HMakeMoreMasters,RelocRel
+;			 NewPtr,NwHandle,ReallocHandle(Heap)
+
+AllocBk ;]
+        MOVEM.L   D0-D5,-(SP)	;Save Registers.
+        MOVE.L    D0,D4	;Save size.
+;Returns real sAct.
+        BSR.W     ActualS ;]
+;Find a free block sAct long.
+        BSR.S     BFindS ;]
+;Found one.
+        BNE.S     AllocBk_ABFound ;]
+        MOVEQ     #-1,D2	;No luck, allow heap to grow.
+;Compact the heap.
+        BSR.W     BkCompactS ;]
+;Space found, continue.
+        BNE.S     AllocBk_ABFound ;]
+        SUB.L     A0,A0	;Nil result => failed.
+;Use common exit path.
+        BRA.S     AllocBk_ABExit ;]
+
+AllocBk_ABFound ;]
+        MOVE.L    D0,D2	;Copy sAct
+        MOVE.L    TagBC24(A0),D0	;Get block header
+;				And.L	MaskBC,D0				;Extract only byte count.
+        MOVE.L    A1,D5	;Make Relocatable block?
+;No, take Non-Rel path.
+        BEQ.S     AllocBk_ABNRel ;]
+        SUB.L     A6,D5	;Make D5 a handle offset.
+        MOVEQ     #tybkRel,D1	;Set up Rel block type.
+        MOVEQ     #-1,D3	;Set endPck true.
+;Go make the block.
+        BRA.S     AllocBk_ABMake ;]
+
+AllocBk_ABNRel ;]
+        MOVE.L    A6,D5	;Points to zone.
+        MOVEQ     #tybkNRel,D1	;Set up Non-Rel block type.
+        MOVEQ     #0,D3	;Set endPck false.
+
+AllocBk_ABMake ;]
+;Split the free space.
+        BSR.S     MakeBk ;]
+        MOVE.L    D5,Handle24(A0)	;Save handle offset or
+												; zone pointer in block.
+        MOVE.L    D4,D0	;Desired size.
+;Set the logical size.
+        BSR.S     SetLogSize ;]
+        ADDQ.L    #BlkData24,A0	;Point to data portion.
+        MOVE.L    A1,D5	;Nrel block?
+;Yes, no MP.
+        BEQ.S     AllocBk_ABExit ;]
+        MOVE.L    A0,(A1)	;Store block pointer in MP.
+
+AllocBk_ABExit ;]
+        MOVE.L    A0,D0	;Set condition codes.
+        MOVEM.L   (SP)+,D0-D5	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure SetLogSize(b: Block; s: Size);
+;
+; Sets the logical size of block b to s.  Invokes deep trouble manager
+;	if trying to set the logical size of the block too small (more than
+;	23 bytes shorter than physical size).  The logical size is always
+;	at least 8 bytes less than the physical size.
+;
+; Arguments:
+;		A0: 	b:		points to block header of block whose logical
+;						  size will be set.
+;		D0: 	s:		logical size for block b.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		A0: 	b:		block whose logical size is being set.
+;		D1: 	s:		physical size.
+;		D1: 	s':     adjusted physical size.
+;		D1: 	dSize:	delta size between adjusted physical and logical sizes.
+;
+; Called By: AllocBk,SetSize
+
+SetLogSize ;]
+        MOVE.L    D1,-(SP)	;Save register.
+        MOVE.L    TagBC24(A0),D1	;Get block header.
+        AND.L     MaskBC,D1	;Strip to byte count only.
+        SUBQ.L    #BlkData24,D1	;Adjust to rough logical size.
+        SUB.L     D0,D1	;Subtract logical size desired.
+        ANDI.B    #$F,D1	;Mask to triply insure range.
+        ANDI.B    #$C0,TagBC24(A0)	;Clear offset field in header.
+        OR.B      D1,TagBC24(A0)	;Merge in new offset.
+        MOVE.L    (SP)+,D1	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function MakeBk(Var bk: Block; s: Size; ty: TyBk; sFree: Size;
+;	endPck: Boolean): Block;
+;
+; Makes a block of type ty and length s in empty space sFree long
+;	pointed to by b.  That is, it splits free space sFree long at
+;	b into a free block (sFree-s) long and an allocated block s long.
+;	Where (sFree-s) is too small, only one block is made.
+;	Upon return, b points to the allocated block.
+;	The left-over space is returned as a free block.  If endPack is
+;	true, and bit FRelAtEnd of the zone flags byte is non-zero,
+;	the block is packed against the high end of the empty space.
+;
+; Arguments:
+;		A0: 	b:		free block from which new block is to be made.
+;		A6: 	z:		zone in which block is being made.
+;		D0: 	sFree:	number of bytes in current free block.
+;		D1: 	ty: 	Block type (1 = Non-Rel; 2 = Rel).
+;		D2: 	s:		number of bytes needed.
+;		D3: 	endPck: boolean (t=>pack at end of free block)
+;
+; Result:
+;		A0: 	b:		points to newly made block.
+;
+; Registers:
+;		A0: 	b:		points to block being split.
+;		A0: 	bFree:	points to block which will be freed.
+;		A1: 	b':     copy of pointer to block being split.
+;		A1: 	b:		pointer to new block being split.
+;		D0: 	sFree:	number of bytes in free block.
+;		D0: 	sRem:	physical size of remaining free block.
+;		D1: 	ty: 	Block type (1 = Non-Rel; 2 = Rel).
+;		D1: 	tag:	Block tag.
+;		D2: 	s:		physical size.
+;		D3: 	endPck: boolean (t=>pack at end of free block)
+;		D4: 	sFree': copy of number of bytes in free block.
+;
+; Called By: AllocBk
+
+MakeBk ;]
+        MOVEM.L   D0-D2/D4/A1,-(SP)	;Save registers.
+        MOVE.L    D0,D4	;Copy sFree.
+        SUB.L     D2,D0	;D0 := sFree-s (= bytes to reclaim).
+        MOVE.L    A0,A1	;Points to free block.
+        CMPI.L    #MinFree24,D0	;Enough to reclaim?						<v1.2>
+;No, skip.
+        BCS.S     MakeBk_MBUseAll ;]
+        TST.W     D3	;Make block at end of free?
+;No, skip.
+        BEQ.S     MakeBk_1 ;]
+        TST.B     Flags(A6)	;Also check FRelAtEnd of flags
+; for non-zero . . .
+        BPL.S     MakeBk_1 ;]
+        ADD.L     D0,A1	;Offset by reclaim bytes.
+;Go make free block.
+        BRA.S     MakeBk_MBFree ;]
+
+MakeBk_1 ;]
+        ADD.L     D2,A0	;Place free block at end (at b + s).
+
+MakeBk_MBFree ;]
+;Byte count in D0.
+        BSR.W     MakeBkF ;]
+;Create allocated block.
+        BRA.S     MakeBk_MBDone ;]
+
+MakeBk_MBUseAll ;]
+        MOVE.L    D4,D2	;s := sFree (Use all of the block).
+
+MakeBk_MBDone ;]
+        MOVE.L    D2,D0	;s = size of block.
+        NEG.L     D0
+        BSR.W     AdjustFree
+        MOVE.L    A1,A0	;Move b pointer to result reg.
+        ROR.L     #2,D1	;Move type to tag bits.
+        ADD.L     D2,D1	;And add in block length.
+        MOVE.L    D1,TagBC24(A0)	;Set up block header.
+        MOVEM.L   (SP)+,D0-D2/D4/A1	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure HBlockMove;
+;
+; Calls OS BlockMove to move stuff around.
+;
+; Arguments:
+;		D0: 	s:		Number of bytes to be moved.
+;		A0: 	pSrc:	points to source block.
+;		A1: 	pDst:	points to destination block.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		None.
+;
+; Called By: CompactHp,RelocRel
+;
+
+HBlockMove
+        MOVEM.L   D0-D2/A0-A2,-(SP)	;Save registers
+        MOVE.L    $4B8,A2 ;]
+        JSR       (A2)
+        MOVEM.L   (SP)+,D0-D2/A0-A2	;Restore register.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function CompactHp(s: Size): [bFree: Block; sMax: Size];
+;
+; Compacts heap by moving relocatable blocks downwards until a
+;	contiguous free region at least s bytes long is found or until
+;	the end of the heap is reached.  Returns a pointer to the free
+;	block, or Nil if no free block large enough was found.	Also
+;	returns size of largest free block found so far.
+; Change start code to accommodate (unlikely) case that first block in zone 	<27Apr85>
+;	is free.  Used to just skip over initial MP block.
+;
+; Called by BkCompactS: 1) initially
+;						2) after growing zone
+;						3) after purging (actually by PurgeHeap)
+;						4) in loop, each time after calling growzone proc
+;
+; Arguments:
+;		D0: 	s:		Amount of space needed by caller.
+;		A6: 	z:		Zone to be purged.
+;
+; Result:
+;		A0: 	bFree:	points to available free space, or Nil.
+;		D1: 	sMax:	size of largest free block found in search (even if
+;						 A0 is nil).
+;
+; Registers:
+;		D0: 	sThis:	Physical size of current block.
+;		D1: 	sMax:	Size to date of largest free block found.
+;		D2: 	sFree:	Cumulative size of this free block.
+;		D3: 	s:		Amount of space needed by caller.
+;		D4: 	t:		Temporary holds flags byte of Master Pointer.
+;		D5: 	fScan:	Scan flag.
+;		A0: 	bSrc:	Source address for compacting moves.
+;		A1: 	bDst:	Destination address for compacting moves.
+;		A2: 	bScan:	Block scan last started from.
+;		A3: 	h:		Handle for relocatable block being moved.
+;		A4: 	pNew:	New Pointer for relocatable block being moved.
+;
+; Called By: CompactMem,BkCompactS,PurgeHeap
+
+CompactHp ;]
+        MOVEM.L   D0/D2-D5/A1-A4,-(SP)	;Save registers.
+        MOVE.L    D0,D3	;Amount of space needed.
+        MOVEQ     #0,D1	;sMax := 0.
+        LEA       HeapData(A6),A0	;bDst := first block in zone.
+;...just in case first block is free  <27Apr85>
+        BRA.S     CompactHp_CHStart ;]
+
+CompactHp_CHSeekFree ;]
+        MOVE.L    TagBC24(A0),D4	;Block header.
+        AND.L     MaskBC,D4	;Byte count only.
+        ADD.L     D4,A0	;Point to next block.
+        CMP.L     BkLim(A6),A0	;At End of Zone?
+;Yes, quit.
+        BCC.S     CompactHp_CHFndFree ;]
+
+CompactHp_CHStart ;]
+        TST.B     TagBC24(A0)	;Is this block free?
+;No, try next one.
+        BNE.S     CompactHp_CHSeekFree ;]
+
+CompactHp_CHFndFree ;]
+        BTST      #FNSelCompct,Flags(A6)	;use non-selective compact?
+        SEQ       D5	;fScan := true if not.
+        MOVE.L    A0,A2	;Remember region start
+
+CompactHp_CHNR2 ;]
+        MOVE.L    A0,A1	;bDst := bSrc.
+        MOVEQ     #0,D2	;sFree := 0.
+
+CompactHp_CHNextBlock ;]
+        CMP.L     BkLim(A6),A0	;Done with all blocks in zone ?
+;Yes, Fail return.
+        BCC.S     CompactHp_CHRtsFail ;]
+        MOVE.L    TagBC24(A0),D0	;Get block header.
+        AND.L     MaskBC,D0	;Extract byte count.
+        TST.B     TagBC24(A0)	;What kind of block here?
+;Free Block.
+        BEQ.S     CompactHp_CHFreeBlock ;]
+;Non-Relocatable Block.
+        BPL.S     CompactHp_CHNextFree ;]
+												;Process relocatable block.
+        MOVE.L    Handle24(A0),A3	;Handle offset.
+        ADD.L     A6,A3	;Convert to handle reference.
+        TST.B     (A3)	;Is block locked?
+;Yes, don't move it.
+        BMI.S     CompactHp_CHNextFree ;]
+        TST.B     D5	;Scanning?
+;Then don't move any blocks.
+        BNE.S     CompactHp_CHNextRel ;]
+        LEA       BlkData24(A1),A4	;Point to bDst data.
+        MOVE.B    (A3),D4	;Save old purge flag.
+        MOVE.L    A4,(A3)	;Update master pointer.
+        MOVE.B    D4,(A3)	;Restore purge flag.
+        BSR.S     HBlockMove	;Move block from bSrc to bDst.
+        ADD.L     D0,A1	;Update bDst.
+;Do next block.
+        BRA.S     CompactHp_CHNextRel ;]
+
+CompactHp_CHFreeBlock ;]
+        ADD.L     D0,D2	;Update sFree.
+        MOVE.L    A1,A3	;In case we're done!
+        CMP.L     D3,D2	;sFree >= s?
+;br if we haven't found enough.
+        BCS.S     CompactHp_CHNextRel ;]
+        TST.B     D5	;were we scanning?
+;Br if not (we're done).
+        BEQ.S     CompactHp_CHRts ;]
+        CLR.B     D5	;Do it 4 real this time . . .
+        MOVE.L    A2,A0	;Reset to scan start.
+;And do it 4 real this time.
+        BRA.S     CompactHp_CHNR2 ;]
+
+CompactHp_CHNextRel ;]
+        ADD.L     D0,A0	;Else update bSrc.
+;Do next block.
+        BRA.S     CompactHp_CHNextBlock ;]
+
+CompactHp_CHNextFree ;]
+;Make a Free block.
+        BSR.S     MakeFree ;]
+;Do next region.
+        BRA.S     CompactHp_CHSeekFree ;]
+
+CompactHp_CHRtsFail ;]
+        SUB.L     A3,A3	;Return Nil if not found.
+
+CompactHp_CHRts ;]
+;Free up last block.
+        BSR.S     MakeFree ;]
+        MOVE.L    A3,A0	;Return pointer to free space.
+        MOVE.L    A0,AllocPtr(A6)	;Set rover here.
+        MOVEM.L   (SP)+,D0/D2-D5/A1-A4	;Restore registers.
+        RTS       	;Return to caller.
+
+MakeFree ;]
+        TST.L     D2	;sFree = 0?
+;Yes, do nothing here.
+        BEQ.S     MakeFree_2 ;]
+        TST.B     D5	;Scanning only?
+;Br if so.
+        BNE.S     MakeFree_1 ;]
+        MOVE.L    D2,TagBC24(A1)
+
+MakeFree_1 ;]
+        CMP.L     D2,D1	;sMax >= sFree?
+;Yes, leave sMax untouched.
+        BCC.S     MakeFree_2 ;]
+        MOVE.L    D2,D1	;sMax := sFree.
+
+MakeFree_2 ;]
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function MaxLimit(adrLim: Adr): Adr;
+;
+; Returns a safe value for growing applZone, dynamically based on the
+; ToMaxLimit: MIN( (BufPtr-DefltStack), (SP-MinStack) )
+; MaxLimit:   MIN( (proposed limit),    (SP-MinStack) )
+;
+; Argument:
+;		D2: 	adrLim: Proposed Appl Limit value.
+;
+; Result:
+;		D1: 	adrLim: New Appl Limit value.
+;		D2: 	BufPtr-DefltStack
+;
+; Register:
+;		D1: 	adrCei: Temporary limit value ceiling.
+;
+; Called By: SetApplBase(ToMaxLimit),InitApplZone(ToMaxLimit),GrowZone
+;
+
+ToMaxLimit
+        MOVE.L    BufPtr,D2	;stack bottom, beginning of time
+        SUB.L     DefltStack,D2	;useful static value
+
+MaxLimit ;]
+        MOVE.L    SP,D1	;D1 := SP, possibly with high bits set
+        AND.L     MaskPtr,D1	;D1 := SP, stripped
+        SUB.L     MinStack,D1	;Allow some stack margin.
+        CMP.L     D2,D1	;adrCei < adrLim?
+;Yes, return adrCei as adrLim.
+        BCS.S     MaxLimit_2 ;]
+        MOVE.L    D2,D1	;No, return adrLim as adrLim.
+
+MaxLimit_2 ;]
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure ZoneAdjustEnd;
+;
+; Adjusts the end of the specified zone to the address provided in A0.
+;	It is only safe to call this on the System Zone when the Application
+;	Zone is about to be initialized.
+;
+; Arguments:
+;		A0: 	adrEnd: New heap end address.
+;		A6: 	z:		Zone whose end will be adjusted.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		D0: 	dSize:	Amount zone will be grown by.
+;		A0: 	adrOld: Old heap end address.
+;		A2: 	adrT:	address temporary.
+;		A3: 	adrEnd: New heap end address.
+;
+; Called By: SetApplBase,GrowZone
+
+ZoneAdjustEnd ;]
+        MOVEM.L   D0/A0/A2-A3,-(SP)	;Save registers.
+        MOVE.L    A0,A3	;New Heap End.
+        MOVE.L    BkLim(A6),A0	;Current Heap End.
+        MOVE.L    A3,D0	;New Heap End.
+        SUB.L     A0,D0	;Compute size increase.
+        MOVE.L    #MinFree24,TagBC24(A3)	;Size of new end block.			<v1.2>
+;make it a free block
+        BSR.W     MakeBkF ;]
+        BSR.W     AdjustFree	;Adjust zone free count.
+        MOVE.L    A3,BkLim(A6)	;Point zone obj. at new end block.
+        MOVEM.L   (SP)+,D0/A0/A2-A3	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure GrowZone(s: Size);
+;
+; GrowZone tries to grow the application heap by (s rounded up to next
+;	1024 byte boundary).  If not successful, tries to grow it at least
+;	up to (SP-MinStack) boundary.  HeapEnd is set up in INitZone and can only be
+;	changed here.
+;
+; This is one of the few locations where arithmetic is done on an input size request.	<21May85>
+;	Watch for carry out when size is added to current zone, as is the case when the
+;	requested size is 'negative'.
+;
+; Massive change: Across 'historical' upward GrowZone, D3 records how much of		<14Apr85>
+;	the request is actually met.  If it's nonzero at GZClnUp, and the conditional
+;	assembly permits, then try growing downward.  Round any growth up to next 4K to
+;	make it worth the trouble, but bound the ApplZone below by SysZone, of course,
+;	and don't allow an increase smaller than minFree.  The change is simple.  Move
+;	the header down; make a free block of the space between the header and what was
+;	the first block; and then update the relative handles of the pointers (decrementing
+;	by the delta) and of the handles (incrementing by the delta).
+;
+;
+; Arguments:
+;		D0: 	s:		Number of bytes to add to the zone.
+;		A6: 	z:		Zone to be grown.  Must only point to ApplZone.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		D0: 	s:		Amount of zone size increase.
+;		D1: 	adrLim: New ApplLimit.
+;		D2: 	adrEnd: Heap End; then temp 												<14Apr85>
+;		D3: 			amount satisfied upward; then flag for TheZone=ApplZone 			<14Apr85>
+;		A0: 	adrEnd: New Heap End; then temp 											<14Apr85>
+;		A1: 			temp.																<14Apr85>
+;		A2: 			temp.																<14Apr85>
+;
+; Called By: BkCompactS, MakePtrSpc 														<14Apr85>
+;------ 24 bit version--------
+
+GrowZone ;]
+        MOVEM.L   D0-D3/A0-A2,-(SP)	;Save registers.							<14Apr85>
+        ADDI.L    #$400,D0	;Add 1024 bytes to size.
+        ANDI.W    #$FC00,D0	;Round it down.
+        MOVE.L    D0,D3	;This is how much we need.					<14Apr85>
+        MOVE.L    ApplLimit,D2	;Current ApplLimit.
+;Compute new ApplLimit value.				<v1.1>
+        BSR.S     MaxLimit ;]
+        MOVE.L    HeapEnd,D2	;Current HeapEnd.
+        CMP.L     D2,D1	;New ApplLimit <= HeapEnd?
+;Yes, can't grow heap.
+        BLS.S     GrowZone_GZClnUp ;]
+        ADD.L     D0,D2	;Projected HeapEnd.  This may carry-out.	<21May85>
+;CarrySet => D0 looks negative.  Retreat!	<21May85>
+        BCS.S     GrowZone_GZClnUp ;]
+        CMP.L     D2,D1	;New ApplLimit <= New HeapEnd?
+;Yes, just grow as much as we can.
+        BCS.S     GrowZone_GZPartGrow ;]
+        MOVE.L    D2,D1	;Set HeapEnd to new value.
+        MOVEQ     #0,D3	;We won't need any more after that.    		<14Apr85>
+;Go move end block, etc.
+        BRA.S     GrowZone_GZAdjFree ;]
+
+GrowZone_GZPartGrow ;]
+        MOVE.L    D1,D0	;Use ApplLimit as new HeapEnd.
+        SUB.L     HeapEnd,D0	;Compute number of bytes grown.
+        CMPI.L    #MinFree24,D0	;Bytes grown < MinFree?						<v1.2>
+;Yes, just don't grow at all.
+        BCS.S     GrowZone_GZClnUp ;]
+				; We need contiguous space -- so don't bother splitting high and low.
+				;  Sub.L   D0,D3				;Diminish need by amount to be grown.   	<14Apr85>
+
+GrowZone_GZAdjFree ;]
+        MOVE.L    D1,HeapEnd	;Set HeapEnd.
+        MOVE.L    D1,A0	;Pass HeapEnd to ZoneAdjustEnd.
+;Move end of zone to HeapEnd.
+        BSR.S     ZoneAdjustEnd ;]
+
+GrowZone_GZClnUp ;]
+        MOVEM.L   (SP)+,D0-D3/A0-A2	;Restore registers. 						<14Apr85>
+        RTS       	;Sole exit point from GrowZone. 			<14Apr85>
+
+;----------------------------------------------------------------------	{4}
+;
+; Function ActualS(s: Size): Size;
+; Argument:
+;		D0: 	s:		logical size.
+;
+; Result:
+;		D0: 	sAct:	actual physical size needed for block.
+;
+; Registers:
+;		D0: 	sTemp:	size undergoing computation.
+;
+; Called By: CompactMem,PurgeMem,AllocBk,SetSize
+*R The ROM adds the eight-byte header, rounds to an even size, and enforces a 12-byte minimum.
+
+ActualS ;]
+        ADDQ.L    #BlkData24,D0	;Add Block overhead.
+        ADDQ.L    #1,D0
+        ANDI.W    #-2,D0 ;]
+        CMPI.L    #MinFree24,D0	;sAct >= minFree?
+;Yes, skip.
+        BCC.S     ActualS_1 ;]
+        MOVEQ     #MinFree24,D0	;No, guarantee minimum size.
+
+ActualS_1 ;]
+        RTS       
+
+;----------------------------------------------------------------------
+;
+; Function GetSize(p: Ptr): Size;
+;
+; Returns the actual data size of a memory manager block.
+;
+; Argument:
+;		A0: 	p:		points to block text region
+;
+; Result:
+;		D0: 	s:		size in bytes
+;
+; Registers:
+;		D0: 	s:		size.
+;		D1: 	dSize:	delta size.
+;		A0: 	p:		points to block text.
+;		A0: 	b:		points to block header.
+;
+; Called By: GetPtrSize,GetHandleSize,SafeReloc,RelocRel,SetSize(2)
+
+GetSize
+        MOVE.L    D1,-(SP)	;Save register.
+        SUBQ.L    #BlkData24,A0	;Point to block header.
+        MOVEQ     #$F,D1	;Mask for delta field.
+        AND.B     (A0),D1	;Logical size difference.
+        MOVE.L    TagBC24(A0),D0	;Get size of block.
+        AND.L     MaskBC,D0	;Discard tag and delta.
+        SUBQ.L    #BlkData24,D0	;Adjust for header length.
+        SUB.L     D1,D0	;Subtract size difference.
+        ADDQ.L    #BlkData24,A0	;Point to block text.
+        MOVE.L    (SP)+,D1	;Restore register.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure ClearGZStuff
+;
+;		Clears out the grow zone handle/pointer for the root flavor only
+;
+;		Arguments: None
+;
+;		Called by: SetSize,ReallocHandle
+;
+;----------------------------------------------------------------------
+
+ClearGZStuff
+        CLR.L     GZRootHnd	; clear 'em out
+        CLR.L     GZRootPtr
+        RTS       
+
+;----------------------------------------------------------------------
+;
+; Function SetSize(p: Ptr; h: Handle; s: Size): ErrCode;
+;
+; This routine is used to set the size of memory blocks -- except shrinking ROZ blocks. 		<04Mar85>
+; Before call is made to RelocRel, block is marked nonpurgeable, though user's growZone         <10Apr85>
+; may go ahead and blitz it anyway. 															<10Apr85>
+;
+; New strategy for handles:  If there is sufficient free space beyond block, proceed as usual.	<18Apr85>
+; If not unlocked relocatable, proceed as usual.  Look for free space below growing block,		<18Apr85>
+; coalescing free space from beginning of zone.  If there is free space of SUFFICIENT size, 	<18Apr85>
+; then slide block down, but no further than required to grow the block, including space beyond <18Apr85>
+; the end.	Else (sliding doesn't help) check the relative sizes of the growing block and its   <18Apr85>
+; successor in the heap; if the latter is larger, skip the MakeSpace call, and go right on to	<18Apr85>
+; relocate and grow the growing block.															<18Apr85>
+; Code is conditionally assembled according to SmartSetSize flag.								<18Apr85>
+;
+; Arguments:
+;		D0: 	s:		New logical size for block.
+;		A0: 	p:		Pointer to block
+;		A1: 	h:		Handle for block, or Nil if Non-Relocatable.
+;		A6: 	z:		Zone holding block.
+;
+; Result:
+;		D0: 	ec: 	error code.
+;								memFullErr: 	Not enough room to grow.
+;								0:				Success.
+;
+; Registers:
+;		A0: 	p:		Pointer to block.
+;		A0: 	b:		Points to block header.
+;		A2: 	b:		Points to block header.
+;		A2: 	bFree:	Points to header of following free block.
+;		D0: 	sCur:	Current size of block.
+;		D0: 	SNew:	Sometime, number of bytes in new block.
+;		D1: 	sNew:	Number of bytes in new block.
+;		D2: 	sCAct:	Physical size of current block.
+;		D3: 	sNAct:	Physical size of new block.
+;		D4: 	sCAct:	Copy of physical size of current block.
+;		D4: 	t:		Temporary.
+;
+; Called By: SetPtrSize,SetHandleSize
+; ----- 24 bit version -----
+
+SetSize
+        MOVEM.L   D1-D6/A0-A3,-(SP)	;Save registers.								<18Apr85>
+        MOVE.B    (A1),-(SP)	;Save flags of block
+        MOVE.L    D0,D1	;Save desired logical size.
+;Adjust D0 to new physical size.
+        BSR.S     ActualS ;]
+        MOVE.L    D0,D3	;New physical size.				<2> kc.end
+        BSR.S     GetSize	;Get current logical size in D0.
+        CMP.L     D0,D1	;sNew = sCur?
+;Yes, return to caller.
+        BEQ.W     SetSize_SSDone ;]
+        MOVE.L    A0,A2	;Points to block text.
+        SUBQ.L    #BlkData24,A2	;Point to block header.
+        MOVE.L    TagBC24(A2),D2	;Get block header.
+        AND.L     MaskBC,D2	;Extract physical size.
+        MOVE.L    D2,D4	;Old physical size.
+        CMP.L     D2,D3	;sNAct = sCAct?
+;Yes, just set logical size.
+        BEQ.W     SetSize_SSLogical ;]
+;sNAct < sCAct, shrink the block.
+        BCS.W     SetSize_SSShrink ;]
+; The block must be grown.																	<18Apr85>
+; Registers: D0=D3=new phys size; D1=new log size; D2=D4=phys size; D5=??					<18Apr85>
+;			 A0=text ptr; A1=handle; A2=block ptr; A3=??									<18Apr85>
+; Across the code use registers:															<18Apr85>
+;			 D0=tmp; D1=new log size; D2=D4=phys size; D3=new phys size; D5=delta size		<18Apr85>
+;			 A0=tmp; A1=handle; 	  A2=block ptr;    A3=tmp								<18Apr85>
+;																							<18Apr85>
+; First, set up some registers and the GZ's.                                                <18Apr85>
+        MOVE.L    D3,D5
+        SUB.L     D2,D5	;delta physical size
+        MOVE.L    A1,GZRootHnd	;record handle being sized
+        MOVE.L    A0,GZRootPtr	;record pointer  "	   "
+; In this loop, A3 steps across the blocks and D6 accumulates free space.					<18Apr85>
+        MOVE.L    A2,A3
+        ADD.L     D4,A3	;next block after growing
+        MOVEQ     #0,D6	;initial accumulation
+
+SetSize_SSAftFree ;]
+        CMP.L     bkLim(A6),A3	;have we reached the heap end?
+;Carry Clear => beyond the end
+        BCC.S     SetSize_SSAFEnd ;]
+        TST.B     (A3)	;Eq => free block
+        BNE.S     SetSize_SSAFEnd ;]
+        ADD.L     TagBC24(A3),D6	;accumulate free space
+        ADD.L     TagBC24(A3),A3	;bump on to next block
+;and continue looping
+        BRA.S     SetSize_SSAftFree ;]
+; Detail: be sure to go on if exactly enough space is there -- for no sliding will be done! <18Apr85>
+
+SetSize_SSAFEnd ;]
+        SUB.L     D6,D5	;D5 := amount unrequited by free space at end
+;Lower or Same => enough space for easy growth!
+        BLS.W     SetSize_SSAsUsual ;]
+; Provided the block is unlocked, relocatable, try coalescing free space from below, remembering	<18Apr85>
+; the 'last' block to give a backward peek when A2 is reached.	The logic follows BFindS farily 	<18Apr85>
+; closely.	Starting at the heap's beginning, outer loop skips over allocated blocks (watching      <18Apr85>
+; for the one being grown);  when a free block is hit, the inner loop starts coalescing until		<18Apr85>
+; allocated block (or growing one) is found.  The loop terminates with A0 pointing to the last		<18Apr85>
+; free block found, and D0 equal to the amount of free space immmediately before the growing block. <18Apr85>
+        MOVE.L    A1,D0
+;Eq => it's a ptr, cannot move
+        BEQ.W     SetSize_SSAsUsual ;]
+        TST.B     (SP)	;remember, the flags were saved earlier
+;Mi => locked, cannot move
+        BMI.W     SetSize_SSAsUsual ;]
+        LEA       heapData(A6),A3	;start with the first block
+
+SetSize_CoalLoop ;]
+        CMP.L     A2,A3
+;Carry Clear => beyond growing pointer
+        BCC.S     SetSize_CoalFini ;]
+        MOVE.L    TagBC24(A3),D0
+        TST.B     TagBC24(A3)
+;Eq => free block found
+        BEQ.S     SetSize_CoalFree ;]
+        AND.L     Lo3Bytes,D0	;isolate current block length
+        ADD.L     D0,A3	;bump up to next block
+        MOVEQ     #0,D0	;mark 'no immediately preceeding free space'
+        BRA.S     SetSize_CoalLoop ;]
+
+SetSize_CoalFree ;]
+        MOVE.L    A3,A0	;start of free space
+        MOVEQ     #0,D0	;init accumulated free space
+
+SetSize_CoalFLoop ;]
+        CMP.L     allocPtr(A6),A3	;is the rover at a disappearing block?			<23Apr85>
+;NotEqual => no...								<23Apr85>
+        BNE.S     SetSize_1 ;]
+        MOVE.L    A0,allocPtr(A6)	;don't let allocptr pt to nonexistent block     <23Apr85>
+
+SetSize_1 ;]
+        ADD.L     TagBC24(A3),D0	;accumulate the free space
+        ADD.L     TagBC24(A3),A3	;bump to next block
+        TST.B     TagBC24(A3)
+;Eq => more free space!
+        BEQ.S     SetSize_CoalFLoop ;]
+        MOVE.L    D0,TagBC24(A0)	;update size of coalesced block
+;continue with this non-free block
+        BRA.S     SetSize_CoalLoop ;]
+; We exit the above loop with D0=free space immediately below growing block, A0 pointing	<18Apr85>
+; to it.  If at least 1/4 of the unrequited space can be made up by sliding, DO IT. 		<18Apr85>
+; In case of a slide: if the free space is within a few minFree's of the needed space,      <18Apr85>
+; go the whole way, otherwise slide just enough to meet the needs.							<18Apr85>
+; A special case arises: when D5 is tiny, a fourth is zero, and this is BAD news if D0 is	<18Apr85>
+; also zero!  The test BLS (as opposed to BCS) catches this case along with tinies. 		<18Apr85>
+; Yet another goof -- must bound unrequited size by minFree, since that's the size of block <18Apr85>
+; of free block we'll make at the end.                                                      <18Apr85>
+
+SetSize_CoalFini ;]
+        MOVE.L    D5,D6	;unrequited space
+        LSR.L     #2,D6	;1/4 of it
+        CMP.L     D6,D0
+;Lower or Same => too little space free (or none available)
+        BLS.S     SetSize_SSNoSlide ;]
+        MOVEQ     #minFree24,D6	;Lower bound for unrequited					<v1.2>
+        CMP.L     D5,D6
+;Lower or Same => D5 big enough for slide
+        BLS.S     SetSize_5 ;]
+        MOVE.L    D6,D5	;Make at least minFree space...
+
+SetSize_5 ;]
+        MOVEQ     #minFree24+minFree24,D6	;unscientific slop							<v1.2>
+        ADD.L     D5,D6	;unrequited space + slop
+        CMP.L     D6,D0
+;Carry Set => not enough extra to split free space
+        BCS.S     SetSize_SSFullSlide ;]
+; To do a partial slide, decrement the size of the lower block by the amount we'll slide.   <18Apr85>
+        SUB.L     D5,D0	;Size minus amount of slide
+        MOVE.L    D0,TagBC24(A0)	;Force size of free block (don't need A0 now)
+        ADD.L     D0,A0	;Target slot for growing block
+        MOVE.L    D5,D0	;Size of slide, for 'sliding' into FullSlide
+; Full slide code: D0=amt of slide; D4=size of sliding block; D6=tmp; A0=dst of slide;		<18Apr85>
+; A1=handle to sliding block; A2=ptr to sliding block.	Be sure to update the handle!		<18Apr85>
+; And after the block is moved, update GZRootPtr and allocPtr, since the latter may point	<18Apr85>
+; to a nonexistent free block.																<18Apr85>
+
+SetSize_SSFullSlide ;]
+        MOVE.L    A0,(A1)	;new location for sliding/growing block
+        ADDQ.L    #blkData24,(A1)	;be sure handle points to text of block!!!! (you idiot)
+        MOVE.B    (SP),(A1)	;restore the tags from home on the stack
+        MOVEM.L   D0/A1,-(SP)	;save amt of slide and handle
+        CMP.L     allocPtr(A6),A2	;is the rover at the block we're moving?    <23Apr85>
+;NotEqual => rover is elsewhere...			<23Apr85>
+        BNE.S     SetSize_10 ;]
+        MOVE.L    A0,allocPtr(A6)	;point rover at new location				<23Apr85>
+
+SetSize_10 ;]
+        EXG       A0,A2	;A0=src of growing block, A1=dst
+        MOVE.L    A2,A1	;dst, for blockmove
+        MOVE.L    D4,D0	;current phys length is length of move!
+        BSR.W     HBlockMove
+        MOVE.L    A2,A0	;ptr to moved block
+        ADD.L     D4,A0	;ptr just beyond -- to new free block
+        MOVE.L    (SP)+,TagBC24(A0)	;stuff size of new free block
+        MOVE.L    (SP)+,A1	;restore handle
+        LEA       blkData24(A2),A0	;text ptr to growing block
+        MOVE.L    A0,GZRootPtr
+        BRA.S     SetSize_SSAsUsual ;]
+; Our last resort: check the block following ours; if it's larger and allocated, don't even 	<18Apr85>
+; bother trying to move it. 																	<18Apr85>
+
+SetSize_SSNoSlide ;]
+        MOVE.L    A2,A0
+        ADD.L     D4,A0	;ptr to following block
+        MOVE.L    TagBC24(A0),D0
+        AND.L     Lo3Bytes,D0	;isolate size
+        CMP.L     D0,D3
+;Carry Clear => new size is large, so go the normal route
+        BCC.S     SetSize_SSAsUsual ;]
+        TST.B     TagBC24(A0)
+;Not Equal => larger, alloc block following
+        BNE.S     SetSize_SSDoReloc ;]
+; This resumes the original SetSize growth code.  The register setup must be adjusted to:		<18Apr85>
+;		 D0=??; D1=new log size; D2=D4=phys size; D3=new phys size; D4=phy size; D5=??; D6=??	<18Apr85>
+;		 A0=??; A1=handle;		 A2=block ptr;	  A3=?? 										<18Apr85>
+
+SetSize_SSAsUsual ;]
+        MOVE.L    A2,A0	;Points to block header.
+        MOVE.L    D3,D0	;New physical size.
+        SUB.L     D2,D0	;Compute delta bytes.
+        ADD.L     D2,A2	;Point to where space is needed
+        BSET      #Lock,(A1)	;Lock block so that MakeSpace
+												;  doesn't move it by accident.
+;Try making room after this block.
+        BSR.W     MakeSpace ;]
+        BCLR      #Lock,(A1)	;Unlock the block.
+        MOVE.L    A2,D4	;Did we succeed?
+;Yes, keep going
+        BNE.S     SetSize_SSEnough ;]
+; New entry point to bypass MakeSpace when following block is bigger than one we're growing.    <18Apr85>
+
+SetSize_SSDoReloc ;]
+        MOVE.L    A1,D4	;No, maybe we can relocate block.
+;No, block is Non-Relocatable.
+        BEQ.S     SetSize_SSFail ;]
+        TST.B     (SP)	;Can we move the growing block?
+;No, block is locked.
+        BMI.S     SetSize_SSFail ;]
+        MOVE.L    D1,D0	;Desired new logical size.
+; Try to grow the (unlocked) block by relocating&growing simultaneously.  Across the call	<10Apr85>
+; mark it nonpurgeable, since we WANT it!  Note must retrieve previous state from stack 	<10Apr85>
+; unlike the BSet/BClr pair bracketing MakeSpace above.  To get here, the Lock bit must be	<10Apr85>
+; clear, so the blithe BClr above jibes with our restoration from the stack.				<10Apr85>
+        BCLR      #Purge,(A1)	;Try not to purge it while moving it!		<10Apr85>
+;Relocate the old block into a new.
+        BSR.W     RelocRel ;]
+        MOVE.B    (SP),(A1)	;Restore previous state.					<10Apr85>
+        BSR.W     ClearGZStuff	;mark gz stuff as done
+;Return to caller.
+        BRA.S     SetSize_SSExit ;]
+
+SetSize_SSFail ;]
+        BSR.W     ClearGZStuff	;mark gz stuff as done
+        MOVEQ     #memFullErr,D0	;Not enough room to reloc. block.
+;Return to caller.
+        BRA.S     SetSize_SSExit ;]
+
+SetSize_SSEnough ;]
+        BSR.W     ClearGZStuff	;mark gz stuff as done
+        MOVE.L    TagBC24(A2),D0	;Length of free space after.
+        MOVE.L    D0,D4	;Physical size of free space.
+        ADD.L     D2,D4	;Physical size of new combined blk.
+        MOVE.L    A0,A2	;Points to block.
+        MOVE.B    TagBC24(A2),D5	;Save tag, delta size.
+        MOVE.L    D4,TagBC24(A2)	;Set block physical size.
+        MOVE.B    D5,TagBC24(A2)	;Restore tag, delta size fields.
+        NEG.L     D0
+        BSR.S     AdjustFree
+
+SetSize_SSShrink ;]
+        SUB.L     D3,D4	;Number of bytes to shrink block.
+        CMPI.L    #MinFree24,D4	;sFree < MinFree?							<v1.2>
+;Yes, set logical size only.
+        BCS.S     SetSize_SSLogical ;]
+        BTST      #ROZ,flags(A6)	;don't shrink ROZ blocks                        <04Mar85>
+;												<04Mar85>
+        BNE.S     MM_410A78 ;]
+        MOVE.L    A2,A0	;Points to block.
+        ADD.L     D3,A0	;Point to new free block.
+        MOVE.B    TagBC24(A2),D5	;Save tag, delta size.
+        MOVE.L    D3,TagBC24(A2)	;Set block physical size.
+        MOVE.B    D5,TagBC24(A2)	;Restore tag, delta size fields.
+        MOVE.L    D4,D0	;Size of new free block.
+;Release free space.
+        BSR.W     MakeBkF ;]
+        BSR.S     AdjustFree	;And account for new free space.
+
+SetSize_SSLogical ;]
+        MOVE.L    A2,A0	;Points to block.
+        MOVE.L    D1,D0	;New logical size.
+;Set logical size.
+        BSR.W     SetLogSize ;]
+
+SetSize_SSDone ;]
+        MOVEQ     #0,D0	;Success result code.
+
+SetSize_SSExit ;]
+        MOVE.B    (SP)+,(A1)	;Restore MP flag byte.
+        MOVEM.L   (SP)+,D1-D6/A0-A3	;Restore registers. 						<18Apr85>
+        RTS       	;Return to caller.
+
+MM_410A78 ;]
+        MOVEQ     #memROZWarn,D0	;											<04Mar85>
+;											<04Mar85>
+        BRA.S     SetSize_SSExit ;]
+
+;----------------------------------------------------------------------
+;
+; Procedure AdjustFree(dSize: Size);
+;
+; Adjusts the free byte count of the zone by dCB.  System fatal error
+;	if an attempt is made to decrease the zone byte count to less than
+;	zero.
+;
+; Arguments:
+;		D0: 	dSize:	delta in size.
+;		A6: 	z:		zone whose free byte count will be adjusted.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		D0: 	dSize:	delta in size.
+;		D0: 	CB: 	new free byte count.
+;
+; Called By: MakeBk,PurgeBlock,ZoneAdjustEnd,SafeReloc(2),FreeBk,
+;				SetSize(2)
+
+AdjustFree
+        ADD.L     D0,ZCBFree(A6)	; New ZCBFree.
+        BMI.S     MM_410A84 ;]
+        RTS       	; Return.
+
+MM_410A84 ;]
+        MOVEQ     #negZcbFreeErr,D0	; Trouble Code (over 4 Gbyte).			<C206>
+        _SysError
+
+;----------------------------------------------------------------------
+;
+; Function NextMaster: Handle;
+;
+; Gets a fresh master pointer, and returns a handle to it.	If none
+;	are available, calls on HMakeMoreMasters to create more.  Returns
+;	Nil if HMakeMoreMasters fails.
+;
+; Argument:
+;		A6: 	z:		Zone from which fresh master is to be gotten.
+;
+; Result:
+;		A1: 	h:		Handle for new master pointer, or Nil.
+;
+; Registers:
+;		D0: 	t:		Temporary, used to test handle for Nil.
+;		A1: 	h:		Handle for next master pointer.
+;
+; Called By: NwHandle
+; ----- 24 bit version -------
+
+NextMaster ;]
+        MOVEM.L   A0/D0,-(SP)	;Save registers.
+        MOVE.L    HFstFree(A6),A1	;Get next handle.
+        MOVE.L    A1,D0	;Are any left?
+;Yes, return this handle.
+        BNE.S     MM_410A98 ;]
+;No, go make more.				<v1.1>
+        BSR.S     HMakeMoreMasters ;]
+;No luck, no room for more.
+        BEQ.S     MM_410A9E ;]
+
+MM_410A98 ;]
+        MOVE.L    (A1),HFstFree(A6)	;Remove handle from list.
+        MOVE.L    A1,D0	;Set condition codes.
+
+MM_410A9E ;]
+        MOVEM.L   (SP)+,A0/D0	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function HMakeMoreMasters: Handle;
+;
+; Makes more Master Pointers (MPs) by allocating a new non-relocatable
+;	block, and then linking the contents of the block onto the free
+;	handle list.
+;
+; Argument:
+;		A6: 	z:		Zone in which new MPs are to be made.
+;
+; Result:
+;		A1: 	h:		Handle for first MP on free list, or Nil.
+;
+; Registers:
+;		D0: 	cMast:	Number of masters to make.
+;		D0: 	sMast:	Size of block to allocate.
+;		D0: 	t:		Temporary used to set condition codes.
+;		D1: 	cMast:	Number of master pointers made.
+;		A0: 	p:		Points to new space for MPs.
+;		A1: 	h:		Nil handle for Non-Rel allocation.
+;		A1: 	h:		Handle being released to pool.
+;
+; Called By: InitZone,NextMaster,MoreMasters									<29jan85>
+; ----- 24 bit version ------
+
+HMakeMoreMasters ;]
+        MOVEM.L   A0/D0-D1,-(SP)	;Save registers.
+        MOVE.W    mAllocCnt(A6),D0	;Number of masters to make.
+        EXT.L     D0
+;Make sure count is > 0
+        BGT.S     MM_410AB2 ;]
+        MOVEQ     #DfltMasters,D0	;If not, use default number.
+
+MM_410AB2 ;]
+        MOVE.L    D0,D1	;Count of master pointers.
+        ASL.L     #2,D0	;Convert MP count to byte count.
+;Clear some room at the low end.
+        BSR.S     MakePtrSpc ;]
+        SUB.L     A1,A1	;Set handle for this block to Nil.
+;Allocate a Non-Relocatable.
+        BSR.W     AllocBk ;]
+;Didn't find any space!
+        BEQ.S     MM_410ACC ;]
+        MOVE.L    A0,A1	;Points to fresh block.
+
+MM_410AC2 ;]
+        BSR.S     ReleaseMP	;Return new MP to list.
+        ADDQ.L    #4,A1	;Point to next MP.
+        SUBQ.W    #1,D1	;Loop counter.
+;Do all fresh handles.
+        BNE.S     MM_410AC2 ;]
+        SUBQ.L    #4,A1	;Point to first MP on list.
+
+MM_410ACC ;]
+        MOVE.L    A1,D0	;Set condition codes.
+        MOVEM.L   (SP)+,A0/D0-D1	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure ReleaseMP(h: Handle);
+;
+; Releases a master pointer to the master pointer pool.
+;
+; Arguments:
+;		A1: 	h:		handle for master pointer being released.
+;		A6: 	z:		Zone into which MP will be released.
+;
+; Result:
+;		None.
+;
+; Registers:
+;		None.
+;
+; Called By: HMakeMoreMasters,FreeBk
+;			   DsposeHandle(Heap)
+
+ReleaseMP
+        MOVE.L    HFstFree(A6),(A1)	;Move old list head to MP.
+        MOVE.L    A1,HFstFree(A6)	;Move handle to new list head.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Procedure MakePtrSpc(s: Size);
+;
+; Tries to create a free space of size s as low in the heap as possible
+; by locating the first possible region and then calling MakeSpace.
+;
+; Added patch code from MSMiscFix after call to MakeSpace.	It used to be			<29jan85>
+; patched in when the call chain got all the way to growZone.  The reasoning
+; here is that the code is only executed when the return value in A2 is NIL,
+; in which case, growZone MUST HAVE BEEN CALLED.
+;
+; Change the patch code to just pass on to the next block strictly after that which <20May85>
+; couldn't be relocated.
+;
+; Add code to run outer loop with OrgApplZone and then ApplZone in case GrowDown	<14Apr85>
+; is nonzero and zone is ApplZone.	Saves new registers D4,A4.
+; In order to keep ptrs as localized as possible, start trying to place them where the
+; first was located, namely just after OrgApplZone.  If that fails, then look down where
+; heap may subsequently have grown.  SUBTLETY -- since first block of original zone is
+; a pointer full of MP's, it's OK to start search midstream at OrgApplZone+bkLim.
+; The moral is: once an MP block, always an MP block!!
+;
+; Arguments:
+;		D0: 	s:		size of block desired.
+;
+; Result:
+;		A2: 	bRgn:	points to block header for reserved block, or Nil.
+;
+; Registers:
+;		D0: 	s:		Size needed.
+;		D1: 			temporary
+;		D2: 	sRgn:	cumulative count of bytes in current region.
+;		D3: 			temp flag for is-it-ApplZone in inner loop. 					<14Apr85>
+;		D4: 			temp flag for is-it-ApplZone in outer loop. 					<14Apr85>
+;		A0: 	bCur:	points to current block.
+;		A1: 			temporary
+;		A2: 	bRgn:	points to region start
+;		A3: 	bLim:	points to last block in zone
+;		A4: 			points to 'apparent' start of zone in inner loop.				<14Apr85>
+;
+; Called By: HMakeMoreMasters
+;			 NewPtr,ResrvMem(Heap)
+; ----- 24 bit version -----
+
+MakePtrSpc ;]
+        MOVEM.L   D0-D4/A0-A1/A3-A4,-(SP)	;Preserve registers, nowadays D4,A4, too.	<14Apr85>
+;Returns real sAct.
+        BSR.W     ActualS ;]
+        MOVE.L    A6,A4	;Presume it's not ApplZone case             <14Apr85>
+        CMP.L     ApplZone,A6	;If EQ & GrowDown then must fix A4			<14Apr85>
+        SEQ       D3	;$FF if so (i.e. we can grow)				<14Apr85>
+; search for good region
+
+MakePtrSpc_MPSpc1 ;]
+        LEA       HeapData(A4),A0	;Start at first block in 'heap' 			<14Apr85>
+        MOVE.L    BkLim(A6),A3	;Last block in zone
+        MOVE.L    A0,A2	;bRgn := first zone block ptr.
+        MOVEQ     #0,D2	;sRgn := 0.
+
+MakePtrSpc_RegionLoop ;]
+        MOVE.L    TagBC24(A0),D1	;Block header
+        AND.L     MaskBC,D1	;Byte count only
+        TST.B     TagBC24(A0)	;Is this block free?
+;Br if so (add to region)
+        BEQ.S     MakePtrSpc_1 ;]
+;Br if non-rel
+        BPL.S     MakePtrSpc_2 ;]
+        MOVE.L    Handle24(A0),A1	;Handle offset.
+        ADD.L     A6,A1	;Handle
+        TST.B     (A1)	;Is block locked?
+;Br if so
+        BMI.S     MakePtrSpc_2 ;]
+
+MakePtrSpc_1 ;]
+        ADD.L     D1,D2	;Add to sRgn
+        ADD.L     D1,A0	;Point to next block
+        CMP.L     D0,D2	;Do we have enough?
+;Br if not
+        BCS.S     MakePtrSpc_4 ;]
+;MakeSpace(bRgn,s)
+        BSR.S     MakeSpace ;]
+;
+; Loop to relocate search in case growZone purged starting point.				<29jan85>
+; Labels offset by 90, to protect the innocent. 								<29jan85>
+; Just relocate at next block beyond current end ptr in A0. 					<20May85>
+        MOVE.L    A2,D2	; get the space?				<29jan85>
+; br if so						<29jan85>
+        BNE.S     MakePtrSpc_96 ;]
+        LEA       HeapData(A4),A2	; start where the original search did		<14Apr85>
+
+MakePtrSpc_92 ;]
+        MOVE.L    TagBC24(A2),D1	; get size of current block 	<29jan85>
+        AND.L     MaskBC,D1
+        ADD.L     D1,A2	; point to next block			<29jan85>
+        CMP.L     A0,A2	; past or equal to current checkpt? 		<29jan85>
+; want HIgher, not CarryClear as before 	<20May85>
+        BHI.S     MakePtrSpc_95 ;]
+        CMP.L     A3,A2	; end of heap reached?			<29jan85>
+; br if not 					<29jan85>
+        BCS.S     MakePtrSpc_92 ;]
+
+MakePtrSpc_95 ;]
+        MOVE.L    A2,A0	; A0 should now be cool 		<29jan85>
+        SUB.L     A2,A2	; restore A2					<29jan85>
+; Now continue with the original MakePtrSpc code... 							<29jan85>
+;
+
+MakePtrSpc_96 ;]
+        MOVE.L    A2,D2	;Did we find it?
+;Exit if so
+        BNE.S     MakePtrSpc_MPSExit ;]
+;Otherwise, look some more.
+        BRA.S     MakePtrSpc_3 ;]
+
+MakePtrSpc_2 ;]
+        ADD.L     D1,A0	;Point to next block
+
+MakePtrSpc_3 ;]
+        MOVE.L    A0,A2	;bRgn := next block ptr.
+        MOVEQ     #0,D2	;sRgn := 0. (next region)
+
+MakePtrSpc_4 ;]
+        CMP.L     A3,A0	;End of zone reached?
+;Loop if not
+        BCS.S     MakePtrSpc_RegionLoop ;]
+        ADDQ.B    #1,D3	;Try to grow zone?
+;Exit if not possible				<14Apr85>
+        BNE.S     MakePtrSpc_MPSOuter ;]
+;Do it
+        BSR.W     GrowZone ;]
+;
+; EXCRUCIATING SUBTLETY HERE:  Two cases can arise, A4 is OrgApplZone (which is 	<14Apr85>
+; always a cool place to start searching, or A4 is an incarnation of ApplZone.		<14Apr85>
+; In the latter case, ApplZone may have changed as a result of the recent call to	<14Apr85>
+; GrowZone.  Even though A4 may now be in the midst of a big new free block,		<14Apr85>
+; bkLim(A4) should nonetheless be the same block it was last time through the loop, <14Apr85>
+; since no coalescing is done in GrowZone.											<14Apr85>
+; The following sequence would fix the problem by adjusting A4 if it turned out that<14Apr85>
+; the first block after the previous ApplZone header could be coalesced.			<14Apr85>
+;
+        BRA.S     MakePtrSpc_MPSpc1 ;]
+
+MakePtrSpc_MPSOuter ;]
+        SUB.L     A2,A2	;No luck.
+
+MakePtrSpc_MPSExit ;]
+        MOVEM.L   (SP)+,D0-D4/A0-A1/A3-A4	;Restore registers, D4&A4,too		<14Apr85>
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function MakeSpace(b: Block; dSize: Size): Block;
+;
+; Try to make a free block of size dSize starting at
+;	block b, and return a pointer to it.
+;
+; Changed exit code to set AllocPtr to be first block of OrgApplZone, so that search for	<27Apr85>
+;	newly freed space will begin at correct place.
+;
+; Arguments:
+;		D0: 	dSize:	amount of space needed at this address.
+;		A2: 	b:		points to block header of first block in region.
+;
+; Result:
+;		A2: 	bAft:	points to block header for succeeding block, or Nil.
+;
+; Registers:
+;		D0:   s,t:		Size needed, temp.
+;		D1: 	s:		Size needed.
+;		D2: 	t:		Temporary byte, used for flags byte of handle.
+;		D3: 	sCum:	Cumulative free byte count.
+;		A0: 	bPur:	points to block being purged.
+;		A0: 	bFree:	points to block being freed.
+;		A1: 	bAft:	points to block header for succeeding block.
+;		A1: 	h:		Handle for block being purged, or otherwise munched.
+;		A2: 	bAft:	points to block header for succeeding block.
+;		A3: 	bCur:	points to block header of block currently being moved.
+;
+; Called By: SetSize,MakePtrSpc
+; ----- 24 bit version -----
+
+MakeSpace ;]
+        MOVEM.L   A0-A1/A3/D0-D3,-(SP)	;Save registers.
+        MOVE.L    D0,D1	;Size needed.
+        MOVE.L    A2,A3	;Advances through following blks.
+        MOVEQ     #0,D3	;Cumulative free byte count.
+
+MakeSpace_MSpLoop ;]
+        CMP.L     D1,D3	;Enough room yet?
+;Yes, exit loop.
+        BCC.S     MakeSpace_MSpDone ;]
+        CMP.L     BkLim(A6),A3	;At end of zone?
+;Yes, give up search.
+        BCC.S     MakeSpace_MSpDone ;]
+        TST.B     TagBC24(A3)	;Is this block free?
+;Yes, let's grab it!
+        BEQ.S     MakeSpace_MSpFree ;]
+;Can't move a Non-Rel block.
+        BPL.S     MakeSpace_MSpDone ;]
+        MOVE.L    Handle24(A3),A1	;Get relative handle.
+        ADD.L     A6,A1	;Convert to absolute handle.
+        MOVE.B    (A1),D2	;This block locked?
+;Yes, give up.
+        BMI.S     MakeSpace_MSpDone ;]
+;Move this block safely.
+        BSR.S     SafeReloc ;]
+;All is well.
+        BEQ.S     MakeSpace_MSpFree ;]
+        BTST      #Purge,D2	;Can we purge this block?
+;No, give up.
+        BEQ.S     MakeSpace_MSpDone ;]
+        MOVE.L    (A1),A0	;Set up pointer to purgeable.
+        SUBQ.L    #BlkData24,A0	;Point to block text field.
+;Purge this block.
+        BSR.W     PurgeBlock ;]
+
+MakeSpace_MSpFree ;]
+        MOVE.L    A3,A0	;Address of block being released.
+        MOVE.L    TagBC24(A0),D0	;Size of block
+        CMP.L     AllocPtr(A6),A0	;Does the rover point here?
+;Skip if not . . .
+        BNE.S     MM_410B98 ;]
+        CLR.L     48(A6) ;]
+
+MM_410B98 ;]
+        ADD.L     D0,D3	;Inc. amount of space found.
+        ADD.L     D0,A3	;Inc. base address of block.
+;Release or move next block.
+        BRA.S     MakeSpace_MSpLoop ;]
+
+MakeSpace_MSpDone ;]
+        AND.L     MaskBC,D3	;Extract only byte count.
+;No space found.
+        BEQ.S     MM_410BA6 ;]
+        MOVE.L    D3,TagBC24(A2)	;Set free block size.
+
+MM_410BA6 ;]
+        CMP.L     D1,D3	;sFnd >= s?
+;Yes, success return.
+        BCC.S     MM_410BAC ;]
+        SUB.L     A2,A2	;reason to call MakeBkf . . .
+
+MM_410BAC ;]
+        CLR.L     48(A6) ;]
+        MOVEM.L   (SP)+,A0-A1/A3/D0-D3	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function SafeReloc(sCum: Size; h: Handle; bAft: Block): ErrCode;
+;
+; Safely relocates a relocatable block.
+;
+; Arguments:
+;		D3: 	sCum:	cumulative free byte count.
+;		A1: 	h:		Handle for block to be moved.
+;		A2: 	bAft:	points to block header for block being built.
+;		A6: 	z:		Zone holding block to be moved.
+;
+; Result:
+;		D0: 	ec: 	error code.
+;								memFullErr: 	No room to relocate block.
+;								0:				Success.
+;
+; Registers:
+;		D0: 	s:		Size of block being built.
+;		A0: 	p:		Pointer to block being moved.
+;		A0: 	ec: 	Saved error code.
+;
+; Called By: MakeSpace
+; ----- 24 bit version -----
+
+SafeReloc ;]
+        MOVE.L    A0,-(SP)	;Save register.
+        MOVE.L    D3,D0	;Is there a free block yet?
+;No, skip consistency code.
+        BEQ.S     MM_410BCE ;]
+        MOVE.L    D3,TagBC24(A2)	;Set free block length.
+        ORI.L     #NRelTag,TagBC24(A2)	;Fake Non-Rel block.
+        MOVE.L    A6,Handle24(A2)	;Including zone reference.
+        NEG.L     D0
+        BSR.W     AdjustFree
+
+MM_410BCE ;]
+        MOVE.L    (A1),A0	;Get pointer to block from handle.
+        BSR.W     GetSize	;Get logical size of block.
+;Move the block.
+        BSR.S     RelocRel ;]
+        MOVE.L    D0,A0	;Save error code.
+        MOVE.L    D3,D0	;Cumulative free space.
+;Nothing so far, skip magic.
+        BEQ.S     MM_410BE2 ;]
+        MOVE.L    D3,TagBC24(A2)	;Make the block free again.
+        BSR.W     AdjustFree	;Return space to space pool.
+
+MM_410BE2 ;]
+        MOVE.L    A0,D0	;Return error code and set cond.
+        MOVE.L    (SP)+,A0	;Restore register.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function RelocRel(h: Handle; s: Size)
+;
+; RelocRel is used to relocate unlocked relocatables.  It moves
+;	the text of the source block referred to by h to a new non relocatable
+;	block s long.  Then it swaps data with the destination block,
+;	swaps block types (making the new block a relocatable and the old
+;	block a non-relocatable, and updating the master pointer), and
+;	releases the source block as a nonrelocatable.
+;
+; SetSize calls here to grow a relocatable block; the destination block size
+;  (used to allocate a new block) is therefore greater than the source data
+;  size (used as the number of bytes to move . . .).  SafeReloc calls here
+;  simply to move a block out of the way: the desired new logical size, in this
+;  case is the same as the old . . .  Since only SetSize cares whether block to
+;  be moved gets purged (which is still OK), change of purge bit is moved from here <10Apr85>
+;  to SetSize.
+;
+; This guy should set up(and release) GZMoveHnd for notifying the grow zone
+;  proc about the handle being moved.
+;
+; Grow zone IS allowed to purge the moving target, if not equal to GZRootHnd, BUT
+;  it is NEVER allowed to Dispose of it.  (A reboot is in order if so...)
+;
+;
+; Arguments:
+;		D0: 	s:		Desired new logical size of block being moved.
+;		A1: 	h:		Handle for block being moved.
+;		A6: 	z:		Zone containing block being moved.
+;
+; Results:
+;		D0: 	ec: 	error code. (CCR doesn't reflect err code)
+;								memFullErr: 	No room to relocate block.
+;								0:				Success.
+;
+;
+; Registers:
+;		D0: 	s:		logical size of source, destination blocks; temp		<06May85>
+;		D1: 	t:		Temporary used to save flags byte.
+;		D2: 			Temporary while swapping tags fields.					<06May85>
+;		A0: 	p:		Points to source or destination blocks.
+;		A1: 	hNew:	Handle for destination block.
+;		A1: 	pDst:	Points to destination for blockmove.
+;		A2: 	hOld:	Handle for block being moved.
+;
+; Called By: SafeReloc,SetSize
+; ----- 24 bit version -----
+
+RelocRel ;]
+        MOVEM.L   D1-D2/A0-A2,-(SP)	;Save registers.				<06May85>
+        MOVE.L    A1,A2	;Handle being moved
+        MOVE.L    A1,GZMoveHnd	;record the moving target
+				; Don't mess with purge bit here -- let caller (SetSize) do it.     <10Apr85>
+        MOVE.B    (A2),D1	;Save flags byte (for SafeReloc case) <23Apr85>
+        SUB.L     A1,A1	;get a nonrelocatable
+;Get a dest block, if we can.
+        BSR.W     AllocBk ;]
+;No luck, restore flags and exit
+        BEQ.S     RelocRel_RRFail ;]
+												; Note... if the object was purged,
+												; by GZ, by definition, there must
+												; be enough space to reallocate it
+												; (esp. if the size is the same -
+												; MakeSpace case), So A2 is valid
+												; for the exit through RRFail
+        TST.L     (A2)	;was object handle purged?
+;assume success
+        BEQ.S     RelocRel_RRFree ;]
+        MOVE.L    A0,A1	;Points to destination block.
+        MOVE.L    (A2),A0
+        BSR.W     GetSize	;Get original size (for SetSize)
+        BSR.W     HBlockMove	;Copy source to destination.
+												; (only logical bytes)
+; Make the new nrel a rel, and vice versa.	Do so preserving the leading nibble of tag	<06May85>
+; information and but not messing up the logical blocksize in the low nibble.			<06May85>
+; It's ugly, but someone has to do it.
+; It's really ugly: $F0 is -$10, not -$F as first attempted.                            <13May85>
+        SUBQ.L    #8,A0	;Source reloc block
+        SUBQ.L    #8,A1	;Dest nrel block
+        MOVEQ     #-$10,D0	;nibble mask = -$10 = $EF+1 = $F0 UGH!	<13May85>
+        AND.B     (A0),D0	;Source high nibble 					<06May85>
+        EOR.B     D0,(A0)	;Clear high nibble						<06May85>
+        MOVEQ     #-$10,D2	;Mask for high nibble.					<13May85>
+        AND.B     (A1),D2	;Dest high nibble						<06May85>
+        EOR.B     D2,(A1)	;Clear high nibble						<06May85>
+        OR.B      D0,(A1)	;Dest becomes reloc 					<06May85>
+        OR.B      D2,(A0)	;Source becomes nonreloc				<06May85>
+        ADDQ.L    #4,A0	;relative handle of original reloc		<06May85>
+        ADDQ.L    #4,A1	;relative handle of new nonreloc		<06May85>
+        MOVE.L    (A0),(A1)+	;complete transformation of new block	<06May85>
+        MOVE.L    A1,(A2)	;point the master pointer here			<06May85>
+        MOVE.B    D1,(A2)	;Restore flags byte.					<23Apr85>
+        MOVE.L    A6,(A0)+	;Source block is nrel now
+
+RelocRel_RRFree ;]
+;Discard source block as nrel.
+        BSR.S     FreeBk ;]
+        MOVEQ     #0,D0	;Success return.
+
+RelocRel_RRExit ;]
+        CLR.L     GZMoveHnd	;clear the moving target
+        MOVEM.L   (SP)+,D1-D2/A0-A2	;Restore registers. 					<06May85>
+        RTS       	;Return to caller.
+
+RelocRel_RRFail ;]
+        MOVE.B    D1,(A2)	;Restore flags byte.			   <23Apr85>
+        MOVEQ     #memFullErr,D0	;No room in memory to move block.
+;Common exit code.
+        BRA.S     RelocRel_RRExit ;]
+
+;----------------------------------------------------------------------
+;
+; Procedure FreeBk(p: Ptr);
+;
+; Release block.  If it is a relocatable block, release its master
+;	pointer as well.
+;
+; Arguments:
+;		A0: 	p:		points to block to be freed.
+;		A6: 	z:		zone in which block belongs.
+;
+; Results:
+;		None.
+;
+; Registers:
+;		D0: 	s:		Size of block.
+;		D1: 	tag:	Tag field of block.
+;		A0: 	b:		Points to block header.
+;		A1: 	h:		Handle for block.
+;
+; Called By: DisposePtr,DsposeHandle,RelocRel
+; ----- 24 bit version -----
+
+FreeBk ;]
+        MOVEM.L   A0-A1/D0-D1,-(SP)	;Save registers.
+        SUBQ.L    #BlkData24,A0	;Point to block header.
+        MOVE.L    TagBC24(A0),D0	;Tag and byte count.
+        MOVE.L    D0,D1	;Make a copy.
+        AND.L     MaskBC,D0	;Extract byte count
+        EOR.L     D0,D1	;Tag, size delta only.
+;Free block, do nothing.
+        BEQ.S     FreeBk_FBDone ;]
+;Non-relocatable block.
+        BPL.S     FreeBk_FBNRel ;]
+        MOVE.L    Handle24(A0),A1	;Handle offset.
+        ADD.L     A6,A1	;Add base to make handle.
+        BSR.W     ReleaseMP	;Release handle.
+
+FreeBk_FBNRel ;]
+        BSR.W     MakeBkF ;]
+        BSR.W     AdjustFree	;Increase free space.
+
+FreeBk_FBDone ;]
+        MOVEM.L   (SP)+,A0-A1/D0-D1	;Restore registers.
+        RTS       	;Return to caller.
+
+;----------------------------------------------------------------------
+;
+; Function StdGZ(s: Size): Size;									added <29jan85>
+;
+; Try to make space, and spare the user's GZProc in non-critical cases.
+; Code lifted from MSMiscFix, our old patch file.  Changes marked <29jan85> :
+;		1) Labels prefixed by SGZ.
+;		2) Pull MakePtrSpc patch stuff out.
+;
+; Arguments:
+;		4(SP)	s:		Number of contiguous bytes needed.
+;
+; Result:
+;		(SP)	dSize:	Number of bytes added to zone by GrowZone Function.
+;
+; Registers:
+;		A1: 	return address
+;		A2: 	ptr to GZRootHnd, GZRootPtr, GZMoveHnd
+;		D3-D5:	3 temp GZxxx values (A2)
+;
+; Called By: CallGZProc
+;
+
+StdGZ
+        MOVE.L    (SP)+,A1	; return address							<29jan85>
+        LEA       GZRootHnd,A2
+        MOVEM.L   (A2),D3-D5	; D3=GZRootHnd, D4=GZRootPtr, D5=GZMoveHnd	<29jan85>
+        TST.L     D5	; separate critical from non-critical . . .
+        BEQ.S     SGZCritCase	;											<29jan85>
+        CMP.L     D3,D5	;											<29jan85>
+        BNE.S     SGZPatchGPS	;											<29jan85>
+
+SGZCritCase
+        BTST      #FNGZResrv,Flags(A6)	; go directly to user growzone?			<29jan85>
+        BNE.S     SGZtoUserGZ	; br if so 								<29jan85>
+        MOVE.L    (SP),D0	; requested amount							<29jan85>
+        CLR.L     (A2)+	; zero these locs for ResrvMem call 		<29jan85>
+        CLR.L     (A2)+	; (ResrvMem must be a non-critical			<29jan85>
+        CLR.L     (A2)+	;  case to prevent reentering)				<29jan85>
+        MOVE.L    TheZone,-(SP)	; save current zone 						<29jan85>
+        MOVE.L    A6,TheZone
+        _ResrvMem 	; try for memory this way . . . 			<29jan85>
+        MOVE.L    (SP)+,TheZone	; restore current zone						<29jan85>
+        MOVEM.L   D3-D5,-(A2)	; restore GZRootHnd, GZRootPtr, GZMoveHnd	<29jan85>
+        TST.L     D0	; did we get it?							<29jan85>
+        BMI.S     SGZtoUserGZ	; br if not (try user GZ proc)				<29jan85>
+        MOVE.L    (SP)+,(SP)	; must be amount we got 					<29jan85>
+        JMP       (A1)	; so return 								<29jan85>
+; come here in all non-critical cases  . . .										<29jan85>
+
+SGZPatchGPS
+        BTST      #FGZAlways,Flags(A6)	; always call user GZ proc?				<29jan85>
+        BNE.S     SGZtoUserGZ	; br if so									<29jan85>
+										; otherwise do our non-critical trip		<29jan85>
+
+SGZNonCrit
+        ADDQ.W    #4,SP	; remove requested amount from stack		<29jan85>
+        JMP       (A1)
+; Set up call to user's proc, because the above failed.                             <29jan85>
+
+SGZtoUserGZ
+        MOVE.L    GZProc(A6),D2	; user growzone proc						<29jan85>
+        BEQ.S     SGZNonCrit	; exit if none								<29jan85>
+        MOVE.L    A1,-(SP)	; restore memory manager return address 	<29jan85>
+        MOVE.L    D2,-(SP)	; user proc 								<29jan85>
+        RTS       	; go via user growzone						<29jan85>
+
+        ENDPROC
+        END

@@ -1,0 +1,387 @@
+[
+  {
+    "address": "004004a0",
+    "type": 2,
+    "comment": "----\nline ~2944\n----"
+  },
+  {
+    "address": "004005bc",
+    "type": 3,
+    "comment": "~~GetPRAM"
+  },
+  {
+    "address": "00400692",
+    "type": 1,
+    "comment": "~InitSwitcherTable!!~"
+  },
+  {
+    "address": "004006a4",
+    "type": 1,
+    "comment": "~IST ends~\n\n~DrawBeepScreen begins~"
+  },
+  {
+    "address": "00400c4c",
+    "type": 2,
+    "comment": "FindBlessedFolder?"
+  },
+  {
+    "address": "004011aa",
+    "type": 2,
+    "comment": "---------------------------\nOS:StartMgr:StartErr.a ends\n---------------------------"
+  },
+  {
+    "address": "004011ac",
+    "type": 3,
+    "comment": "------------------------\nOS:StartMgr:StartAlert.a\n------------------------"
+  },
+  {
+    "address": "004017de",
+    "type": 2,
+    "comment": "-----------------------------\nOS:StartMgr:StartAlert.a ends\n-----------------------------"
+  },
+  {
+    "address": "004019ca",
+    "type": 3,
+    "comment": "----------\nOS:Queue.a\n----------"
+  },
+  {
+    "address": "00401a40",
+    "type": 2,
+    "comment": "OS:Queue.a ends"
+  },
+  {
+    "address": "00401c8a",
+    "type": 3,
+    "comment": "----------------------------\nQuickDraw:Classic:CrsrCore.a\n----------------------------"
+  },
+  {
+    "address": "00401cc6",
+    "type": 0,
+    "comment": "what the fuck"
+  },
+  {
+    "address": "00401f48",
+    "type": 2,
+    "comment": "END FILE QuickDraw:Classic:CrsrCore.a"
+  },
+  {
+    "address": "00401f4a",
+    "type": 3,
+    "comment": "OS:TrapDispatcher:Dispatch.a"
+  },
+  {
+    "address": "0040202e",
+    "type": 2,
+    "comment": "END FILE"
+  },
+  {
+    "address": "00402030",
+    "type": 1,
+    "comment": "fetch"
+  },
+  {
+    "address": "00402030",
+    "type": 3,
+    "comment": "OS:DeviceMgr.a"
+  },
+  {
+    "address": "00402032",
+    "type": 1,
+    "comment": "stash"
+  },
+  {
+    "address": "00402034",
+    "type": 1,
+    "comment": "iodone"
+  },
+  {
+    "address": "00403fee",
+    "type": 2,
+    "comment": "OS:HFS:MFSVOL.a ends"
+  },
+  {
+    "address": "00403ff2",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:TFSDIR1.a\n----------------"
+  },
+  {
+    "address": "00404292",
+    "type": 2,
+    "comment": "---------------------\nOS:HFS:TFSDIR1.a ends\n---------------------"
+  },
+  {
+    "address": "00404852",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:TFSDIR3.a\n----------------"
+  },
+  {
+    "address": "00404d62",
+    "type": 2,
+    "comment": "---------------------\nOS:HFS:TFSDIR3.a ends\n---------------------"
+  },
+  {
+    "address": "00404d66",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:MFSDIR3.a\n----------------"
+  },
+  {
+    "address": "00404eb4",
+    "type": 2,
+    "comment": "---------------------\nOS:HFS:MFSDIR3.a ends\n---------------------"
+  },
+  {
+    "address": "00404eb8",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:TFSRFN1.a\n----------------"
+  },
+  {
+    "address": "004050fa",
+    "type": 2,
+    "comment": "--------------------\nOS:HFS:TFSRF1.a ends\n--------------------"
+  },
+  {
+    "address": "004050fc",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:MFSRFN1.a\n----------------"
+  },
+  {
+    "address": "00405142",
+    "type": 2,
+    "comment": "--------------------\nOS:HFS:MFSRN1.a ends\n--------------------"
+  },
+  {
+    "address": "00405144",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:TFSRFN2.a\n----------------"
+  },
+  {
+    "address": "004057d4",
+    "type": 2,
+    "comment": "OS:HFS:MFSRFN3.a ends"
+  },
+  {
+    "address": "004057d6",
+    "type": 3,
+    "comment": "------------\nOS:HFS:VSM.a\n------------"
+  },
+  {
+    "address": "00405aa6",
+    "type": 2,
+    "comment": "-----------------\nOS:HFS:VSM.a ends\n-----------------"
+  },
+  {
+    "address": "00405aa8",
+    "type": 3,
+    "comment": "------------\nOS:HFS:FXM.a\n------------"
+  },
+  {
+    "address": "00406042",
+    "type": 2,
+    "comment": "-----------------\nOS:HFS:FXM.a ends\n-----------------"
+  },
+  {
+    "address": "00406044",
+    "type": 3,
+    "comment": "---------------\nOS:HFS:CMSVCS.a\n---------------"
+  },
+  {
+    "address": "004065d6",
+    "type": 2,
+    "comment": "--------------------\nOS:HFS:CMSVCS.a ends\n--------------------"
+  },
+  {
+    "address": "004065d8",
+    "type": 3,
+    "comment": "----------------\nOS:HFS:CMMAINT.a\n----------------"
+  },
+  {
+    "address": "00407d3e",
+    "type": 2,
+    "comment": "END FILE OS:HFS:CacheIO.a"
+  },
+  {
+    "address": "00407d40",
+    "type": 2,
+    "comment": "~scsiboot.a:146"
+  },
+  {
+    "address": "00407dee",
+    "type": 1,
+    "comment": "scsiget"
+  },
+  {
+    "address": "00407dfa",
+    "type": 1,
+    "comment": "scsiselect"
+  },
+  {
+    "address": "00407e0c",
+    "type": 1,
+    "comment": "scsicmd"
+  },
+  {
+    "address": "00407e26",
+    "type": 1,
+    "comment": "scsiread"
+  },
+  {
+    "address": "00407e3a",
+    "type": 1,
+    "comment": "scsicomplete"
+  },
+  {
+    "address": "0040f072",
+    "type": 1,
+    "comment": "What is this?"
+  },
+  {
+    "address": "00410cbe",
+    "type": 2,
+    "comment": "end OS:MemoryMgr:MemoryMgrInternal.a"
+  },
+  {
+    "address": "00410cc0",
+    "type": 3,
+    "comment": "OS:MemoryMgr:BlockMove.a"
+  },
+  {
+    "address": "00410f2e",
+    "type": 2,
+    "comment": "OS:MemoryMgr:BlockMove.a ends"
+  },
+  {
+    "address": "00410f30",
+    "type": 3,
+    "comment": "Toolbox:ToolboxEventMgr:ToolboxEventMgr.a"
+  },
+  {
+    "address": "004111aa",
+    "type": 2,
+    "comment": "Toolbox:ToolboxEventMgr:ToolboxEventMgr.a ends"
+  },
+  {
+    "address": "004111ac",
+    "type": 3,
+    "comment": "Toolbox:WindowMgr:WindowMgr.a"
+  },
+  {
+    "address": "00415586",
+    "type": 2,
+    "comment": "----------------------------------\nToolbox:DialogMgr:DialogMgr.a ends\n----------------------------------\n(finally!)"
+  },
+  {
+    "address": "00415588",
+    "type": 3,
+    "comment": "-----------------------\nToolbox:Munger:Munger.a\n-----------------------"
+  },
+  {
+    "address": "00415bde",
+    "type": 2,
+    "comment": "----------------------------\nToolbox:Munger:Munger.a ends\n----------------------------"
+  },
+  {
+    "address": "00415be0",
+    "type": 3,
+    "comment": "-------------------------\nToolbox:DeskMgr:DeskMgr.a\n-------------------------"
+  },
+  {
+    "address": "00415eca",
+    "type": 2,
+    "comment": "------------------------------\nToolbox:DeskMgr:DeskMgr.a ends\n------------------------------"
+  },
+  {
+    "address": "00415ecc",
+    "type": 3,
+    "comment": "-----------------------\nToolbox:GetMgr:GetMgr.a\n-----------------------"
+  },
+  {
+    "address": "0041608c",
+    "type": 2,
+    "comment": "----------------------------\nToolbox:GetMgr:GetMgr.a ends\n----------------------------"
+  },
+  {
+    "address": "0041608e",
+    "type": 3,
+    "comment": "---------------------------------\nToolbox:TextEdit:StyledTextEdit.a\n---------------------------------"
+  },
+  {
+    "address": "00416daa",
+    "type": 2,
+    "comment": "--------------------------------------\nToolbox:TextEdit:StyledTextEdit.a ends\n--------------------------------------"
+  },
+  {
+    "address": "00416dac",
+    "type": 3,
+    "comment": "---------------------------\nToolbox:ScrapMgr:ScrapMgr.a\n---------------------------"
+  },
+  {
+    "address": "00416f8e",
+    "type": 2,
+    "comment": "--------------------------------\nToolbox:ScrapMgr:ScrapMgr.a ends\n--------------------------------"
+  },
+  {
+    "address": "00416f90",
+    "type": 3,
+    "comment": "--------------------\nToolbox:PackageMgr.a\n--------------------"
+  },
+  {
+    "address": "00417050",
+    "type": 2,
+    "comment": "-------------------------\nToolbox:PackageMgr.a ends\n-------------------------"
+  },
+  {
+    "address": "00417052",
+    "type": 3,
+    "comment": "------------------\nToolbox:SexyDate.a\n------------------"
+  },
+  {
+    "address": "0041712a",
+    "type": 2,
+    "comment": "-----------------------\nToolbox:SexyDate.a ends\n-----------------------"
+  },
+  {
+    "address": "0041712a",
+    "type": 3,
+    "comment": "\n"
+  },
+  {
+    "address": "004175d0",
+    "type": 2,
+    "comment": "----------------------------\nOS:SCSIMgr:SCSIMgrOld.a ends\n----------------------------"
+  },
+  {
+    "address": "00417714",
+    "type": 0,
+    "comment": "typeoffs"
+  },
+  {
+    "address": "00417716",
+    "type": 0,
+    "comment": "nameoffs"
+  },
+  {
+    "address": "0041859a",
+    "type": 2,
+    "comment": "---------------------------\nDrivers:Sony:SonyRWT.a ends\n---------------------------"
+  },
+  {
+    "address": "004185a8",
+    "type": 3,
+    "comment": "-----------------------\nDrivers:Sony:SonyUtil.a\n-----------------------"
+  },
+  {
+    "address": "00418f2e",
+    "type": 1,
+    "comment": "Drivers:Sony:SonyWrite.a"
+  },
+  {
+    "address": "0041df94",
+    "type": 3,
+    "comment": "---------------------\nToolbox:SANE:FPCtrl.a\n---------------------"
+  },
+  {
+    "address": "0041e522",
+    "type": 2,
+    "comment": "--------------------------\nToolbox:SANE:FPCtrl.a ends\n--------------------------"
+  }
+]

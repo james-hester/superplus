@@ -1,0 +1,105 @@
+{
+  "module": "QuickDraw/PutRgn.a",
+  "source_path": "Reconstruction/Source/QuickDraw/PutRgn.a",
+  "source_sha256": "ac17bba18c471faf298d3f973ed609533bf7095ed9209cae83f78777402b955b",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/PutRgn.m.a",
+    "sha256": "af1924a091ff0f2f220ba025dc214c96176aaec73e5258aad591cfe0b66b9c47"
+  },
+  "upstream_equates": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x40c856",
+      "end_address_exclusive": "0x40c8cc",
+      "rom_offset": "0xc856",
+      "length": 118,
+      "sha256": "5ec7b73fc734873a667e4390d59636bbcce92422b080c058f223c0ab717a6124",
+      "first_symbol": "PUTRGN",
+      "last_symbol": "PUTRGN"
+    }
+  ],
+  "symbols": {
+    "PUTRGN": "0x40c856"
+  },
+  "external_references": {
+    "SETHSIZE": "0x408798"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete PutRgn module and applicable original comments. Omitted the later EASE header."
+    },
+    {
+      "kind": "equates",
+      "description": "Replaced the GrafTypes include with its required equates and their dependencies. Retained the original procedure parameters and local EQU declarations."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made PC operands, branch sizes and applicable ADDQ or SUBQ encodings explicit. Matched source branches to ROM branches in order; every branch condition agrees."
+    },
+    {
+      "kind": "macro_reversion",
+      "description": "Retained the UNLINK invocation and supplied the restored 68000 return macro used by the reconstructed Regions module."
+    },
+    {
+      "kind": "external_references",
+      "description": "Assigned external procedure addresses from the matching ROM call operands. Preserved the original symbolic call names."
+    },
+    {
+      "kind": "instruction_reversion",
+      "description": "Restored two MOVE.L (A0)+,(A1)+ instructions for rectangular regions. The ROM copies the two diagonal bounding-box points. The ancestor adds six instructions to emit all four corners and records the rectangular-region fix on September 26, 1986. Removed the later change tags; retained the COPY TOPLEFT and COPY BOTRIGHT comment wording."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 118 assembled bytes equal the ROM span. All 1 recorded symbols match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Used the shared translator on the preserved source, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "original_body_comments": 65,
+    "preserved_original_body_comments": 57,
+    "removed_comment_texts": [
+      "COPY TOPLEFT\t\t\t\t\t<EHB 26Sep86>",
+      "COPY TOP\t\t\t\t\t\t<EHB 26Sep86>",
+      "GET LEFT\t\t\t\t\t\t<EHB 26Sep86>",
+      "GET BOTRIGHT\t\t\t\t\t<EHB 26Sep86>",
+      "COPY RIGHT\t\t\t\t\t\t<EHB 26Sep86>",
+      "COPY BOT\t\t\t\t\t\t<EHB 26Sep86>",
+      "COPY LEFT\t\t\t\t\t\t<EHB 26Sep86>",
+      "COPY BOTRIGHT\t\t\t\t\t<EHB 26Sep86>"
+    ],
+    "temporary_driver": "/tmp/check-putrgn-rgnblt.py",
+    "temporary_build": "/tmp/putrgn-rgnblt-build",
+    "commands": [
+      "python3 /tmp/check-putrgn-rgnblt.py"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the original macro spelling, source formatting or label spelling."
+    ]
+  },
+  "integration_manifest": {
+    "name": "putrgn",
+    "source": "Reconstruction/Source/QuickDraw/PutRgn.a",
+    "start": "0x40c856",
+    "end_exclusive": "0x40c8cc",
+    "entry_points": {
+      "PUTRGN": "0x40c856"
+    }
+  }
+}

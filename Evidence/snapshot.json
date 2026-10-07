@@ -1,0 +1,37 @@
+{
+  "captured_date": "2026-10-03",
+  "timezone": "America/New_York",
+  "endpoint": "http://127.0.0.1:8089",
+  "project": "macPlus",
+  "program": "Mac Plus",
+  "architecture": "68000:BE:32:default",
+  "rom_start": "0x400000",
+  "rom_end_exclusive": "0x420000",
+  "rom_checksum": "0x4d1f8172",
+  "defined_functions": 0,
+  "exported_flat_address_symbols_including_dynamic": 12349,
+  "exported_rom_instructions": 39728,
+  "exported_rom_comments": 77,
+  "files": [
+    {
+      "path": "ROM/MacPlus-v3.bin",
+      "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+    },
+    {
+      "path": "Evidence/ghidra-symbols.tsv",
+      "sha256": "f327d39d35381c6ba07e2c1fa23aad971b9dc42d29541469517ee429500cd701"
+    },
+    {
+      "path": "Evidence/ghidra-instructions.tsv",
+      "sha256": "0f2f739dc6d05b39cdc1d07864e2877094da02581cc6e78b7dc7437a6313b487"
+    },
+    {
+      "path": "Evidence/ghidra-comments.json",
+      "sha256": "2df48952bb8cb1edf30c4a0a3d7a83860f332b371f0a2f85b0f0f9fb3a931098"
+    },
+    {
+      "path": "Evidence/source-inventory.json",
+      "sha256": "491dc812f2ee2cee39d9a705821f7f0adbc903c73766caf4d63a51fe19de32f9"
+    }
+  ]
+}

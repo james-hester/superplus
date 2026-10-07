@@ -1,0 +1,610 @@
+*R This module restores the Mac Plus format and verify routines.
+*R The ROM retains the PWM frequency table and speed adjustment, uses seven
+*R sync groups, and marks synchronous completion in DskErr. Later MFM, SWIM2,
+*R power manager, and format write-protection paths are absent from this target.
+*R Retained routine comments and formatting loops come from SonyFormat.a.
+
+;
+;	File:		SonyFormat.a
+;
+;	Contains:	Sony Format/Verify routines
+;
+;	Written by:	Larry Kenyon, Steve C, Gary D, ...
+;
+;	Copyright:	© 1982-1990, 1992 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/30/85	LAK		Fixed bug in read-verify (wasn't getting rid of poll stack data
+;									when it saw a sector it already had).
+;				10/25/85	LAK		Skip speed check for 2-sided drives. Use NewIntf rather than
+;									Sides to determine whether drive has new interface.
+;				 7/29/85	RDC		Added changes for MidMac: - changed interrupt level settings to
+;									use equates - adjusted frequency count table - assume no speed
+;									errors for now
+;
+		IMPORT AdrDisk,EmptyPD,GetDrv1,MeasureSpeed,POffExit,RdAddr ;]
+		IMPORT RdAddrSetup,RdData,RWPowerUp,Seek,SetUpPoll ;]
+
+	INCLUDE 'SonyEqu.a'
+	INCLUDE 'SonyFormatEqu.a' ;]
+
+
+;_______________________________________________________________________
+;
+; Routine:		CtlFormat
+; Arguments:	  A0.L (in)  -- param block ptr
+;				  A1.L (in)  -- driver locals ptr
+;				  D1.W (in)  -- drive vars offset
+;				  Drive (in) -- set to correct drive
+;				  D0.W (out) -- result code (0 if correctly formatted)
+;_______________________________________________________________________
+
+			BLANKS ON
+			STRING ASIS
+
+SyncTbl
+AdrMkTbl
+	DC.B	$FF,$3F,$CF,$F3,$FC,$FF 	; self-sync pattern
+	DC.B	$D5,$AA,$96,$00,$00,$00,$00 ; addr mk skeleton
+	DC.B	$00,$DE,$AA,$FF
+	DC.B	$FF,$3F,$CF,$F3,$FC,$FF 	; self-sync pattern
+	DC.B	$D5,$AA,$AD,$00,$00 		; data mark header
+
+CtlFormat	SUB 	#512,SP 			; get space for buffers we need off stack
+			MOVE.L	SP,DiskBuffer(A1)	; StackBuf for mark, block buffer
+
+			TST.B	Sides(A1,D1)		; for now, format according to drive
+			SMI 	TwoSided(A1)		; $00 for 1-sided format
+			BPL.S	@1					; <21Jun85> br if one-sided			<C437/25aug87>
+; <21Jun85> format 2-sided as 1-sided?<C437/25aug87>
+			CMP.W	#1,CSParam(A0) ;]
+			BNE.S	@1					; <21Jun85> br if not				<C437/25aug87>
+			CLR.B	TwoSided(A1)		; <21Jun85> force one-sided
+
+@1			TST.B	TwoSided(A1)		; <21Jun85> so, 1-sided or 2-sided?	<C437/25aug87>
+			SNE 	TwoSideFmt(A1,D1)	; <21Jun85> update it for future
+										; interested parties . . .
+
+			MOVE.W	#7,GapSync(A1) ;]
+
+			BSR 	FVPowerUp			; start up the drive (synchronously)
+
+			MOVE.L	SonyVars,A1 		;
+			MOVE.L	DiskBuffer(A1),A0	; now fill stack buffer with blank marks
+			LEA 	AdrMkTbl,A1
+			MOVEQ	#12-1,D0			; marks for 12 sectors				<C437/25aug87>
+
+@2			MOVEQ	#27-1,D1			; 27 bytes per sector				<C437/25aug87>
+			MOVE.L	A1,A2				; point A2 to blank image
+
+@3			MOVE.B	(A2)+,(A0)+			;									<C437/25aug87>
+			DBRA	D1,@3				;									<C437/25aug87>
+			DBRA	D0,@2				;									<C437/25aug87>
+
+			BSR 	GetDrv1
+			CLR.W	SideTrack(A1)		; start with track 0
+
+TrackLoop
+			BSR.S	SpdSeek 			; seek to track and adjust speed if needed
+			BNE.S	FmtVerExit			; exit on errors
+
+			BSR 	FormatTrack 		; format the track
+@0			BNE.S	FmtVerExit			; exit on errors
+			BSR 	GetDrv1
+
+			BCLR	#3,SideTrack(A1)	; clear 'side' bit
+			ADDQ	#1,SideTrack(A1)	; go on to the next track
+			CMP 	#80,SideTrack(A1)	; until we're done with all 80
+			BLT.S	TrackLoop
+
+FmtVerOK	MOVEQ	#0,D0				; successful exit
+FmtVerExit MOVE.W PwrOffTime(A1),D2
+	ADD.W #512,SP
+	BRA.W POffExit
+
+;_______________________________________________________________________
+;
+; Routine:		SpdSeek
+; Arguments:	 A1,D1 (input)	-- ptr to drive vars
+;				 D0.W (output)	-- result code (0 if speed ok)
+; Function: 	This routine seeks to a track and checks speed if changing
+;				track speed class boundary.
+;_______________________________________________________________________
+
+
+; table of frequency counts for 15 tach pulses, each of the 5 speed classes
+			
+FmtSpeedLimits ;]
+	DC.W $11BC,$1162,$1359,$12F7,$1549,$14DD,$17A6,$172E,$1A9A,$1A14 ;]
+
+*R The ROM still measures and adjusts speed for PWM drives.
+SpdSeek
+	MOVE.B BadSpdInit(A1),BadSpdCnt(A1)
+CkDrift
+	MOVE.W SideTrack(A1),D6
+	BSR.W FmtVerSeek
+	BSR.W GetDrv1
+	MOVE.W Track(A1,D1.W),D6 ;]
+	BMI.S SpdSeekXit
+	TST.B NewIntf(A1,D1.W) ;]
+	BMI.S SpdSeekOK ;]
+	MOVEQ #15,D0
+	AND.B D6,D0
+	BNE.S SpdSeekOK ;]
+	LSR.W #4,D6
+	LSL.W #3,D6
+	LEA TrkSpeedTbl(A1,D1.W),A2 ;]
+	LEA TSTblTicks(A2,D6),A2 ;]
+	MOVE.L $16A,D2 ;]
+	MOVE.L D2,(A2)
+	LEA FmtSpeedChecked,A3 ;]
+	BRA.W MeasureSpeed ;]
+FmtSpeedChecked ;]
+	BMI.S SpdSeekError ;]
+	MOVE.W -(A2),D0
+	LSR.W #1,D0
+	LEA FmtSpeedLimits,A0 ;]
+	LSR.W #1,D6
+	ADD.W D6,A0
+	CMP.W (A0)+,D4
+	BGT.S FmtSpeedAdjust ;]
+	NEG.W D0
+	CMP.W (A0),D4 ;]
+	BGT.S SpdSeekOK ;]
+FmtSpeedAdjust ;]
+	SUB.W D0,-(A2)
+	CLR.L 4(A2) ;]
+	SUBQ.B #1,BadSpdCnt(A1) ;]
+	BPL.S CkDrift ;]
+SpdSeekError ;]
+	MOVEQ #SpdAdjErr,D0 ;]
+	BRA.S SpdSeekXit ;]
+SpdSeekOK
+	MOVEQ #0,D0
+SpdSeekXit
+	RTS
+
+;_______________________________________________________________________
+;
+; Routine:	FormatTrack
+; Arguments:	  D0.W (output) -- result code (0 if format ok)
+; Function: This routine formats a track (both sided for double-sided
+;		disks), verifying that sync is evenly spread between the
+;		sectors.
+;_______________________________________________________________________
+
+FormatTrack BSR 	GetDrv1
+			MOVE.W	SideTrack(A1),D6	; current side/track
+
+			MOVE.W	D6,D1
+			BCLR	#11,D1				; clear side bit
+			LSR.W	#4,D1				; speed class
+			MOVEQ	#12,D0				; 12 sectors in outside tracks
+			SUB.W	D1,D0				; reduce by 1 per speed class inward
+			MOVE.W	D0,SectCnt(A1)		; save for later
+
+			BSR 	FillInMarks 		; update mark buffer for this track/side
+										; (pass D0=sector count,D6=side/track)
+FmtTrk1
+			BSR.W	DoFormat			; format the track (disables interrupts)	<C437/10feb88>
+			BEQ.S	@1					; br if ok
+			BSR 	toEmptyPD			; get rid of poll data
+			ANDI	#$F8FF,SR			; open up interrupts
+			BRA 	FTExit				; exit immediately for write errors
+
+; now we check the intersector gap (keep poll data on the stack . . .)
+
+@1			BSR 	RdAddr				; get next address mark
+			BMI.S	@2					; br if error
+			TST.B	D2					; should be sector 0
+			BEQ.S	@2
+			MOVEQ	#Fmt1Err,D0 		; set "not sector 0" error otherwise
+
+@2			BSR 	toEmptyPD			; get rid of poll data (preserves D0)
+			ANDI	#$F8FF,SR			; open up interrupts
+
+			LEA 	GapSync(A1),A0		; useful addr
+			MOVE.W	DskErr,D0
+			BMI.S	DecrSn1 			; br on error (change amt of sync in case
+										;  erase turn-off glitched us out or not
+										;  sector 0 - wrote too much sync)
+
+			MOVE.L	#MustFindCt+4,D2	; nibble must find count, adjusted
+			SUB.W	D0,D2				; nybble gap before sector 0
+			DIVU	#5,D2				; sync group count
+			MOVE.W	#Fmt2Err,DskErr 	; assume "not enuf sync"
+
+			SUB.W	(A0),D2 			; groups more than the standard GapSync
+			BMI.S	DecrSync			; br if too little
+
+			EXT.L	D2
+			DIVU	SectCnt(A1),D2		; divide by groups per sector
+			BEQ.S	FTExitOK			; br if ok
+			SUBQ.W	#1,D2				; don't increase if only by 1
+			BEQ.S	FTExitOK
+			ADDQ.W	#1,(A0) 			; increase GapSync by 1 only
+
+FTExitOK	BSR 	GetDrv1 			; set A1,D1 to point to drive vars
+			BSET	#3,SideTrack(A1)	; are we on the second side already?
+			BNE.S	@1					; br if so
+			TST.B	TwoSided(A1)		; format two-sides?
+			BNE 	FormatTrack 		; br if so and format the other side
+
+@1			CLR.W	DskErr				; success!
+
+FTExit		MOVE.W	DskErr,D0
+			RTS
+
+DecrSync
+			ADDQ.W	#1,D2				; if only one, don't worry
+			BEQ.S	FTExitOK
+
+DecrSn1
+			SUBQ.W	#1,(A0) 			; decrement GapSync
+			CMP.W	#minSync,(A0)		; not below the minimum tho
+			BLT.S	FTExit
+
+			BRA.S	FmtTrk1 			; otherwise, go again				<C437/10feb88>
+;_____________________________________________________________________
+;
+; Routine:	DoFormat
+; Arguments:
+;		 A5.L (input) --
+;		 A6.L (input) --
+; Function: Formats the current track; the disk is assumed to be up
+;		to speed and correctly positioned, and interrupts disabled.
+;
+;		write 200 sync groups (get something on the disk)
+;		start with sector 0: do 2-1 soft interleave
+;
+;	 loop:	intersector gap sync groups
+;		10 $A9 nybbles (only before sector 0)
+;		1 sync group (6)
+;		D5 AA 96 trk sec side vol cksum DE AA FF (11)
+;		1 sync group (6)
+;		D5 AA AD sec (4)
+;
+;		703 96 nibbles
+;		DE AA FF
+;		loop for all sectors
+;_____________________________________________________________________
+
+adrBytCnt	EQU 	27					; bytes in buffer for a sector adr mark
+syncBytCnt	EQU 	6					; bytes in a sync group
+dataBytCnt	EQU 	703 				; number of $96 nibbles in an address mk
+strtSync	EQU 	200 				; number of sync groups to initially write
+
+DoFormat
+			MOVE.L	(SP)+,DskRtnAdr 	; strip return address
+			MOVEQ	#RdDtaAdr,D0		; PAL address for side 0
+			MOVE.L	SonyVars,A1
+			TST.B	TwoSided(A1)
+			BEQ.S	@1
+			BTST	#11,D6				; side 1?
+			BEQ.S	@1					; br if not
+			MOVEQ	#RdDta1Adr,D0
+@1			BSR 	AdrDisk
+
+			MOVEQ	#4,D0
+			BSR 	SetUpPoll			; set up A5,A6, PollStack
+	MOVE.L #DBase+Q6H,A3 ;]
+	MOVE.L #DBase+Q6L,A4 ;]
+
+			MOVE.L	DiskBuffer(A1),A0	; point to nibble buffer
+			MOVE.W	SectCnt(A1),D0		; number of sectors to write here
+
+;_______________________________________________________________________
+;
+;	D7 =						A7 = stack (where poll data is pushed)
+;	D6 =						A6 = ptr to SCC chan A data reg
+;	D5 =						A5 = ptr to 6522 A-reg
+;	D4 = scratch				A4 = ptr to Q6L (initially IWM)
+;	D3 = scratch				A3 = ptr to Q6H
+;	D2 = working buffer count	A2 = working buffer pointer
+;	D1 = sync group count		A1 = pointer to sync group, data mk slip
+;	D0 = sector count			A0 = pointer to mark buffer
+;_______________________________________________________________________
+
+			MOVE.W	GapSync(A1),D1		; set up D1 now
+			SUBQ.W	#2,D1				; adjust for DBRA and adr mk sync
+
+	LEA SyncTbl,A1
+	MOVE.W #strtSync-1,D3
+	TST.B (A3)
+	MOVE.B D3,DBase+Q7H ;]
+
+WrStrtSync	MOVE.L	A1,A2				; write a sync group
+			MOVEQ	#(syncBytCnt/2)-1,D2 ;
+
+WSS1		MOVE.B	(A2)+,D4			; prefetch
+
+@0			TST.B	(A4)				; check write handshake
+			BPL.S	@0					;
+			MOVE.B	D4,(A3) 			; write out next header nibble
+
+			MOVE.B	(A2)+,D4			; prefetch
+			TST.B (A5)
+	BMI.S @poll1 ;]
+	MOVE.B (A6),-(SP)
+@poll1 ;]
+
+@2			TST.B	(A4)				; check write handshake
+			BPL.S	@2					;
+			MOVE.B	D4,(A3) 			; write out next header nibble
+
+			DBRA	D2,WSS1
+			DBRA	D3,WrStrtSync
+
+WrNxtSect	MOVE.W	D1,D3				; number of sync groups - 1
+
+@1			MOVE.L	A1,A2				; write a sync group
+			MOVEQ	#syncBytCnt-1,D2
+
+@2			TST.B	(A4)				; check write handshake
+			BPL.S	@2					;
+			MOVE.B	(A2)+,(A3)			; write out next gap nibble
+			TST.B (A5)
+	BMI.S @poll2 ;]
+	MOVE.B (A6),-(SP)
+@poll2 ;]
+@3			DBRA	D2,@2
+			DBRA	D3,@1
+
+			MOVEQ	#adrBytCnt-1,D2
+@4			TST.B	(A4)				; check write handshake
+			BPL.S	@4					;
+			MOVE.B	(A0)+,(A3)			; write out next adr mk nibble
+			TST.B (A5)
+	BMI.S @poll3 ;]
+	MOVE.B (A6),-(SP)
+@poll3 ;]
+@5			DBRA	D2,@4
+
+			MOVE.W	#dataBytCnt-1,D2
+@6			TST.B	(A4)				; check write handshake
+			BPL.S	@6					;
+			MOVE.B	#$96,(A3)			; write out next data mk nibble
+			TST.B (A5)
+	BMI.S @poll4 ;]
+	MOVE.B (A6),-(SP)
+@poll4 ;]
+@7			DBRA	D2,@6
+
+			MOVEQ	#3,D2
+			ADDQ	#8,A2				; point to bit slip marks . . .
+@8			TST.B	(A4)				; check write handshake
+			BPL.S	@8					;
+			MOVE.B	(A2)+,(A3)			; write out next bit slip nibble
+			DBRA	D2,@8
+			SUBQ.W	#1,D0
+			BGT.S	WrNxtSect			; write all sectors
+
+			MOVE.B	(A4),D0 			; read write handshake reg for status
+			MOVEQ	#0,D2				; assume no underrun
+			BTST	#6,D0				; any errors?
+
+			BNE.S	@9					; branch if no underrun was detected
+			MOVEQ	#WrUnderRun,D0		; underrun error
+			BRA.S	@10
+@9			MOVEQ	#0,D0				; no errors
+@10
+; get out of write mode after half	<A351/05nov86><A302/30oct86>
+			TST.B   DBase+Q7L ;]
+										; of garbage nibble is written
+			MOVE.L	DskRtnAdr,-(SP)
+			TST.W	D0					; set CCR
+			RTS
+;_____________________________________________________________________
+;
+; Routine:	FillInMarks
+; Arguments:	 A0.L (input)  -- buffer pointer (must be 27*number of sectors)
+;		 D0.W (input)  -- number of sectors
+;		 D6.W (input)  -- side - track
+;		 all registers are preserved
+; Function: Fills in the buffer with the address marks (buffer is already
+;		filled with appropriate sync bytes . . .)
+;
+;			1 sync group (6)
+;			D5 AA 96 trk sec side vol cksum DE AA FF (11)
+;			1 sync group (6)
+;			D5 AA AD sec (4)
+;
+;_____________________________________________________________________
+
+TrkOffset	EQU 	9
+SecOffset	EQU 	10
+SidOffset	EQU 	11
+VolOffset	EQU 	12
+CkSumOffset EQU 	13
+DSecOffset	EQU 	26
+
+FillInMarks
+			MOVEM.L A0-A1/D0-D7,-(SP)
+			MOVE.L	SonyVars,A1
+			MOVE.L	DiskBuffer(A1),A0	; stack buffer
+			MOVEQ	#FmtByte,D3 		; 1-sided format byte
+			TST.B	TwoSided(A1)		; use 2-sided format?
+			BEQ.S	@0					; br if 1-sided
+			MOVEQ	#Fmt2Byte,D3		; 2-sided format byte
+
+@0			MOVE.L	NiblTbl,A1			; nibble code table
+
+			MOVE.B	0(A1,D3),D7 		; D7 holds encoded volume byte
+			MOVE.B	D3,D5				; start checksum
+
+			MOVEQ	#$3F,D3 			; 6-bit mask
+			AND.B	D6,D3				; get track low 6 bits
+			MOVE.B	0(A1,D3),D2 		; D2 holds encoded track number
+			EOR.B	D3,D5				; add it to checksum
+
+			LSR.W	#6,D6				; get track high bits/side
+			EOR.B	D6,D5				; add it to checksum
+			MOVE.B	0(A1,D6),D6 		; D6 holds encoded side/trk
+
+			MOVE.W	D0,D1				; number of sectors
+			SUBQ.W	#1,D1
+			LSR.W	#1,D1
+			ADDQ.W	#1,D1				; second sector number
+			SWAP	D1
+			CLR.W	D1					; first sector number is always zero . . .
+
+@1			MOVE.B	0(A1,D1),D3 		; D1 = next sector number
+			MOVEQ	#0,D4				; zero high byte
+			MOVE.B	D5,D4				; checksum minus sector nibble
+			EOR.B	D1,D4				; add it in
+
+			ADD 	#TrkOffset,A0		; bump to track
+			MOVE.B	D2,(A0)+			; encoded track
+			MOVE.B	D3,(A0)+			; encoded sector
+			MOVE.B	D6,(A0)+			; encoded side
+			MOVE.B	D7,(A0)+			; encoded volume
+			MOVE.B	0(A1,D4),(A0)+		; checksum
+			ADD 	#12,A0				; point to data mark sector nibble
+			MOVE.B	D3,(A0)+
+
+			ADDQ.W	#1,D1				; bump to next even/odd sector
+			SWAP	D1					; toggle between odd and even
+			SUBQ.W	#1,D0
+			BNE.S	@1
+
+			MOVEM.L (SP)+,A0-A1/D0-D7
+			RTS
+;_______________________________________________________________________
+;
+; Routine:		CtlVerify
+; Arguments:	  A0.L (in)  -- param block ptr
+;				  A1.L (in)  -- driver locals ptr
+;				  D1.W (in)  -- drive vars offset
+;				  Drive (in) -- set to correct drive
+;				  D0.W (out) -- result code (0 if correctly formatted)
+; Function: 	This routine reads all sectors on the newly formatted
+;				diskette to verify correct format.
+;_______________________________________________________________________
+
+; change to work with 2-sided drives . . . allow to miss a couple sectors
+; first spin (in case of serial data coming in . . .)
+
+CtlVerify								; (add vector??)
+			SUB 	#512,SP 			; get space for buffers we need off stack
+			MOVE.L	SP,DiskBuffer(A1)	; StackBuf for mark, block buffer
+
+			BSR 	FVPowerUp			; make sure we're powered (synchronously)
+
+			MOVEQ	#4,D2				; 5 speed classes
+			MOVE.W	#$007F,D4			; sector map track 79 (almost)
+			MOVEQ	#79,D6				; and track number 79
+
+NxtVClass	LSL.W	#1,D4				; sectors map this track speed class
+			ADDQ	#1,D4				; set low bit
+			MOVEQ	#15,D3				; tracks this speed class
+
+NxtVTrk 	MOVEM.L D2-D6,-(SP)
+			BSR 	FmtVerSeek			; seek to desired track (synchronous)
+			MOVEM.L (SP)+,D2-D6
+			BSR 	GetDrv1
+			MOVE.W	Track(A1,D1),D0
+			BMI.S	@1					;									<C437/21nov86>
+
+			BSR.S	VerTrack			; verify the track (GCR)
+@0			BNE.S	@1					; exit on errors					<C437/21nov86>
+
+			SUBQ.W	#1,D6				; next track
+			DBRA	D3,NxtVTrk			; end of speed class?
+			DBRA	D2,NxtVClass		; move to next speed class
+
+@1			BRA 	FmtVerExit			;									<C437/21nov86>
+
+VerTrack	MOVEM.L D2-D6,-(SP)
+			ORI 	#HiIntMask,SR		; no interrupts 					<29Jul85>
+			LEA 	SectMapSave(A1),A0	; [map side 0][max tries][map side 1][max tries]
+			MOVE.W	D4,(A0) 			; save sector map
+			MOVEQ	#12,D3
+			SUB 	D2,D3				; sectors this track
+			LSL.W	#2,D3				; allow some slop (may not get 1-1) <25Oct85>
+			MOVE.W	D3,2(A0)
+			MOVE.L	(A0)+,(A0)+ 		; duplicate for side 1
+			BCLR	#3,SideTrack(A1)	; go for side 0
+
+VTLoop		MOVE.L	D1,D6				; <21Jun85> save drive offset
+			BSR 	RdAddrSetup 		; get next address mark
+			BPL.S	@1					; br if ok
+			BSR.S	toEmptyPD			; get rid of poll data
+			ANDI	#$F8FF,SR			; open up interrupts
+			BRA.S	VTExit
+
+@1			LEA 	SectSave(A1),A0
+			MOVE.W	D2,(A0)+			; save sector number
+			MOVE.W	(A0)+,D0			; sector map
+			BCLR	D2,D0				; did we get this sector already?
+			BNE.S	@2					; br if not
+
+			BSR.S	toEmptyPD			; get rid of poll data					<30Oct85>
+			ANDI	#$F8FF,SR			; open up interrupts					<30Oct85>
+			LEA 	SectMapSave+2(A1),A0 ; point to max retries 				<30Oct85>
+			BRA.S	@3					; rejoin RdData for loop timeout check	<30Oct85>
+
+@2			CMP.B	#$1F,D3 			; <21Jun85> check format type
+			SGT 	TwoSideFmt(A1,D6)	; <21Jun85>  to determine 2-sided
+
+; check track, side??
+
+			MOVE.L	DiskBuffer(A1),A0	; get someplace to stick data
+			CLR.B	DskVerify			; never verify for this one
+			BSR 	RdData				; read in a sector
+			BSR.S	toEmptyPD			; get rid of data
+			TST.W	D0					; read ok?
+			BNE.S	VTExit
+
+			LEA 	SectSave(A1),A0
+			MOVE.W	(A0)+,D2			; sector we just read
+			MOVE.W	(A0),D0 			; sector map
+			BCLR	D2,D0				; mark this sector gotten
+			MOVE.W	D0,(A0)+			; stash bitmap back
+			BEQ.S	VTExitOK			; exit if now zero
+
+@3			SUBQ.W	#1,(A0) 			; decrement sector count			<30Oct85>
+			BNE.S	VTLoop				; loop until done
+			MOVEQ	#VerErr,D0			; should get 1-1 ok reads
+			BRA.S	VTExit
+
+VTExitOK	BSR 	GetDrv1 			; <21Jun85>
+			TST.B	TwoSideFmt(A1,D1)	; <21Jun85> two-sided format?
+			BEQ.S	@1					; br if not
+			BSET	#3,SideTrack(A1)	; just finished second side?
+			BNE.S	@1					; br if so
+			ADDQ	#2,A0				; point to sectmap/count copy
+			MOVE.L	(A0),-(A0)			; and copy it back
+			BRA.S	VTLoop				; and go for side 1
+
+@1			MOVEQ	#0,D0
+VTExit		ANDI	#$F8FF,SR
+			MOVEM.L (SP)+,D2-D6
+			TST.W	D0
+			RTS
+
+toEmptyPD	MOVE.W	D0,DskErr			; save error code
+			BRA 	EmptyPD
+
+FmtVerSeek
+	LEA 	Seek,A0	; a synchronous seek
+
+*R The original driver signals completion through DskErr.
+SyncCall
+ CLR.B DskErr ;]
+	BSR.S @2
+@1
+ TST.B DskErr ;]
+	BEQ.S @1
+	RTS
+@2 JSR (A0)
+	ST DskErr ;]
+	RTS
+
+FVPowerUp
+	LEA 	RWPowerUp,A0	; do the RW powerup trip synchronously
+			BRA.S	SyncCall
+
+
+SonyFormatEnd ;]
+	END

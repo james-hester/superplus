@@ -1,0 +1,205 @@
+{
+  "module": "TFSCOMMON",
+  "source": "Reconstruction/Source/OS/HFS/TFSCOMMON.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSCOMMON.a",
+      "sha256": "2f15bf4ee208b83d57c4d4aaf277b21a863f12b553d00346e300532cba2f3aea",
+      "line_ranges": [
+        [
+          1,
+          9
+        ],
+        [
+          21,
+          356
+        ]
+      ],
+      "role": "Routine bodies, applicable history, and original comments."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          45,
+          50
+        ],
+        [
+          251,
+          328
+        ],
+        [
+          329,
+          330
+        ],
+        [
+          358,
+          370
+        ],
+        [
+          402,
+          426
+        ],
+        [
+          452,
+          452
+        ]
+      ],
+      "role": "Volume, file, and working-directory record fields."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          128,
+          128
+        ],
+        [
+          234,
+          234
+        ],
+        [
+          310,
+          310
+        ]
+      ],
+      "role": "Working-directory array address, extent-record length, and release option."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          499,
+          499
+        ],
+        [
+          524,
+          529
+        ]
+      ],
+      "role": "Time and queue fields."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          182,
+          182
+        ]
+      ],
+      "role": "The no-such-volume error value."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x402c50",
+      "end_exclusive": "0x402de6",
+      "rom_offset": "0x2c50",
+      "length": 406,
+      "sha256": "976fd1df0fc203e68f406fac9a511f7e215d4b7d3f6f84abf29fdcbb0b912ecd",
+      "start_label": "DivUp",
+      "end_label": "TFSCOMMONEnd",
+      "boundary_evidence": "DivUp begins at its exported ROM address 0x402c50. The last FlushMDB return ends at 0x402de6. MakeStkPB starts there and belongs to OS/HFS/TFSVOL.a."
+    }
+  ],
+  "entry_points": {
+    "DivUp": "0x402c50",
+    "RoundAlloc": "0x402c64",
+    "QWordSearch": "0x402c86",
+    "GetVCBRfn": "0x402ca6",
+    "GetVCBDrv": "0x402cc0",
+    "GetWDCBRfn": "0x402cf4",
+    "MarkVCB": "0x402d1e",
+    "MarkVCBTime": "0x402d20",
+    "MarkVCBDirty": "0x402d28",
+    "FlushMDB": "0x402d2e",
+    "FlMDBExit": "0x402ddc",
+    "TFSCOMMONEnd": "0x402de6"
+  },
+  "integration_manifest": {
+    "name": "tfscommon",
+    "source": "Reconstruction/Source/OS/HFS/TFSCOMMON.a",
+    "start": "0x402c50",
+    "end_exclusive": "0x402de6",
+    "entry_points": {
+      "DivUp": "0x402c50",
+      "RoundAlloc": "0x402c64",
+      "QWordSearch": "0x402c86",
+      "GetVCBRfn": "0x402ca6",
+      "GetVCBDrv": "0x402cc0",
+      "GetWDCBRfn": "0x402cf4",
+      "MarkVCB": "0x402d1e",
+      "MarkVCBTime": "0x402d20",
+      "MarkVCBDirty": "0x402d28",
+      "FlushMDB": "0x402d2e",
+      "FlMDBExit": "0x402ddc",
+      "TFSCOMMONEnd": "0x402de6"
+    }
+  },
+  "changes": [
+    {
+      "location": "DivUp through GetWDCBRfn",
+      "change": "Retained the surviving routine bodies, including the short DivUp calls in RoundAlloc. Added only the required field definitions and external addresses.",
+      "evidence": "Every instruction matches the ROM from 0x402c50 through 0x402d1e. The source history dates the short calls to November 6, 1985."
+    },
+    {
+      "location": "MarkVCB and MarkVCBDirty",
+      "change": "Omitted the later manual-eject branch and debug-only checks.",
+      "evidence": "The ROM calls MarkVCBDirty, stores Time in vcbLsMod, and returns. MarkVCBDirty contains ST vcbFlags(A2) and RTS."
+    },
+    {
+      "location": "FlushMDB",
+      "change": "Restored direct entry, omitted debug code and the two FCB dirty-flag clears, and retained the older unconditional byte clear after RelBlock.",
+      "evidence": "The ROM begins with MOVE.L (SP)+,-(A6). It copies the volume metadata and both extent records, recomputes allocation counts, releases the block, and clears vcbFlags. The later source dates FCB dirty-flag clearing to November 20, 1985, vector dispatch to February 19, 1987, and manual-eject handling to August 3, 1993."
+    },
+    {
+      "location": "Source form and provenance",
+      "change": "Preserved the original header and applicable history and comments. Marked reconstruction additions, supplied explicit PC-relative JSR operands, and prefixed the two inactive *PWD* lines with semicolons.",
+      "evidence": "The added equates retain the field names and values from the surviving include files. These syntax changes let the shared verifier assemble the original instructions."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "CkWDRefNum",
+      "address": "0x403d3c"
+    },
+    {
+      "name": "GetBlock",
+      "address": "0x4077b0"
+    },
+    {
+      "name": "RelBlock",
+      "address": "0x407a0a"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x402c50, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "da941826b6427fbc65141afef4ee5e495fae6e7e524cc1bee146d30fe8275f27",
+    "assembled_length": 406,
+    "matched_bytes": 406,
+    "entry_points_checked": 12,
+    "result": "exact",
+    "limits": [
+      "The comparison proves the emitted bytes and label positions. It does not execute file operations or test disk behavior.",
+      "External routines and BlockMove trap dispatch are outside this span. Their addresses and trap opcode are checked here, but their implementations are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. The reconstruction retains surviving source where the ROM confirms it."
+    ]
+  }
+}

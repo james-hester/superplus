@@ -1,0 +1,144 @@
+{
+  "module": "QuickDraw/GrafInit.a",
+  "source_path": "Reconstruction/Source/QuickDraw/GrafInit.a",
+  "source_sha256": "8c90b2d6a13bd144a459c5aeef61380f6258b88920a283a440d063470c3394a9",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/GrafAsm.m.a",
+    "sha256": "998e2d9925d9eca1fc34f6571e444e78bfc97bf2987670ba7e7a3dbd3e0de9fc",
+    "instruction_lines": [
+      61,
+      287
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        146,
+        147
+      ],
+      [
+        248,
+        253
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        525
+      ],
+      [
+        561,
+        573
+      ]
+    ],
+    "macro_expansion_lines": [
+      444,
+      460
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x408784",
+      "end_address_exclusive": "0x408956",
+      "rom_offset": "0x8784",
+      "length": 466,
+      "sha256": "f3589520926ef0f1e31bc8c37dec7eb76093aa1c7d85321b24eb632ea15c5080",
+      "first_symbol": "NewHandle",
+      "last_symbol": "SetStdProcs"
+    }
+  ],
+  "symbols": {
+    "NewHandle": "0x408784",
+    "MemFull": "0x408792",
+    "SetHSize": "0x408798",
+    "InitGraf": "0x4087a6",
+    "CURDATA": "0x408800",
+    "OpenPort": "0x40886c",
+    "InitPort": "0x408884",
+    "ClosePort": "0x408904",
+    "SetStdProcs": "0x40891c"
+  },
+  "manifest_entry": {
+    "name": "grafinit",
+    "source": "Reconstruction/Source/QuickDraw/GrafInit.a",
+    "start": "0x408784",
+    "end_exclusive": "0x408956",
+    "entry_points": {
+      "NewHandle": "0x408784",
+      "MemFull": "0x408792",
+      "SetHSize": "0x408798",
+      "InitGraf": "0x4087a6",
+      "CURDATA": "0x408800",
+      "OpenPort": "0x40886c",
+      "InitPort": "0x408884",
+      "ClosePort": "0x408904",
+      "SetStdProcs": "0x40891c"
+    }
+  },
+  "external_routines": {
+    "NewRgn": "0x40bd4e",
+    "RectRgn": "0x40beb4",
+    "CopyRgn": "0x40bdfe"
+  },
+  "data_spans": [
+    {
+      "start": "0x408800",
+      "end_exclusive": "0x40886c",
+      "length": 108,
+      "source": "CURDATA in QuickDraw/Classic/GrafAsm.m.a:153-169",
+      "description": "Preserved the original arrow cursor bitmap, cursor mask, hotspot, and gray patterns."
+    }
+  ],
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained NewHandle through SetStdProcs in source order, including the original CURDATA definitions. Preserved applicable comments and the original filename, copyright notice, and GRAFASM.TEXT heading."
+    },
+    {
+      "kind": "conditional_removal",
+      "description": "Removed the hasPenFraction block in InitPort. The source history dates the addition to May 1990. The Mac Plus ROM has no corresponding store."
+    },
+    {
+      "kind": "macro_expansion",
+      "description": "Expanded UNLINK for its four-byte parameter using the original macro instructions. The expansion emits UNLK, the parameter removal, and RTS."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made the short BNE branch and PC addressing explicit. These spellings reproduce the ROM encoding."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied required global, field, color, and trap-table equates. Set lastGrafGlob to -202 and xToolTable to $C00, as the ROM requires. Defined the original trap opcodes and the verified external routine addresses."
+    },
+    {
+      "kind": "provenance",
+      "description": "Removed later archive annotations from the InitPort fall-through and omitted placeholder header fields. Added marked reconstruction notes."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 466,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated the MPW source, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-grafinit-verify",
+    "temporary_verifier": "/tmp/verify-grafinit.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "8c90b2d6a13bd144a459c5aeef61380f6258b88920a283a440d063470c3394a9",
+    "assembled_sha256": "f3589520926ef0f1e31bc8c37dec7eb76093aa1c7d85321b24eb632ea15c5080",
+    "object_relocations": 0,
+    "scope": "The entire emitted span, including its original data, matches the ROM. MPW assembly has not been run. GrafInit.a is a reconstruction filename."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

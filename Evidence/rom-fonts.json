@@ -1,0 +1,109 @@
+{
+  "module": "rom-fonts",
+  "source": "Reconstruction/Source/Resources/SystemFonts.r",
+  "source_sha256": "173273cbefa0b302ae94a1283866edec1cba753ce3b2b4a0e82d70019d43e4bf",
+  "originals": [
+    {
+      "path": "Resources/SystemFonts.r",
+      "sha256": "bd2e7b7725727ed5dfad50aedd29db61ccdc8e39af6306b7c9b0fcf9c8f5b6b1",
+      "line_ranges": [
+        [
+          1,
+          2
+        ],
+        [
+          4,
+          217
+        ]
+      ],
+      "role": "Original font declarations, data, and comments."
+    },
+    {
+      "path": "Toolbox/FontMgr/FontMgr.a",
+      "sha256": "077207f83069325cf98e8c56b6a817b7c36b10d185e291bec5af154b311f0532",
+      "line_ranges": [
+        [
+          5166,
+          5250
+        ],
+        [
+          5262,
+          5281
+        ]
+      ],
+      "role": "Character-height table allocation and loop bounds."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "spans": [
+    {
+      "start": "0x41f27c",
+      "end_exclusive": "0x41ffc0",
+      "length": 3396,
+      "sha256": "16b830584aad633975e768ecc409c1f716f513023063b4e28e5aea918b5534ae"
+    }
+  ],
+  "integration_manifest": {
+    "name": "rom-fonts",
+    "source": "Reconstruction/Source/Resources/SystemFonts.r",
+    "format": "rez-data",
+    "start": "0x41f27c",
+    "end_exclusive": "0x41ffc0",
+    "block_flags": "0xc0",
+    "first_master_pointer_offset": "0x90",
+    "resources": [
+      {
+        "type": "FONT",
+        "id": 0,
+        "label": "Font0",
+        "attributes": [
+          "sysheap"
+        ],
+        "name": "Chicago"
+      },
+      {
+        "type": "FONT",
+        "id": 12,
+        "label": "Font12",
+        "attributes": [
+          "sysheap"
+        ]
+      }
+    ],
+    "entry_points": {
+      "Font0Block": "0x41f27c",
+      "Font0": "0x41f284",
+      "Font0End": "0x41f284",
+      "Font12Block": "0x41f284",
+      "Font12": "0x41f28c",
+      "Font12End": "0x41ffc0"
+    }
+  },
+  "changes": [
+    {
+      "change": "Copied FONT 0 and FONT 12 from Resources/SystemFonts.r. FONT 0 remains empty and named Chicago. Restored FONT 12 data offsets $D32 and $D33 from $0009 to $FFFF.",
+      "evidence": "These are the only two differing bytes among 3,380 bytes of font data. The word is the final extra bounds entry of the character-height table."
+    },
+    {
+      "change": "Retained all other data and comments, adjusting the hexadecimal display comment for the restored word.",
+      "evidence": "The font header sets bit zero, marking the height table present. The height table begins at byte 2942 and holds 219 words. BuildCharTable subtracts two from its byte count before processing the character entries, excluding this final word."
+    },
+    {
+      "change": "Placed the two fonts in eight-byte memory blocks with relative master-pointer offsets $90 and $94.",
+      "evidence": "The empty font has block size 8. Chicago 12 has block size $D3C, including its 3,380 data bytes."
+    }
+  ],
+  "verification": {
+    "method": "The shared verifier assembled the source, linked it at its ROM address, and compared every emitted byte and all recorded labels.",
+    "matched_bytes": 3396,
+    "entry_points_checked": 6,
+    "result": "exact",
+    "limits": [
+      "The comparison establishes emitted bytes and labels. It does not execute ROM code or establish the exact text of the lost Mac Plus sources."
+    ],
+    "build_method": "The restricted Rez parser reads only data declarations, preserves their bytes, and emits named resource blocks with the recorded memory headers. It rejects unsupported source, omitted or repeated resources, and changed declaration metadata."
+  }
+}

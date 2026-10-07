@@ -1,0 +1,50 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/ResourceMgrPriv.a
+;
+;	File:		ResourceMgrPriv.a
+;
+;	Contains:	private equates for the Resource Manager
+;
+;	Copyright:	© 1983-1993 by Apple Computer, Inc., all rights reserved.
+;
+
+		INCLUDE 'Private.a'
+
+resDataOffset	EQU 	0				; 4 byte offset to resource data in the file
+resMapOffset	EQU 	resDataOffset+4 ; 4 byte offset to resource map in the file
+typeCount		EQU 	0				; TypeCount(A3) gives number of types
+tType			EQU 	0				; Type of resources
+tCount			EQU 	tType+4 		; 2 byte count, zero based
+tOffset 		EQU 	tCount+2		; 2 byte offset
+tSize			EQU 	tOffset+2		; Type entry size
+typeShift		EQU 	3				; log2 TSize.
+rID 			EQU 	0				; ID of the resource
+rNameOff		EQU 	rID+2			; name offset of the resource
+rAttr			EQU 	rNameOff+2		; attribute byte (high byte of locn)
+rLocn			EQU 	rAttr			; location of the resource in source file
+rHndl			EQU 	rLocn+4 		; handle of the resource
+reSize			EQU 	rHndl+4 		; resource entry size
+lenWdLen        EQU     4               ; a longword is 4 bytes.
+ROMRsrcStart	EQU 	$1A 			; offset to beggining of rom Rsrc stuff 		<28aug85> BBM
+preKey			EQU 	$20B7A185		; first key in preload key info 				<20jun85> BBM
+preDataBuff 	EQU 	$00 			; offset key info inside cache			00:
+preVersion		EQU 	preDataBuff+4	; four byte version number				04:
+preLock 		EQU 	preVersion+4	; Ptr to end of preload locked rsrcs	08:
+preUnLock		EQU 	preLock+4		; Ptr to end of preload unlocked rsrcs	0C:
+preExtra		EQU 	preUnLock+4 	; Ptr to end of extra preload rsrcs 	10:
+preEnd			EQU 	preExtra+4		; $0C bytes reserved for future use 	14:
+preSize 		EQU 	preEnd-preDataBuff		; size of preload stuff in rsrc fork	<11jul85> BBM
+HSCache 		EQU 	RMGRHiVars		; start lowmem cache for HandleScan 	00: 	<12mar85> BBM
+HSCRType		EQU 	HSCache 		; D3.L = resource type cache			00:
+HSCHandle		EQU 	HSCRType+4		; A1.L = handle to resource 			04:
+HSCROffset		EQU 	HSCHandle+4 	; A2.L = offset to resource entry		08:
+HSCTOffset		EQU 	HSCROffset+4	; A3.L = offset to TypeCount			0C:
+HSCMapHndl		EQU 	HSCTOffset+4	; A4.L = handle to map					10:
+HSCEntryCnt 	EQU 	HSCMapHndl+4	; D4.W = entry count (-1)				14:
+HSCTypeCnt		EQU 	HSCEntryCnt+2	; D5.W = type count (-1)				16:
+HSCMapRNum		EQU 	HSCTypeCnt+2	; D6.W = Rsrc File Reference number 	18:
+ResOneDeep		EQU 	HSCMapRNum+2	; flag for onedeep (auto-cleared)		1A: 	<12mar85> BBM
+GIROneDeep		EQU 	ResOneDeep+1	; flag (true means insert rom map)		1B: 	<09jul85> BBM
+GIRIndex		EQU 	GIROneDeep+1	; last index + 1 used by GetIndResource 1C: 	<09jul85> BBM

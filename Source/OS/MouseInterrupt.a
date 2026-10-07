@@ -1,0 +1,65 @@
+;
+;	Copyright:	© 1981-1990 by Apple Computer, Inc., all rights reserved.
+;
+;				 7/23/85	RDC		Moved mouse interrupt routines to IntHnd.Text
+;				  5/4/82	LAK		Updated MV1INT, MH1INT for SCC hardware
+; <23Jul85>  RDC  Moved mouse interrupt routines to IntHnd.Text
+
+*R This file restores the two Mac Plus mouse interrupt
+*R receivers at $401BD8 and $401C00. Their instruction bodies are absent
+*R from the released files. CrsrCore records their move to IntHnd in July 1985.
+*R The historical names MH1Int and MV1Int describe horizontal and vertical
+*R mouse interrupts; the ROM behavior establishes their addresses here.
+*R Evidence/mouse-interrupt.json records provenance and exact checks.
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'SysEqu.a'
+
+h 				EQU 		2         				; horizontal coordinate [word]
+v 				EQU 		0         				; vertical coordinate [word]
+
+MouseInterrupt PROC ;]
+        EXPORT MH1Int ;]
+        EXPORT MV1Int ;]
+
+*R The receiver combines VIA bit 4 with SCC status bit 3 to choose the horizontal step. It updates MTemp+H and copies CrsrCouple to CrsrNew.
+
+MH1Int ;]
+        MOVE.B    $EFE1FE,D1 ;]
+        ADD.W     D0,D0
+        EOR.W     D0,D1
+        BTST      #4,D1
+        BEQ.S     MouseLeft ;]
+        ADDQ.W    #1,MTemp+H ;]
+        MOVE.B    CrsrCouple,CrsrNew
+        RTS       
+
+MouseLeft ;]
+        SUBQ.W    #1,MTemp+H ;]
+        MOVE.B    CrsrCouple,CrsrNew
+        RTS       
+
+*R The receiver combines VIA bit 5 with SCC status bit 3 to choose the vertical step. It updates MTemp+V and copies CrsrCouple to CrsrNew.
+
+MV1Int ;]
+        MOVE.B    $EFE1FE,D1 ;]
+        ADD.W     D0,D0
+        ADD.W     D0,D0
+        EOR.W     D0,D1
+        BTST      #5,D1
+        BEQ.S     MouseDown ;]
+        SUBQ.W    #1,MTemp+V ;]
+        MOVE.B    CrsrCouple,CrsrNew
+        RTS       
+
+MouseDown ;]
+        ADDQ.W    #1,MTemp+V ;]
+        MOVE.B    CrsrCouple,CrsrNew
+        RTS       
+
+MouseInterruptEnd ;]
+        ENDPROC
+        END

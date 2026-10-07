@@ -1,0 +1,258 @@
+{
+  "module": "VSM",
+  "source": "Reconstruction/Source/OS/HFS/VSM.a",
+  "originals": [
+    {
+      "path": "OS/HFS/VSM.a",
+      "sha256": "b51b4428c353b07d31451fbb7061c733a4a6cf2ab977bce80677130829bda409",
+      "line_ranges": [
+        [
+          1,
+          667
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/FXM.a",
+      "sha256": "29f3b69f127191b02a64fc7c1bc21f52bd43d9a635d87e9bc6c1c79ce7f04a62",
+      "line_ranges": [
+        [
+          140,
+          166
+        ]
+      ],
+      "role": "The DeallocFile vector establishes the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          281,
+          281
+        ],
+        [
+          283,
+          283
+        ],
+        [
+          285,
+          286
+        ],
+        [
+          291,
+          291
+        ],
+        [
+          301,
+          302
+        ],
+        [
+          368,
+          368
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          365,
+          366
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          230,
+          230
+        ],
+        [
+          232,
+          234
+        ],
+        [
+          296,
+          296
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          1041,
+          1041
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          181,
+          181
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4057d6",
+      "end_exclusive": "0x405aa8",
+      "rom_offset": "0x57d6",
+      "length": 722,
+      "sha256": "893e471a0f73a24e3ce06068109db38c2d739f13e940e5216f3799609dcc619b",
+      "start_label": "VSM",
+      "end_label": "VSMEnd",
+      "boundary_evidence": "VSM starts at the BlkAlloc vector at 0x4057d6. GetBMBlk returns at 0x405aa6, immediately before the FXM DeallocFile vector at 0x405aa8."
+    }
+  ],
+  "entry_points": {
+    "VSM": "0x4057d6",
+    "BlkAlloc": "0x4057d6",
+    "vBlkAlloc": "0x4057dc",
+    "blkLoop": "0x405804",
+    "bkAlFree": "0x40583a",
+    "bkAllocDoIt": "0x4058ba",
+    "BkAllocOK": "0x405900",
+    "BkAllocExit": "0x405922",
+    "bkAllocFull": "0x40592c",
+    "BlkDeAlloc": "0x405932",
+    "vBlkDeAlloc": "0x405938",
+    "BlkChk": "0x405978",
+    "UpdateFree": "0x4059d2",
+    "ReadBM": "0x405a04",
+    "NextBit": "0x405a34",
+    "NxtBitRTS": "0x405a3e",
+    "FrBitScan": "0x405a42",
+    "NextWord": "0x405a5c",
+    "nwRstIndex": "0x405a76",
+    "nwGetLong": "0x405a78",
+    "nwExit": "0x405a7e",
+    "GetBMBlk": "0x405a82",
+    "VSMEnd": "0x405aa8"
+  },
+  "integration_manifest": {
+    "name": "vsm",
+    "source": "Reconstruction/Source/OS/HFS/VSM.a",
+    "start": "0x4057d6",
+    "end_exclusive": "0x405aa8",
+    "entry_points": {
+      "VSM": "0x4057d6",
+      "BlkAlloc": "0x4057d6",
+      "vBlkAlloc": "0x4057dc",
+      "blkLoop": "0x405804",
+      "bkAlFree": "0x40583a",
+      "bkAllocDoIt": "0x4058ba",
+      "BkAllocOK": "0x405900",
+      "BkAllocExit": "0x405922",
+      "bkAllocFull": "0x40592c",
+      "BlkDeAlloc": "0x405932",
+      "vBlkDeAlloc": "0x405938",
+      "BlkChk": "0x405978",
+      "UpdateFree": "0x4059d2",
+      "ReadBM": "0x405a04",
+      "NextBit": "0x405a34",
+      "NxtBitRTS": "0x405a3e",
+      "FrBitScan": "0x405a42",
+      "NextWord": "0x405a5c",
+      "nwRstIndex": "0x405a76",
+      "nwGetLong": "0x405a78",
+      "nwExit": "0x405a7e",
+      "GetBMBlk": "0x405a82",
+      "VSMEnd": "0x405aa8"
+    }
+  },
+  "changes": [
+    {
+      "location": "ReadBM at 0x405a04",
+      "change": "Removed the ReadBM vector and vReadBM export added in October 1986.",
+      "evidence": "ReadBM begins by moving its return address from the system stack to A6. There is no jReadBM vector load or return before that body."
+    },
+    {
+      "location": "Bitmap allocation, release, checks, and scan routines",
+      "change": "Retained the surviving instruction bodies, including the October 1985 end-of-volume scan fixes. Kept inactive debug checks as comments.",
+      "evidence": "All 722 bytes and 23 recorded labels match. FrBitScan subtracts D1 from D2 at 0x405a58 before returning at end of volume."
+    },
+    {
+      "location": "Build directives and instruction forms",
+      "change": "Replaced the include wrapper with required original equates and ROM routine addresses. Preserved the procedure and added its closing ENDP. Made branch sizes and PC-relative calls explicit.",
+      "evidence": "The ROM uses word branches for the allocation test at 0x405840 and calls from UpdateFree, ReadBM, and NextWord. Print and load directives do not emit instructions."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "GetBlock",
+      "address": "0x4077b0"
+    },
+    {
+      "name": "RelBlock",
+      "address": "0x407a0a"
+    },
+    {
+      "name": "MarkBlock",
+      "address": "0x4079f4"
+    },
+    {
+      "name": "DivUp",
+      "address": "0x402c50"
+    },
+    {
+      "name": "RoundAlloc",
+      "address": "0x402c64"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4057d6, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "826e8faa5083bc19d218439ad743182240fd86191d544251eca0dcdd33cc004e",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/VSM.a",
+        "sha256": "826e8faa5083bc19d218439ad743182240fd86191d544251eca0dcdd33cc004e"
+      }
+    ],
+    "assembled_length": 722,
+    "matched_bytes": 722,
+    "entry_points_checked": 23,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

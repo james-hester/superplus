@@ -1,0 +1,170 @@
+{
+  "module": "OS/SysUtil.a",
+  "source_path": "Reconstruction/Source/OS/SysUtil.a",
+  "source_sha256": "948f7c91c7f88295f8de4390ba6b1d8af2104bfb39e0487c97dfd3f25e631dfc",
+  "upstream_source": {
+    "path": "OS/SysUtil.a",
+    "sha256": "a15fc9ba95239f3361e06b2db8d7bfbca433aa6813e795ac4616a2b33c176e8f"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x40f7dc",
+      "end_address_exclusive": "0x40fc8a",
+      "rom_offset": "0xf7dc",
+      "length": 1198,
+      "code_length": 174,
+      "table_length": 1024,
+      "sha256": "225faa0c83b56dd4b1f140d20e5fca174430af3ef595b324c877af1fb5d47110",
+      "first_symbol": "Delay",
+      "last_symbol": "CmpTab"
+    }
+  ],
+  "symbols": {
+    "Delay": "0x40f7dc",
+    "CmpString": "0x40f7ee",
+    "RelString": "0x40f804",
+    "Canonizer": "0x40f84a",
+    "EntString": "0x40f85c",
+    "ExtString": "0x40f872",
+    "UprString": "0x40f878",
+    "StripTab": "0x40f88a",
+    "UpperTab": "0x40f98a",
+    "CmpTab": "0x40fa8a"
+  },
+  "parts": [
+    {
+      "name": "Delay",
+      "start_address": "0x40f7dc",
+      "end_address_exclusive": "0x40f7ee",
+      "length": 18,
+      "sha256": "1f92648fb025936666a97f1e553f15bb8e1a1d534c120e4f8339b7b84c929492"
+    },
+    {
+      "name": "CmpString",
+      "start_address": "0x40f7ee",
+      "end_address_exclusive": "0x40f804",
+      "length": 22,
+      "sha256": "58132c17d618f2b82c021b32ec44a8a9eee440af8a1b98e43da52b7209445f2b"
+    },
+    {
+      "name": "RelString",
+      "start_address": "0x40f804",
+      "end_address_exclusive": "0x40f84a",
+      "length": 70,
+      "sha256": "67067ed9145857d386744ddba9291050c158191da4bbcbe8d0112f1f44a701cd"
+    },
+    {
+      "name": "Canonizer",
+      "start_address": "0x40f84a",
+      "end_address_exclusive": "0x40f85c",
+      "length": 18,
+      "sha256": "eb33e13d0585207915f716aa1a453937a2216d958c251b830abac1dbc170b6cc"
+    },
+    {
+      "name": "EntString",
+      "start_address": "0x40f85c",
+      "end_address_exclusive": "0x40f872",
+      "length": 22,
+      "sha256": "d65a185552fcd217be390cbe5ade29d5c17929fca18c7222c9f9e3d399e01266"
+    },
+    {
+      "name": "ExtString",
+      "start_address": "0x40f872",
+      "end_address_exclusive": "0x40f878",
+      "length": 6,
+      "sha256": "06d13d05d6ff8e652c1db36c41fe46ee2fd1a0d4e4beee13369a68949ad7d287"
+    },
+    {
+      "name": "UprString",
+      "start_address": "0x40f878",
+      "end_address_exclusive": "0x40f88a",
+      "length": 18,
+      "sha256": "602dee474fc9940169e20afc68b66610851d3ffd68bb606670ca7af00e1186ad"
+    },
+    {
+      "name": "StripTab",
+      "start_address": "0x40f88a",
+      "end_address_exclusive": "0x40f98a",
+      "length": 256,
+      "sha256": "c3579ebfc5aefa654c9098e9e3db6c12dea0048d2c50a058f95f5190a869a9c3"
+    },
+    {
+      "name": "UpperTab",
+      "start_address": "0x40f98a",
+      "end_address_exclusive": "0x40fa8a",
+      "length": 256,
+      "sha256": "652ed678801f9d990699f69b172152caf2bbefcc7e6b342aaeec3aeea6681ca9"
+    },
+    {
+      "name": "CmpTab",
+      "start_address": "0x40fa8a",
+      "end_address_exclusive": "0x40fc8a",
+      "length": 512,
+      "sha256": "3656fb47a6f28af391e7f86e5338446853b533af6d8db376422584cfa726707f"
+    }
+  ],
+  "equates": {
+    "Ticks": {
+      "value": 362,
+      "source": "Interfaces/AIncludes/SysEqu.a:498"
+    }
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained Delay, CmpString, RelString, Canonizer, EntString, ExtString, UprString and all three tables. Other SysUtil routines remain outside this excerpt."
+    },
+    {
+      "kind": "instruction_reversion",
+      "description": "Restored MOVE.W #$2000,SR in Delay, matching ROM bytes 46fc2000. The January 29, 1993 history entry identifies the later NuKernel change to ANDI.W #$F8FF,SR."
+    },
+    {
+      "kind": "instruction_reversion",
+      "description": "Restored BGT.S in Delay, matching ROM bytes 6efa. The June 21, 1993 history entry identifies the later change to unsigned BHI.S."
+    },
+    {
+      "kind": "placement_reversion",
+      "description": "Moved UprString after ExtString and restored its short BSR.S EntString and BRA.S ExtString. The February 28, 1989 comment records removal of those short branch suffixes in the ancestor."
+    },
+    {
+      "kind": "symbol_reversion",
+      "description": "Removed the Trap suffix from DelayTrap, RelStringTrap and UprStringTrap. The May 21, 1992 history entry records the suffix addition for RelString and UprString; Ghidra names the ROM Delay and UprString entries without that suffix."
+    },
+    {
+      "kind": "assembly_directive",
+      "description": "Added Ticks=$016A and closing directives. Made the original implicit PC addressing explicit for StripTab, UpperTab and CmpTab. Renamed local @1 labels to @DelayLoop and @CmpDone for translation."
+    },
+    {
+      "kind": "comments",
+      "description": "Retained the original header, copyright, history through 1985 and applicable routine comments. Removed later history, branch-change comments and the 1989 UpperTab bug-fix comments."
+    },
+    {
+      "kind": "tables",
+      "description": "Retained all nine original table macros and every table invocation. The UpperTab mapping from $60 to $61 remains unchanged. The extra $02 argument to basec for the nonbreaking space entry remains ignored, as in the original macro; CmpTab emits $20,$00 at that entry."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "source_sha256": "948f7c91c7f88295f8de4390ba6b1d8af2104bfb39e0487c97dfd3f25e631dfc",
+    "checked_bytes": 1198,
+    "assembled_sha256": "225faa0c83b56dd4b1f140d20e5fca174430af3ef595b324c877af1fb5d47110",
+    "rom_span_sha256": "225faa0c83b56dd4b1f140d20e5fca174430af3ef595b324c877af1fb5d47110",
+    "linked_relocations": 0,
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Historical MPW assembly has not been tested.",
+      "The translator supports the constructs used by the current excerpts.",
+      "Byte equality does not establish the exact historical source text or prove completion of the ROM."
+    ]
+  }
+}

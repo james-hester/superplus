@@ -1,0 +1,90 @@
+{
+  "module": "QuickDraw/SeekRgn.a",
+  "source_path": "Reconstruction/Source/QuickDraw/SeekRgn.a",
+  "source_sha256": "8a44cc93306d437489b38f28e76cc6ff56006ba0f6c7a3eb91864b2e22928f8e",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/SeekRgn.m.a",
+    "sha256": "6424f8b7ec8aec091f822e2912f169f1b5e03c7c447eacc319fb5bc6548a2b94"
+  },
+  "upstream_equates": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x40c2c6",
+      "end_address_exclusive": "0x40c3d6",
+      "rom_offset": "0xc2c6",
+      "length": 272,
+      "sha256": "ec48a272efac373d3642e624609d2e8a443f0f4eb4dbd867da389546ca270c85",
+      "first_symbol": "INITRGN",
+      "last_symbol": "SEEKRGN"
+    }
+  ],
+  "symbols": {
+    "INITRGN": "0x40c2c6",
+    "SEEKRGN": "0x40c2fe"
+  },
+  "external_references": {
+    "MaskTab": "0x408438"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete SeekRgn module and applicable original comments. Omitted the later EASE header."
+    },
+    {
+      "kind": "equates",
+      "description": "Replaced the GrafTypes include with its required equates and their dependencies. Retained procedure parameters and local EQU declarations."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made PC operands, branch sizes and applicable ADDQ or SUBQ encodings explicit. Matched source branches to ROM branches in order; every branch condition agrees."
+    },
+    {
+      "kind": "external_reference",
+      "description": "Set MaskTab to $408438, the destination of the ROM LEA instruction."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 272 assembled instruction bytes equal the ROM span. All 2 recorded entry points match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Used the shared translator on the preserved source, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "original_body_comments": 155,
+    "preserved_original_body_comments": 155,
+    "removed_comment_texts": [],
+    "temporary_driver": "/tmp/check-region-support.py",
+    "temporary_build": "/tmp/region-support-build",
+    "commands": [
+      "python3 /tmp/check-region-support.py"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the original macro spelling, source formatting or label spelling."
+    ]
+  },
+  "integration_manifest": {
+    "name": "seekrgn",
+    "source": "Reconstruction/Source/QuickDraw/SeekRgn.a",
+    "start": "0x40c2c6",
+    "end_exclusive": "0x40c3d6",
+    "entry_points": {
+      "INITRGN": "0x40c2c6",
+      "SEEKRGN": "0x40c2fe"
+    }
+  }
+}

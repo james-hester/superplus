@@ -1,0 +1,1027 @@
+{
+  "module": "OS/MemoryMgr/BlockMove.a",
+  "source_path": "Reconstruction/Source/OS/MemoryMgr/BlockMove.a",
+  "source_sha256": "78616b2c928108070cfc75659fa8e17c647b019093fa38103e3201a841da7993",
+  "upstream_sources": [
+    {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "sha256": "6473b443317f9ad0535d966aed960589897f9f8311ce3b43faafa146a720314a",
+      "retained_header_lines": [
+        1,
+        15
+      ],
+      "retained_history_lines": [
+        76,
+        89
+      ],
+      "retained_comment_ranges": [
+        [
+          91,
+          107
+        ],
+        [
+          184,
+          204
+        ],
+        [
+          550,
+          571
+        ]
+      ],
+      "removed_68000_history_line": 34
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x410cc0",
+      "end_address_exclusive": "0x410f30",
+      "rom_offset": "0x10cc0",
+      "length": 624,
+      "sha256": "2628b63d0ca0e2e50f6ea7eb47375ead1ecb866a64b305d1f67de7bcfd8fc17e"
+    }
+  ],
+  "manifest_entry": {
+    "name": "blockmove",
+    "source": "Reconstruction/Source/OS/MemoryMgr/BlockMove.a",
+    "start": "0x410cc0",
+    "end_exclusive": "0x410f30",
+    "entry_points": {
+      "BlockMove": "0x410cc0",
+      "CheckAlignment": "0x410cd8",
+      "CopyBytesInc": "0x410ce0",
+      "ByteTailInc": "0x410cf6",
+      "CopyByteTailInc": "0x410cfe",
+      "BlockMoveDone": "0x410d0e",
+      "CopyBytesDec": "0x410d12",
+      "ByteTailDec": "0x410d28",
+      "CopyByteTailDec": "0x410d30",
+      "CopyAligned": "0x410d44",
+      "CopyLongInc": "0x410d54",
+      "MovemLoopInc": "0x410d72",
+      "LongLoopInc": "0x410d92",
+      "TailDispatchInc": "0x410da8",
+      "AlignDec": "0x410e3e",
+      "CopyLongDec": "0x410e46",
+      "MovemLoopDec": "0x410e64",
+      "LongLoopDec": "0x410e84",
+      "TailDispatchDec": "0x410e9a",
+      "TailInc00": "0x410dbc",
+      "TailInc01": "0x410e24",
+      "TailInc02": "0x410e0e",
+      "TailInc03": "0x410e22",
+      "TailInc04": "0x410dba",
+      "TailInc05": "0x410e36",
+      "TailInc06": "0x410e0c",
+      "TailInc07": "0x410e20",
+      "TailInc08": "0x410db8",
+      "TailInc09": "0x410e34",
+      "TailInc10": "0x410e0a",
+      "TailInc11": "0x410e1e",
+      "TailInc12": "0x410db6",
+      "TailInc13": "0x410e32",
+      "TailInc14": "0x410e08",
+      "TailInc15": "0x410e1c",
+      "TailInc16": "0x410db4",
+      "TailInc17": "0x410e30",
+      "TailInc18": "0x410e06",
+      "TailInc19": "0x410e1a",
+      "TailInc20": "0x410db2",
+      "TailInc21": "0x410e2e",
+      "TailInc22": "0x410e04",
+      "TailInc23": "0x410e18",
+      "TailInc24": "0x410db0",
+      "TailInc25": "0x410e2c",
+      "TailInc26": "0x410e02",
+      "TailInc27": "0x410e16",
+      "TailInc28": "0x410dae",
+      "TailInc29": "0x410e2a",
+      "TailInc30": "0x410e00",
+      "TailInc31": "0x410e14",
+      "TailDec00": "0x410eae",
+      "TailDec01": "0x410f16",
+      "TailDec02": "0x410f00",
+      "TailDec03": "0x410f14",
+      "TailDec04": "0x410eac",
+      "TailDec05": "0x410f28",
+      "TailDec06": "0x410efe",
+      "TailDec07": "0x410f12",
+      "TailDec08": "0x410eaa",
+      "TailDec09": "0x410f26",
+      "TailDec10": "0x410efc",
+      "TailDec11": "0x410f10",
+      "TailDec12": "0x410ea8",
+      "TailDec13": "0x410f24",
+      "TailDec14": "0x410efa",
+      "TailDec15": "0x410f0e",
+      "TailDec16": "0x410ea6",
+      "TailDec17": "0x410f22",
+      "TailDec18": "0x410ef8",
+      "TailDec19": "0x410f0c",
+      "TailDec20": "0x410ea4",
+      "TailDec21": "0x410f20",
+      "TailDec22": "0x410ef6",
+      "TailDec23": "0x410f0a",
+      "TailDec24": "0x410ea2",
+      "TailDec25": "0x410f1e",
+      "TailDec26": "0x410ef4",
+      "TailDec27": "0x410f08",
+      "TailDec28": "0x410ea0",
+      "TailDec29": "0x410f1c",
+      "TailDec30": "0x410ef2",
+      "TailDec31": "0x410f06"
+    }
+  },
+  "edits": [
+    {
+      "kind": "scope",
+      "description": "Restored the complete MC68000 BlockMove interval. The released history records removal of the 68000 versions in October 1991. The surviving tail operations supply 140 instruction and comment matches."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored the entry, masked-address comparison, copy direction, mixed-alignment byte loops, aligned longword loops, and 48-byte MOVEM loops from the ROM. Every instruction is assembled; no instruction bytes are hidden in data directives."
+    },
+    {
+      "kind": "source_preservation",
+      "description": "Retained the released header, history through April 1985, argument and register description, tail comments, and matching instruction comments. The source note identifies the historical 124-byte threshold as obsolete for this ROM, whose MOVEM path requires at least 192 bytes after the alignment byte."
+    },
+    {
+      "kind": "labels",
+      "description": "Named tail entries by the byte counts in the ROM branch tables. Used explicit PC addressing and ROM branch widths. Newly named control labels describe reconstructed paths; they do not establish original source names."
+    }
+  ],
+  "source_instruction_pairs": {
+    "4263342": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 261,
+      "original_code": "TailInc28\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 28 bytes Incrementing"
+    },
+    "4263344": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 262,
+      "original_code": "TailInc24\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 24 bytes Incrementing"
+    },
+    "4263346": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 263,
+      "original_code": "TailInc20\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 20 bytes Incrementing"
+    },
+    "4263348": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 264,
+      "original_code": "TailInc16\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 16 bytes Incrementing"
+    },
+    "4263350": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 265,
+      "original_code": "TailInc12\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 12 bytes Incrementing"
+    },
+    "4263352": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 266,
+      "original_code": "TailInc08\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final  8 bytes Incrementing"
+    },
+    "4263354": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 267,
+      "original_code": "TailInc04\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final  4 bytes Incrementing"
+    },
+    "4263360": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 217,
+      "original_code": "bra.s\tTailInc00",
+      "comment": " 10 2 0 0\tcopy final  0 bytes Incrementing"
+    },
+    "4263362": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 218,
+      "original_code": "bra.s\tTailInc01",
+      "comment": " 10 2 0 0\tcopy final  1 byte  Incrementing"
+    },
+    "4263364": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 219,
+      "original_code": "bra.s\tTailInc02",
+      "comment": " 10 2 0 0\tcopy final  2 bytes Incrementing"
+    },
+    "4263366": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 220,
+      "original_code": "bra.s\tTailInc03",
+      "comment": " 10 2 0 0\tcopy final  3 bytes Incrementing"
+    },
+    "4263368": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 221,
+      "original_code": "bra.s\tTailInc04",
+      "comment": " 10 2 0 0\tcopy final  4 bytes Incrementing"
+    },
+    "4263370": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 222,
+      "original_code": "bra.s\tTailInc05",
+      "comment": " 10 2 0 0\tcopy final  5 bytes Incrementing"
+    },
+    "4263372": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 223,
+      "original_code": "bra.s\tTailInc06",
+      "comment": " 10 2 0 0\tcopy final  6 bytes Incrementing"
+    },
+    "4263374": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 224,
+      "original_code": "bra.s\tTailInc07",
+      "comment": " 10 2 0 0\tcopy final  7 bytes Incrementing"
+    },
+    "4263376": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 225,
+      "original_code": "bra.s\tTailInc08",
+      "comment": " 10 2 0 0\tcopy final  8 bytes Incrementing"
+    },
+    "4263378": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 226,
+      "original_code": "bra.s\tTailInc09",
+      "comment": " 10 2 0 0\tcopy final  9 bytes Incrementing"
+    },
+    "4263380": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 227,
+      "original_code": "bra.s\tTailInc10",
+      "comment": " 10 2 0 0\tcopy final 10 bytes Incrementing"
+    },
+    "4263382": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 228,
+      "original_code": "bra.s\tTailInc11",
+      "comment": " 10 2 0 0\tcopy final 11 bytes Incrementing"
+    },
+    "4263384": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 229,
+      "original_code": "bra.s\tTailInc12",
+      "comment": " 10 2 0 0\tcopy final 12 bytes Incrementing"
+    },
+    "4263386": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 230,
+      "original_code": "bra.s\tTailInc13",
+      "comment": " 10 2 0 0\tcopy final 13 bytes Incrementing"
+    },
+    "4263388": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 231,
+      "original_code": "bra.s\tTailInc14",
+      "comment": " 10 2 0 0\tcopy final 14 bytes Incrementing"
+    },
+    "4263390": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 232,
+      "original_code": "bra.s\tTailInc15",
+      "comment": " 10 2 0 0\tcopy final 15 bytes Incrementing"
+    },
+    "4263392": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 233,
+      "original_code": "bra.s\tTailInc16",
+      "comment": " 10 2 0 0\tcopy final 16 bytes Incrementing"
+    },
+    "4263394": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 234,
+      "original_code": "bra.s\tTailInc17",
+      "comment": " 10 2 0 0\tcopy final 17 bytes Incrementing"
+    },
+    "4263396": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 235,
+      "original_code": "bra.s\tTailInc18",
+      "comment": " 10 2 0 0\tcopy final 18 bytes Incrementing"
+    },
+    "4263398": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 236,
+      "original_code": "bra.s\tTailInc19",
+      "comment": " 10 2 0 0\tcopy final 19 bytes Incrementing"
+    },
+    "4263400": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 237,
+      "original_code": "bra.s\tTailInc20",
+      "comment": " 10 2 0 0\tcopy final 20 bytes Incrementing"
+    },
+    "4263402": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 238,
+      "original_code": "bra.s\tTailInc21",
+      "comment": " 10 2 0 0\tcopy final 21 bytes Incrementing"
+    },
+    "4263404": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 239,
+      "original_code": "bra.s\tTailInc22",
+      "comment": " 10 2 0 0\tcopy final 22 bytes Incrementing"
+    },
+    "4263406": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 240,
+      "original_code": "bra.s\tTailInc23",
+      "comment": " 10 2 0 0\tcopy final 23 bytes Incrementing"
+    },
+    "4263408": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 241,
+      "original_code": "bra.s\tTailInc24",
+      "comment": " 10 2 0 0\tcopy final 24 bytes Incrementing"
+    },
+    "4263410": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 242,
+      "original_code": "bra.s\tTailInc25",
+      "comment": " 10 2 0 0\tcopy final 25 bytes Incrementing"
+    },
+    "4263412": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 243,
+      "original_code": "bra.s\tTailInc26",
+      "comment": " 10 2 0 0\tcopy final 26 bytes Incrementing"
+    },
+    "4263414": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 244,
+      "original_code": "bra.s\tTailInc27",
+      "comment": " 10 2 0 0\tcopy final 27 bytes Incrementing"
+    },
+    "4263416": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 245,
+      "original_code": "bra.s\tTailInc28",
+      "comment": " 10 2 0 0\tcopy final 28 bytes Incrementing"
+    },
+    "4263418": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 246,
+      "original_code": "bra.s\tTailInc29",
+      "comment": " 10 2 0 0\tcopy final 29 bytes Incrementing"
+    },
+    "4263420": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 247,
+      "original_code": "bra.s\tTailInc30",
+      "comment": " 10 2 0 0\tcopy final 30 bytes Incrementing"
+    },
+    "4263424": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 206,
+      "original_code": "TailInc30\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 30 bytes Incrementing"
+    },
+    "4263426": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 207,
+      "original_code": "TailInc26\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 26 bytes Incrementing"
+    },
+    "4263428": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 208,
+      "original_code": "TailInc22\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 22 bytes Incrementing"
+    },
+    "4263430": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 209,
+      "original_code": "TailInc18\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 18 bytes Incrementing"
+    },
+    "4263432": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 210,
+      "original_code": "TailInc14\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 14 bytes Incrementing"
+    },
+    "4263434": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 211,
+      "original_code": "TailInc10\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 10 bytes Incrementing"
+    },
+    "4263436": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 212,
+      "original_code": "TailInc06\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final  6 bytes Incrementing"
+    },
+    "4263438": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 213,
+      "original_code": "TailInc02\tmove.w\t(a0)+,(a1)+",
+      "comment": " 12 1 1 1\tcopy final  2 bytes Incrementing"
+    },
+    "4263444": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 248,
+      "original_code": "TailInc31\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 31 bytes Incrementing"
+    },
+    "4263446": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 250,
+      "original_code": "TailInc27\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 27 bytes Incrementing"
+    },
+    "4263448": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 251,
+      "original_code": "TailInc23\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 23 bytes Incrementing"
+    },
+    "4263450": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 252,
+      "original_code": "TailInc19\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 19 bytes Incrementing"
+    },
+    "4263452": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 253,
+      "original_code": "TailInc15\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 15 bytes Incrementing"
+    },
+    "4263454": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 254,
+      "original_code": "TailInc11\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 11 bytes Incrementing"
+    },
+    "4263456": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 255,
+      "original_code": "TailInc07\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final  7 bytes Incrementing"
+    },
+    "4263458": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 256,
+      "original_code": "TailInc03\tmove.w\t(a0)+,(a1)+",
+      "comment": " 12 1 1 1\tcopy final  3 bytes Incrementing"
+    },
+    "4263460": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 257,
+      "original_code": "TailInc01\tmove.b\t(a0)+,(a1)+",
+      "comment": " 12 1 1 1\tcopy final  1 byte  Incrementing"
+    },
+    "4263466": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 271,
+      "original_code": "TailInc29\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 29 bytes Incrementing"
+    },
+    "4263468": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 272,
+      "original_code": "TailInc25\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 25 bytes Incrementing"
+    },
+    "4263470": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 273,
+      "original_code": "TailInc21\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 21 bytes Incrementing"
+    },
+    "4263472": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 274,
+      "original_code": "TailInc17\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 17 bytes Incrementing"
+    },
+    "4263474": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 275,
+      "original_code": "TailInc13\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final 13 bytes Incrementing"
+    },
+    "4263476": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 276,
+      "original_code": "TailInc09\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final  9 bytes Incrementing"
+    },
+    "4263478": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 277,
+      "original_code": "TailInc05\tmove.l\t(a0)+,(a1)+",
+      "comment": " 20 1 2 2\tcopy final  5 bytes Incrementing"
+    },
+    "4263584": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 628,
+      "original_code": "TailDec28\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 28 bytes Decrementing"
+    },
+    "4263586": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 629,
+      "original_code": "TailDec24\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 24 bytes Decrementing"
+    },
+    "4263588": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 630,
+      "original_code": "TailDec20\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 20 bytes Decrementing"
+    },
+    "4263590": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 631,
+      "original_code": "TailDec16\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 16 bytes Decrementing"
+    },
+    "4263592": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 632,
+      "original_code": "TailDec12\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 12 bytes Decrementing"
+    },
+    "4263594": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 633,
+      "original_code": "TailDec08\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final  8 bytes Decrementing"
+    },
+    "4263596": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 634,
+      "original_code": "TailDec04\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final  4 bytes Decrementing"
+    },
+    "4263602": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 584,
+      "original_code": "bra.s\tTailDec00",
+      "comment": " 10 2 0 0\tcopy final  0 bytes Decrementing"
+    },
+    "4263604": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 585,
+      "original_code": "bra.s\tTailDec01",
+      "comment": " 10 2 0 0\tcopy final  1 byte  Decrementing"
+    },
+    "4263606": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 586,
+      "original_code": "bra.s\tTailDec02",
+      "comment": " 10 2 0 0\tcopy final  2 bytes Decrementing"
+    },
+    "4263608": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 587,
+      "original_code": "bra.s\tTailDec03",
+      "comment": " 10 2 0 0\tcopy final  3 bytes Decrementing"
+    },
+    "4263610": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 588,
+      "original_code": "bra.s\tTailDec04",
+      "comment": " 10 2 0 0\tcopy final  4 bytes Decrementing"
+    },
+    "4263612": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 589,
+      "original_code": "bra.s\tTailDec05",
+      "comment": " 10 2 0 0\tcopy final  5 bytes Decrementing"
+    },
+    "4263614": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 590,
+      "original_code": "bra.s\tTailDec06",
+      "comment": " 10 2 0 0\tcopy final  6 bytes Decrementing"
+    },
+    "4263616": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 591,
+      "original_code": "bra.s\tTailDec07",
+      "comment": " 10 2 0 0\tcopy final  7 bytes Decrementing"
+    },
+    "4263618": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 592,
+      "original_code": "bra.s\tTailDec08",
+      "comment": " 10 2 0 0\tcopy final  8 bytes Decrementing"
+    },
+    "4263620": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 593,
+      "original_code": "bra.s\tTailDec09",
+      "comment": " 10 2 0 0\tcopy final  9 bytes Decrementing"
+    },
+    "4263622": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 594,
+      "original_code": "bra.s\tTailDec10",
+      "comment": " 10 2 0 0\tcopy final 10 bytes Decrementing"
+    },
+    "4263624": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 595,
+      "original_code": "bra.s\tTailDec11",
+      "comment": " 10 2 0 0\tcopy final 11 bytes Decrementing"
+    },
+    "4263626": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 596,
+      "original_code": "bra.s\tTailDec12",
+      "comment": " 10 2 0 0\tcopy final 12 bytes Decrementing"
+    },
+    "4263628": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 597,
+      "original_code": "bra.s\tTailDec13",
+      "comment": " 10 2 0 0\tcopy final 13 bytes Decrementing"
+    },
+    "4263630": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 598,
+      "original_code": "bra.s\tTailDec14",
+      "comment": " 10 2 0 0\tcopy final 14 bytes Decrementing"
+    },
+    "4263632": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 599,
+      "original_code": "bra.s\tTailDec15",
+      "comment": " 10 2 0 0\tcopy final 15 bytes Decrementing"
+    },
+    "4263634": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 600,
+      "original_code": "bra.s\tTailDec16",
+      "comment": " 10 2 0 0\tcopy final 16 bytes Decrementing"
+    },
+    "4263636": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 601,
+      "original_code": "bra.s\tTailDec17",
+      "comment": " 10 2 0 0\tcopy final 17 bytes Decrementing"
+    },
+    "4263638": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 602,
+      "original_code": "bra.s\tTailDec18",
+      "comment": " 10 2 0 0\tcopy final 18 bytes Decrementing"
+    },
+    "4263640": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 603,
+      "original_code": "bra.s\tTailDec19",
+      "comment": " 10 2 0 0\tcopy final 19 bytes Decrementing"
+    },
+    "4263642": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 604,
+      "original_code": "bra.s\tTailDec20",
+      "comment": " 10 2 0 0\tcopy final 20 bytes Decrementing"
+    },
+    "4263644": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 605,
+      "original_code": "bra.s\tTailDec21",
+      "comment": " 10 2 0 0\tcopy final 21 bytes Decrementing"
+    },
+    "4263646": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 606,
+      "original_code": "bra.s\tTailDec22",
+      "comment": " 10 2 0 0\tcopy final 22 bytes Decrementing"
+    },
+    "4263648": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 607,
+      "original_code": "bra.s\tTailDec23",
+      "comment": " 10 2 0 0\tcopy final 23 bytes Decrementing"
+    },
+    "4263650": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 608,
+      "original_code": "bra.s\tTailDec24",
+      "comment": " 10 2 0 0\tcopy final 24 bytes Decrementing"
+    },
+    "4263652": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 609,
+      "original_code": "bra.s\tTailDec25",
+      "comment": " 10 2 0 0\tcopy final 25 bytes Decrementing"
+    },
+    "4263654": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 610,
+      "original_code": "bra.s\tTailDec26",
+      "comment": " 10 2 0 0\tcopy final 26 bytes Decrementing"
+    },
+    "4263656": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 611,
+      "original_code": "bra.s\tTailDec27",
+      "comment": " 10 2 0 0\tcopy final 27 bytes Decrementing"
+    },
+    "4263658": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 612,
+      "original_code": "bra.s\tTailDec28",
+      "comment": " 10 2 0 0\tcopy final 28 bytes Decrementing"
+    },
+    "4263660": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 613,
+      "original_code": "bra.s\tTailDec29",
+      "comment": " 10 2 0 0\tcopy final 29 bytes Decrementing"
+    },
+    "4263662": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 614,
+      "original_code": "bra.s\tTailDec30",
+      "comment": " 10 2 0 0\tcopy final 30 bytes Decrementing"
+    },
+    "4263666": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 573,
+      "original_code": "TailDec30\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 30 bytes Decrementing"
+    },
+    "4263668": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 574,
+      "original_code": "TailDec26\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 26 bytes Decrementing"
+    },
+    "4263670": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 575,
+      "original_code": "TailDec22\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 22 bytes Decrementing"
+    },
+    "4263672": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 576,
+      "original_code": "TailDec18\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 18 bytes Decrementing"
+    },
+    "4263674": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 577,
+      "original_code": "TailDec14\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 14 bytes Decrementing"
+    },
+    "4263676": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 578,
+      "original_code": "TailDec10\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 10 bytes Decrementing"
+    },
+    "4263678": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 579,
+      "original_code": "TailDec06\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final  6 bytes Decrementing"
+    },
+    "4263680": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 580,
+      "original_code": "TailDec02\tmove.w\t-(a0),-(a1)",
+      "comment": " 14 1 1 1\tcopy final  2 bytes Decrementing"
+    },
+    "4263686": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 615,
+      "original_code": "TailDec31\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 31 bytes Decrementing"
+    },
+    "4263688": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 617,
+      "original_code": "TailDec27\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 27 bytes Decrementing"
+    },
+    "4263690": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 618,
+      "original_code": "TailDec23\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 23 bytes Decrementing"
+    },
+    "4263692": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 619,
+      "original_code": "TailDec19\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 19 bytes Decrementing"
+    },
+    "4263694": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 620,
+      "original_code": "TailDec15\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 15 bytes Decrementing"
+    },
+    "4263696": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 621,
+      "original_code": "TailDec11\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 11 bytes Decrementing"
+    },
+    "4263698": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 622,
+      "original_code": "TailDec07\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final  7 bytes Decrementing"
+    },
+    "4263700": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 623,
+      "original_code": "TailDec03\tmove.w\t-(a0),-(a1)",
+      "comment": " 14 1 1 1\tcopy final  3 bytes Decrementing"
+    },
+    "4263702": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 624,
+      "original_code": "TailDec01\tmove.b\t-(a0),-(a1)",
+      "comment": " 14 1 1 1\tcopy final  1 byte  Decrementing"
+    },
+    "4263708": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 638,
+      "original_code": "TailDec29\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 29 bytes Decrementing"
+    },
+    "4263710": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 639,
+      "original_code": "TailDec25\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 25 bytes Decrementing"
+    },
+    "4263712": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 640,
+      "original_code": "TailDec21\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 21 bytes Decrementing"
+    },
+    "4263714": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 641,
+      "original_code": "TailDec17\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 17 bytes Decrementing"
+    },
+    "4263716": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 642,
+      "original_code": "TailDec13\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final 13 bytes Decrementing"
+    },
+    "4263718": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 643,
+      "original_code": "TailDec09\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final  9 bytes Decrementing"
+    },
+    "4263720": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 644,
+      "original_code": "TailDec05\tmove.l\t-(a0),-(a1)",
+      "comment": " 22 1 2 2\tcopy final  5 bytes Decrementing"
+    },
+    "4263356": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 214,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263358": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 215,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263440": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 214,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263442": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 215,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263462": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 214,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263464": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 215,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263482": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 214,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263484": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 215,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263598": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 581,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263600": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 582,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263682": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 581,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263684": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 582,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263704": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 581,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263706": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 582,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    },
+    "4263724": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 581,
+      "original_code": "moveq.l\t#noErr,d0",
+      "comment": "  4 1 0 0\treturn success status"
+    },
+    "4263726": {
+      "path": "OS/MemoryMgr/BlockMove.a",
+      "line": 582,
+      "original_code": "rts",
+      "comment": " 16 2 2 0\t_BlockMove complete"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 624,
+    "checked_entry_points": 83,
+    "instruction_count": 271,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-blockmove-verify",
+    "source_sha256": "78616b2c928108070cfc75659fa8e17c647b019093fa38103e3201a841da7993",
+    "assembled_sha256": "2628b63d0ca0e2e50f6ea7eb47375ead1ecb866a64b305d1f67de7bcfd8fc17e",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original source formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

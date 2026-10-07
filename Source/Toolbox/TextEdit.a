@@ -1,0 +1,2281 @@
+*R Mac Plus v3 TextEdit, from TEGetText through DefClikProc.
+*R The ROM uses the uniform-font record, direct handle flags and a twelve-byte entry frame.
+*R Styled text, script dispatch, character buffering and later error paths are absent.
+*R Original comments that still describe this target remain unchanged; later revision tags
+*R refer to the surviving source. The original history ends at the November 1985 ROM build.
+*R Restored instruction sizes preserve the ROM encodings.
+*R Internal names without surviving source labels are documented in Evidence/textedit.json.
+;
+;
+;	File:		TextEdit.a (formerly te68k.a)
+;
+;	Contains:	TextEdit for ROM or (when included in TextEditPatch.a) 'ptch' 0
+;
+;	Written by:	SC	Steve Capps
+;				EHB	Ernie Beernink
+;				MBK	Margie Kaptanoglu
+;				RWW	Russ Wetmore
+;				SMB	Sue Bartalo
+;				YS	Yishai Steinhart (most recently)
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc., all rights reserved.
+;
+*R Original modification history through the ROM build:
+;				 11/5/85	EHB		Moved label to make WordRedraw fix work right
+;				 11/3/85	SC		Fixed special case D3=0 in DoCaret
+;				 11/1/85	EHB		If WordRedraw=0->draw normal, if >0 -> draw word, if <0 -> draw
+;									line
+;				10/31/85	EHB		Fast TextBox was scanning 0 len strings for CR's
+;				10/31/85	EHB		In RecalDraw, draw whole words if WordRedraw (new lowMem) is
+;									TRUE
+;				10/30/85	EHB		In DoFind, set up D3/D4 with selStart/selEnd before calling
+;									DoText
+;				 10/1/85	EHB		Set up D2 for all calls to CallBreak (identifies caller)
+;				 10/1/85	EHB		Added hooks for TrimMeasure, FindWord, and FindLine.
+;				 7/26/85	EHB		Added ShowCaret to end of TEPinScroll (needed for null scroll)
+;				 7/16/85	SC		PinDisplay has new entry point for TEUpdate compatability
+;									Refresh changed to take A0 pointing to an update rect not D0/D1,
+;									calls PinA0Rect.
+;				 6/15/85	SC		Undid "teLftClick not a byte, now the tefLeftClk bit in teFlags"
+;									had to drop back to old one for compatibility. TERecback is now
+;									the TEFlags
+;				 6/15/85	SC		DoText must return ThePort in A0 for compatibility
+;				 6/10/85	SC		CharbyChar had a BLT that should've been a BLE (It gets there by
+;									a BGE so it should stay in loop if BLE).
+;				 6/10/85	SC		DoText links a stack frame/DoBye and findDone UNLK
+;				 6/10/85	SC		In rangeRect, stuff the rect.left in TempRect and set pen to
+;									right for compatibility with old DoText
+;				 6/10/85	SC		DoSearch returns in D0 as before
+;				  6/7/85	EHB		Fast TextBox shouldn't catch zero strings else no
+;									EraseRect(oops)
+;				 5/23/85	SC		Dropped port save/restore font
+;				 5/21/85	SC		Added negative length to Fast TextBox
+;				 5/20/85	SC		SelView called before caret view in DelGuts and PasteGuts;
+;									should be after (leaves carets behind in Dialogs)
+;				 5/20/85	SC		CleanupSel saved teTextH flags twice!!
+;				 5/20/85	SC		DoSearch longize D3-D4 (Thanks Bill and Larry)
+;				 5/20/85	SC		Fast TextBox didn't catch zero string length case (oops)
+;				 5/18/85	SC		Made DefClikProc obey autoScroll bit
+;				 5/18/85	SC		LineWidth didn't handle the line past teLength correctly
+;				 5/18/85	SC		Merged LineWidth and TrimMeasure
+;				 5/18/85	SC		Made trim measure skip wordBreak code and only trim chars <=
+;									space. This should truly measure only the black characters And
+;									not the word break chars now. (Deja Vu - did this on 3 May but a
+;									bug in FindLine made it LOOK as though it didn't work so I undid
+;									it on 9-May)
+;				 5/18/85	SC		New routine PinDisplay replaces pin code in Hilite and Refresh
+;				 5/18/85	SC		Put back DoText funnel for compatibility
+;				 5/18/85	SC		Dropped printable trim in FindLine @ end
+;				 5/15/85	SC		Multiple standard entries with stack peel amount in D1. Does a
+;									preflight and then escapes if the preflight fails
+;				 5/13/85	SC		Save/Restore text stuff in std entry/exit and made setlinarray
+;									avoid calling _GethandleSize(done once in stdEntry)
+;				 5/13/85	SC		Added preflight routine to check memory. Called from pasteguts,
+;									insertGuts, and TextBox. Did similar to TENew
+;				 5/12/85	SC		New local proc MungeSetup to do common munger stuff
+;				 5/12/85	SC		Use D5 in recallines to hold telength
+;				 5/11/85	SC		Added TEAutoView trap to enable/disable the auto scrolling
+;				 5/11/85	SC		Local proc Scroll broken out for use by TEScroll and TEPinScroll
+;				 5/11/85	SC		Use _XMunger instead of _Munger
+;				 5/11/85	SC		Reinstated teSelPoint, it's in documentation
+;				 5/11/85	SC		Completely trashed DoText, OffsetStuff, DoFormat and replaced
+;									them with a clean versions of DoFind, DoHilite, DoDraw, DoCaret.
+;									This was to clean up the scaled fonts problem, the direct pen
+;									adjustment and general mayhem With the old DoText.
+;				  5/9/85	SC		Made a local CalText proc to avoid StdEntry
+;				  5/9/85	SC		StdEntry/Exit save restore teTextH flags
+;				  5/9/85	SC		Made SelView local proc
+;				  5/9/85	SC		Dropped trim measure black stuff
+;				  5/9/85	SC		teLftClick not a byte, now the tefLeftClk bit in teFlags
+;				  5/8/85	SC		Added TEPinScroll which does a pinned scroll (Not upward
+;									compatible so I couldn't include in real scroll, but it is used
+;									by the default click proc and TEScrollView
+;				  5/8/85	SC		Added TEScrollView which insures selection is visible before
+;									doing something. Called from TEKey, TEPaste, TECut, TEIdle, etc.
+;				  5/8/85	SC		Added default click proc for auto scrolling
+;				  5/7/85	SC		Undo refresh hilite stuff, moved similar stuff to Hilite
+;				  5/6/85	SC		DoFormat had an extra measure for left justify that was not
+;									needed
+;				  5/6/85	SC		DoText used TempRect, use stack frame instead
+;				  5/5/85	SC		Longized all the 0(A0,DX.L) and call to _TextWidth and _DrawText
+;				  5/5/85	SC		Made StdEntry/Exit use LINK instructions not SP based
+;				  5/5/85	SC		Fixed up recalLines to reduce flashiness
+;				  5/5/85	SC		Dropped teSelPoint usage, get off stack frame instead of
+;									TeHandle
+;				  5/5/85	SC		Tricks played with A0 and teCarOn, teCarAct in DrawCaret,
+;									cleaned up for readability.
+;				  5/5/85	SC		TESetSelect trashed teSelPoint, cleaned up code a bit
+;				  5/4/85	SC		SkipLoop in TrimMeasure could go negative
+;				  5/4/85	SC		Dropped DelGuts and InsGuts call from PasteGuts and made a
+;									combined inline call for munger speed. Could make DelGuts and
+;									InsGuts inline since only 1 caller, but left that for another
+;									day
+;				  5/4/85	SC		Changed D2 usage in TEClick to D5 long sign bit
+;				  5/3/85	SC		Made trim measure skip wordBreak code and only trim chars <=
+;									space. This should truly measure only the black characters And
+;									not the word break chars now.
+;				  5/3/85	SC		Dropped forROM and for44T compile switches for readability
+;				  5/3/85	SC		New version of FindLine, cleaner and fixes bugs. Still
+;									inefficient because it measures whole line repeatedly, but
+;									faster quickdraw fixes this.
+;				  5/3/85	SC		Fixed the <CR>-in-1st-char bug with word select. FindWord would
+;									abort if the left char scan got to the beginning, but it
+;									wouldn't check if the 0th char was a break character or not
+;				 1/25/85	EHB		Fixed Refresh to only hilight visible part of selection
+;				 1/25/85	EHB		Added Capp's TextBox fix
+;				 1/24/85	EHB		Added patch in RecalDraw
+;				 1/23/85	LAK		Adapted for new equate files.
+;				 1/16/85	EHB		Fixed center/right justify in TextBox fix
+;
+;-----------------------------------------------------------------------
+;
+;				 9/12/83			Made InvertHook push the rectangle
+;				  9/9/83			Fixed caret activate problem w/ inactive records Dropped
+;									background stuff(Finally gave up) Added global word break for
+;									Europe.
+;				  9/4/83			Fixed First char select bug in DoText
+;				 8/25/83			Fixed Insert D7 bug
+;				 8/25/83			Fixed unwind bug in stdexit
+;				 8/21/83			Added DoText and recal hooks
+;				 8/19/83			Added system double/caret times
+;				 8/17/83			Fixed Rony bug in RecalDraw
+;				  8/8/83			Dropped pinrects and used extended rects in DoText to save code
+;				  8/7/83			Reinstated total dobackgnd from recal(FUCK!)
+;				  8/6/83			Dropped total dobackgnd from recal(I guess addition IS
+;									communitive)
+;				  8/5/83			Fixed a bug in FindLine Fixed bug in Recaline (now waits for
+;									whole text to finish) Optimized dobackgnd to always stop at end
+;				  8/3/83			Cleaned up TEKey a bit Cleaned up refresh a bit Changed all
+;									indices to unsigned (BGE's) Added idle proc for scroll and key
+;									Addes TEInsert Fixed the Bryan Stearns memorial 1-char bug in
+;									RecalDraw Added hilite hook for MicroSoft and other bizarre
+;									things Added caret hook too SetSelect uses longs Added
+;									TESetJust, TEGetText
+;				  8/2/83			Code review changes: added std2Offset constant stdEntry points
+;									to param via A2 changed #7 to #Lock moved epilog4 flags trick in
+;									lock/unlock in stdentry/exit cleaned up selection safety chk in
+;									stdentry used grafGlobals(A5) instead of 0(A5) cleaned up(Ha!)
+;									TEClick Changed DoFind to handle top and pin H to DestRect
+;									switched end checks for teFind in DoText Changed and commented
+;									selsort- now returns A2^ to selStart callers of selSort now use
+;									A2 Shortened rect stuff in RecalDraw CallBreak uses reg
+;									arguments instead of stack
+;				 7/23/83			New Today
+;
+;<<<END HISTORY>>>	<- This is to make the end of these comments easy to find with MPW.
+
+		EXPORT TEActivate,TEAutoView,TECalText,TEClick,TECopy,TECut ;]
+		EXPORT TEDeactivate,TEDelete,TEDispose,TEIdle,TEInit,TEInsert ;]
+		EXPORT TEKey,TENew,TEPaste,TEPinScroll,TEScroll,TESelView ;]
+		EXPORT TESetJust,TESetSelect,TESetText,TEUpdate,TextBox,XFindLine ;]
+		EXPORT XFindWord,XTrimMeasure ;]
+
+botRight  		EQU 		4         				; lower right corner [point]
+bottom			EQU 		4         				; bottom coordinate [word]
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'TextEditPriv.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+clipRgn   		EQU 		$1C       				; clipping region [handle]
+GrafGlobals EQU 0
+h 				EQU 		2         				; horizontal coordinate [word]
+left  			EQU 		2         				; left coordinate [word]
+LineArraySlop EQU 8 ;]
+PreflightSlop EQU 128 ;]
+rgnBBox   		EQU 		2         				; bounding box [rectangle]
+right 			EQU 		6         				; right coordinate [word]
+rLine EQU -8 ;]
+rTrue EQU rLine-8 ;]
+savedD2 EQU -22 ;]
+savedD4 EQU -14 ;]
+stdLink EQU saveTH ;]
+teRgtClick EQU teLftCaret ;]
+TextFrameSize EQU rTrue ;]
+thePort EQU 0
+top   			EQU 		0         				; top coordinate [word]
+topLeft   		EQU 		0         				; upper left corner [point]
+txFont			EQU 		$44       				; text font [word]
+v 				EQU 		0         				; vertical coordinate [word]
+
+
+;----------------------------------------------------------------------
+;
+;			FUNCTION	TEGetText( h: TEHandle	): Handle;
+;
+;			Returns the text handle
+;
+;----------------------------------------------------------------------
+
+TEGetText PROC EXPORT ;]
+                BSR.W   StdEntry
+                MOVE.L  teTextH(A3),(A2)            ; return the text handle
+                BRA.W   epilog4
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEInit
+;
+;----------------------------------------------------------------------
+
+TEInit
+                MOVEQ   #0,D0
+                MOVE.W  D0,TEScrpLength             ; save in global space
+                _NEWHANDLE
+                MOVE.L  A0,TEScrpHandle             ; Save in global space
+                LEA     XDoText,A0	; set up doText hook
+                MOVE.L  A0,TEDoText
+                LEA     XReCalLines,A0	; set up recal hook
+                MOVE.L  A0,TERecal
+                LEA     DefWordBrk,A0	; get default word break
+                MOVE.L  A0,TEWdBreak
+                RTS
+
+;
+;			PROCEDURE TEDispose( h: TEHandle )
+;
+
+TEDispose
+                LINK.W  A6,#0
+                MOVEM.L D2-D7/A2-A4,-(SP)           ; save stdregs
+                MOVE.L  8(A6),A4                    ; Pop handle into A4
+                MOVE.L  (A4),A3                     ; Dereference into A3
+                MOVE.L  teTextH(A3),A0              ; get rid of text
+                _DISPOSHANDLE
+                MOVE.L  A4,A0                       ; get rid of itself
+                _DISPOSHANDLE
+                MOVEQ   #4,D0
+                BRA.W   GoStd2Exit ;]
+
+*R TextBox first checks space for the record, text and allocation margin.
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TextBox( Text: Ptr; Length: LONGINT; r: Rect; style: INTEGER );
+; here's Capp's code to make TextBox fast for drawing single lines
+; Added EHB 25-Jan-85.
+
+TextBox
+                LINK.W  A6,#0
+                MOVEM.L D2-D7/A2-A4,-(SP)           ; save StdRegs on stack
+                MOVEQ   #teRecSize,D0
+                ADD.L   #PreflightSlop,D0 ;]
+                ADD.L   TBLength(A6),D0 ;]
+                BSR.W   Preflight ;]
+                BNE.W   tbExit ;]
+                MOVE.L  TBText(A6),A0               ; see if any CR's in text
+                MOVE.L  TBLength(A6),D0             ; get length
+                BLT.W   tbExit                      ; escape if illegal string		<C971/RWW102887>NO
+                BEQ.S   NoZeroScan                  ; => don't scan NIL strings		<EHB 31-Oct-85>
+
+ScanCR ;]
+                CMP.B   #returnChar,(A0)+
+                BEQ.S   UseRealOne
+                SUBQ.L  #1,D0
+                BNE.S   ScanCR ;]
+
+; no carriage returns, try in rect
+
+NoZeroScan
+                SUBQ.W  #2,sp                       ; see how big it is?
+                MOVE.L  TBText(a6),-(sp)            ; pass text
+                CLR.W   -(sp)
+                MOVE.W  TBLength+2(a6),-(sp)        ; pass length (low word)
+                _TEXTWIDTH
+                MOVE.W  (sp)+,d3                    ; save it
+                MOVE.L  TBBox(A6),A0                ; point to rect
+                MOVE.W  right(A0),D0
+                SUB.W   left(A0),D0
+                SUBQ.W  #2,D0
+                CMP.W   D3,D0
+                BLE.S   UseRealOne
+                MOVE.L  A0,-(SP)                    ; erase the rect
+                _ERASERECT
+                SUBQ.W  #8,SP
+                MOVE.L  SP,-(SP)
+                _GETFONTINFO
+                MOVE.W  (SP)+,D0                    ; get ascent
+                ADDQ.W  #6,SP                       ; skip rest
+                MOVE.L  TBBox(A6),A0                ; point to rect
+                MOVE.L  (A0),-(SP)                  ; push topleft
+                ADD.W   D0,(SP)                     ; go down ascent
+                ADDQ.W  #1,2(SP)                    ; indent 1 for TE compatibility
+                _MOVETO
+                TST.W   TBJust(A6)                  ; look at justification
+                BEQ.S   TextBoxDraw ;]
+                MOVE.L  TBBox(A6),A0                ; point to rect
+                MOVE.W  right(A0),D0                ; calc width
+                SUB.W   left(A0),D0
+                SUB.W   D3,D0                       ; subtract text width
+                SUBQ.W  #1,D0                       ; caret space TE compatibility
+                TST.W   TBJust(A6)                  ; look at justification
+                BMI.S   TextBoxOffset ;]
+                ASR.W   #1,D0                       ; divide by two
+
+TextBoxOffset ;]
+                MOVE.W  D0,-(SP)                    ; move over
+                CLR.W   -(SP)                       ; dv = 0
+                _MOVE
+
+TextBoxDraw ;]
+                MOVE.L  TBText(A6),-(SP)            ; pass text
+                CLR.W   -(SP)
+                MOVE.W  TBLength+2(A6),-(SP)        ; pass length (low word)
+                _DRAWTEXT
+
+tbExit
+                BRA.S   Go14Exit                    ; go to standard exit
+
+UseRealOne
+                SUBQ.W  #4,SP                       ; make room for return handle
+                MOVE.L  TBBox(A6),-(SP)             ; pass rect to init code
+                MOVE.L  (SP),-(SP)                  ; pass rect twice
+                MOVE.L  (SP),-(SP)                  ; pass rect twice
+                _ERASERECT
+                _TENEW
+                MOVE.L  (SP)+,A4                    ; save handle
+                MOVE.L  (A4),A0                     ; dereference
+                MOVE.W  TBJust(A6),teJust(A0)       ; and set style
+                MOVE.L  TBLength(A6),D0             ; get length
+                BEQ.S   noTextBox
+                MOVE.L  TBText(A6),-(SP)            ; pass text pointer
+                MOVE.L  D0,-(SP)                    ; pass text length
+                MOVE.L  A4,-(SP)                    ; pass tehandle
+                _TESETTEXT
+                MOVE.L  TBBox(A6),-(SP)             ; pass rect to update
+                MOVE.L  A4,-(SP)                    ; pass tehandle
+                _TEUPDATE                           ; and draw it
+
+noTextBox
+                MOVE.L  A4,-(SP)                    ; pass tehandle
+                _TEDISPOSE                          ; and dispose it
+
+Go14Exit
+                MOVEQ   #14,D0
+
+GoStd2Exit ;]
+                BRA.W   Std2Exit
+
+*R this ROM clears the text handle lock bit directly before PtrToXHand.
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TESetText( text: Ptr; l: Length; h: TEHandle	);
+;
+;			Makes the text passed in, the current text to edit
+;
+;----------------------------------------------------------------------
+
+TESetText
+                BSR.W   StdEntryC ;]
+                MOVE.L  (A2)+,D0                    ; get length passed
+                MOVE.W  D0,teSelStart(A3)           ; save as selection
+                MOVE.W  D0,teSelEnd(A3)
+                MOVE.W  D0,teLength(A3)             ; save as length
+                MOVE.L  (A2)+,A0                    ; set up ptr
+                MOVE.L  teTextH(A3),A1              ; handle to stuff into
+                BCLR    #7,(A1)
+                _PTRTOXHAND
+                MOVE.L  teTextH(A3),A0              ; handle to stuff into
+                _HLOCK                              ; relock it
+                BSR.S   CalText                     ; go do it
+
+go12
+                BRA.W   epilog12
+
+CalText
+                MOVE.L  teSelStart(A3),-(SP)        ; save selStart/End
+                CLR.W   teSelStart(A3)              ; recall from beginning
+                MOVE.W  #-32766,D7 ;]
+                CLR.L   teLines(A3)                 ; insure total recal
+                BSR.W   ReCalLines                  ; redo the line stuff
+                MOVE.L  (SP)+,teSelStart(A3)        ; restore selStart/End
+                RTS
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TECalText{ ( h: TEHandle	) };
+;
+;			When the user installs his own text handle/rectangle in the record,
+;			this routine should be called to calibrate the line array to it
+;
+;----------------------------------------------------------------------
+
+TECalText
+                BSR.W   StdEntry
+                BSR.S   CalText                     ;								<C971/RWW102887>NO
+
+epilog4
+                MOVEQ   #4,D0
+
+*R StdExit restores the saved handle bytes, clip and port.
+
+;----------------------------------------------------------------------
+;
+;			Std Exit assumes original argument is good
+;
+;----------------------------------------------------------------------
+
+StdExit
+                MOVE.L  inHandle(A6),A4             ; Place handle into A4
+                MOVE.L  (A4),A3                     ; re-dereference it
+                MOVE.W  D0,D4                       ; save strip amount
+                MOVE.L  teTextH(A3),A0              ; get text handle
+                MOVE.B  saveTH(A6),(A0) ;]
+                MOVE.L  saveClip(A6),-(SP)
+                MOVE.L  (SP),-(SP)
+                _SETCLIP                            ; restore caller's clip
+                _DISPOSRGN                          ; and dispose of our copy
+                MOVE.B  saveHandle(A6),(A4) ;]
+                MOVE.L  savePort(A6),-(SP)          ; restore port to user's passed
+                _SETPORT
+                MOVE.W  D4,D0                       ; restore strip amount
+
+Std2Exit
+                MOVEM.L (SP)+,D2-D7/A2-A4           ; restore regs
+                UNLK    A6
+                MOVE.L  (SP)+,A0                    ; remove return add
+                ADD.W   D0,SP                       ; strip parameters
+                JMP     (A0)
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TESetSelect{ ( selStart, selEnd: LONGINT; h: TEHandle	) };
+;
+;			Sets the current select range
+;
+;----------------------------------------------------------------------
+
+TESetSelect
+                BSR.W   StdEntryC ;]
+                BSR.W   HideCaret
+                BSR.W   HiLite
+                MOVE.W  14(A6),teSelEnd(A3)         ; Jam the selection end
+                MOVE.W  18(A6),teSelStart(A3)       ; jam selStart
+                BSR.W   CleanUpSel                  ; sort and clean up selection
+                BSR.W   ShowCaret
+                BSR.W   HiLite
+                BSR.W   SelView
+                BRA.W   go12
+
+*R TENew allocates a 104-byte cleared record and copies the current font.
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			FUNCTION TENew{ ( destRect, viewRect: Rect ): TEHandle };
+;
+;			Called when creating an unstyled TERecord.
+;----------------------------------------------------------------------
+
+TENew
+                LINK.W  A6,#0
+                MOVEM.L D2-D7/A2-A4,-(SP)           ; Save regs
+                CLR.L   16(A6)                      ; return NIL
+                MOVEQ   #teRecSize,D0               ; Allocate a record
+                _NewHandle ,CLEAR
+                BMI.S   NewExit ;]
+                MOVE.L  A0,A4                       ; save handle
+                BSET    #7,(A4)
+                MOVE.L  (A4),A3                     ; dereference it
+                MOVEQ   #0,D0                       ; get text handle
+                _NEWHANDLE
+                MOVE.L  A0,teTextH(A3)
+                LEA     teDestRect(A3),A0           ; point to rects in beginning
+                MOVE.L  12(A6),A2                   ; Get dest rectangle arg
+                MOVE.L  (A2)+,(A0)+                 ; save away in record
+                MOVE.L  (A2)+,(A0)+
+                MOVE.L  8(A6),A2                    ; Get view rectangle arg
+                MOVE.L  (A2)+,(A0)+                 ; save away in record
+                MOVE.L  (A2)+,(A0)+
+                SUBQ.W  #8,SP
+                MOVE.L  SP,-(SP)
+                _GETFONTINFO
+                MOVE.W  (SP)+,D0
+                MOVE.W  D0,teAscent(A3)             ; save in ascent		** <C207/10oct86/MBK> **
+                ADD.W   (SP)+,D0 ;]
+                ADDQ.W  #2,SP
+                ADD.W   (SP)+,D0 ;]
+                MOVE.W  D0,teLineHite(A3) ;]
+                MOVE.L  GrafGlobals(A5),A2          ; get lisagraf globals and then
+                MOVE.L  thePort(A2),A2              ; thePort
+                MOVE.L  A2,teGrafPort(A3)           ; save this port
+                MOVE.L  txFont(A2),teFontStuff(A3)  ; save the font/face
+                MOVE.L  txFont+4(A2),teFontStuff+4(A3); save the mode/size
+                MOVE.L  TEWdBreak,teWordBreak(A3)   ; Set global word breaker
+                LEA     DefClikProc,A0	; setup default click proc
+                MOVE.L  A0,teClikProc(A3)
+                BCLR    #7,(A4)
+                MOVE.L  A4,16(A6)                   ; return handle
+
+NewExit
+                MOVEQ   #8,D0
+                BRA.W   Std2Exit                    ;								<C971/RWW102887>NO
+
+TEUpdate
+                BSR.W   StdEntry8 ;]
+                MOVE.L  (A2)+,A0                    ; get rect
+                BSR.W   Refresh
+                BRA.W   epilog8
+
+;----------------------------------------------------------------------
+;
+;			A local cover for do find called from TEClick
+;
+;			This takes a character index in D6 and expands it into D0,D1
+;			For character select mode, it simply copies it into D0,D1, but
+;			for word select, it locates the surrounding word and returns
+;			D0,D1 pointing to the word start and end(Respectively)
+;			Long at D5 negative if word select
+;
+;----------------------------------------------------------------------
+
+ClickExpand
+                MOVE.W  D6,D0                       ; default for no-word select
+                MOVE.W  D6,D1                       ;
+                TST.L   D5                          ; see if word select (if negative)
+                BPL.S   byebye
+                BSR.W   FindWord                    ; find word @D0
+
+byebye
+                RTS
+
+;
+;			PROCEDURE HiLite;
+;
+;			A3 is dereferenced object
+;
+;			Now this pins the selStart and selEnd to the viewRect lines
+;
+;----------------------------------------------------------------------
+
+HiLite
+                TST.B   teActive(A3)                ; don't do if not active
+                BEQ.S   byebye
+                MOVEM.W teSelStart(A3),D3-D4        ; disp start is D3, disp end is D4
+                MOVEQ   #teHighlight,D7             ; set mark mode
+                BRA.W   DoText                      ; Remove old selection
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEClick( pt: Point; extend: BOOLEAN; h: TEHandle );
+;
+;		Uses:
+;			D6 as a character index corresponding to the current mouse point
+;			D5 a copy of the previous D6
+;			D5 long sign minus if word select
+;			A2 anchor left point for hilighting selection
+;			A4 anchor right for hilighting selection (bad! bad! bad!)						<27>
+;			D0 for left of word at click spot
+;			D1 for right of word at click spot
+;			D3 split dispStarts for left and right piece of highlight
+;			D4 split dispEnds for left and right piece of highlight
+;
+;----------------------------------------------------------------------
+
+TEClick
+                BSR.W   StdEntryA ;]
+                MOVE.L  14(A6),teSelPoint(A3)       ; pass selPoint
+                BSR.W   DoFind                      ; juggle dispStart/End and do find
+                BSR.W   HideCaret                   ; Remove caret
+                SUBQ.W  #4,SP                       ; make room for the tickCount
+                _TICKCOUNT
+                MOVE.L  (SP),D0
+                SUB.L   teClikTime(A3),D0           ; see if double click
+                CMP.L   DoubleTime,D0               ; 1/2 second click time
+                SLE     D5                          ; D5 = 0 if single click
+                CMP.W   teClikLoc(A3),D6            ; see if same location
+                SEQ     D1
+                AND.B   D1,D5                       ; D5 ST if double click
+                ROR.L   #8,D5                       ; get switch in high D5
+                MOVE.W  D6,teClikLoc(A3)            ; double click only if not moved
+                MOVE.L  (SP)+,teClikTime(A3)
+                TST.B   12(A6)                      ; see if extend flag is on
+                BEQ.S   notExtended
+                MOVEM.W teSelStart(A3),D0-D1        ; get old selection
+                CMP.W   D6,D0                       ; chk side of new loc
+                BCC.S   useRight
+                MOVE.W  D0,A2                       ; save anchor left
+                MOVE.W  D0,A4                       ; and anchor right
+                BRA.S   goToIt
+
+useRight
+                MOVE.W  D1,A2                       ; save anchor left
+                MOVE.W  D1,A4                       ; and anchor right
+
+goToIt
+                MOVE.W  D6,D5
+                BRA.S   goSelect
+
+notExtended
+                BSR.S   HiLite                      ; Remove old selection
+                MOVEQ   #teWordSelect,D2            ; say "ClickExpand, word selection" <EHB 01Oct85>
+                BSR.S   ClickExpand                 ;								<C971/RWW102887>NO
+                MOVEM.W D0-D1,teSelStart(A3)
+                MOVE.W  D0,A2                       ; save anchor left
+                MOVE.W  D1,A4                       ; and anchor right
+                MOVE.W  D6,D5                       ; save "old" D6
+                MOVE.B  teLftClick(A3),teLftCaret(A3)
+                BSR.W   ShowCaret                   ; feedback to user
+                BSR.W   HiLite
+
+waitLoop
+                MOVE.L  teClikProc(A3),D0           ; call the click proc
+                BEQ.S   noClikProc
+                MOVE.L  D0,A0
+                JSR     (A0)
+                BEQ.S   done1                       ; if returns zero abort drag						<SM7> CSS
+
+noClikProc
+                CLR.W   -(SP)                       ; make room for result
+                _WAITMOUSEUP                        ; see if button still down
+                TST.W   (SP)+
+                BEQ.S   done1
+                PEA     teSelPoint(A3)              ; pass address for point
+                _GETMOUSE
+                BSR.S   DoFind                      ; juggle dispStart/End and do find
+                CMP.W   D6,D5                       ; see if change
+                BEQ.S   waitLoop
+                BSR.W   HideCaret
+
+goSelect
+                MOVEQ   #teWordDrag,D2              ; say "ClickExpand, word dragging"
+                BSR.W   ClickExpand                 ; Get new points
+                LEA     teSelEnd(A3),A0             ; point between selStart/End
+                CMP.W   D6,A4                       ; see if less than anchor right
+                BCS.S   notToLeft                   ; skip if not to left of anchor
+                MOVE.W  -(A0),D3                    ; save previous left
+                MOVE.W  D0,(A0)+                    ; save new left (in teSelStart!)
+                MOVE.W  D0,D4                       ; save dispEnd too
+                SWAP    D3
+                SWAP    D4
+                MOVE.W  A4,D3                       ; save other dispStart
+                MOVE.W  (A0)+,D4
+                MOVE.W  A4,-(A0)
+                BRA.S   hiliteIt
+
+notToLeft
+                CMP.W   D6,A2                       ; see if greater than anchor left
+                BHI.S   keepWaiting                 ; skip if not to right of anchor
+                MOVE.W  (A0)+,D3
+                MOVE.W  D1,-(A0)
+                MOVE.W  D1,D4                       ; save dispEnd too
+                SWAP    D3
+                SWAP    D4
+                MOVE.W  -(A0),D3                    ; save other dispEnd
+                MOVE.W  A2,D4                       ; save other dispStart
+                MOVE.W  A2,(A0)+
+
+hiliteIt
+                MOVEQ   #teHighlight,D7             ; set mark mode
+                BSR.W   DoText                      ; do one half
+                SWAP    D3                          ; get other dispStart/End
+                SWAP    D4                          ; and hilight too
+                BSR.W   DoText                      ; and other half
+
+keepWaiting
+                MOVE.W  D6,D5                       ; save new end
+                BRA.S   waitLoop                    ; continue on
+
+done1
+                BSR.W   ShowCaret                   ; redisplay caret
+                MOVEQ   #10,D0
+                BRA.W   StdExit
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			DoFind
+;
+;			Take the teSelPoint(A3) and return D6 w/corresponding char index
+;
+;		Exit
+;			D6 contains the selection index returned from DoText
+;
+;----------------------------------------------------------------------
+
+DoFind
+                MOVE.W  teSelPoint+v(A3),D0         ; i:=(selPoint.v-destRect.top)
+                BSR.W   PtToLine                    ; line index in D0
+                BGE.S   southPole                   ; below the last line
+                ADD.W   D0,D0                       ; double D0
+                BPL.S   noPole                      ; default if i < 0 is D6 = 0
+                MOVEQ   #0,D6                       ; if above point to beginning
+                RTS
+
+southPole
+                MOVE.W  teLength(A3),D6             ; return index(t):=length
+                RTS
+
+noPole
+                MOVEM.W teLines(A3,D0),D3-D4        ; dispStart := lines[i]
+                MOVEQ   #teFind,D7                  ; set find mode
+                BSR.W   DoText                      ; return index(t) in D0
+                MOVE.W  D0,D6                       ; return in D6
+                RTS
+
+*R the search measures successive character ranges and tests their rectangles.
+
+DoSearch
+                MOVEM.L D2-D7/A2-A4,-(SP)
+                LEA     teLines(A3,D0.W),A2 ;]
+                MOVE.W  D3,D4                       ; init char counter
+                MOVE.W  (A2),D3
+                MOVEQ   #0,D4
+                MOVE.W  D3,D4
+                ADDQ.W  #1,D4
+                BSR.W   LineRect                    ; set rLine to A2 line
+                MOVE.W  rLine+left(A6),D5 ;]
+
+SearchLoop ;]
+                BSR.W   RangeRect
+                SUBQ.W  #2,SP
+                MOVE.L  teSelPoint(A3),-(SP)
+                PEA     teSelRect(A3)
+                _PTINRECT
+                TST.B   (SP)+
+                BNE.S   hitIt
+                MOVE.W  rTrue+right(A6),D5 ;]
+                ADDQ.W  #1,D4
+                CMP.W   2(A2),D4
+                BLS.S   SearchLoop ;]
+                MOVEQ   #1,D4
+                BRA.S   findLeft
+
+hitIt
+                SF      teLftClick(A3)              ; assume false for later!	<4May89smb>
+                CMP.W   #32766,teSelRect+right(A3) ;]
+                BNE.S   FindHalf ;]
+                MOVE.L  teTextH(A3),A0              ; handle to text
+                MOVE.L  (A0),A0                     ; dereference
+                CMP.B   #13,-1(A0,D4.L) ;]
+                BEQ.S   findLeft ;]
+
+FindHalf ;]
+                MOVE.W  rTrue+right(A6),D0 ;]
+                SUB.W   teSelPoint+h(A3),D0 ;]
+                SUB.W   teSelPoint+h(A3),D0 ;]
+                ADD.W   D5,D0
+                BLT.S   findDone ;]
+
+findLeft
+                SUBQ.W  #1,D4
+                ST      teLftClick(a3)              ; mark on left to keep caret on same line (see doCaret)
+
+findDone
+                MOVE.W  D4,D0
+                BRA.S   doBye
+
+*R drawing uses one font and one line height for the complete record.
+
+DoDraw
+                BSR.W   PinDisplay
+                BSR.S   Preamble
+
+DrawLoop
+                BSR.S   PrepLine                    ; pin D4 at line end
+                BLS.S   doBye
+                PEA     teSelRect(A3)
+                _ERASERECT
+                MOVE.L  rTrue(A6),-(SP) ;]
+                MOVE.W  teAscent(A3),D0
+                ADD.W   D0,(SP)                     ; drop pen to baseline
+                _MOVETO
+                MOVE.L  teTextH(A3),A0              ; get text handle
+                MOVE.L  (A0),A0                     ; dereference
+                ADD.L   D3,A0                       ; offset pointer
+                MOVE.L  A0,-(sp)
+                CLR.W   -(SP)
+                MOVE.W  D4,-(SP)
+                SUB.W   D3,(SP)
+                _DRAWTEXT
+                ADDQ.W  #2,A2
+                MOVE.W  (A2),D3                     ; get start
+                BRA.S   DrawLoop ;]
+
+doBye
+                MOVEM.L (SP)+,D2-D7/A2-A4           ; restore regs
+                UNLK    A6                          ; unlink DoText frame
+                MOVE.L  GrafGlobals(A5),A0          ; get the port in A0 for
+                MOVE.L  thePort(A0),A0              ; compatibility
+                RTS
+
+;
+;			PrepLine
+;
+;			Given display start and end in [D3..D4], and a line start in
+;			(A2), this gets the line's rectangle in rLine(A6).  Then pins
+;			D4 at the lineStart of the next line.  Then gets the range's
+;			rectangle in rTrue.  And, the expanded rect in teSelRect(A3).
+;			(It calls range rect to do this).  Finally exits with CC's
+;			Set according to D3 and D5(the length).
+;
+;		Exit:
+;			CC's set to relationship of D3 to dispEnd in D5
+;
+;
+;----------------------------------------------------------------------
+
+PrepLine
+                BSR.W   LineRect
+                MOVE.W  D5,D4                       ; get right
+                CMP.W   2(A2),D4                    ; pin to right (compare to lineStart of next line)
+                BCS.S   LineEndInBounds ;]
+                MOVE.W  2(A2),D4                    ; set to line end (= start of next line)
+
+LineEndInBounds ;]
+                BSR.W   RangeRect                   ; get rect from D3 to D4 in teSelRect
+                CMP.W   D3,D5                       ; finished?
+                RTS
+
+*R lo16 names the long mask stored in the DefWordBrk AND instruction.
+
+;----------------------------------------------------------------------
+;
+;			Preamble
+;
+;			Given display start and end in [D3..D4], this first sorts the
+;			two, and copies D4 into D5.  Then, it skips to the lineStart
+;			entry containing D3.  It sets up A2 to point to that line.
+;
+;		Exit:
+;			CC's set to relationship of D3 to the next line's start, 2(A2)
+;			D5 a copy of incoming D4
+;			a2 a pointer to the current line for d3
+;
+;----------------------------------------------------------------------
+
+Preamble
+                MOVE.L  (SP)+,A0                    ; get local RTS
+                MOVEM.L D2-D7/A2-A4,-(SP)
+                MOVE.L  A0,-(SP)                    ; replace RTS
+                CMP.W   D3,D4                       ; sort range
+                BCC.S   EndInBounds ;]
+                EXG     D4,D3                       ; swap regs
+
+EndInBounds ;]
+                CMP.W   teLength(A3),D4             ; pin disp end
+                BCS.S   StartInBounds ;]
+                MOVE.W  teLength(A3),D4             ; pin disp end
+
+StartInBounds ;]
+                LEA     teLines(A3),A2              ; point to line starts
+                AND.L   lo16,D4	; longize D4
+                MOVE.W  D4,D5                       ; save D5 as limit
+                AND.L   lo16,D3	; longize D3
+                BEQ.S   GotLine ;]
+
+GetLine
+                CMP.W   2(A2),D3
+                BLS.S   TestLineEnd ;]
+                ADDQ.W  #2,A2                       ; next lineStart
+                BRA.S   GetLine ;]
+
+TestLineEnd ;]
+                BNE.S   GotLine ;]
+                ADDQ.W  #2,A2                       ; next lineStart
+
+GotLine ;]
+                RTS
+
+;			DoText funnel proc for compatibility
+;			On entry d7: 
+;				teFind	(0)
+;				teMark	(1)		renamed to teHighlight
+;				teDraw	(-1)
+;				teLoc	(-2)	renamed to teCaret
+;----------------------------------------------------------------------
+
+DoText
+                MOVE.L  TEDoText,-(SP)
+                RTS
+
+*R the local frame holds the line rectangle and selected range rectangle.
+
+XDoText
+                LINK.W  A6,#TextFrameSize ;]
+                TST.W   D7                          ; check dispatch code
+                BEQ.W   DoSearch
+                BGT.S   DoHilite
+                CMP.W   #teDraw,D7
+                BEQ.W   DoDraw                      ; fall into doCaret
+
+DoCaret
+                BSR.S   Preamble
+                TST.W   D3                          ; special case @ 1st character		<03Nov85> SC
+                BEQ.S   CaretRect ;]
+                CMP.W   (A2),D3                     ; at line start?
+                BNE.S   CaretRect ;]
+                MOVE.W  teLength(A3),D0             ; are we past last char?
+                BEQ.S   CaretRect ;]
+                CMP.W   D0,D3                       ; are we past last char?
+                BCS.S   TestCaretSide ;]
+                MOVE.L  teTextH(A3),A0              ; get text handle
+                MOVE.L  (A0),A0                     ; dereference
+                CMP.B   #13,-1(A0,D3.L) ;]
+                BEQ.S   CaretRect ;]
+                BRA.S   PreviousLine ;]
+
+TestCaretSide ;]
+                TST.B   teLftCaret(A3)              ; to left?
+                BNE.S   CaretRect ;]
+
+PreviousLine ;]
+                SUBQ.W  #2,A2                       ; skip to previous line
+
+CaretRect ;]
+                BSR.W   PrepLine                    ; get selRect from D3..D4		<C971/RWW102887>NO
+                MOVE.W  rTrue+left(A6),D0 ;]
+                MOVE.W  D0,teSelRect+right(A3)      ; and set in teSelRect
+                SUBQ.W  #1,D0
+                MOVE.W  D0,teSelRect+left(A3)
+                BRA.W   doBye
+
+DoHilite
+                BSR.W   PinDisplay
+                BSR.W   Preamble
+
+HiliteLoop ;]
+                BSR.W   PrepLine
+                BLS.S   HiliteDone ;]
+                MOVE.L  teHiHook(A3),D0
+                BSR.W   InvertHook
+                ADDQ.W  #2,A2
+                MOVE.W  (A2),D3
+                BRA.S   HiliteLoop ;]
+
+HiliteDone ;]
+                BRA.W   doBye
+
+*R line index times teLineHite determines the vertical position.
+
+;----------------------------------------------------------------------
+;
+;			LineRect
+;			Given the line start array in A2, this fills in the rLine(A6)
+;			With the rectangle for that line except that right = left.
+;			It adjusts the rect for the current format.
+;
+;----------------------------------------------------------------------
+
+LineRect
+                LEA     teLines(A3),A0
+                MOVE.L  A2,D0
+                SUB.L   A0,D0
+                ASR.L   #1,D0
+                MOVE.W  teLineHite(A3),D1
+                MULU.W  D1,D0
+                LEA     teDestRect+8(A3),A0         ; point past destRect
+                LEA     (A6),A1 ;]
+                MOVE.L  -(A0),-(A1)                 ; copying teDestRect to teSelRect
+                MOVE.L  -(A0),-(A1)                 ; copying teDestRect to teSelRect
+                ADD.W   D0,(A1)                     ; add total height to top to get
+                MOVE.W  top(A1),bottom(A1)          ; temporarily the same
+                ADD.W   D1,bottom(A1)               ; add line height to get bottom bound of line rect
+                TST.W   teJust(A3)
+                BEQ.S   LeftPadding ;]
+                BSR.S   LineWidth                   ; get width of (A2) line in D0
+                MOVE.W  teDestRect+right(A3),D1
+                SUB.W   teDestRect+left(A3),D1
+                SUB.W   D0,D1
+                SUBQ.W  #1,D1                       ; subtract one for caret
+                TST.W   teJust(A3)
+                BMI.S   JustifyOffset ;]
+                ASR.W   #1,D1                       ; div by 2 for centering
+
+JustifyOffset ;]
+                ADD.W   D1,rLine+left(A6) ;]
+                ADD.W   D1,rLine+right(A6) ;]
+
+LeftPadding ;]
+                ADDQ.W  #1,rLine+left(A6) ;]
+                MOVE.W  rLine+left(A6),rLine+right(A6) ;]
+                RTS
+
+;----------------------------------------------------------------------
+;
+;			LineWidth
+;
+;			Measures the width of the line at (A2)..2(A2).  Trims break chars
+;			from the right side.  Called from LineRect.
+;
+;	 Entry
+;			A2 = ptr to lineStart array
+;			A3 = dereferenced handle to TE object
+;
+;	 Exit
+;			leaves the width in D0
+;
+;----------------------------------------------------------------------
+
+LineWidth
+                MOVE.W  (a2),d6                     ; get lineStart as anchor
+                MOVE.W  2(a2),d7                    ; get line end as the other anchor
+
+MeasD6D7
+                MOVE.L  TETrimMeasure,-(SP)         ; push trimMeasure routine			<EHB 01Oct85>
+                RTS                                 ; and call it						<EHB 01Oct85>
+
+*R the ROM trims characters at or below space before TextWidth.
+
+XTrimMeasure
+                CMP.W   teLength(A3),D6             ; are we past last char?
+                BEQ.S   zeroExit                    ; escape quick					<C971/RWW102887>NO
+                CMP.W   D6,D7                       ; is line empty?
+                BLS.S   zeroExit                    ; if so, skip trimming(fast exit)<C971/RWW102887>NO
+
+TrimLoop ;]
+                SUBQ.W  #1,D7                       ; look to left
+                CMP.W   D6,D7
+                BEQ.S   TrimmedEnd ;]
+                MOVE.L  teTextH(A3),A0
+                MOVE.L  (A0),A0
+                AND.L   lo16,D7 ;]
+                CMP.B   #32,0(A0,D7.L) ;]
+                BLS.S   TrimLoop ;]
+
+TrimmedEnd ;]
+                ADDQ.W  #1,D7                       ; use next char
+
+MeasureIt
+                CMP.W   D6,D7                       ; nothing to measure?
+                BLS.S   zeroExit                    ;								<C971/RWW102887>NO
+                SUBQ.W  #2,SP
+                MOVE.L  teTextH(A3),A0
+                MOVE.L  (A0),A0
+                AND.L   lo16,D6	; longize it
+                ADD.L   D6,A0
+                MOVE.L  A0,-(SP)
+                CLR.W   -(SP)
+                MOVE.W  D7,-(SP)
+                SUB.W   D6,(SP) ;]
+                _TEXTWIDTH
+                MOVE.W  (SP)+,D0
+                RTS
+
+zeroExit
+                MOVEQ   #0,D0                       ; nothing to measure
+                RTS
+
+*R range measurement extends selected line edges to $8002 and $7FFE.
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			RangeRect
+;
+;			Given the line rect in rLine(A6), this sets teSelRect to the
+;			line rect with the left side at the given loc in D3 and the
+;			right side at D4.  If D3 is the first char on the line, it ...???
+;
+;----------------------------------------------------------------------
+
+RangeRect
+                MOVE.W  (A2),D6                     ; set D6 to beg of line ** <C454/21nov86/MBK> **
+                MOVE.W  D3,D7
+                BSR.S   MeasureIt
+                LEA     (A6),A0 ;]
+                LEA     rLine(A6),A1 ;]
+                MOVE.L  -(A0),-(A1)
+                MOVE.L  -(A0),-(A1)
+                ADD.W   D0,2(A1)
+                MOVE.W  D4,D7                       ; just need 2nd measure
+                BSR.S   MeasureIt                   ; measure whole line
+                ADD.W   D0,rTrue+right(A6) ;]
+                LEA     rLine(A6),A0 ;]
+                LEA     teLineHite(A3),A1 ;]
+                MOVE.L  -(A0),-(A1)
+                MOVE.L  -(A0),-(A1)
+                MOVE.W  left(A1),TempRect           ; compatibility shit
+                MOVE.L  botRight(A1),-(SP)          ; push pen loc for compatibility
+                CMP.W   (A2),D3
+                BNE.S   RangeRight ;]
+                MOVE.W  #-32766,2(A1) ;]
+
+RangeRight ;]
+                CMP.W   2(A2),D4
+                BNE.S   RangeMove ;]
+                MOVE.W  #32766,6(A1) ;]
+
+RangeMove ;]
+                _MOVETO                             ; compatibility shit
+                RTS
+
+PinDisplay
+                LEA     teViewRect(A3),A0           ; use viewRect
+
+PinA0Rect
+                MOVE.W  top(A0),D0                  ; load D0 w/top
+                BSR.S   PtToLine                    ; turn into a lineStart in d0
+                BGE.S   PinEmpty ;]
+                ADD.W   D0,D0                       ; double for array ref.
+                BLT.S   PinBottom ;]
+                CMP.W   teLines(A3,D0),D3           ; pin D3 to viewRect.top
+                BCC.S   PinTopEnd ;]
+                MOVE.W  teLines(A3,D0),D3           ; dispStart = lines[i]
+
+PinTopEnd ;]
+                CMP.W   teLines(A3,D0),D4           ; pin D4 to viewRect.top
+                BCC.S   PinBottom ;]
+                MOVE.W  teLines(A3,D0),D4           ; dispEnd = lines[i]
+
+PinBottom ;]
+                MOVE.W  bottom(A0),D0               ; get bottom in D0
+                ADD.W   teLineHite(A3),D0 ;]
+                SUBQ.W  #1,D0
+                BSR.S   PtToLine
+                BGE.S   PinReturn ;]
+                ADD.W   D0,D0
+                CMP.W   teLines(A3,D0),D3           ; pin D3 to viewRect.bottom
+                BCS.S   PinBottomEnd ;]
+                MOVE.W  teLines(A3,D0),D3           ; dispStart = lines[i]
+
+PinBottomEnd ;]
+                CMP.W   teLines(A3,D0),D4           ; pin D4 to viewRect.bottom
+                BCS.S   PinReturn ;]
+                MOVE.W  teLines(A3,D0),D4           ; dispEnd = lines[i]
+
+PinReturn ;]
+                RTS
+
+PinEmpty ;]
+                MOVE.W  D3,D4                       ; nothing in range
+                RTS
+
+PtToLine
+                SUB.W   teDestRect+top(A3),D0       ; origin to destRect
+                EXT.L   D0                          ; extend to long
+                DIVS.W  teLineHite(A3),D0 ;]
+                CMP.W   teNLines(A3),D0
+                RTS
+
+;
+;			This calls the passed hook if there, but otherwise uses _InverRect.
+;			Used for carets and selection.  The hook passed must remove the
+;			rect from the stack
+;
+;		Entry:
+;			D0 the hook proc in question
+;			selRect(A3) set up for rectangle in question
+;
+;----------------------------------------------------------------------
+;
+
+InvertHook
+                PEA     teSelRect(A3)               ;	default selection method
+                BEQ.S   defHilite                   ; there, otherwise just invert
+                MOVE.L  D0,A0
+                JMP     (A0)
+
+defHilite
+                _INVERRECT
+                RTS
+
+StdEntryC ;]
+                MOVEQ   #12,D1
+                BRA.S   StdEntry2 ;]
+
+StdEntryA ;]
+                MOVEQ   #10,D1 ;]
+                BRA.S   StdEntry2 ;]
+
+StdEntry8 ;]
+                MOVEQ   #8,D1
+                BRA.S   StdEntry2 ;]
+
+StdEntry6 ;]
+                MOVEQ   #6,D1
+                BRA.S   StdEntry2 ;]
+
+StdEntry
+                MOVEQ   #4,D1
+
+*R the entry variants keep the argument size in D1 for the allocation failure exit.
+
+StdEntry2
+                MOVE.L  (SP)+,A0                    ; save return address
+                LINK.W  A6,#stdLink                 ; stack frame
+                MOVEM.L D2-D7/A2-A4,-(SP)
+                MOVE.L  A0,-(SP)                    ; push return address back on stack
+                MOVEQ   #127,D0
+                BSR.W   Preflight ;]
+                BEQ.S   EntryReady ;]
+                MOVE.W  D1,D0
+                BRA.W   Std2Exit
+
+EntryReady ;]
+                MOVE.L  inHandle(A6),A4             ; Pop handle into A4
+                MOVE.L  (A4),A3
+                MOVE.B  (A4),saveHandle(A6) ;]
+                PEA     savePort(A6)                ; save incoming port
+                _GETPORT                            ;
+                MOVE.L  A4,A0                       ; get the TEHandle
+                _HLOCK
+                MOVE.L  teGrafPort(A3),A2           ; save "thePort" for below
+                MOVE.L  A2,-(SP)                    ; set to our port
+                _SETPORT
+                SUBQ.W  #4,SP                       ; make room for clip
+                _NEWRGN
+                MOVE.L  (SP),saveClip(A6)           ; save user's clip in frame
+                MOVE.L  (SP),-(SP)                  ; stay on stack for sectrgn below
+                _GETCLIP                            ;
+                PEA     teViewRect(A3)              ; clip to viewRect
+                _CLIPRECT
+                MOVE.L  clipRgn(A2),-(SP)
+                MOVE.L  (SP),-(SP)                  ; destination
+                _SECTRGN
+                MOVE.L  (A5),A0
+                MOVE.L  (A0),A0
+                MOVE.L  teFontStuff(A3),txFont(A0)  ; set the font/face
+                MOVE.L  teFontStuff+4(A3),txFont+4(A0); set the mode/size
+                MOVE.L  teTextH(A3),A0              ; get handle size
+                MOVE.B  (A0),saveTH(A6) ;]
+                _HLOCK                              ; and lock it
+                _GETHANDLESIZE                      ; get its size
+                MOVE.W  D0,teLength(A3)             ; stuff its length
+
+CleanUpSel
+                MOVE.W  teLength(A3),D0             ; get the text length
+                MOVE.W  teSelEnd(A3),D1             ; make sure selEnd is cool
+                SUB.W   D0,D1                       ; selEnd-length
+                BLS.S   okSelEnd                    ; if >0 then bad selend
+                MOVE.W  D0,teSelEnd(A3)             ; set to length if > length
+
+okSelEnd
+                MOVE.W  teSelStart(A3),D1           ; make sure selStart is cool
+                SUB.W   teSelEnd(A3),D1             ; selStart-selend
+                BLS.S   okSelStart                  ; if >0 then bad selStart
+                SUB.W   D1,teSelStart(A3)           ; set to selend if > selend
+
+okSelStart
+                BSR.S   SelSort                     ; I wish i could fall into it
+                LEA     inHandle+4(A6),A2           ; Point to next to last param
+                RTS
+
+;
+;		Exit:
+;			D0 contains a sorted selStart/End as a long
+;			A2 contains a pointer to teSelStart
+;
+;----------------------------------------------------------------------
+
+SelSort
+                LEA     teSelStart(A3),A2           ; Point to selstart
+                MOVE.L  (A2),D0                     ; load start and end
+                CMP.W   (A2),D0                     ; see which is bigger
+                BCC.S   SelSorted ;]
+                SWAP    D0
+                MOVE.L  D0,(A2)                     ; swap and store back
+
+SelSorted ;]
+                RTS
+
+;
+;			PROCEDURE TECopy( h: TEHandle );
+;
+;
+;----------------------------------------------------------------------
+
+TECopy
+                BSR.W   StdEntry                    ;								<C971/RWW102887>NO
+                BSR.S   SelSort                     ; D0 contains both (end in low order)
+                SUB.W   (A2),D0                     ; A2 points to selStart(A3)
+                MOVE.W  D0,TEScrpLength             ; scraplength=selEnd-selStart
+                MOVE.L  teTextH(A3),A0              ; source = text; already locked
+                MOVE.L  (A0),A0                     ; dereference
+                MOVEQ   #0,D0                       ; clear whole long
+                MOVE.W  (A2),D0
+                ADD.L   D0,A0                       ; offset to selection(see above)
+                MOVE.L  TEScrpHandle,A1             ; destination
+                MOVE.W  TEScrpLength,D0             ; nBytes = scrapLength
+                _PTRTOXHAND
+
+goEpilog4
+                BRA.W   epilog4
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TECut( h: TEHandle );
+;
+;----------------------------------------------------------------------
+
+TECut
+                BSR.W   StdEntry                    ;								<C971/RWW102887>NO
+                MOVE.L  A4,-(SP)                    ; duplicate handle twice
+                _TECOPY                             ; copy it
+                MOVE.L  A4,-(SP)
+                _TEDELETE                           ; delete it (A3 no good after)
+                BRA.S   goEpilog4                   ; see you later					<C971/RWW102887>NO
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEDelete( h: TEHandle );
+;
+;----------------------------------------------------------------------
+
+TEDelete
+                BSR.W   StdEntry                    ;								<C971/RWW102887>NO
+                BSR.W   HideCaret
+                BSR.S   DelGuts                     ; delete the selection
+                BSR.S   RecalDraw                   ; recalibrate line starts
+                BSR.W   ShowCaret
+                BSR.W   SelView                     ; insure selection is visible
+                BRA.S   goEpilog4                   ;								<C971/RWW102887>NO
+
+;		Entry:
+;			A3 contains dereferenced handle
+;
+;		Exit
+;			Selstart and selEnd will be fixed up to point to the old selStart
+;			D7 contains delta amount for delete portion
+;
+;----------------------------------------------------------------------
+
+DelGuts
+                BSR.S   SelSort                     ; sort selection				<C971/RWW102887>NO
+                MOVE.W  D0,D7                       ; calc delta amount(selEnd in D0)
+                SUB.W   (A2),D7                     ; ...for ReCalLines (A2 ^selStart)
+                BEQ.S   outGuts                     ; skip if null selection
+                BSR.W   MungeSetup                  ; set up params for delete
+                MOVE.W  D7,-(SP)                    ; length for delete
+                CLR.W   -(SP)                       ; fake long length
+                CLR.L   -(SP)                       ; fake p2
+                CLR.L   -(SP)                       ; fake l2
+                _MUNGER                             ; sloppy munger
+                ADDQ.L  #4,SP                       ; pop result
+                SUB.W   D7,teLength(A3)             ; length:=length -(selEnd-selStart)
+                MOVE.W  (A2)+,(A2)                  ; selEnd:=selStart
+
+outGuts
+                RTS
+
+;
+;			PROCEDURE RecalDraw
+;
+;			** Modified 6/18/86 by MBK **
+;
+;			Calls ReCalLines to recalibrates the line start array and then draws
+;			the "new" part according to selStart
+;
+;		Entry
+;			A4 points to handle
+;			A3 points to dereferenced TE object
+;			D7 contains delta change = oldLength-newLength
+;
+;----------------------------------------------------------------------
+
+RecalDraw
+                MOVE.W  teNLines(A3),-(SP) ;]
+                BSR.W   ReCalLines                  ; D2/D4 returned w/dispStart
+                MOVE.W  D2,D3                       ; record dispStart
+                MOVE.W  (SP)+,D0
+                MULU.W  teLineHite(A3),D0 ;]
+                ADD.W   teDestRect+top(A3),D0       ; new top
+                LEA     teLineHite(A3),A0 ;]
+                MOVE.W  #32752,-(A0) ;]
+                MOVE.W  D0,-(A0)
+                MOVE.W  teNLines(A3),D0
+                MULU.W  teLineHite(A3),D0 ;]
+                ADD.W   (A3),D0 ;]
+                MOVE.W  #-32766,-(A0) ;]
+                MOVE.W  D0,-(A0)
+                MOVE.L  A0,-(SP)                    ; point to rect
+                _ERASERECT
+                MOVEQ   #teDraw,D7                  ; Redraw changed part
+                BRA.W   DoText                      ; see you later					<C971/RWW102887>NO
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE FindWord
+;
+;			Finds a word @ D0 and returns its start and end+1 index in D0,D1
+;			respectively. Note cannot return selStart itself - must look to left
+;
+;			Entry
+;						A3 - dereferenced handle
+;						D0 - current position (i.e. selStart)
+;						D2 - identifier of routine that called FindWord
+;			Exit
+;						D0 - word start
+;						D1 - word end+1
+;
+;----------------------------------------------------------------------
+
+FindWord
+                MOVE.L  TEFindWord,-(SP)            ; call the FindWord Routine 		<EHB 01Oct85>
+                RTS
+
+XFindWord
+                SWAP    D2
+                MOVE.W  D0,D2
+                MOVE.W  D0,D1
+                BEQ.S   RightScan
+                BSR.S   LeftScan
+
+RightScan
+                BCLR    #17,D2                      ; clear bit 17 (right)				<EHB 01Oct85>
+
+RS1
+                CMP.W   teLength(A3),D1             ; see if @ right edge
+                BCC.S   RightScanDone ;]
+                MOVE.W  D1,A1                       ; pass index
+                BSR.S   CallBreak
+                BNE.S   RightScanDone ;]
+                ADDQ.W  #1,D1                       ; try next char
+                BRA.S   RS1                         ;									<EHB 01Oct85>
+
+RightScanDone ;]
+                RTS
+
+LeftScan
+                BSET    #17,D2                      ; set bit 1 (left)					<EHB 01Oct85>
+
+LS1
+                SUBQ.W  #1,D0                       ; pre decrement
+                MOVE.W  D0,A1                       ; pass index
+                BSR.S   CallBreak                   ; was it a break?
+                BNE.S   LeftWordEdge ;]
+                TST.W   D0                          ; are we done?
+                BEQ.S   LeftScanDone ;]
+                BRA.S   LS1                         ; keep looking
+
+LeftWordEdge ;]
+                ADDQ.W  #1,D0                       ; try next char
+
+LeftScanDone ;]
+                RTS
+
+CallBreak
+                MOVEM.L D0/A0-A1,-(SP)
+                MOVE.W  a1,d0                       ; pass index in D0
+                MOVE.L  teTextH(a3),a0              ; get handle
+                MOVE.L  (a0),a0
+                MOVE.L  teWordBreak(a3),a1          ; get routine
+                JSR     (a1)                        ; call routine which sets CC's
+                MOVEM.L (SP)+,D0/A0-A1
+                RTS
+
+DefWordBrk
+lo16		Equ 		*+2
+                AND.L   #$0000FFFF,D0               ; longize it
+                CMP.B   #$20,0(A0,D0.L)             ; see if <= $20
+                SLS     D0                          ; return if word break(SP)
+                TST.B   D0
+                RTS
+
+; Measures the trimmed string in [D6..D7)
+
+TrimMeasure
+                MOVEM.L D6-D7,-(SP)                 ; save regs
+                BSR.W   MeasD6D7
+                MOVEM.L (SP)+,D6-D7                 ; restore regs
+                RTS
+
+;	Input:
+;		a3: ptr to edit record
+;		d6: lineStart of line containing selStart
+;	Output:
+;		d0: line end after d6
+
+FindLine
+                MOVE.L  TEFindLine,-(SP)            ; push current FindLine routine 	<EHB 01Oct85>
+                RTS                                 ; and call it						<EHB 01Oct85>
+
+XFindLine
+                MOVEM.L D1-D7/A1-A2,-(SP)
+                MOVE.W  teDestRect+right(a3),d4     ; right edge
+                SUB.W   teDestRect+left(a3),d4
+                SUBQ.W  #1,D4
+                SUB.L   A2,A2
+                MOVE.W  D6,D7
+
+NextWord
+                MOVE.W  D7,D0
+                MOVEQ   #teFromFind,d2              ; say findLine is calling
+                BSR.W   FindWord                    ; word start in d0, word end in d1
+                MOVE.W  D1,D7
+                TST.B   teCROnly(A3)
+                BNE.S   FitsLine ;]
+                BSR.S   TrimMeasure ;]
+                CMP.W   D4,D0
+                BGE.S   EndWordScan ;]
+
+FitsLine ;]
+                MOVE.W  D7,D5
+                ADDQ.W  #1,A2
+                CMP.W   teLength(A3),D7
+                BEQ.S   FoundLineEnd ;]
+                MOVE.L  teTextH(A3),A0
+                MOVE.L  (A0),A0
+                AND.L   lo16,D7 ;]
+                CMP.B   #13,0(A0,D7.L)
+                BEQ.S   EndWordScan ;]
+                ADDQ.W  #1,D7
+                BRA.S   NextWord ;]
+
+EndWordScan ;]
+                MOVE.W  A2,D0
+                BEQ.S   CharByChar ;]
+                ADDQ.W  #1,D5
+
+FoundLineEnd ;]
+                MOVE.W  D5,D0
+                MOVEM.L (SP)+,D1-D7/A1-A2
+                RTS
+
+CharByChar ;]
+                SUBQ.W  #1,D7
+                BSR.S   TrimMeasure ;]
+                CMP.W   D0,D4
+                BLE.S   CharByChar ;]
+                MOVE.W  D7,D5
+                BRA.S   FoundLineEnd ;]
+
+*R this version grows the line array in place and updates its saved boundaries.
+
+;
+;			PROCEDURE ReCalLines
+;
+;
+;			Recalibrates the line start array and sets dispStart/dispEnd to
+;			correct redraw spot.  Starting with the selection, it figures out
+;			which line the selection is on.  Then it recalibrates the line starts
+;			from there until the delta in D7 is consumed (the word wrap has
+;			petered out).  It returns D2 and D4 to the redraw start and end.
+;			(It should return D3 instead of D2, but for compatibility it uses
+;			D2).
+;
+;		Entry
+;			A4 points to handle
+;			A3 points to dereferenced TE object
+;			D7 contains delta in change = oldLength-newLength
+;			teLength(a3) reflects the new length (at least for deletion)
+;		Exit
+;			dispStart(D2) now set to redraw start
+;			dispEnd(D4) set to redraw end
+;		Uses
+;			d2	redraw start position (aka savedD2)
+;			d3	initialized to word boundary at selStart(a3)
+;			d4	redraw end position	(aka savedD4)
+;			d5	for handle size
+;			a2	ptr to current lineStarts(a3) position
+;----------------------------------------------------------------------
+
+ReCalLines
+                MOVE.L  TERecal,-(SP)
+                RTS
+
+XReCalLines
+                LINK.W  A6,#0
+                MOVEM.L D2-D6/A2,-(SP) ;]
+                MOVE.L  A4,A0
+                _GETHANDLESIZE
+                MOVE.L  D0,D5
+                LEA     teNLines(A3),A2 ;]
+                CLR.W   (A2)+
+                MOVE.W  teLength(A3),savedD4(A6)    ; default redraw end
+                MOVEQ   #teFromRecal,D2             ; say ReCalLines is calling 		<EHB 01Oct85>
+                MOVE.W  teSelStart(A3),D0           ; put start position in D0			<EHB 01Oct85>
+                BSR.W   FindWord                    ; get word around selstart for comparison <C971/RWW102887>NO
+                MOVE.W  D0,D3                       ; returned word boundary
+
+InitLineStLoop
+                MOVE.W  (A2)+,D6                    ; i(start):=lineStarts[line]
+                MOVE.W  D6,savedD2(A6)              ; save away as default redraw start
+                CMP.W   (A2),D3                     ; while selWord<lineStarts[line+1]
+                BCS.S   FoundLineBounds             ; if inclusive (d3 contained between savedD2 & a2)
+                BEQ.S   AtNextLineStart             ; if at next line start
+                ADDQ.W  #1,teNLines(A3)             ; one more line, keep looking for
+                BRA.S   InitLineStLoop              ; line containing selStart(D3)
+
+FoundLineBounds
+                BSR.W   FindLine                    ; get line end after D6				<C971/RWW102887>NO
+                CMP.W   D0,D3                       ; did the line break change? (is d3 beyond this line end?)
+                BCC.S   DrawWholeLine               ; if so, must redraw whole thing
+
+TestRedraw
+                TST.B   WordRedraw                  ; should we redraw the whole word?	<EHB 31-Oct-85>
+                BGT.S   DrawWholeLine               ; => yes, app wants whole word		<EHB 31-Oct-85>
+                BLT.S   DoRecal                     ; => app wants whole line			<EHB 01-Nov-85>
+                MOVE.W  teSelStart(A3),D3           ; reset d3 from word boundary to selStart
+
+DrawWholeLine
+                TST.W   teJust(A3)                  ; see what format: for right or
+                BNE.S   DoRecal                     ; centered, must use linestart (not selStart)
+                MOVE.W  D3,savedD2(A6)              ; return word start-1
+                BEQ.S   DoRecal
+                SUBQ.W  #1,savedD2(a6)
+                BRA.S   DoRecal
+
+AtNextLineStart
+                BSR.W   FindLine                    ; get line end after D6				<C971/RWW102887>NO
+                CMP.W   D0,D3                       ; did the line break change? (ie - different from current a2)
+                BNE.S   DrawWholeLine               ; if so, must redraw whole thing<C971/RWW102887>NO
+                MOVE.W  D3,savedD2(A6)              ; "next" line OK if at beginning
+                BRA.S   TestRedraw                  ;								<C971/RWW102887>NO
+
+NextRecalLine ;]
+                CMP.W   teLength(A3),D6
+                BCC.S   EndLineStarts ;]
+                BSR.W   FindLine
+
+DoRecal
+                MOVE.W  D0,D3                       ; save next line start in D3
+                CMP.W   teSelEnd(A3),D3
+                BLS.S   SaveLineStart ;]
+                SUB.W   D3,(A2) ;]
+                CMP.W   (A2),D7
+                BEQ.S   SameLineEnd ;]
+
+SaveLineStart ;]
+                BSR.S   SetLineArray ;]
+                MOVE.W  D3,(A2)+
+                MOVE.W  D3,D6
+                BRA.S   NextRecalLine ;]
+
+SameLineEnd ;]
+                MOVE.W  D3,savedD4(A6)
+                ADD.W   D3,(A2)
+
+ShiftLineStarts ;]
+                BSR.S   SetLineArray ;]
+                SUB.W   D7,(A2)
+                MOVE.W  (A2)+,D6
+                CMP.W   teLength(A3),D6
+                BCS.S   ShiftLineStarts ;]
+
+EndLineStarts ;]
+                BSR.S   SetLineArray ;]
+                MOVE.W  D6,-(A2) ;]
+                SUBQ.W  #1,teNLines(A3) ;]
+                TST.W   teLength(A3)
+                BNE.S   ReCalDone ;]
+                CLR.W   teNLines(A3)
+
+ReCalDone
+                MOVEM.L (SP)+,D2-D6/A2 ;]
+                UNLK    A6
+                RTS
+
+*R SetLineArray adds eight spare bytes when the line array needs room.
+
+SetLineArray ;]
+                ADDQ.W  #1,teNLines(A3)
+                MOVE.L  A4,A0
+                MOVEQ   #teRecSize,D0
+                ADD.W   teNLines(A3),D0 ;]
+                ADD.W   teNLines(A3),D0 ;]
+                CMP.L   D0,D5
+                BGE.S   LineArrayReady ;]
+                SUB.L   A3,A2
+                ADDQ.L  #LineArraySlop,D0 ;]
+                MOVE.L  D0,D5
+                BCLR    #7,(A4)
+                _SETHANDLESIZE
+                _HLOCK
+                MOVE.L  (A4),A3
+                ADD.L   A3,A2
+
+LineArrayReady ;]
+                RTS
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE ShowCaret
+;			PROCEDURE HideCaret
+;			PROCEDURE DrawCaret
+;			PROCEDURE EraseCaret
+;
+;		Entry:
+;			A3 contains dereferenced handle
+;
+;----------------------------------------------------------------------
+
+ShowCaret
+                TST.B   teActive(A3)                ; do nothing if not active
+                BEQ.S   LineArrayReady ;]
+                MOVE.W  teSelStart(A3),D0           ; see if should be turned on
+                CMP.W   teSelEnd(A3),D0
+                BNE.S   LineArrayReady ;]
+                ST      teCarAct(A3)                ; activate caret
+                TST.B   teCarOn(A3)                 ; see if caret is on
+                BNE.S   LineArrayReady ;]
+
+DrawCaret
+                ST      teCarOn(A3)                 ; caret marked on
+
+ForceCaret
+                BRA.S   DrawIt                      ; force a redraw
+
+HideCaret
+                TST.B   teActive(A3)                ; do nothing if not active
+                BEQ.S   LineArrayReady ;]
+                SF      teCarAct(A3)                ; deactivate caret
+                TST.B   teCarOn(A3)                 ; see if caret is on
+                BEQ.S   LineArrayReady ;]
+
+EraseCaret
+                SF      teCarOn(A3)                 ; caret marked on
+
+DrawIt
+                MOVEM.L D0-D7,-(SP)
+                MOVE.W  teSelStart(A3),D3           ; dispStart:=selStart
+                MOVE.W  D3,D4                       ; dispEnd:=same
+                MOVEQ   #teCaret,D7                 ; does nothing except moves pen
+                BSR.W   DoText                      ; draw the caret
+                MOVE.L  teCarHook(A3),D0            ; do the inversion via hook if there
+                BSR.W   InvertHook                  ;									<C971/RWW112487>
+                MOVEM.L (SP)+,D0-D7
+                RTS
+
+;
+;			PROCEDURE TEActivate( h: TEHandle )
+;			PROCEDURE TEDeActivate( h: TEHandle )
+;
+;----------------------------------------------------------------------
+
+TEActivate
+                BSR.W   StdEntry                    ;								<C971/RWW102887>NO
+                TST.B   teActive(A3)                ; see if already active
+                BNE.S   DoneActivate ;]
+                MOVE.W  teSelStart(a3),d0           ; Only enable the caret
+                CMP.W   teSelEnd(a3),d0
+                BNE.S   SetActive ;]
+                ST      teCarAct(a3)                ; activate caret
+
+SetActive ;]
+                ST      teActive(a3)                ; flag as active
+                BSR.W   HiLite
+
+DoneActivate
+                BRA.S   goHome
+
+;----------------------------------------------------------------------
+
+TEDeactivate
+                BSR.W   StdEntry                    ;								<C971/RWW102887>NO
+                TST.B   teActive(a3)
+                BEQ.S   goHome
+                BSR.S   HideCaret                   ; hide the caret
+                BSR.W   HiLite                      ; Remove old selection
+                SF      teActive(A3)                ; flag as inactive
+                BRA.S   goHome
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEIdle( h: TEHandle )
+;
+;----------------------------------------------------------------------
+
+TEIdle
+                BSR.W   StdEntry                    ;								<C971/RWW102887>NO
+                TST.B   teCarAct(A3)                ; see if active
+                BEQ.S   goHome
+                SUBQ.W  #4,SP                       ; make room for result
+                _TICKCOUNT                          ; Get current time
+                MOVE.L  (SP)+,A0                    ; use A0 for auto extend
+                CMP.L   teCarTime(A3),A0            ; see if done
+                BCS.S   goHome
+                ADD.L   CaretTime,A0                ; next time
+                MOVE.L  A0,teCarTime(A3)
+                BSR.S   DrawIt                      ; flip the caret
+                NOT.B   teCarOn(A3)                 ; flip the flag
+
+goHome
+                BRA.W   epilog4
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEPaste( h: TEHandle );
+;
+;----------------------------------------------------------------------
+
+TEPaste
+                BSR.W   StdEntry
+                MOVE.L  TEScrpHandle,A1
+                BSET    #7,(A1)
+                MOVE.L  (A1),D6 ;]
+                MOVEQ   #0,D5
+                MOVE.W  TEScrpLength,D5
+                BSR.S   PasteGuts                   ; go paste the scrap	<C971/RWW102887>NO <SM7> CSS
+                MOVE.L  TEScrpHandle,A1
+                BCLR    #7,(A1)
+                BRA.S   goHome
+
+*R PasteGuts retains the incoming D7 value in its allocation calculation.
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE PasteGuts
+;
+;
+;		Entry:
+;			D5 = insert length after the delete
+;			D6 = pointer to text to insert
+;
+;----------------------------------------------------------------------
+
+PasteGuts
+                MOVE.W  D7,D0
+                EXT.L   D0
+                NEG.L   D0
+                ADD.L   D5,D0
+                BSR.S   Preflight ;]
+                BNE.S   PasteDone ;]
+                BSR.W   HideCaret                   ;								<C971/RWW102887>NO
+                BSR.W   HiLite                      ; remove selection				<C971/RWW102887>NO
+                BSR.W   SelSort                     ; sort select (A2 ^selStart/End)<C971/RWW102887>NO
+                MOVE.W  D0,D7                       ; calc delta amount(selEnd in D0)
+                SUB.W   (A2),D7                     ; ...for ReCalLines (A2 ^selStart)
+                BSR.S   MungeSetup                  ; setup for the paste replace
+                MOVE.W  D7,-(SP)                    ; length for delete
+                CLR.W   -(SP)                       ; fake long length
+                MOVE.L  D6,-(SP)                    ; pointer to insert = p2
+                MOVE.L  D5,-(SP)                    ; length to insert = l2
+                _MUNGER                             ; use sloppy munger
+                ADDQ.L  #4,SP                       ; pop result
+                MOVE.L  teTextH(A3),A0              ; get text handle
+                _HLOCK                              ; and relock it
+                SUB.W   D7,teLength(A3)             ; length:=length -(selEnd-selStart)
+                ADD.W   D5,teLength(A3)             ; adjust length by insert amount
+                SUB.W   D5,D7                       ; adjust delta amount for ReCalLines
+                BSR.W   RecalDraw                   ; redo the line stuff
+                LEA     teSelStart(A3),A0           ; point to selStart
+                ADD.W   D5,(A0)                     ; selStart:=selstart + insert amount
+                MOVE.W  (A0)+,(A0)                  ; selEnd:=selStart
+                BSR.W   ShowCaret                   ;								<C971/RWW102887>NO
+                BSR.W   SelView                     ; insure selection is visible
+
+PasteDone ;]
+                RTS
+
+; A3 the standard record w/selstart for the offset
+; trashes A1
+; leaves stack setup to l1
+
+MungeSetup
+                MOVE.L  (SP)+,A1                    ; get local RTS
+                MOVE.L  teTextH(A3),A0              ; get text handle
+                _HUNLOCK
+                SUBQ.L  #4,SP                       ; room for result
+                MOVE.L  A0,-(SP)                    ; push handle
+                MOVE.W  teSelStart(A3),-(SP)        ; start index for insert
+                CLR.W   -(SP)                       ; fake long for index
+                CLR.L   -(SP)                       ; fake p1
+                JMP     (A1)
+
+*R Preflight tests an allocation with a one-sixteenth margin plus 128 bytes.
+
+Preflight
+                MOVE.L  D0,D2
+                BMI.S   PreflightOK ;]
+                ASR.L   #4,D2
+                ADD.L   D2,D0
+                ADD.L   #PreflightSlop,D0 ;]
+                _NEWHANDLE
+                BNE.S   PreflightDone ;]
+                _DISPOSHANDLE
+
+PreflightOK ;]
+                MOVEQ   #0,D0
+
+PreflightDone ;]
+                RTS
+
+;
+;			PROCEDURE InsGuts
+;
+;
+;			Takes the text pointed to by D6 of length D5 and inserts it
+;			at selStart.  It then adjusts teLength by the inserted length.
+;			It also adjusts D7, the delta accumulator for RecalLines.
+;
+;		Entry:
+;			D5 length of text
+;			D6 pointer to text
+;			D7 pending delta amount for recalLines
+;		Exit:
+;			D7 Adjusted by insert amount
+;
+;----------------------------------------------------------------------
+
+InsGuts
+                MOVE.L  D5,D0
+                BSR.S   Preflight ;]
+                BNE.S   InsertDone ;]
+                BSR.S   MungeSetup                  ; setup for the insert			<C971/RWW102887>NO
+                CLR.L   -(SP)                       ; fake l1
+                MOVE.L  D6,-(SP)                    ; pointer to insert = p2
+                MOVE.L  D5,-(SP)                    ; length to insert = l2
+                _MUNGER                             ; use sloppy munger
+                ADDQ.L  #4,SP                       ; pop result
+                MOVE.L  teTextH(A3),A0              ; get text handle
+                _HLOCK                              ; and relock it
+                ADD.W   D5,teLength(A3)             ; adjust length by insert amount
+                SUB.W   D5,D7                       ; adjust delta amount for ReCalLines
+
+InsertDone
+                RTS
+
+;
+;			This inserts the passed text/length just before the selection
+;			but doesn't touch the scrap.  The selection too is "untouched"
+;			because it is offset by the inserted amount to point to the same
+;			range.  Just after a TENew this can be used as a replacement for
+;			the old TESetText because the selection and length are all zero.
+;
+;----------------------------------------------------------------------
+
+TEInsert
+                BSR.W   StdEntryC ;]
+                BSR.W   HideCaret                   ;								<C971/RWW102887>NO
+                BSR.W   HiLite                      ; remove selection				<C971/RWW102887>NO
+                MOVEQ   #0,D7                       ; delta = 0(No deletion)
+                MOVEM.L (A2)+,D5-D6                 ; A2 points to l param
+                BSR.S   InsGuts                     ; go insert the scrap
+                BSR.W   RecalDraw                   ; redo the line stuff
+                ADD.W   D5,teSelStart(A3)           ; selStart:=selstart + insert amount
+                ADD.W   D5,teSelEnd(A3)             ; selEnd:=selEnd + insert amount
+                BSR.W   ShowCaret
+                BSR.W   HiLite                      ; restore selection				<C971/RWW102887>NO
+
+epilog12
+                MOVEQ   #12,D0
+                BRA.W   StdExit
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEKey( key: CHAR; h: TEHandle );
+;
+
+TEKey
+                BSR.W   StdEntry6 ;]
+                ST      teRgtClick(A3) ;]
+                _OBSCURECURSOR                      ; nice knowing you cursor
+                MOVE.W  (A2),D1                     ; store char away
+                CMP.B   #8,D1
+                BEQ.S   backSpace
+                MOVE.L  A2,D6                       ; point to the character
+                ADDQ.W  #1,D6                       ; character in lower half
+                MOVEQ   #1,D5                       ; one long
+                BSR.W   PasteGuts
+                BRA.S   epilog6
+
+backSpace
+                MOVE.W  teSelStart(A3),D0           ; see if null selection
+                CMP.W   teSelEnd(A3),D0
+                BNE.S   cutit
+                TST.W   D0                          ; see if at extreme left (really, the beginning… think R-L)
+                BEQ.S   epilog6                     ; skip if so
+                BSR.W   HideCaret                   ; remove the caret
+                SUBQ.W  #1,teSelStart(A3)
+
+cutit
+                MOVE.L  A4,-(SP)                    ; pass the handle
+                _TEDELETE                           ; and cut it (A3 no good after)
+
+epilog6
+                MOVEQ   #6,D0
+                BRA.W   StdExit
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TESetJust( just: INTEGER; h: TEHandle	);
+;
+;			Sets the justify mode. DOESN'T redraw.  Lovely code...
+;
+;----------------------------------------------------------------------
+
+TESetJust
+                BSR.W   StdEntry6 ;]
+                MOVE.W  (A2),teJust(A3)             ; set the style
+                BRA.S   epilog6                     ;								<C971/RWW102887>NO
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE Refresh
+;
+;
+;----------------------------------------------------------------------
+
+Refresh
+                MOVEQ   #0,D3                       ; min/max redraw pins in DoDraw
+                MOVEQ   #-1,D4
+                BSR.W   PinA0Rect                   ; pass A0 rect to Pin code
+                MOVEQ   #teDraw,D7                  ; drawit
+                BSR.W   DoText
+                BSR.W   HiLite                      ; reshow selection
+                TST.B   teCarOn(A3)                 ; force a redraw if caret is on
+                BEQ.S   handyReturn                 ; if off skip it
+                BRA.W   ForceCaret                  ; implied return
+
+;			PROCEDURE TEScroll( dh, dv: INTEGER; h: TEHandle )
+;
+;			Scrolls the dest rect "under" the view rect to give the caller
+;			scrolling ability.  A call of ( 0, -lineheight, h) would scroll up
+;			one line, because dest rect is offset by the passed (dh,dv).  The
+;			resultant update region is redrawn
+;
+;----------------------------------------------------------------------
+
+TEScroll
+                BSR.W   StdEntry8 ;]
+                BSR.W   HideCaret
+                MOVE.L  (A2)+,D3                    ; get dv,dh pair
+                BSR.S   Scroll
+
+epilog8
+                MOVEQ   #8,D0
+                BRA.W   StdExit
+
+*R a zero scroll returns without restoring the hidden caret.
+
+; Amount to scroll in D3
+
+Scroll
+                TST.L   D3                          ; escape if nothing there
+                BEQ.S   handyReturn
+                PEA     teDestRect(A3)              ; pass the dest rectangle
+                MOVE.L  D3,-(SP)                    ; pass dh, dv
+                _OFFSETRECT
+                SUBQ.W  #4,SP                       ; make room for temp region
+                _NEWRGN                             ; get it
+                MOVE.L  (SP)+,A2                    ; save its handle
+                PEA     teViewRect(A3)              ; pass rect to scroll
+                MOVE.L  D3,-(SP)                    ; pass dh, dv
+                MOVE.L  A2,-(SP)                    ; pass the temp region
+                _SCROLLRECT
+                BSR.W   ShowCaret
+                MOVE.L  A2,-(SP)                    ; clip to it update rgn
+                _SETCLIP
+                MOVE.L  (A2),A0                     ; point to region
+                LEA     rgnBBox(A0),A0
+                BSR.S   Refresh                     ; and redraw those lines
+                MOVE.L  A2,-(SP)                    ; get rid of temp region
+                _DISPOSRGN
+
+handyReturn
+                RTS
+
+*R the ROM retains the old additions in both negative-scroll adjustments.
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEPinScroll( dh, dv: INTEGER; h: TEHandle )
+;			Scrolls the dest rect "under" the view rect to give the caller
+;			scrolling ability.  A call of ( 0, -lineheight, h) would scroll up
+;			one line, because dest rect is offset by the passed (dh,dv).  The
+;			resultant update region is redrawn.  This version pins the scroll
+;			amount to the destRect/nLines
+;
+;----------------------------------------------------------------------
+
+TEPinScroll
+                BSR.W   StdEntry8 ;]
+                BSR.W   HideCaret
+                MOVE.W  (A2),D0                     ; get dV
+                BPL.S   PinTop ;]
+                MOVE.W  teLineHite(A3),D1
+                MULU.W  teNLines(A3),D1 ;]
+                ADD.W   teDestRect+top(A3),D1       ; get destRect.top
+                SUB.W   teViewRect+bottom(A3),D1    ; a diff. viewRect.bottom
+                BLE.S   AdjustVertical ;]
+                ADD.W   D1,D0                       ; see what delta does
+                BPL.S   pinH
+                ADD.W   D0,(A2)
+                BRA.S   pinH ;]
+
+PinTop ;]
+                MOVE.W  teDestRect+top(A3),D1       ; add destRect.top
+                SUB.W   teViewRect+top(A3),D1       ; diff. viewRect.top
+                BPL.S   AdjustVertical ;]
+                ADD.W   D1,D0
+                BMI.S   pinH
+
+AdjustVertical ;]
+                SUB.W   D0,(A2)                     ; adjust scroll
+
+pinH
+                MOVE.W  2(A2),D0                    ; get dH
+                BPL.S   PinLeft ;]
+                MOVE.W  teDestRect+right(A3),D1     ; add destrect.right
+                SUB.W   teViewRect+right(A3),D1     ; a diff. viewRect.right
+                BLE.S   AdjustHorizontal ;]
+                ADD.W   D1,D0
+                BPL.S   pinDone
+                ADD.W   D0,2(A2)                    ; adjust scroll
+                BRA.S   pinDone
+
+PinLeft ;]
+                MOVE.W  teDestRect+left(A3),D1      ; add destRect.left
+                SUB.W   teViewRect+left(A3),D1      ; diff. viewRect.left
+                BPL.S   AdjustHorizontal ;]
+                ADD.W   D1,D0
+                BMI.S   pinDone
+
+AdjustHorizontal ;]
+                SUB.W   D0,2(A2)                    ; adjust scroll
+
+pinDone
+                MOVE.L  (A2)+,D3                    ; get dv,dh pair
+                BSR.W   Scroll                      ; and go scroll it
+                BSR.W   ShowCaret
+                BRA.W   epilog8
+
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TESelView( hTe: TEHandle );
+;			Insures the selection is in view rect.  SelView is a local
+;			copy of it
+;
+;----------------------------------------------------------------------
+
+TESelView
+                BSR.W   StdEntry                    ; doo dah...
+                BSR.S   SelView                     ; go do it
+                BRA.W   epilog4
+
+SelView
+                BTST    #tefAutoPos,teFlags(A3)     ; scrolling allowed?
+                BEQ.S   SelViewDone ;]
+                BSR.W   SelSort                     ; sort selection
+                MOVE.W  teSelStart(A3),D3           ; dispStart:=selStart
+                MOVE.W  D3,D4                       ; dispEnd:=same
+                MOVEQ   #teCaret,D7                 ; does nothing except moves pen
+                BSR.W   DoText                      ; position for the caret
+                MOVE.L  teSelRect+topLeft(A3),D7    ; save penloc in D7
+                LEA     TempRect+8,A2               ; place for working rect
+                LEA     teViewRect+8(A3),A0         ; source
+                MOVE.L  -(A0),-(A2)
+                MOVE.L  -(A0),-(A2)
+                MOVE.W  teLineHite(A3),D0
+                SUB.W   D0,4(A2) ;]
+                SUBQ.W  #1,right(A2)                ; room for caret
+                SUBQ.W  #2,SP
+                MOVE.L  D7,-(SP)                    ; pass selStart location
+                MOVE.L  A2,-(SP)                    ; pass adjust viewRect
+                _PTINRECT
+                TST.B   (SP)+
+                BNE.S   SelViewDone ;]
+                MOVE.L  (A2)+,-(SP)                 ; get adjusted viewRect.topLeft
+                MOVE.L  (A2),-(SP)                  ; get adjusted viewRect.botRight
+                MOVE.L  -(A2),-(SP)                 ; subtract adjusted topLeft
+                PEA     4(SP)
+                _SUBPT
+                PEA     4(SP)                       ; add top to delta
+                _ADDPT
+                MOVE.L  D7,-(SP)                    ; subtract penloc
+                PEA     4(SP)                       ; to "center" pen if possible
+                _SUBPT
+                MOVE.L  A4,-(SP)
+                BSR.W   TEPinScroll ;]
+
+SelViewDone ;]
+                RTS
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE TEAutoView( auto: BOOLEAN; hTe: TEHandle );
+;
+;			Sets the autoview bit according to the boolean
+;
+;----------------------------------------------------------------------
+
+TEAutoView
+                BSR.W   StdEntry6 ;]
+                TST.B   (A2)+                       ; was it true
+                BEQ.S   ClearAutoView ;]
+                BSET    #tefAutoPos,teFlags(A3)     ; allow scrolling
+                BRA.S   AutoViewDone ;]
+
+ClearAutoView ;]
+                BCLR    #tefAutoPos,teFlags(A3)     ; allow scrolling
+
+AutoViewDone ;]
+                BRA.W   epilog6
+
+*R the default click loop expands the view by eight pixels and half a line.
+
+;formFeed
+;----------------------------------------------------------------------
+;
+;			PROCEDURE DefClikProc
+;
+;			Default click proc for scrolling - does a pinned autoscroll of
+;			the destRect to match the viewrect.
+;		Entry:
+;			A3 pointing to the dereferenced text edit record
+;			A6 pointing to the standard stack frame
+;			thePort set, etc.
+;		Exits:
+;			CC's set <> 0
+;
+;----------------------------------------------------------------------
+
+DefClikProc
+                MOVEM.L D0-D7/A0-A4,-(SP)           ; save ALL regs
+                BTST    #tefAutoPos,teFlags(A3)     ; scrolling allowed?
+                BEQ.S   doneAuto                    ; if not, must skip
+                MOVE.W  teLineHite(A3),D5 ;]
+                MOVEQ   #0,D4
+                LEA     teViewRect+8(A3),A0         ; point to view rect
+                LEA     TempRect+8,A2               ; copy into TempRect
+                MOVE.L  -(A0),-(A2)
+                MOVE.L  -(A0),-(A2)
+                MOVE.L  A2,-(SP)
+                MOVE.W  #-8,-(SP) ;]
+                MOVE.W  D5,D0
+                ASR.W   #1,D0
+                NEG.W   D0
+                MOVE.W  D0,-(SP)
+                _INSETRECT
+                SUBQ.W  #4,SP                       ; room for pt
+                MOVE.L  SP,-(SP)
+                _GETMOUSE
+                MOVE.W  (SP)+,D6                    ; get V coordinate
+                MOVE.W  (SP)+,D7                    ; get H coordinate
+                CMP.W   (A2)+,D6                    ; subtract top of viewRect
+                BLT.S   scrollUp                    ; scroll up
+                CMP.W   (A2)+,D7                    ; subtract left of viewRect
+                BLT.S   scrollLeft                  ; scroll left
+                CMP.W   (A2)+,D6                    ; subtract bottom of viewRect
+                BGT.S   scrollDown                  ; scroll down
+                CMP.W   (A2)+,D7                    ; subtract right of viewRect
+                BGT.S   scrollRight                 ; scroll right
+
+doneAuto
+                MOVEQ   #1,D0                       ; cc's <> 0
+                MOVEM.L (SP)+,D0-D7/A0-A4           ; restore ALL regs
+                RTS
+
+scrollDown
+                NEG.W   D5
+
+scrollUp
+                BRA.S   scrollEm
+
+scrollRight
+                NEG.W   D5
+
+scrollLeft
+                EXG     D4,D5
+
+scrollEm
+                MOVE.W  d4,-(sp)                    ; pass dh
+                MOVE.W  D5,-(SP)
+                MOVE.L  inHandle(A6),-(SP) ;]
+                BSR.W   TEPinScroll ;]
+                BRA.S   doneAuto                    ;								<C971/RWW102887>NO
+
+TextEditEnd ;]
+                ENDP
+                END

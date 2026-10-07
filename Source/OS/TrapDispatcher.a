@@ -1,0 +1,259 @@
+;
+;	File:		Dispatch.a
+;
+;	Written by:	Andy Hertzfeld   July 15, 1982
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+
+;
+; 24-Oct-82  AJH  Added bit 10 auto-pop for toolBox dispatches
+;				   Added GetTrapAddress, SetTrapAddress
+; 22-Feb-83  LAK  Changed OS dispatch to save fewer regs since OS routines
+;				   now observe Pascal regsave conventions;
+;				   (async bit is bit 10).
+; 12-May-83  JTC  Tweaked for speedup.
+; 08-Aug-83  LAK  Saved space in SetTrapAddr as per 17-July code review.
+;_______________________________________________________________________
+;
+; 23 Jan 85  LAK  Adapted for new equate files.
+; 31 Jan 85  LAK  Added ATrap68010 for new machine support.
+; 06 Mar 85  JTC  Long-word dispatch table entries.  Separate OSTable and ToolTable.
+;					New _LGetTrapAddress and _LSetTrapAddress.
+; 05 May 85  JTC  _L... made modifier-bits variants of the original _Set... and _Get...
+;_______________________________________________________________________
+
+*R This file restores the two original trap dispatcher
+*R entries and the trap-address routines at $401F4A through $402030.
+*R The released file was rewritten in 1988 and later removed its 68000
+*R paths. The ROM supplies these bodies. The retained description defines
+*R their calling conventions and trap numbering.
+*R Dispatch accepts the 68010 exception frame; EMT1010 accepts the 68000
+*R frame. Both preserve D1, D2, and A2 before dispatching a toolbox trap.
+*R Evidence/trap-dispatcher.json records provenance and exact checks.
+
+
+;_______________________________________________________________________
+;
+;	  EMT1010 -- MacIntosh Operating System Dispatcher
+;
+;	  The following code receives all Line 1010 emulator traps and transfers control
+;  to the appropriate system code to interpret the trap.  Two 32-bit/entry RAM-based
+;  dispatch tables are used to derive the addresses to dispatch to.  Since this table
+;  is patchable, a system or application program can patch in and intercept any system
+;  call to fix bugs, etc.
+;
+;  An A-line trap has the form:  1010 tabc nnnn nnnn
+;
+;  t=1 ==> Toolbox;  t=0 ==> OS.  They differ mainly in register saving conventions.
+;
+;  ToolBox:
+;		These calls follow Pascal parameter-passing conventions, receiving and returning
+;		values on the stack, and saving all but D0-D2/A0-A1.
+;		All registers are preserved up to the time the target routine is reached; the
+;		stack is as though a JSR had been executed.
+;		a=1 ==> an extra return address was on the stack when the trap was executed
+;			(e.g. a dumb compiler required a JSR to the A-line trap).  This superfluous
+;			address will be removed by the dispatcher.
+;		bcnnnnnnnn = trap number
+;
+;  OS:
+;		All parameters are passed in registers.  Routine must follow Pascal
+;		conventions about D3-D7/A2-A7.	D0/A0-A1 are passed through to the
+;		routine unchanged.	D1.W is the actual A-line instruction.
+;		c=1 ==> D1-D2/A1 are preserved by the dispatcher (so values can be returned
+;			in D0/A0).
+;		c=0 ==> D1-D2/A0-A1 are preserved by the dispatcher (so D0 can be returned).
+;		a,b = don't care, but are used by the traps to indicate, say, SYS/APPL,
+;			SYNC/ASYNC, DIACRITICALS/NOT, . . .
+;		nnnnnnnn = trap number
+;
+; Dispatch addresses are maintained in two tables of long words, ToolTable with 512 entries,
+; and OSTable with 256 entries.  (They used to be rolled into one table of 512 word entries.)
+; For backward compatibility, the GetTrapAddress and SetTrapAddress routines use the original
+; trap numbering scheme, that is traps $00-$4F, $54, and $57 are OS traps, and the rest are
+; Tool traps.
+;
+; The expanded routines GetTrapAddress and SetTrapAddress routines use
+; bits #10 to specify Tool=1/OS=0 and #9 to specify New=1/Old=0 numbering.	Bit #10 is ignored
+; when bit #9 is 0.
+;
+;	A few things to remember.  Although toolbox routines use pascal register
+;	saving conventions, the trap dispatcher must preserve all registers when
+;	dispatching a toolbox trap, since there are some routines which are
+;	documented as saving all registers (_Debugger, _LoadSeg, _FP68K, …).
+;
+;	Even though the OS trap dispatcher saves A0-A2/D1-D2 for the user, it
+;	may not modify A0 or A1 before calling the OS routine, since routines
+;	like _BlockMove expect paramaters in A0/A1/D0.  Additionally, register
+;	D1 must contain a copy of the A-Trap word, since that is how routines
+;	read the additional trap bits (eg. _NewPtr ,SYS,CLEAR).
+;
+;	Although the register save order, and format of the stack frame for an
+;	OS trap is undocumented, Microsoft does a SetTrapAddress on _GetHandleSize
+;	and and their new routine calls the ROM GetHandleSize, and then restores
+;	the registers that the trap dispatcher saved, and does a TST.L on D0.
+;	Because of this, register save order must be maintained for compatibility,
+;	since we may never get back to restore them.
+;
+
+        MACHINE MC68000
+
+		INCLUDE 'HardwarePrivateEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'Traps.a'
+
+dontSaveA0 EQU 8 ;]
+
+Dispatcher PROC EXPORT
+        EXPORT Dispatch,EMT1010,SetTrapAddress,GetTrapAddress ;]
+
+*R The 68010 entry moves the saved PC over the format word. The 68000 entry reserves the extra word instead.
+
+Dispatch
+        MOVE.L    2(SP),4(SP) ;]
+        BRA.S     DispatchCommon ;]
+
+EMT1010
+        SUBQ.L    #2,SP
+
+DispatchCommon ;]
+        MOVEM.L   D1-D2/A2,-(SP)
+        MOVE.L    16(SP),A2
+        MOVE.W    (A2)+,D2
+        MOVE.L    A2,16(SP) ;]
+        MOVE.W    D2,D1
+        ANDI.W    #numTrapMask,D2 ;]
+        CMPI.W    #$A800,D1 ;]
+        BCS.S     OSTrap ;]
+        LEA       ToolTable,A2 ;]
+        LSL.W     #2,D2
+        MOVE.L    0(A2,D2.W),12(SP) ;]
+        CMPI.W    #$A800+autoPop,D1 ;]
+        MOVEM.L   (SP)+,D1-D2/A2
+        BCS.S     ToolExit ;]
+        MOVE.L    (SP)+,(SP)
+
+ToolExit ;]
+        RTS       
+
+*R OS traps pass their trap word in D1. Bit 8 selects whether the dispatcher restores A0; both paths preserve A1.
+
+OSTrap ;]
+        LEA       OSTable,A2 ;]
+        BCLR      #dontSaveA0,D2 ;]
+        BNE.S     OSKeepA0 ;]
+        LSL.W     #2,D2
+        MOVE.L    0(A2,D2.W),A2 ;]
+        MOVEM.L   A0-A1,-(SP)
+        JSR       (A2)
+        MOVEM.L   (SP)+,A0-A1
+
+OSExit ;]
+        MOVEM.L   (SP)+,D1-D2/A2
+        ADDQ.W    #4,SP
+        TST.W     D0
+        RTS       
+
+OSKeepA0 ;]
+        LSL.W     #2,D2
+        MOVE.L    0(A2,D2.W),A2 ;]
+        MOVE.L    A1,-(SP)
+        JSR       (A2)
+        MOVE.L    (SP)+,A1
+        BRA.S     OSExit ;]
+
+
+;_______________________________________________________________________
+;
+; Routine:		SetTrapAddress
+;
+; Function: 	Load new trap vector into dispatch table.
+;
+; Input:		D0		-	trap number in low 9 bits
+;				A0		-	trap address
+;
+; Output:		none
+;
+;_______________________________________________________________________
+
+*R The original setters update the RAM table directly. They predate cache flushing and patch-header checks.
+
+SetTrapAddress
+        BTST      #OldDisp,D1 ;]
+        BEQ.S     SetOldTrap ;]
+        ANDI.W    #numTrapMask,D0
+        LEA       ToolTable,A1
+        BTST      #ToolDisp,D1 ;]
+        BNE.S     SetTrapEntry ;]
+
+SetOSTrap ;]
+        ANDI.W    #255,D0
+        LEA       OSTable,A1
+
+SetTrapEntry ;]
+        LSL.W     #2,D0
+        MOVE.L    A0,0(A1,D0.W) ;]
+        MOVEQ     #0,D0
+        RTS       
+
+SetOldTrap ;]
+        BSR.S     FindOldTable ;]
+        BRA.S     SetTrapEntry ;]
+
+*R Old numbering assigns $00 through $4F, $54, and $57 to the OS table. Other old trap numbers use the Toolbox table.
+
+FindOldTable ;]
+        ANDI.W    #numTrapMask,D0
+        LEA       ToolTable,A1
+        CMPI.W    #87,D0 ;]
+        BHI.S     OldTableExit ;]
+        BEQ.S     OldOSTrap ;]
+        CMPI.W    #79,D0 ;]
+        BLS.S     OldOSTrap ;]
+        CMPI.W    #84,D0 ;]
+        BNE.S     OldTableExit ;]
+
+OldOSTrap ;]
+        LEA       OSTable,A1
+
+OldTableExit ;]
+        RTS       
+
+GetOldTrap ;]
+        BSR.S     FindOldTable ;]
+        BRA.S     GetTrapEntry ;]
+
+;
+; Routine:		GetTrapAddress
+;
+; Function: 	Return trap address from dispatch table.
+;
+; Input:		D0		-	trap number in low 9 bits
+;
+; Output:		A0		-	trap address
+;
+;_______________________________________________________________________
+
+GetTrapAddress
+        BTST      #OldDisp,D1 ;]
+        BEQ.S     GetOldTrap ;]
+        ANDI.W    #numTrapMask,D0
+        LEA       ToolTable,A1
+        BTST      #ToolDisp,D1 ;]
+        BNE.S     GetTrapEntry ;]
+
+GetOSTrap ;]
+        ANDI.W    #255,D0
+        LEA       OSTable,A1
+
+GetTrapEntry ;]
+        LSL.W     #2,D0
+        MOVE.L    0(A1,D0.W),A0 ;]
+        MOVEQ     #0,D0
+        RTS       
+
+DispatcherEnd ;]
+        ENDPROC
+        END

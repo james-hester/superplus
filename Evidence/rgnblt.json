@@ -1,0 +1,140 @@
+{
+  "module": "QuickDraw/RgnBlt.a",
+  "source_path": "Reconstruction/Source/QuickDraw/RgnBlt.a",
+  "source_sha256": "a629c0e3e37099f8f42af2538aae6ab4846261e195e87da1e302aa3611f1adb1",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/RgnBlt.m.a",
+    "sha256": "cddd6015e25d35a8f94185c1ae63194c20c384f8462e0a92e96f8ac769af9911"
+  },
+  "upstream_equates": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x40a732",
+      "end_address_exclusive": "0x40ac70",
+      "rom_offset": "0xa732",
+      "length": 1342,
+      "sha256": "18f9c558bba1f17a3eed2b2b083883e6c3e01eb57cd699531eacf54e91daa4a3",
+      "first_symbol": "RgnBlt",
+      "last_symbol": "MASK11"
+    }
+  ],
+  "symbols": {
+    "RgnBlt": "0x40a732",
+    "SEEKMASK": "0x40aa86",
+    "RECTJMP": "0x40aa96",
+    "MODETAB": "0x40ab74",
+    "MASK0": "0x40ab84",
+    "MASK1": "0x40abb4",
+    "MASK2": "0x40abdc",
+    "MASK3": "0x40ac04",
+    "MASK8": "0x40ac2e",
+    "MASK9": "0x40ac44",
+    "MASK10": "0x40ac52",
+    "MASK11": "0x40ac60"
+  },
+  "external_references": {
+    "COLORMAP": "0x408560",
+    "RSECT": "0x40a110",
+    "SHIELDCURSOR": "0x4082fe",
+    "TRIMRECT": "0x40c1ba",
+    "BITBLT": "0x40a284",
+    "INITRGN": "0x40c2c6",
+    "PATEXPAND": "0x408498",
+    "SHOWCURSOR": "0x4082f8",
+    "SEEKRGN": "0x40c2fe"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete RgnBlt module and applicable original comments. Omitted the later EASE header."
+    },
+    {
+      "kind": "equates",
+      "description": "Replaced the GrafTypes include with its required equates and their dependencies. Retained the original procedure parameters and local EQU declarations."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made PC operands, branch sizes and applicable ADDQ or SUBQ encodings explicit. Matched source branches to ROM branches in order; every branch condition agrees."
+    },
+    {
+      "kind": "macro_reversion",
+      "description": "Retained the UNLINK invocation and supplied the restored 68000 return macro used by the reconstructed Regions module."
+    },
+    {
+      "kind": "external_references",
+      "description": "Assigned external procedure addresses from the matching ROM call operands. Preserved the original symbolic call names."
+    },
+    {
+      "kind": "tables",
+      "description": "Preserved both eight-word jump tables as symbolic label differences. Made the two indexed RECTJMP references explicitly relative to PC. GNU translation namespaces the original AC and BC labels to avoid reserved register names."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 1342 assembled bytes equal the ROM span. All 12 recorded symbols match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Used the shared translator on the preserved source, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "original_body_comments": 614,
+    "preserved_original_body_comments": 614,
+    "removed_comment_texts": [],
+    "temporary_driver": "/tmp/check-putrgn-rgnblt.py",
+    "temporary_build": "/tmp/putrgn-rgnblt-build",
+    "commands": [
+      "python3 /tmp/check-putrgn-rgnblt.py"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the original macro spelling, source formatting or label spelling."
+    ],
+    "instruction_bytes": 1310,
+    "table_bytes": 32
+  },
+  "integration_manifest": {
+    "name": "rgnblt",
+    "source": "Reconstruction/Source/QuickDraw/RgnBlt.a",
+    "start": "0x40a732",
+    "end_exclusive": "0x40ac70",
+    "entry_points": {
+      "RgnBlt": "0x40a732",
+      "SEEKMASK": "0x40aa86",
+      "RECTJMP": "0x40aa96",
+      "MODETAB": "0x40ab74",
+      "MASK0": "0x40ab84",
+      "MASK1": "0x40abb4",
+      "MASK2": "0x40abdc",
+      "MASK3": "0x40ac04",
+      "MASK8": "0x40ac2e",
+      "MASK9": "0x40ac44",
+      "MASK10": "0x40ac52",
+      "MASK11": "0x40ac60"
+    }
+  },
+  "tables": [
+    {
+      "name": "RECTJMP",
+      "start": "0x40aa96",
+      "length": 16
+    },
+    {
+      "name": "MODETAB",
+      "start": "0x40ab74",
+      "length": 16
+    }
+  ]
+}

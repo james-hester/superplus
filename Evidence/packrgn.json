@@ -1,0 +1,92 @@
+{
+  "module": "QuickDraw/PackRgn.a",
+  "source_path": "Reconstruction/Source/QuickDraw/PackRgn.a",
+  "source_sha256": "edc9fa60043a33a1cce25b348bd8e1ae4142e436c748754fd5345dccbab838eb",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/PackRgn.m.a",
+    "sha256": "7887047e16dbeb84f699ad097e13e3bdc24eadd707924085ed155a0d1d353b93"
+  },
+  "upstream_equates": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x40c78e",
+      "end_address_exclusive": "0x40c856",
+      "rom_offset": "0xc78e",
+      "length": 200,
+      "sha256": "3d806d575ef68c29f67d9ad5163c76e5464c3bc78c2cb9ef7444ee9ce911d0f4",
+      "first_symbol": "PACKRGN",
+      "last_symbol": "PACKRGN"
+    }
+  ],
+  "symbols": {
+    "PACKRGN": "0x40c78e"
+  },
+  "external_references": {
+    "SetHSize": "0x408798"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete PackRgn module and applicable original comments. Omitted the later EASE header."
+    },
+    {
+      "kind": "equates",
+      "description": "Replaced the GrafTypes include with its required equates and their dependencies. Retained procedure parameters and local EQU declarations."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made PC operands, branch sizes and applicable ADDQ or SUBQ encodings explicit. Matched source branches to ROM branches in order; every branch condition agrees."
+    },
+    {
+      "kind": "macro_reversion",
+      "description": "Retained every UNLINK invocation and supplied the restored 68000 macro used by the reconstructed Regions module."
+    },
+    {
+      "kind": "external_reference",
+      "description": "Set SetHSize to $408798, the destination of the ROM JSR instructions."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 200 assembled instruction bytes equal the ROM span. All 1 recorded entry points match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Used the shared translator on the preserved source, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "original_body_comments": 121,
+    "preserved_original_body_comments": 121,
+    "removed_comment_texts": [],
+    "temporary_driver": "/tmp/check-region-support.py",
+    "temporary_build": "/tmp/region-support-build",
+    "commands": [
+      "python3 /tmp/check-region-support.py"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the original macro spelling, source formatting or label spelling."
+    ]
+  },
+  "integration_manifest": {
+    "name": "packrgn",
+    "source": "Reconstruction/Source/QuickDraw/PackRgn.a",
+    "start": "0x40c78e",
+    "end_exclusive": "0x40c856",
+    "entry_points": {
+      "PACKRGN": "0x40c78e"
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "module": "OS/VerticalRetraceMgr.a",
+  "source_path": "Reconstruction/Source/OS/VerticalRetraceMgr.a",
+  "source_sha256": "7878ab220c30507812a948da98c309a2b91238d9c756cb6ddcfc7c9ff87cff15",
+  "upstream_sources": [
+    {
+      "path": "OS/VerticalRetraceMgr.a",
+      "sha256": "a3b2584ac573b14076cfec6ba8bd87ea7eeb941a6092b847949947e56ed65e3d",
+      "header_lines": [
+        1,
+        13
+      ],
+      "history_lines": [
+        56,
+        68
+      ],
+      "routine_reference_ranges": [
+        [
+          87,
+          175
+        ]
+      ]
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        498,
+        1268,
+        1271,
+        1273,
+        1274,
+        1275
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "copied_lines": [
+        133,
+        147
+      ]
+    }
+  ],
+  "external_routines": {
+    "EnqueueTrap": "0x4019ca",
+    "DequeueTrap": "0x4019f0"
+  },
+  "boundary_evidence": {
+    "start": "Ghidra identifies VInstall at $401C2A. The first instruction checks the VBL queue element type.",
+    "end": "VRemove returns at $401C88. InitCrTable starts at $401C8A and belongs to the following cursor code."
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the original file header, applicable history, phasing explanation, VRemove contract, and instruction comments. Omitted slot VBL routines and the later pseudo VBL implementation."
+    },
+    {
+      "kind": "restoration",
+      "description": "Moved the invalid-type return between the type check and the count calculation. The valid-type branch skips that return; VRemove branches back to it."
+    },
+    {
+      "kind": "restoration",
+      "description": "Removed the zero-phase test and branch present in the later source. The ROM applies the two-division phasing calculation whenever the count is nonzero. The original history still records the earlier zero-phase change."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the interrupt mask to $0100 and loaded Ticks directly from low memory. Removed the shared slot-queue entry and loaded VBLQueue immediately before EnqueueTrap."
+    },
+    {
+      "kind": "encoding",
+      "description": "Used explicit PC addressing for EnqueueTrap and DequeueTrap. VInstallCount is a reconstruction label for the valid-type branch target."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the queue layout, low-memory globals, and error codes from the released equate files. Added verified external routine addresses and the ROM interrupt-mask value."
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401c2a",
+      "end_address_exclusive": "0x401c8a",
+      "rom_offset": "0x1c2a",
+      "length": 96,
+      "sha256": "fdad2aabd324bc7a185722d414ef0d0e1e7dfc1d439963c6e84f7d9b7390311e"
+    }
+  ],
+  "symbols": {
+    "VInstall": "0x401c2a",
+    "VTypeError": "0x401c32",
+    "VRemove": "0x401c74",
+    "AnRTS": "0x401c88"
+  },
+  "manifest_entry": {
+    "name": "vertical-retrace",
+    "source": "Reconstruction/Source/OS/VerticalRetraceMgr.a",
+    "start": "0x401c2a",
+    "end_exclusive": "0x401c8a",
+    "entry_points": {
+      "VInstall": "0x401c2a",
+      "VTypeError": "0x401c32",
+      "VRemove": "0x401c74",
+      "AnRTS": "0x401c88"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 96,
+    "checked_entry_points": 4,
+    "instruction_count": 35,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-vertical-retrace-verify",
+    "temporary_verifier": "/tmp/verify-vbl.py",
+    "source_sha256": "7878ab220c30507812a948da98c309a2b91238d9c756cb6ddcfc7c9ff87cff15",
+    "assembled_sha256": "fdad2aabd324bc7a185722d414ef0d0e1e7dfc1d439963c6e84f7d9b7390311e",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

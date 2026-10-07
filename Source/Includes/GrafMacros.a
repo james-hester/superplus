@@ -1,0 +1,30 @@
+*R QuickDraw return macros retain the Mac Plus instruction sizes.
+*R The UNLINK structure follows QuickDraw Source/GrafTypes.a.
+*R See Evidence/shared-includes.json for the module-specific encoding choices.
+;
+*R UNLINK uses ADDQ for up to eight parameter bytes, then ADD.
+
+        MACRO
+        UNLINK
+.*--------------------------------------------------------------
+.*
+.* UNLINK A6, STRIP PARAMETERS, AND RETURN.
+.*
+.* FIRST PARAM IS NUMBER OF BYTES OF STACK BIAS.
+.*
+        UNLK    A6                      ;RELEASE LOCAL VARIABLES
+        IF      &Eval(&Syslst[1])=0 THEN;NO PARAMETERS ?
+        RTS                             ;THEN JUST RTS
+        ELSEIF  &Eval(&Syslst[1])=4 THEN;4 BYTES ?
+        MOVE.L  (SP)+,(SP)              ;STRIP PARAMETERS
+        RTS                             ;RETURN
+        ELSE
+        MOVE.L  (SP)+,A0
+        IF      &Eval(&Syslst[1])<=8 THEN ;]
+        ADDQ    #&Syslst[1],SP ;]
+        ELSE
+        ADD     #&Syslst[1],SP
+        ENDIF
+        JMP     (A0)
+        ENDIF
+        ENDM

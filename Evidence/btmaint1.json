@@ -1,0 +1,216 @@
+{
+  "module": "BTMAINT1",
+  "source": "Reconstruction/Source/OS/HFS/BTMAINT1.a",
+  "originals": [
+    {
+      "path": "OS/HFS/BTMAINT1.a",
+      "sha256": "511962668325f70d1faaa1e0207d8daa17c89ddbae07f67da985a61377a1695b",
+      "line_ranges": [
+        [
+          1,
+          540
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/BTMAINT2.a",
+      "sha256": "6b089ca75b49f47071992ac8d701df3fa2987c6f65eb6be16351e8ce2a62dcaa",
+      "line_ranges": [
+        [
+          90,
+          145
+        ]
+      ],
+      "role": "BuildIRec establishes the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          192,
+          192
+        ],
+        [
+          198,
+          198
+        ],
+        [
+          308,
+          308
+        ],
+        [
+          323,
+          324
+        ],
+        [
+          331,
+          333
+        ],
+        [
+          337,
+          339
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          368,
+          368
+        ],
+        [
+          372,
+          372
+        ],
+        [
+          378,
+          379
+        ],
+        [
+          381,
+          381
+        ],
+        [
+          383,
+          383
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40706c",
+      "end_exclusive": "0x4072a0",
+      "rom_offset": "0x706c",
+      "length": 564,
+      "sha256": "fb2e8d870cf4e8974eecc2d29bb00a261f1c768fd4443a966ce98c85add96beb",
+      "start_label": "BTMaint1",
+      "end_label": "BTMAINT1End",
+      "boundary_evidence": "RotateLT starts at 0x40706c after the BTALLOC RelMap return. RotRecLt returns at 0x40729e. BuildIRec begins BTMAINT2 at 0x4072a0."
+    }
+  ],
+  "entry_points": {
+    "BTMaint1": "0x40706c",
+    "RotateLT": "0x40706c",
+    "SplitLt": "0x40715c",
+    "TreeSearch": "0x4071e4",
+    "RotRecLt": "0x40726c",
+    "BTMAINT1End": "0x4072a0"
+  },
+  "integration_manifest": {
+    "name": "btmaint1",
+    "source": "Reconstruction/Source/OS/HFS/BTMAINT1.a",
+    "start": "0x40706c",
+    "end_exclusive": "0x4072a0",
+    "entry_points": {
+      "BTMaint1": "0x40706c",
+      "RotateLT": "0x40706c",
+      "SplitLt": "0x40715c",
+      "TreeSearch": "0x4071e4",
+      "RotRecLt": "0x40726c",
+      "BTMAINT1End": "0x4072a0"
+    }
+  },
+  "changes": [
+    {
+      "location": "SplitLt",
+      "change": "Removed the InitNode error check added in December 1985.",
+      "evidence": "The call at 0x407190 is followed directly by MOVEA.L A0,A2 at 0x407194. The ROM retains the other allocation and release error checks."
+    },
+    {
+      "location": "TreeSearch",
+      "change": "Removed the vector stub added in October 1986 and retained the original search body.",
+      "evidence": "TreeSearch begins at 0x4071e4 by saving its return address on A6. The branches at 0x4071fe and 0x407210 use word displacements to TSExit."
+    },
+    {
+      "location": "Node rotation and source provenance",
+      "change": "Preserved the original header, applicable history, and comments, including RotateLT and RotRecLt. Added required original equates, external routine addresses, and the SysError opcode.",
+      "evidence": "All 564 bytes and six labels match. The fatal rotation path retains SysError, opcode 0xa9c9. Explicit PC-relative calls preserve the target encodings."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "AllocNode",
+      "address": "0x406e38"
+    },
+    {
+      "name": "GetNode",
+      "address": "0x407402"
+    },
+    {
+      "name": "RelNode",
+      "address": "0x4075d0"
+    },
+    {
+      "name": "DeleteRec",
+      "address": "0x40736a"
+    },
+    {
+      "name": "GetNodeSiz",
+      "address": "0x40743c"
+    },
+    {
+      "name": "GetOffset",
+      "address": "0x407454"
+    },
+    {
+      "name": "GetRecA",
+      "address": "0x40746e"
+    },
+    {
+      "name": "InitNode",
+      "address": "0x40748a"
+    },
+    {
+      "name": "InsertRec",
+      "address": "0x4074bc"
+    },
+    {
+      "name": "LocRec",
+      "address": "0x407538"
+    },
+    {
+      "name": "LocTPR",
+      "address": "0x40756a"
+    },
+    {
+      "name": "SearchNode",
+      "address": "0x4075ea"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x40706c, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "ff512ce1587f3932295e8c8ecd141494ed4185f2b1d4b10e0a0d703afd923592",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/BTMAINT1.a",
+        "sha256": "ff512ce1587f3932295e8c8ecd141494ed4185f2b1d4b10e0a0d703afd923592"
+      }
+    ],
+    "assembled_length": 564,
+    "matched_bytes": 564,
+    "entry_points_checked": 6,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

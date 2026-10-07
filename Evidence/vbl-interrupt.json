@@ -1,0 +1,197 @@
+{
+  "module": "OS/VBLInterrupt.a",
+  "source_path": "Reconstruction/Source/OS/VBLInterrupt.a",
+  "source_sha256": "9ab6a04fb6f2aae76b5f7b51e6c3bdee6331e6697fec8758937927e870123c1d",
+  "upstream_sources": [
+    {
+      "path": "OS/InterruptHandlers.a",
+      "sha256": "67eb951bf54a8a019100c0d9e81997a914f920f59520ff5400b3f74718e44e19",
+      "header_lines": [
+        1,
+        14
+      ],
+      "copied_history_ranges": [
+        [
+          395,
+          400
+        ],
+        [
+          406,
+          407
+        ],
+        [
+          409,
+          409
+        ],
+        [
+          414,
+          415
+        ]
+      ],
+      "history_reference_ranges": [
+        [
+          275,
+          279
+        ],
+        [
+          395,
+          429
+        ]
+      ]
+    },
+    {
+      "path": "OS/VerticalRetraceMgr.a",
+      "sha256": "a3b2584ac573b14076cfec6ba8bd87ea7eeb941a6092b847949947e56ed65e3d",
+      "routine_reference_ranges": [
+        [
+          199,
+          262
+        ]
+      ],
+      "history_reference_ranges": [
+        [
+          24,
+          35
+        ]
+      ]
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        463,
+        464,
+        498,
+        523,
+        524,
+        541,
+        542,
+        616,
+        620,
+        1046,
+        1228,
+        1245,
+        1269,
+        1270,
+        1272,
+        1273,
+        1275,
+        1326
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        369,
+        375
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "copied_lines": [
+        751
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "reference_lines": [
+        963,
+        1803
+      ]
+    }
+  ],
+  "external_routines": {
+    "OneSecReturn": "0x401b10",
+    "DequeueTrap": "0x4019f0"
+  },
+  "boundary_evidence": {
+    "start": "Ghidra labels $401B12 as VBLInt?. The handler increments Ticks and acknowledges the VIA CA1 interrupt. The preceding OneSecInt returns at $401B10.",
+    "end": "The handler clears the inVbl flag and returns at $401BD6. Mouse movement interrupt code starts at $401BD8."
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the InterruptHandlers.a header and relevant history. The later VerticalRetraceMgr.a supplies the stack check and queue dispatch bodies and their comments. Its history records the move from InterruptHandlers.a in 1989."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the entry order: increment Ticks, acknowledge CA1, write $2000 to SR, and test the inVbl flag. A nested interrupt returns through the preceding OneSecInt return. The later handler tests the flag before opening interrupts."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored word branches in the stack checks and the direct cursor callback through JCrsrTask. The ROM calls that callback without a null check."
+    },
+    {
+      "kind": "rom_reconstruction",
+      "description": "Restored the removed mouse and keyboard service block from ROM instructions at $401B46 through $401BA5. It samples bit 3 of VIA data port B on even ticks. When the button differs from MBState, the handler requires at least three ticks since the previous recorded change before updating MBTicks, MBState, and RndSeed and posting the event. It calls a nonzero JKybdTask every 32 ticks."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the system queue traversal. It loads qHead directly, preserves A0 around each callback, reads the next link after the callback or removal, and loads VBLQueue only when removing an expired element. It clears inVbl through an absolute low-memory address."
+    },
+    {
+      "kind": "comments",
+      "description": "Preserved the historical comment about keyboard and mouse service frequency. Added a reconstruction note with the cadence measured from the ROM instructions."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied low-memory, queue, event, VIA-register, and stack-error equates from the released sources. Added the ROM VIA data port address, external return and dequeue addresses, and named trap opcodes. OneSecReturn, VIA1DataB, CheckButton, CheckKeyboard, RunQueue, and NextVBL are reconstruction names."
+    }
+  ],
+  "rom_only_instruction_span": {
+    "start": "0x401b46",
+    "end_exclusive": "0x401ba6",
+    "length": 96,
+    "reason": "The later sources removed direct cursor, mouse button, and keyboard servicing from this VBL handler. InterruptHandlers.a history corroborates the callbacks, random seed update, and keyboard cadence; the emitted instructions come from the ROM."
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401b12",
+      "end_address_exclusive": "0x401bd8",
+      "rom_offset": "0x1b12",
+      "length": 198,
+      "sha256": "49af27a0af117ff0dd91f7732011911bc5690d01263a719f07d6a4a0092950dc"
+    }
+  ],
+  "symbols": {
+    "VBLInt": "0x401b12"
+  },
+  "manifest_entry": {
+    "name": "vbl-interrupt",
+    "source": "Reconstruction/Source/OS/VBLInterrupt.a",
+    "start": "0x401b12",
+    "end_exclusive": "0x401bd8",
+    "entry_points": {
+      "VBLInt": "0x401b12"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 198,
+    "checked_entry_points": 1,
+    "instruction_count": 62,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-vbl-interrupt-verify",
+    "temporary_verifier": "/tmp/verify-vbl.py",
+    "source_sha256": "9ab6a04fb6f2aae76b5f7b51e6c3bdee6331e6697fec8758937927e870123c1d",
+    "assembled_sha256": "49af27a0af117ff0dd91f7732011911bc5690d01263a719f07d6a4a0092950dc",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

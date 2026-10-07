@@ -1,0 +1,372 @@
+{
+  "module": "QuickDraw/DrawArc.a",
+  "source_path": "Reconstruction/Source/QuickDraw/DrawArc.a",
+  "source_sha256": "90c8f51e96f0fb3257a17c58e9b39dda97d9a482b26df6a9170fb2f4b5a0b786",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/DrawArc.m.a",
+    "sha256": "f302aa543a654ae17113b6c9e9f8fb590f92a378262df8022222e5b4727ebda7",
+    "instruction_lines": [
+      38,
+      1145
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        184
+      ],
+      [
+        210,
+        212
+      ],
+      [
+        248,
+        272
+      ],
+      [
+        281,
+        290
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        517
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40b020",
+      "end_address_exclusive": "0x40b790",
+      "rom_offset": "0xb020",
+      "length": 1904,
+      "sha256": "bbdb627821ba967d86613a03a73a8efdd924115e2cbba01ffb8f18e821a37067",
+      "first_symbol": "DrawArc",
+      "last_symbol": "BumpOval"
+    }
+  ],
+  "symbols": {
+    "DrawArc": "0x40b020",
+    "MODEMAP": "0x40b0e8",
+    "INITONE": "0x40b354",
+    "ONESLAB": "0x40b5aa",
+    "SEEKMASK": "0x40b654",
+    "RECTJMP": "0x40b662",
+    "InitOval": "0x40b6ac",
+    "BumpOval": "0x40b74e"
+  },
+  "manifest_entry": {
+    "name": "drawarc",
+    "source": "Reconstruction/Source/QuickDraw/DrawArc.a",
+    "start": "0x40b020",
+    "end_exclusive": "0x40b790",
+    "entry_points": {
+      "DrawArc": "0x40b020",
+      "MODEMAP": "0x40b0e8",
+      "INITONE": "0x40b354",
+      "ONESLAB": "0x40b5aa",
+      "SEEKMASK": "0x40b654",
+      "RECTJMP": "0x40b662",
+      "InitOval": "0x40b6ac",
+      "BumpOval": "0x40b74e"
+    }
+  },
+  "external_routines": {
+    "SlopeFromAngle": "0x40b7ce",
+    "RSect": "0x40a110",
+    "ShieldCursor": "0x4082fe",
+    "ShowCursor": "0x4082f8",
+    "TrimRect": "0x40c1ba",
+    "InitRgn": "0x40c2c6",
+    "SeekRgn": "0x40c2fe",
+    "PatExpand": "0x408498",
+    "ColorMap": "0x408560",
+    "XorSlab": "0x408642",
+    "DrawSlab": "0x408686",
+    "SlabMode": "0x408716",
+    "FastSlabMode": "0x408770",
+    "MaskTab": "0x408438"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable DrawArc.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC indexing explicit for MODEMAP and RECTJMP."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made the four remaining BSR calls to ONESLAB short branches. Made the BumpOval loop branches short."
+    },
+    {
+      "kind": "data",
+      "description": "Preserved the eight MODEMAP bytes and four RECTJMP word offsets as their original data definitions."
+    },
+    {
+      "kind": "traps",
+      "description": "Defined the existing _MFixRatio, _MFixMul, and _MLongMul calls as the ROM trap words $A869, $A868, and $A867."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 166,
+      "original": "JSR \tCOLORMAP",
+      "restored": "JSR\tCOLORMAP(PC)"
+    },
+    {
+      "upstream_line": 193,
+      "original": "JSR \tRSECT",
+      "restored": "JSR\tRSECT(PC)"
+    },
+    {
+      "upstream_line": 211,
+      "original": "JSR \tTrimRect",
+      "restored": "JSR\tTrimRect(PC)"
+    },
+    {
+      "upstream_line": 232,
+      "original": "MOVE.B\tMODEMAP(D0),D0",
+      "restored": "MOVE.B\tMODEMAP(PC,D0),D0"
+    },
+    {
+      "upstream_line": 312,
+      "original": "JSR \tSlopeFromAngle",
+      "restored": "JSR\tSlopeFromAngle(PC)"
+    },
+    {
+      "upstream_line": 327,
+      "original": "JSR \tSlopeFromAngle",
+      "restored": "JSR\tSlopeFromAngle(PC)"
+    },
+    {
+      "upstream_line": 417,
+      "original": "JSR \tINITOVAL",
+      "restored": "JSR\tINITOVAL(PC)"
+    },
+    {
+      "upstream_line": 466,
+      "original": "JSR \tINITOVAL",
+      "restored": "JSR\tINITOVAL(PC)"
+    },
+    {
+      "upstream_line": 477,
+      "original": "JSR \tSHIELDCURSOR",
+      "restored": "JSR\tSHIELDCURSOR(PC)"
+    },
+    {
+      "upstream_line": 522,
+      "original": "ADD \t#2,D5",
+      "restored": "ADDQ\t#2,D5"
+    },
+    {
+      "upstream_line": 531,
+      "original": "ADD \t#4,D5",
+      "restored": "ADDQ\t#4,D5"
+    },
+    {
+      "upstream_line": 534,
+      "original": "PEA \tBRECT",
+      "restored": "PEA\tBRECT(PC)"
+    },
+    {
+      "upstream_line": 538,
+      "original": "JMP \tINITRGN",
+      "restored": "JMP\tINITRGN(PC)"
+    },
+    {
+      "upstream_line": 553,
+      "original": "JSR \tXorSlab",
+      "restored": "JSR\tXorSlab(PC)"
+    },
+    {
+      "upstream_line": 596,
+      "original": "JSR \tFastSlabMode",
+      "restored": "JSR\tFastSlabMode(PC)"
+    },
+    {
+      "upstream_line": 600,
+      "original": "@1\t\tJSR \tSlabMode",
+      "restored": "@1\tJSR\tSlabMode(PC)"
+    },
+    {
+      "upstream_line": 617,
+      "original": "JSR \tPATEXPAND",
+      "restored": "JSR\tPATEXPAND(PC)"
+    },
+    {
+      "upstream_line": 638,
+      "original": "JSR \tBUMPOVAL",
+      "restored": "JSR\tBUMPOVAL(PC)"
+    },
+    {
+      "upstream_line": 641,
+      "original": "JSR \tBUMPOVAL",
+      "restored": "JSR\tBUMPOVAL(PC)"
+    },
+    {
+      "upstream_line": 803,
+      "original": "LEA \tMaskTab,A0",
+      "restored": "LEA\tMaskTab(PC),A0"
+    },
+    {
+      "upstream_line": 808,
+      "original": "JMP \tDrawSlab",
+      "restored": "JMP\tDrawSlab(PC)"
+    },
+    {
+      "upstream_line": 826,
+      "original": "BSR \tONESLAB",
+      "restored": "BSR.S\tONESLAB"
+    },
+    {
+      "upstream_line": 838,
+      "original": "BSR \tONESLAB",
+      "restored": "BSR.S\tONESLAB"
+    },
+    {
+      "upstream_line": 841,
+      "original": "BSR \tONESLAB",
+      "restored": "BSR.S\tONESLAB"
+    },
+    {
+      "upstream_line": 851,
+      "original": "DOSLAB\tBSR \tONESLAB",
+      "restored": "DOSLAB\tBSR.S\tONESLAB"
+    },
+    {
+      "upstream_line": 859,
+      "original": "NEXTPAT ADD \t#4,PATINDEX(A6)",
+      "restored": "NEXTPAT\tADDQ\t#4,PATINDEX(A6)"
+    },
+    {
+      "upstream_line": 869,
+      "original": "ADD \t#1,D7",
+      "restored": "ADDQ\t#1,D7"
+    },
+    {
+      "upstream_line": 874,
+      "original": "JSR \tSHOWCURSOR",
+      "restored": "JSR\tSHOWCURSOR(PC)"
+    },
+    {
+      "upstream_line": 888,
+      "original": "MOVE\tRECTJMP(D1),D1",
+      "restored": "MOVE\tRECTJMP(PC,D1),D1"
+    },
+    {
+      "upstream_line": 889,
+      "original": "JMP\tRECTJMP(D1)",
+      "restored": "JMP\tRECTJMP(PC,D1)"
+    },
+    {
+      "upstream_line": 900,
+      "original": "JSRSEEK JSR \tSEEKRGN",
+      "restored": "JSRSEEK\tJSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 916,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 918,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 1021,
+      "original": "SUB.L\t#1,D0",
+      "restored": "SUBQ.L\t#1,D0"
+    },
+    {
+      "upstream_line": 1091,
+      "original": "ADD \t#2,(A3)+",
+      "restored": "ADDQ\t#2,(A3)+"
+    },
+    {
+      "upstream_line": 1123,
+      "original": "BLT \tMORE1",
+      "restored": "BLT.S\tMORE1"
+    },
+    {
+      "upstream_line": 1138,
+      "original": "BGT \tMORE2",
+      "restored": "BGT.S\tMORE2"
+    },
+    {
+      "upstream_line": 1140,
+      "original": "ADD \t#1,D0",
+      "restored": "ADDQ\t#1,D0"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 1904,
+    "checked_entry_points": 8,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-drawarc-verify",
+    "temporary_verifier": "/tmp/verify-shapes.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "90c8f51e96f0fb3257a17c58e9b39dda97d9a482b26df6a9170fb2f4b5a0b786",
+    "assembled_sha256": "bbdb627821ba967d86613a03a73a8efdd924115e2cbba01ffb8f18e821a37067",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "original_data_spans": [
+    {
+      "label": "MODEMAP",
+      "start": "0x40b0e8",
+      "end_exclusive": "0x40b0f0",
+      "length": 8
+    },
+    {
+      "label": "RECTJMP",
+      "start": "0x40b662",
+      "end_exclusive": "0x40b66a",
+      "length": 8
+    }
+  ]
+}

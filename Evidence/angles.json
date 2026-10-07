@@ -1,0 +1,165 @@
+{
+  "module": "QuickDraw/Angles.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Angles.a",
+  "source_sha256": "7d13980806266669456769799fec39c30aa7d55546c8aa2b1aaa75a242b76f44",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/Angles.m.a",
+    "sha256": "ccda143511bbabed1f25d0d47a84eb9067945abb200475317b29df901526a939",
+    "instruction_lines": [
+      35,
+      321
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        175
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40b790",
+      "end_address_exclusive": "0x40b982",
+      "rom_offset": "0xb790",
+      "length": 498,
+      "sha256": "e8bae6dc32af40b388bba8d1119531bb0fc3f2d487a9d49f72f0db494a319b2d",
+      "first_symbol": "AngleFromSlope",
+      "last_symbol": "PtToAngle"
+    }
+  ],
+  "symbols": {
+    "AngleFromSlope": "0x40b790",
+    "SlopeFromAngle": "0x40b7ce",
+    "SLOPE": "0x40b83c",
+    "PtToAngle": "0x40b8f2"
+  },
+  "manifest_entry": {
+    "name": "angles",
+    "source": "Reconstruction/Source/QuickDraw/Angles.a",
+    "start": "0x40b790",
+    "end_exclusive": "0x40b982",
+    "entry_points": {
+      "AngleFromSlope": "0x40b790",
+      "SlopeFromAngle": "0x40b7ce",
+      "SLOPE": "0x40b83c",
+      "PtToAngle": "0x40b8f2"
+    }
+  },
+  "external_routines": {},
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable Angles.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC indexing explicit for both accesses to the SLOPE table."
+    },
+    {
+      "kind": "data",
+      "description": "Preserved all 210 slope-table bytes as their original DC.B and DC.W definitions."
+    },
+    {
+      "kind": "traps",
+      "description": "Defined the existing _MFixRatio and _MFixMul calls as the ROM trap words $A869 and $A868."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 49,
+      "original": "LEA \tCONTINUE,A0",
+      "restored": "LEA\tCONTINUE(PC),A0"
+    },
+    {
+      "upstream_line": 51,
+      "original": "SCAN\tADD.W\t#1,D1",
+      "restored": "SCAN\tADDQ.W\t#1,D1"
+    },
+    {
+      "upstream_line": 94,
+      "original": "ADD \t#1,(SP)",
+      "restored": "ADDQ\t#1,(SP)"
+    },
+    {
+      "upstream_line": 97,
+      "original": "MOVE.B\tSLOPE-91(D0),1(SP)",
+      "restored": "MOVE.B\tSLOPE-91(PC,D0),1(SP)"
+    },
+    {
+      "upstream_line": 101,
+      "original": "MOVE.W\tSLOPE(D0),2(SP)",
+      "restored": "MOVE.W\tSLOPE(PC,D0),2(SP)"
+    },
+    {
+      "upstream_line": 309,
+      "original": "JSR \tAngleFromSlope",
+      "restored": "JSR\tAngleFromSlope(PC)"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 498,
+    "checked_entry_points": 4,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-angles-verify",
+    "temporary_verifier": "/tmp/verify-shapes.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "7d13980806266669456769799fec39c30aa7d55546c8aa2b1aaa75a242b76f44",
+    "assembled_sha256": "e8bae6dc32af40b388bba8d1119531bb0fc3f2d487a9d49f72f0db494a319b2d",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "original_data_spans": [
+    {
+      "label": "SLOPE upper bytes",
+      "start": "0x40b820",
+      "end_exclusive": "0x40b83c",
+      "length": 28
+    },
+    {
+      "label": "SLOPE",
+      "start": "0x40b83c",
+      "end_exclusive": "0x40b8f2",
+      "length": 182
+    }
+  ]
+}

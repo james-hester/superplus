@@ -1,0 +1,185 @@
+{
+  "module": "Toolbox/FontMgrInit.a",
+  "source_path": "Reconstruction/Source/Toolbox/FontMgrInit.a",
+  "source_sha256": "aba3ea0dbf29040e8b2903ea485a7e69dca7a2e3886592687709725e7dc7bd53",
+  "upstream_sources": [
+    {
+      "path": "Toolbox/FontMgr/FontMgr.a",
+      "sha256": "077207f83069325cf98e8c56b6a817b7c36b10d185e291bec5af154b311f0532",
+      "header_lines": [
+        1,
+        31
+      ],
+      "history_reference_lines": [
+        487,
+        498
+      ]
+    },
+    {
+      "path": "Toolbox/FontMgr/FontMgrPatch.a",
+      "sha256": "208801a737d3d036da6aeb64cb1b9b5ab4128de865114a06f959a230624d4c6b",
+      "routine_reference_ranges": [
+        [
+          196,
+          332
+        ],
+        [
+          368,
+          388
+        ]
+      ],
+      "copied_equate_lines": [
+        149,
+        174
+      ]
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "copied_line_ranges": [
+        [
+          209,
+          229
+        ],
+        [
+          735,
+          745
+        ]
+      ],
+      "restored_default_size_line": 210
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        1042,
+        1215,
+        1349
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "copied_lines": [
+        228
+      ]
+    },
+    {
+      "path": "Internal/Asm/ColorEqu.a",
+      "sha256": "028ace54d87dd5711fa6a13d176e85fb4cf32b92f79ae91dc989479d1e3259ac",
+      "copied_lines": [
+        385
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40e5e4",
+      "end_address_exclusive": "0x40e6ce",
+      "rom_offset": "0xe5e4",
+      "length": 234,
+      "sha256": "e62269831a7c131b4d46e28fadff6d62554b891fff599365751bddcccc3209e2",
+      "first_symbol": "InitFonts",
+      "last_symbol": "FMSwapFontEntry"
+    }
+  ],
+  "symbols": {
+    "InitFonts": "0x40e5e4",
+    "CantAllocWTab": "0x40e67e",
+    "InValWidths": "0x40e682",
+    "InvalWidthTab": "0x40e6b0",
+    "FMSwapFont": "0x40e6c0",
+    "FMSwapFontEntry": "0x40e6c6"
+  },
+  "manifest_entry": {
+    "name": "fontmgr-init",
+    "source": "Reconstruction/Source/Toolbox/FontMgrInit.a",
+    "start": "0x40e5e4",
+    "end_exclusive": "0x40e6ce",
+    "entry_points": {
+      "InitFonts": "0x40e5e4",
+      "CantAllocWTab": "0x40e67e",
+      "InValWidths": "0x40e682",
+      "InvalWidthTab": "0x40e6b0",
+      "FMSwapFont": "0x40e6c0",
+      "FMSwapFontEntry": "0x40e6c6"
+    }
+  },
+  "external_routines": {
+    "SetScreenDevice": "0x40eeac",
+    "GetFontHandle": "0x40ec92"
+  },
+  "fallthrough_at_end": {
+    "address": "0x40e6ce",
+    "description": "FMSwapFontEntry continues into the FMSwapFont body."
+  },
+  "remaining_font_manager_span": {
+    "start": "0x40e6ce",
+    "end_exclusive": "0x40f0c0",
+    "length": 2546
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Reconstructed InitFonts, InValWidths, the FMSwapFont dispatch wrapper, and its output-record setup in ROM order. Preserved the descriptive FontMgr.a header and applicable FontMgrPatch.a routine comments."
+    },
+    {
+      "kind": "restoration",
+      "description": "InitFonts preserves D3, invalidates CurFMFamily and the FOND cache, and loads the system font through GetFontHandle. It combines SysFontFam and SysFontSize, substitutes size 12 when needed, and retries with Chicago 12 when the requested system font is absent."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored FMDefaultSize as a word at $986. The later ToolUtils.a defines a byte at $987 and uses the preceding byte for GotStrike."
+    },
+    {
+      "kind": "restoration",
+      "description": "Retained the older memory-size check before allocating the extra width-table list. The system heap allocation traps use the SYS flag; the list allocation also uses CLEAR."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored the trap-address comparison during InitFonts. If the FMSwapFont trap still points to the ROM wrapper, JSwapFont receives the internal entry address. Otherwise it retains the current trap address."
+    },
+    {
+      "kind": "restoration",
+      "description": "InValWidths masks the high flag byte from WidthListHand, scans its handles with A0 and A1, and invalidates the current width table directly. It omits the later FOND-state restoration, CurFMFamily assignment, and shared dereference routine."
+    },
+    {
+      "kind": "restoration",
+      "description": "The FMSwapFont wrapper pushes JSwapFont and returns through that address. FMSwapFontEntry places the output-record address in the caller result slot, then continues into the next ROM routine. FMSwapFontEntry is a reconstruction label."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the width-table layout, low-memory globals, and trap-number equates from the released sources. Added the two verified external routine addresses and named the flagged allocation trap words explicitly."
+    },
+    {
+      "kind": "scope",
+      "description": "The remaining Font Manager interval is $40E6CE through $40F0BF, or 2,546 bytes. It contains the FMSwapFont body, font selection, scaling helpers, screen initialization, and tables. The separate FontMgr.a file begins with GetFontName at $40F0C0."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 234,
+    "checked_entry_points": 6,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-fontmgr-init-verify",
+    "temporary_verifier": "/tmp/verify-fontmgr-init.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "aba3ea0dbf29040e8b2903ea485a7e69dca7a2e3886592687709725e7dc7bd53",
+    "assembled_sha256": "e62269831a7c131b4d46e28fadff6d62554b891fff599365751bddcccc3209e2",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

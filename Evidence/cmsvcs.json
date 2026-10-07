@@ -1,0 +1,302 @@
+{
+  "module": "CMSVCS",
+  "source": "Reconstruction/Source/OS/HFS/CMSVCS.a",
+  "originals": [
+    {
+      "path": "OS/HFS/CMSVCS.a",
+      "sha256": "eebc64f3e3491acc1c698dd6cf6630656a1b6157ccb4259cee68c8d3bd47c262",
+      "line_ranges": [
+        [
+          1,
+          1082
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/CMMAINT.a",
+      "sha256": "29a4ae2a1dd258af0fa7633ab445317a79db58843f137aebedc3e71d4b1184d9",
+      "line_ranges": [
+        [
+          1,
+          123
+        ]
+      ],
+      "role": "BuildKey establishes the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          192,
+          193
+        ],
+        [
+          202,
+          205
+        ],
+        [
+          406,
+          407
+        ],
+        [
+          413,
+          415
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          427,
+          429
+        ],
+        [
+          436,
+          439
+        ],
+        [
+          444,
+          444
+        ],
+        [
+          450,
+          452
+        ],
+        [
+          462,
+          462
+        ],
+        [
+          464,
+          464
+        ],
+        [
+          471,
+          472
+        ],
+        [
+          479,
+          480
+        ],
+        [
+          485,
+          487
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          278,
+          278
+        ],
+        [
+          289,
+          289
+        ],
+        [
+          317,
+          319
+        ],
+        [
+          330,
+          330
+        ],
+        [
+          332,
+          333
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          499,
+          499
+        ],
+        [
+          814,
+          814
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          362,
+          362
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          215,
+          215
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x406044",
+      "end_exclusive": "0x4065d8",
+      "rom_offset": "0x6044",
+      "length": 1428,
+      "sha256": "e551e29d834cda20fd15577cc50343beed9d1bfd5f4645c40a319b400c5ed06f",
+      "start_label": "CMSvcs",
+      "end_label": "CMSVCSEnd",
+      "boundary_evidence": "CMCreateCN begins after the FXM return at 0x406044. UpdRtCnts returns at 0x4065d6. BuildKey starts CMMAINT at 0x4065d8."
+    }
+  ],
+  "entry_points": {
+    "CMSvcs": "0x406044",
+    "CMCreateCN": "0x406044",
+    "CMDeleteCN": "0x40618a",
+    "CMGetCN": "0x406238",
+    "CMGetOff": "0x406258",
+    "CMMoveCN": "0x4062bc",
+    "CMRenameCN": "0x406462",
+    "CMUpdateCN": "0x40656c",
+    "CMSetUp": "0x4065a0",
+    "vCMSetUp": "0x4065a6",
+    "UpdVCnts": "0x4065ae",
+    "UpdRtCnts": "0x4065be",
+    "CMSVCSEnd": "0x4065d8"
+  },
+  "integration_manifest": {
+    "name": "cmsvcs",
+    "source": "Reconstruction/Source/OS/HFS/CMSVCS.a",
+    "start": "0x406044",
+    "end_exclusive": "0x4065d8",
+    "entry_points": {
+      "CMSvcs": "0x406044",
+      "CMCreateCN": "0x406044",
+      "CMDeleteCN": "0x40618a",
+      "CMGetCN": "0x406238",
+      "CMGetOff": "0x406258",
+      "CMMoveCN": "0x4062bc",
+      "CMRenameCN": "0x406462",
+      "CMUpdateCN": "0x40656c",
+      "CMSetUp": "0x4065a0",
+      "vCMSetUp": "0x4065a6",
+      "UpdVCnts": "0x4065ae",
+      "UpdRtCnts": "0x4065be",
+      "CMSVCSEnd": "0x4065d8"
+    }
+  },
+  "changes": [
+    {
+      "location": "CMDeleteCN, CMMoveCN, and CMRenameCN",
+      "change": "Removed the file-thread operations integrated from FileMgrPatches in April 1992. Directory thread operations remain.",
+      "evidence": "CMDeleteCN branches directly to DCDelete for files at 0x4061b0. It processes thread records only for directories and returns any thread deletion error. CMMoveCN and CMRenameCN likewise skip thread updates for files."
+    },
+    {
+      "location": "Catalog mutation exits",
+      "change": "Restored MarkVCBTime calls in the creation, deletion, move, rename, and update exits.",
+      "evidence": "The calls at 0x406174, 0x406222, 0x40644c, 0x406556, and 0x40658a target 0x402d20. This updates the volume modification date before CMFlush; the later source calls MarkVCB at 0x402d1e."
+    },
+    {
+      "location": "Source provenance and build forms",
+      "change": "Preserved the original header, applicable history, and comments. Added original equates, the BlockMove opcode, and external routine addresses. Made call addressing and branch sizes explicit.",
+      "evidence": "All 1428 bytes and 13 labels match. RCDelOld uses a word branch at 0x406516, and CMUpdateCN uses a word CMSetUp call at 0x406572."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "BTGetRecord",
+      "address": "0x406928"
+    },
+    {
+      "name": "BTDelete",
+      "address": "0x40671c"
+    },
+    {
+      "name": "BTInsert",
+      "address": "0x4069ea"
+    },
+    {
+      "name": "BTSearch",
+      "address": "0x406d4a"
+    },
+    {
+      "name": "BTUpdate",
+      "address": "0x406dd6"
+    },
+    {
+      "name": "BuildKey",
+      "address": "0x4065d8"
+    },
+    {
+      "name": "CMFlush",
+      "address": "0x406606"
+    },
+    {
+      "name": "LocCNode",
+      "address": "0x406678"
+    },
+    {
+      "name": "LocCRec",
+      "address": "0x406698"
+    },
+    {
+      "name": "UpdCName",
+      "address": "0x4066c2"
+    },
+    {
+      "name": "MarkVCBTime",
+      "address": "0x402d20"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x406044, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "1522a2743de835a27a9a58f9af9d709491a1b35e5129282180cd94cb5a2128cb",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/CMSVCS.a",
+        "sha256": "1522a2743de835a27a9a58f9af9d709491a1b35e5129282180cd94cb5a2128cb"
+      }
+    ],
+    "assembled_length": 1428,
+    "matched_bytes": 1428,
+    "entry_points_checked": 13,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

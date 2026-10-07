@@ -1,0 +1,423 @@
+;
+;	File:		Clock.a
+;
+;	Contains:	This file contains routines to directly access the clock.
+;
+;	Copyright:	© 1985-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Copyright © 1982-1993 by Apple Computer, Inc.  All rights reserved.
+;
+*R This module restores the clock and PRAM span in the
+*R Mac Plus version 3 ROM. OS/SysUtil.a retains InitUtil and the API comments.
+*R OS/Clock.a and ClockPRAMPrimitives.a retain later versions of the clock code.
+*R The ROM determines the earlier register interfaces, loops, command encoding,
+*R default values, and procedure order. Newly restored bodies and helper names
+*R are reconstruction work. Applicable original comments and history remain.
+*R See Reconstruction/Evidence/clock.json for provenance and verification.
+;
+*R Applicable history from OS/Clock.a follows.
+;
+;				 2/19/86	BBM		Made some modifications to work under MPW
+;				10/31/85	BBM		arithmetic done wrong in Read/WriteXPRam.
+;				10/30/85	LAK		No longer call ReadPram after extended read/write. Use jump
+;									table vector rather than GetTrapAddress.
+;				10/29/85	BBM		needed to save one more register across ClkNoMem call.
+;				10/25/85	RDC		Removed MidMac equate for clock routines (now moved to
+;									startmain)
+;				10/23/85	BBM		Changed calling interface to ReadXPRam and WriteXPRam. Also now
+;									checks if new clock chip present before executing ReadXPRam and
+;									WriteXPRam.
+;				 10/3/85	so		these routines can be called from the start code (before memory
+;									test). This is done via three macros: RTS5, BSR6 and RTS6. Also
+;									supported is the extended command for reads and writes to the
+;									new clock chip for mac. The entry for the lowest level routine
+;									just added is ClkNoMem, and it is accessed via BSR5. Added two
+;									new traps to access all of extra parameter ram, ReadXPRam and
+;									WriteXPRam.
+;				 10/2/85	BBM		made the lowest level routines not use any memory (like the
+;									stack),
+*R Applicable history from OS/SysUtil.a follows.
+;
+;				 2/19/86	BBM		Made some modifications to work under MPW
+;				10/30/85	LAK		Incorporated init of new parameter RAM into InitUtil. Set bit 5
+;									(13) of Hardware vector if parameter RAM was valid at boot.
+;				 10/3/85	BBM		added three new Defs for new clock.text
+;				 7/24/85	RDC		Deleted ClkRW routine (moved to new Clock.text) Changed BSR to
+;									JSR for ref's to ClkRW routine
+;				  6/7/85	JTC		Modified to return long to OS dispatcher. <07Jun85>
+
+		EXPORT WriteXPRam ;]
+
+        BLANKS ON
+        STRING ASIS
+        MACHINE MC68000
+
+*R These equates name command fields.
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+RTCRead EQU $80 ;]
+RTCRegister EQU $01 ;]
+RTCWriteProtect EQU (13<<2)+RTCRegister ;]
+RTCTest EQU (12<<2)+RTCRegister ;]
+RTCProtectPattern EQU $55 ;]
+RTCReadExtended EQU $17 ;]
+RTCWriteExtended EQU $07 ;]
+
+; the following are lower-level routines which actually access the clock chip
+
+;_______________________________________________________________________
+;
+; Routine:		ReadPram
+;
+; Arguments:	A1 (input)  -- pointer to buffer where 20 bytes are placed
+;				all regs preserved
+;
+; Function: 	All 20 bytes clock pram are read into buffer.
+;
+; Notes:		Disables VIA interrupts for long periods of time (60 usec).
+;_______________________________________________________________________
+
+ReadPram PROC EXPORT ;]
+        MOVEM.L D1-D2/D5/A1,-(SP) ;]
+        MOVEQ #RTCRead+(16<<2)+RTCRegister-256,D1 ;]
+        MOVEQ #16-1,D5 ;]
+        BSR.S ReadPramLoop ;]
+        MOVEQ #RTCRead+(8<<2)+RTCRegister-256,D1 ;]
+        MOVEQ #4-1,D5 ;]
+        BSR.S ReadPramLoop ;]
+        MOVEM.L (SP)+,D1-D2/D5/A1 ;]
+        RTS
+
+ReadPramLoop JSR ClkRW ;]
+        MOVE.B D2,(A1)+
+        ADDQ.B #4,D1
+        DBRA D5,ReadPramLoop ;]
+        RTS
+
+;  original 20-byte parameter RAM initialization values
+;
+*R The ROM retains zero mouse tracking and cache defaults.
+*R The expressions below preserve the earlier field values in the source format.
+PRAMInit DC.B $A8                ; old PRAM validity byte
+        DC.B 0                  ; AppleTalk node ID hint for modem port
+        DC.B 0                  ; AppleTalk node ID hint for printer port
+        DC.B (0<<4)+(0<<0)       ; serial port usage = neither port in use
+        DC.W (3<<14)+(0<<12)+(3<<10)+(10<<0) ;] 2 stop bits, no parity, 8 data bits, 9600 baud
+        DC.W (3<<14)+(0<<12)+(3<<10)+(10<<0) ;] 2 stop bits, no parity, 8 data bits, 9600 baud
+        DC.L 0                  ; alarm time (midnight, January 1, 1904)
+        DC.W Geneva-1           ; application font number - 1
+        DC.B ((24/4)<<4)+(6/2)   ; auto-key threshold = 24 ticks; auto-key rate = 6 ticks
+        DC.B 0                  ; printer connection = 0 (printer port)
+        DC.B (0<<7)+(0<<3)+3     ;] alarm disabled, zero tracking field, speaker volume 3
+        DC.B ((32/4)<<4)+(32/4)  ; double-click time = 32 ticks; caret-blink time = 32 ticks
+        DC.B 0                  ; ram cache size in 32K blocks
+        DC.B (0<<7)+(1<<6)+(0<<5)+(0<<4)+(3<<2) ;] mouse scaling on, cache off, internal boot, menu blink 3
+
+
+;_______________________________________________________________________
+;
+; Routine:		InitUtil
+;
+; Arguments:	D0 (output) -- result code (0 if clock was already initialized)
+;
+; Function: 	The clock ram and time are read and stored in the low-memory
+;				buffer used by the clock utility routines.
+;_______________________________________________________________________
+
+*R If the validity byte is not $A8, InitUtil restores
+*R SysParam defaults. It reads the time without resetting it.
+
+InitUtil PROC EXPORT ;]
+        CLR.W -(SP)             ; assume no reset of PRam values
+        BSR WrProtOff ;]
+        MOVEQ #RTCTest,D1 ;]
+        CLR.B D2
+        JSR ClkRW ;]
+        BSR WrProtOn ;]
+			LEA 	SysParam,A1 			; where parameter ram is read to
+			BSR.S	ReadPram				; read parameter ram and
+			BSR.S	ReadTime				; time into SysParam and Time
+
+			MOVEQ	#0,D0					; assume valid clock data
+			CMP.B	#$A8,(A1)				; is the clock data valid?
+			BEQ.S	CkNewPram				; branch if so
+			MOVE.W	#PRInitErr,(SP) 		; report non-zero result						<30Oct85> LAK
+
+			MOVEQ	#4,D1
+			LEA 	PramInit,A0	; point to initial values
+@1			MOVE.L	(A0)+,(A1)+ 			; set parameter ram to initial values
+			DBRA	D1,@1
+
+			BSR 	WritePram				; and put initial values into clk chip
+
+CkNewPram	BTST	#6,HWCfgFlags			; new clock chip present?						<30oct85> BBM
+			BEQ.S	ClkXit					; exit if not									<30oct85> BBM
+			LEA 	GetParam,A0 			; get pointer to useful buffer					<30oct85> BBM
+
+			MOVE.L	#$4000C,D0				; Command to read 4 bytes at addr C 			<30oct85> BBM
+			_ReadXPRam						;												<30oct85> BBM
+
+; put validity bytes into D1
+			MOVE.L	#'Bugs',D1 ;]
+
+			CMP.L	(A0),D1 				; is the extra parameter ram valid? 			<30oct85> BBM
+			BEQ.S	ClkXit					; exit if so									<30oct85> BBM
+
+			MOVE.W	#PRInitErr,(SP) 		; report non-zero result						<30Oct85> LAK
+			MOVE.L	D1,(A0) 				; store out true validity bytes 				<30oct85> BBM
+			MOVE.L	#$4000C,D0				; Command to write 4 bytes at addr C			<30oct85> BBM
+			_WriteXPRam 					;												<30oct85> BBM
+
+			MOVEQ	#32,D1					; starting address to clear out XPRam			<30oct85> BBM
+@0			MOVEQ	#4,D0					; number of bytes to write
+			SWAP	D0						; finish the command byte						<30oct85> BBM
+			MOVE.W	D1,D0					; get the current address in XPRam				<30oct85> BBM
+			CLR.L	(A0)					; clear out the buffer							<30oct85> BBM
+			_WriteXPRam 					;
+			ADDQ.B	#4,D1					; get the next address to write to ...			<30oct85> BBM
+											; we want wrap at 256!!!!						<30oct85> BBM
+			CMP.B	#8,D1					; Check if we wrote the last address			<30oct85> BBM
+			BNE.S	@0						; if not loop back untill we are done			<30oct85> BBM
+
+ClkXit		MOVE.W	(SP)+,D0				; pass back error code							<30oct85> LAK
+			BNE.S	@1						; br if we had to reset clock/pram				<30oct85> LAK
+			BSET	#5,HWCfgFlags			; note the good values							<30oct85> LAK
+@1			EXT.L	D0						; OS errors are long							<30oct85> LAK
+			RTS
+;
+; Routine:	ReadTime
+;
+; Inputs:	none
+;
+; Outputs:	D0	-	result code
+;			"Time" contains the 32-bit time value read from the clock
+;
+; Trashes:	8 bytes at "GetParam"
+;
+; Function:	reads the time from the realtime clock
+;________________________________________________________________________________________
+
+ReadTime PROC EXPORT ;]
+        MOVEM.L D1-D2/D4-D5/A2-A3,-(SP) ;]
+        MOVEQ #2-1,D4           ; try reading twice in case the time rolls over
+        MOVEQ #0,D0
+RetryRead MOVEQ #RTCRead+(7<<2)+RTCRegister-256,D1 ;]
+        MOVEQ #8-1,D5 ;]
+; use clock utility storage
+        LEA GetParam,A2 ;]
+        MOVE.L A2,A3
+ReadByte
+ JSR ClkRW ;]
+        MOVE.B D2,(A2)+
+        SUBQ.B #4,D1 ;]
+        DBRA D5,ReadByte ;]
+        CMPM.L (A3)+,(A3)+ ;]
+        BEQ.S ReadDone ;]
+        DBRA D4,RetryRead ;]
+        MOVEQ #ClkRdErr,D0      ; note the problem
+ReadDone ;]
+ MOVE.L GetParam,Time
+        MOVEM.L (SP)+,D1-D2/D4-D5/A2-A3 ;]
+        TST.L D0
+        RTS
+
+
+;________________________________________________________________________________________
+;
+; Routine:	WriteTime
+;
+; Inputs:	"Time" contains the 32-bit time value to write to the clock
+;
+; Outputs:	D0	-	result code:	 0 = no error
+*R D0 returns zero, ClkRdErr (-85), or ClkWrErr (-86).
+;
+; Trashes:	8 bytes at "GetParam"
+;
+*R WriteTime retries the complete write and verification
+*R when the time read back differs. ReadTime can retry its own pair of reads.
+;________________________________________________________________________________________
+
+WriteTime PROC EXPORT ;]
+        MOVEM.L D1-D5,-(SP) ;]
+        BSR.S WrProtOff ;]
+        MOVE.L Time,D3          ; get the time to write
+        MOVEQ #2-1,D5           ; give it two tries
+RetryWrite ;]
+ MOVE.L D3,D2
+        MOVEQ #RTCRegister,D1 ;]
+        MOVEQ #4-1,D4
+WriteByte JSR ClkRW ;]
+        ADDQ.B #4,D1            ; address the next register
+        LSR.L #8,D2
+        DBRA D4,WriteByte ;]
+        BSR.S ReadTime
+        BNE.S WriteDone ;]
+        CMP.L Time,D3           ; do they match?
+        BEQ.S WriteDone ;]
+        DBRA D5,RetryWrite ;]
+        MOVEQ #ClkWrErr,D0      ; note the error
+WriteDone BSR.S WrProtOn ;]
+        MOVEM.L (SP)+,D1-D5 ;]
+        RTS
+
+*R These descriptions and command comments come from RTCWrProtOn and
+*R RTCWrProtOff in OS/IoPrimitives/ClockPRAMPrimitives.a.
+*R The Plus helpers return through the stack and change only D1 and D2.
+*R ClkRW preserves the other registers that the later RTC routines change.
+;
+;________________________________________________________________________________________
+;
+;] Routine:	WrProtOn						[RTC utility routine]
+;
+; Inputs:	none
+;
+; Outputs:	none
+;
+;] Trashes:	D1,D2
+;
+; Function:	write-protects RTC-based PRAM when we're done modifying it
+;________________________________________________________________________________________
+
+WrProtOn PROC ;]
+; use 'set write protect' command
+        MOVEQ #RTCWriteProtect,D1 ;]
+        MOVEQ #(1<<7)+RTCProtectPattern-256,D2 ;]
+        JMP ClkRW	;] write it to the clock chip
+
+
+;________________________________________________________________________________________
+;
+;] Routine:	WrProtOff						[RTC utility routine]
+;
+; Inputs:	none
+;
+; Outputs:	none
+;
+;] Trashes:	D1,D2
+;
+; Function:	write-enables RTC-based PRAM so we can write bytes to it
+;________________________________________________________________________________________
+
+WrProtOff PROC ;]
+; use 'reset write protect' command
+        MOVEQ #RTCWriteProtect,D1 ;]
+        MOVEQ #RTCProtectPattern,D2 ;]
+        JMP ClkRW	;] write it to the clock chip
+
+;_______________________________________________________________________
+;
+; Routine:		WritePram
+;
+; Arguments:	  SysParam contains the 20 bytes to write.
+;				  all regs preserved
+;
+; Function: 	Writes all 20 bytes of parameter ram from SysParam.
+;
+; Notes:		disables VIA interrupts for long periods of time (60 usec)
+;				no verification of write data is done
+;_______________________________________________________________________
+
+WritePram PROC EXPORT ;]
+        MOVEM.L D1-D3/A2,-(SP) ;]
+        BSR.S WrProtOff ;]
+        LEA SysParam,A2 ;]
+        MOVE.B #(16<<2)+RTCRegister,D1 ;]
+        MOVEQ #16-1,D3
+        BSR.S WritePramLoop ;]
+        MOVE.B #(8<<2)+RTCRegister,D1 ;]
+        MOVEQ #4-1,D3
+        BSR.S WritePramLoop ;]
+        BSR.S WrProtOn ;]
+        MOVEM.L (SP)+,D1-D3/A2 ;]
+        RTS
+
+WritePramLoop ;]
+ MOVE.B (A2)+,D2
+        JSR ClkRW ;]
+        ADDQ.B #4,D1
+        DBRA D3,WritePramLoop ;]
+        RTS
+
+*R ClkRW calls the low-memory clock vector with a return
+*R address in A5. It preserves SR and the registers saved below.
+ClkRW PROC ;]
+        MOVE SR,-(SP)
+        MOVEM.L D1/D3-D6/A0-A1/A5-A6,-(SP) ;]
+        LEA ClkReturn,A5 ;]
+        MOVE.L JClkNoMem,A0 ;]
+        JMP (A0)
+ClkReturn MOVEM.L (SP)+,D1/D3-D6/A0-A1/A5-A6 ;]
+        MOVE (SP)+,SR
+        RTS
+
+*R SetupXPram splits the packed count and address in D0.
+SetupXPram PROC ;]
+        MOVE.L A0,A1
+        MOVEQ #3-1,D3
+        MOVE D0,D4
+        SWAP D0
+        MOVE D0,D5
+        SUBQ #1,D5
+        RTS
+
+
+;________________________________________________________________________________________
+;
+; Routine:	ReadXPRAM, WriteXPRAM
+;
+; Inputs:	A0	-	pointer to caller's buffer
+;			D0	-	[number of bytes to transfer][starting PRAM address]
+; Outputs:	D0	-	result code
+;
+; Trashes:	none
+;
+; Function:	reads or writes extended PRAM bytes into the caller's buffer
+;________________________________________________________________________________________
+ReadXPRam PROC EXPORT ;]
+        MOVEM.L D1-D5/A1,-(SP) ;]
+        BSR.S SetupXPram ;]
+        MOVEQ #RTCReadExtended,D0 ;]
+        BRA.S rwXCommon
+
+WriteXPRam
+        MOVEM.L D1-D5/A1,-(SP) ;]
+        BSR.S SetupXPram ;]
+        JSR WrProtOff ;]
+        MOVEQ #RTCWriteExtended,D0 ;]
+
+rwXCommon BTST #6,HWCfgFlags     ; new clock chip present?
+        BEQ.S rwXPRAMErr ;]
+EncodeHigh LSL.B #1,D4 ;]
+        ROXL #1,D0
+        DBRA D3,EncodeHigh ;]
+        LSL #1,D0
+        MOVEQ #7-1,D3 ;]
+EncodeLow LSL.B #1,D4 ;]
+        ROXL #1,D0
+        DBRA D3,EncodeLow ;]
+TransferByte ;]
+ MOVE D0,D1
+        ROR #8,D1
+        MOVE.B (A1),D2
+        BSR.S ClkRW ;]
+        MOVE.B D2,(A1)+
+        OR.B #$80,D0 ;]
+        ADDQ #4,D0
+        AND #$BFFF,D0 ;]
+        OR #$3800,D0 ;]
+        DBRA D5,TransferByte ;]
+        JSR WrProtOn ;]
+        MOVEQ #0,D0             ; return "no error"
+XPramReturn ;]
+        MOVEM.L (SP)+,D1-D5/A1
+        RTS
+rwXPRAMErr ;]
+ MOVEQ #PRWrErr,D0     ; no extended PRAM so just return an error
+        BRA.S XPramReturn ;]
+
+ClockEnd ;]
+        END

@@ -1,0 +1,308 @@
+{
+  "module": "OS/MouseInterrupt.a",
+  "source_path": "Reconstruction/Source/OS/MouseInterrupt.a",
+  "source_sha256": "92962ce084a86d42c89fea18f6fe050e758c59e50783dc15e256b3851c765e60",
+  "upstream_sources": [
+    {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "sha256": "18ba00f320b95b734f820cf88b11844bf3c7263a5ebcf0d9a29e01388d5e5313"
+    },
+    {
+      "path": "OS/InterruptHandlers.a",
+      "sha256": "67eb951bf54a8a019100c0d9e81997a914f920f59520ff5400b3f74718e44e19"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      7,
+      9
+    ],
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      52,
+      52
+    ],
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      71,
+      71
+    ],
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      136,
+      136
+    ]
+  ],
+  "retained_routine_comments": {},
+  "retained_body_comments": {},
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        1229,
+        1237,
+        1254
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "copied_lines": [
+        612,
+        613
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401bd8",
+      "end_address_exclusive": "0x401c2a",
+      "rom_offset": "0x1bd8",
+      "length": 82,
+      "sha256": "821d6a4a440b398b798a5781541a67a66878a725e73ba9d4bb086362423f5114"
+    }
+  ],
+  "manifest_entry": {
+    "name": "mouse-interrupt",
+    "source": "Reconstruction/Source/OS/MouseInterrupt.a",
+    "start": "0x401bd8",
+    "end_exclusive": "0x401c2a",
+    "entry_points": {
+      "MH1Int": "0x401bd8",
+      "MV1Int": "0x401c00",
+      "MouseLeft": "0x401bf4",
+      "MouseDown": "0x401c1e"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "mouse-interrupt",
+      "source": "Reconstruction/Source/OS/MouseInterrupt.a",
+      "start": "0x401bd8",
+      "end_exclusive": "0x401c2a",
+      "entry_points": {
+        "MH1Int": "0x401bd8",
+        "MV1Int": "0x401c00",
+        "MouseLeft": "0x401bf4",
+        "MouseDown": "0x401c1e"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "The horizontal mouse receiver starts at $401BD8, immediately after the VBL interrupt span.",
+    "end": "The vertical receiver ends with RTS at $401C28, immediately before VInstall at $401C2A."
+  },
+  "edits": [
+    {
+      "kind": "missing_body_restoration",
+      "description": "Restored both mouse interrupt bodies from ROM instructions. The released CrsrCore.a history records their move to IntHnd in July 1985. The surviving InterruptHandlers.a describes their external-status dispatch slots but no longer contains these bodies."
+    },
+    {
+      "kind": "symbol_restoration",
+      "description": "Used the historical MH1Int and MV1Int names. The horizontal and vertical coordinate updates establish their respective ROM addresses. Copied MTemp, CrsrCouple, CrsrNew, H, and V equates from released interfaces."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained the original cursor author, copyright, and mouse interrupt history comments. New notes distinguish the missing bodies from surviving source."
+    }
+  ],
+  "source_instruction_pairs": {},
+  "rom_only_instructions": [
+    {
+      "address": 4201432,
+      "op": "MOVE.B",
+      "operand": "$EFE1FE,D1",
+      "bytes": "123900efe1fe",
+      "rom_instruction": "moveb 0xefe1fe,%d1"
+    },
+    {
+      "address": 4201438,
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "bytes": "d040",
+      "rom_instruction": "addw %d0,%d0"
+    },
+    {
+      "address": 4201440,
+      "op": "EOR.W",
+      "operand": "D0,D1",
+      "bytes": "b141",
+      "rom_instruction": "eorw %d0,%d1"
+    },
+    {
+      "address": 4201442,
+      "op": "BTST",
+      "operand": "#4,D1",
+      "bytes": "08010004",
+      "rom_instruction": "btst #4,%d1"
+    },
+    {
+      "address": 4201446,
+      "op": "BEQ.S",
+      "operand": "MouseLeft",
+      "bytes": "670c",
+      "rom_instruction": "beqs 0x401bf4"
+    },
+    {
+      "address": 4201448,
+      "op": "ADDQ.W",
+      "operand": "#1,MTemp+H",
+      "bytes": "5278082a",
+      "rom_instruction": "addqw #1,0x82a"
+    },
+    {
+      "address": 4201452,
+      "op": "MOVE.B",
+      "operand": "CrsrCouple,CrsrNew",
+      "bytes": "11f808cf08ce",
+      "rom_instruction": "moveb 0x8cf,0x8ce"
+    },
+    {
+      "address": 4201458,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4201460,
+      "op": "SUBQ.W",
+      "operand": "#1,MTemp+H",
+      "bytes": "5378082a",
+      "rom_instruction": "subqw #1,0x82a"
+    },
+    {
+      "address": 4201464,
+      "op": "MOVE.B",
+      "operand": "CrsrCouple,CrsrNew",
+      "bytes": "11f808cf08ce",
+      "rom_instruction": "moveb 0x8cf,0x8ce"
+    },
+    {
+      "address": 4201470,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4201472,
+      "op": "MOVE.B",
+      "operand": "$EFE1FE,D1",
+      "bytes": "123900efe1fe",
+      "rom_instruction": "moveb 0xefe1fe,%d1"
+    },
+    {
+      "address": 4201478,
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "bytes": "d040",
+      "rom_instruction": "addw %d0,%d0"
+    },
+    {
+      "address": 4201480,
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "bytes": "d040",
+      "rom_instruction": "addw %d0,%d0"
+    },
+    {
+      "address": 4201482,
+      "op": "EOR.W",
+      "operand": "D0,D1",
+      "bytes": "b141",
+      "rom_instruction": "eorw %d0,%d1"
+    },
+    {
+      "address": 4201484,
+      "op": "BTST",
+      "operand": "#5,D1",
+      "bytes": "08010005",
+      "rom_instruction": "btst #5,%d1"
+    },
+    {
+      "address": 4201488,
+      "op": "BEQ.S",
+      "operand": "MouseDown",
+      "bytes": "670c",
+      "rom_instruction": "beqs 0x401c1e"
+    },
+    {
+      "address": 4201490,
+      "op": "SUBQ.W",
+      "operand": "#1,MTemp+V",
+      "bytes": "53780828",
+      "rom_instruction": "subqw #1,0x828"
+    },
+    {
+      "address": 4201494,
+      "op": "MOVE.B",
+      "operand": "CrsrCouple,CrsrNew",
+      "bytes": "11f808cf08ce",
+      "rom_instruction": "moveb 0x8cf,0x8ce"
+    },
+    {
+      "address": 4201500,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4201502,
+      "op": "ADDQ.W",
+      "operand": "#1,MTemp+V",
+      "bytes": "52780828",
+      "rom_instruction": "addqw #1,0x828"
+    },
+    {
+      "address": 4201506,
+      "op": "MOVE.B",
+      "operand": "CrsrCouple,CrsrNew",
+      "bytes": "11f808cf08ce",
+      "rom_instruction": "moveb 0x8cf,0x8ce"
+    },
+    {
+      "address": 4201512,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    }
+  ],
+  "restored_equates": {},
+  "restored_symbolic_operands": {
+    "4201448": "#1,MTemp+H",
+    "4201460": "#1,MTemp+H",
+    "4201490": "#1,MTemp+V",
+    "4201502": "#1,MTemp+V"
+  },
+  "retained_data": {},
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 82,
+    "checked_entry_points": 4,
+    "instruction_count": 23,
+    "source_operation_matches": 0,
+    "rom_only_operation_count": 23,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-mouse-interrupt-verify",
+    "source_sha256": "92962ce084a86d42c89fea18f6fe050e758c59e50783dc15e256b3851c765e60",
+    "assembled_sha256": "821d6a4a440b398b798a5781541a67a66878a725e73ba9d4bb086362423f5114",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "module": "Desk Manager",
+  "source": "Reconstruction/Source/Toolbox/DeskMgr.a",
+  "source_sha256": "c5091f2859bfd85ccf7a7bf9c4c4f4d904b153fa5c14a962d016739f50c90869",
+  "originals": [
+    {
+      "path": "Toolbox/DeskMgr/DeskMgr.a",
+      "sha256": "d4f8a325fda948ee6e9c910103b3ad2f820290c7bbb83053bd7c954dc5ed2e28",
+      "role": "Routine bodies, event table, historical revisions, and interface contracts."
+    },
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "role": "Driver fields, window fields, globals, trap words, and the immediate-call flag.",
+      "declaration_lines": [
+        281,
+        277,
+        178,
+        280,
+        278,
+        279,
+        282,
+        275,
+        276
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "role": "Driver fields, window fields, globals, trap words, and the immediate-call flag.",
+      "declaration_lines": [
+        686,
+        688,
+        689,
+        679,
+        690,
+        685,
+        687,
+        654,
+        656,
+        586,
+        588,
+        585,
+        739,
+        737,
+        741,
+        760,
+        740,
+        498,
+        701,
+        700
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "role": "Driver fields, window fields, globals, trap words, and the immediate-call flag.",
+      "declaration_lines": [
+        841,
+        309,
+        304,
+        355,
+        840,
+        754,
+        283,
+        275,
+        303
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "role": "Driver fields, window fields, globals, trap words, and the immediate-call flag.",
+      "declaration_lines": [
+        407,
+        408,
+        413,
+        652,
+        676,
+        685,
+        686,
+        691,
+        692,
+        910,
+        942,
+        1045,
+        1046,
+        1049,
+        1064,
+        268
+      ]
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 389,
+  "rom": {
+    "start": "0x415be0",
+    "end_exclusive": "0x415ecc",
+    "bytes": 748,
+    "sha256": "df658d31256a90b3676c4a51e5c4b2f71e9d4ddb77045918ec7cfe09e45558b3"
+  },
+  "changes": [
+    "SystemEvent retains the twelve-entry event table and the earlier unchecked FrontWindow result in IfTopWants. The later nil-window check is absent. The table uses a PC-relative address.",
+    "DiskHandler retains only the MountVol call and returns its result in the event message. The disk-eject event extensions added in September 1986 and the manual-eject handling added in 1993 are absent.",
+    "SystemClick keeps the DCE pointer in D3, reads the window variant from the high byte of WindowDef, and locks the loaded definition procedure by setting master-pointer bit seven. It clears the bit after the call. The later DCE handle, GetWVariant, HLock, and HUnlock paths are omitted.",
+    "SystemTask retains its driver timing loop and reentrancy lock. The later notification and balloon-help calls are absent. SystemMenu saves its registers before fetching the menu result and omits later help, keyboard, and input-method dispatch.",
+    "SystemEdit, OpenDeskAcc, CloseDeskAcc, driver-table lookup, driver messages, and window click handling retain their original bodies. The immediate Control trap is expressed as DC.W _Control+Immed, using the released trap word and flag equate. It emits $A204.",
+    "Five explicit short branches restore the original encodings. The original attribution, 1982\u20131985 histories, dispatch-table comments, and routine contracts remain. Two corrected comments identify the event range as 0\u201311 and the desk accessory return value as a reference number."
+  ],
+  "verification": {
+    "name": "deskmgr",
+    "source": "Reconstruction/Source/Toolbox/DeskMgr.a",
+    "source_sha256": "c5091f2859bfd85ccf7a7bf9c4c4f4d904b153fa5c14a962d016739f50c90869",
+    "start": "0x415be0",
+    "end_exclusive": "0x415ecc",
+    "bytes": 748,
+    "sha256": "df658d31256a90b3676c4a51e5c4b2f71e9d4ddb77045918ec7cfe09e45558b3",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Toolbox/DeskMgr.a",
+        "sha256": "c5091f2859bfd85ccf7a7bf9c4c4f4d904b153fa5c14a962d016739f50c90869"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "deskmgr",
+    "source": "Reconstruction/Source/Toolbox/DeskMgr.a",
+    "start": "0x415be0",
+    "end_exclusive": "0x415ecc",
+    "entry_points": {
+      "SystemEvent": "0x415be0",
+      "DeskMgrEnd": "0x415ecc",
+      "checkdeskhook": "0x415d12",
+      "closedeskacc": "0x415eb2",
+      "deskmgr": "0x415be0",
+      "diskhandler": "0x415c88",
+      "doclosehook": "0x415d6c",
+      "doitnow": "0x415dda",
+      "doneopendacc": "0x415eaa",
+      "donesclick": "0x415d06",
+      "donesedit": "0x415e60",
+      "donesevt": "0x415c20",
+      "donesm": "0x415e2e",
+      "donesysevt": "0x415c1c",
+      "dragclick": "0x415d3a",
+      "evtdtable": "0x415c04",
+      "feedtoorn": "0x415e1e",
+      "goawayclick": "0x415d4c",
+      "iftopwants": "0x415c28",
+      "nextsm": "0x415e2a",
+      "nexttsys": "0x415dde",
+      "nogoodsearch": "0x415c58",
+      "notfrontmost": "0x415d34",
+      "notswindow": "0x415da4",
+      "opendeskacc": "0x415e64",
+      "searchwindow": "0x415c40",
+      "senddcommon": "0x415c5e",
+      "senddrvrmsg": "0x415c5c",
+      "sendrunmsg": "0x415c78",
+      "smloop": "0x415e08",
+      "systemclick": "0x415ca0",
+      "systemedit": "0x415e36",
+      "systemmenu": "0x415dee",
+      "systemtask": "0x415d72",
+      "systloop": "0x415dac",
+      "sysupdate": "0x415c7c",
+      "taskdone": "0x415de8",
+      "twobyteexit": "0x415ec6"
+    }
+  },
+  "historical_limits": "The source comparison and exact assembly verify emitted instructions and data. They do not execute desk accessory drivers or recover the lost source text."
+}

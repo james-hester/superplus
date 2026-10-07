@@ -1,0 +1,880 @@
+{
+  "module": "OS/EarlyInterrupts.a",
+  "source_path": "Reconstruction/Source/OS/EarlyInterrupts.a",
+  "source_sha256": "65b243a6608bf0affdd54d5838d1841790165222d47c959a25b6694504c08693",
+  "upstream_sources": [
+    {
+      "path": "OS/InterruptHandlers.a",
+      "sha256": "67eb951bf54a8a019100c0d9e81997a914f920f59520ff5400b3f74718e44e19"
+    },
+    {
+      "path": "OS/Clock.a",
+      "sha256": "30bd4dc45eef2b5b89183d79b3cea41082063c168cb06a8b3f27e5e40e84a040"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "OS/InterruptHandlers.a",
+      1,
+      13
+    ],
+    [
+      "OS/Clock.a",
+      1,
+      8
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x401a84": {
+      "path": "OS/InterruptHandlers.a",
+      "lines": [
+        1832,
+        1833,
+        1834,
+        1835,
+        1836,
+        1837,
+        1838,
+        1839,
+        1840,
+        1841,
+        1842,
+        1843,
+        1844,
+        1845,
+        1846,
+        1847,
+        1848,
+        1849,
+        1850,
+        1851,
+        1852,
+        1853,
+        1854,
+        1855,
+        1856,
+        1857,
+        1858,
+        1859,
+        1860,
+        1861,
+        1862,
+        1863,
+        1864,
+        1865,
+        1866,
+        1867,
+        1868,
+        1869,
+        1870,
+        1871,
+        1872,
+        1873,
+        1874
+      ]
+    },
+    "0x401ab6": {
+      "path": "OS/InterruptHandlers.a",
+      "lines": [
+        1949,
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959,
+        1960,
+        1961,
+        1962
+      ]
+    },
+    "0x401ae8": {
+      "path": "OS/Clock.a",
+      "lines": [
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151
+      ]
+    }
+  },
+  "retained_body_comments": {
+    "0x401ad0": {
+      "path": "OS/InterruptHandlers.a",
+      "lines": [
+        1976
+      ]
+    },
+    "0x401b0a": {
+      "path": "OS/Clock.a",
+      "lines": [
+        164
+      ]
+    }
+  },
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        477,
+        478,
+        499,
+        1194,
+        1203,
+        1204,
+        1205,
+        1214,
+        1218,
+        1261,
+        1384,
+        1385
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        369,
+        370,
+        374
+      ]
+    },
+    {
+      "path": "OS/InterruptHandlers.a",
+      "sha256": "67eb951bf54a8a019100c0d9e81997a914f920f59520ff5400b3f74718e44e19",
+      "copied_lines": [
+        490
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "copied_lines": [
+        305
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401a42",
+      "end_address_exclusive": "0x401b12",
+      "rom_offset": "0x1a42",
+      "length": 208,
+      "sha256": "42eec37439b283aeadaa276b0604235c240f6374e431e3bd2158e190cc34ea0b"
+    }
+  ],
+  "manifest_entry": {
+    "name": "early-interrupts",
+    "source": "Reconstruction/Source/OS/EarlyInterrupts.a",
+    "start": "0x401a42",
+    "end_exclusive": "0x401b12",
+    "entry_points": {
+      "Level1Int": "0x401a42",
+      "SccDecode": "0x401a84",
+      "ExtBInt": "0x401ab6",
+      "ExtAInt": "0x401ac2",
+      "ExtABInt": "0x401acc",
+      "OneSecInt": "0x401ae8",
+      "CheckSCSIInterrupt": "0x401a4c",
+      "DispatchVIA": "0x401a60",
+      "FindVIAInterrupt": "0x401a74",
+      "Level1Exit": "0x401a7e",
+      "GoLvl2": "0x401aa8",
+      "Level2Exit": "0x401ab0",
+      "ClearExtStatus": "0x401ae0",
+      "OneSecDone": "0x401b10"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "early-interrupts",
+      "source": "Reconstruction/Source/OS/EarlyInterrupts.a",
+      "start": "0x401a42",
+      "end_exclusive": "0x401b12",
+      "entry_points": {
+        "Level1Int": "0x401a42",
+        "SccDecode": "0x401a84",
+        "ExtBInt": "0x401ab6",
+        "ExtAInt": "0x401ac2",
+        "ExtABInt": "0x401acc",
+        "OneSecInt": "0x401ae8",
+        "CheckSCSIInterrupt": "0x401a4c",
+        "DispatchVIA": "0x401a60",
+        "FindVIAInterrupt": "0x401a74",
+        "Level1Exit": "0x401a7e",
+        "GoLvl2": "0x401aa8",
+        "Level2Exit": "0x401ab0",
+        "ClearExtStatus": "0x401ae0",
+        "OneSecDone": "0x401b10"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "Level1Int begins at $401A42 after the preceding NMI handler span.",
+    "end": "OneSecInt ends with RTS at $401B10, immediately before VBLInt at $401B12."
+  },
+  "edits": [
+    {
+      "kind": "source_restoration",
+      "description": "Restored the Mac Plus interrupt dispatchers from surviving InterruptHandlers.a and Clock.a operations. The evidence records 39 matching released operations and 27 ROM-only operations."
+    },
+    {
+      "kind": "dispatch_restoration",
+      "description": "Restored the original register saves and RTE exits, VIA bit scan, SCC vector indexing, and mouse external-status vector selection. The unconditional branch at $401A4A skips the SCSI test body retained in the ROM."
+    },
+    {
+      "kind": "clock_order",
+      "description": "Restored the ROM order that increments Time before clearing the VIA CA2 interrupt. Later Clock.a clears the interrupt first."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained original file headers, SCC interface descriptions, clock descriptions, and applicable matching operation comments. Omitted the later SCC receive loop description and obsolete claim that mouse vectors are unused."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x401a64": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1562,
+      "original_code": "movea.l\tVIA,a1",
+      "comment": " get VIA1 base address",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "VIA,a1",
+      "inline_comment_retained": true
+    },
+    "0x401a6c": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1567,
+      "original_code": "and.b\tvIER(a1),d0",
+      "comment": " only process enabled interrupts",
+      "preceding_comments": [],
+      "op": "AND.B",
+      "operand": "vIER(a1),d0",
+      "inline_comment_retained": true
+    },
+    "0x401a7a": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1570,
+      "original_code": "movea.l\t(a0),a0",
+      "comment": " get routine address from table",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "(a0),a0",
+      "inline_comment_retained": true
+    },
+    "0x401a88": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1919,
+      "original_code": "MOVE.L\tSCCRd,A0",
+      "comment": " get SCC read address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SCCRd,A0",
+      "inline_comment_retained": true
+    },
+    "0x401a8c": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1920,
+      "original_code": "MOVE.B\t(A0),D0",
+      "comment": " read to sync up SCC (just to be safe)",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401a8e": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1921,
+      "original_code": "MOVE.L\tSCCWr,A1",
+      "comment": " get SCC channel B write control address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SCCWr,A1",
+      "inline_comment_retained": true
+    },
+    "0x401a92": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1923,
+      "original_code": "MOVE.B\t#2,(A1)",
+      "comment": " point to SCC register 2, B channel",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#2,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401a96": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1924,
+      "original_code": "LEA \tSccDT,A2",
+      "comment": " point to dispatch table",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SccDT,A2",
+      "inline_comment_retained": true
+    },
+    "0x401a9a": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1925,
+      "original_code": "MOVEQ\t#$0E,D0",
+      "comment": " AND mask",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#$0E,D0",
+      "inline_comment_retained": true
+    },
+    "0x401a9c": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1926,
+      "original_code": "AND.B\t(A0),D0",
+      "comment": " read the modified interrupt vector",
+      "preceding_comments": [],
+      "op": "AND.B",
+      "operand": "(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401a9e": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1928,
+      "original_code": "CMPI.B\t#8,D0",
+      "comment": " channel A interrupt?",
+      "preceding_comments": [],
+      "op": "CMPI.B",
+      "operand": "#8,D0",
+      "inline_comment_retained": true
+    },
+    "0x401aa4": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1933,
+      "original_code": "GoChannelA\tADDQ\t#2,A0",
+      "comment": " adjust SCC addresses for port A",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#2,A0",
+      "inline_comment_retained": true
+    },
+    "0x401aa6": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1934,
+      "original_code": "ADDQ\t#2,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#2,A1"
+    },
+    "0x401aae": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1936,
+      "original_code": "jsr \t(A2)",
+      "comment": " call service routine",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "(A2)",
+      "inline_comment_retained": true
+    },
+    "0x401ab6": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1965,
+      "original_code": "ExtBInt \tMOVE.B\t(A0),D0",
+      "comment": " * read SCC RR0 status for channel B",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401ab8": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1966,
+      "original_code": "LEA \tSCCBSts,A3",
+      "comment": " old register value",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SCCBSts,A3",
+      "inline_comment_retained": true
+    },
+    "0x401abc": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1967,
+      "original_code": "LEA \tExtStsDT,A2",
+      "comment": " point to channel B dispatch vectors",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "ExtStsDT,A2",
+      "inline_comment_retained": true
+    },
+    "0x401ac0": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1968,
+      "original_code": "BRA.S\tExtABInt",
+      "comment": " share some code",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "ExtABInt",
+      "inline_comment_retained": true
+    },
+    "0x401ac2": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1971,
+      "original_code": "ExtAInt \tMOVE.B\t(A0),D0",
+      "comment": " * read SCC RR0 status for channel A",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401ac4": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1972,
+      "original_code": "LEA \tSCCASts,A3",
+      "comment": " old register value",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SCCASts,A3",
+      "inline_comment_retained": true
+    },
+    "0x401ac8": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1973,
+      "original_code": "LEA \tExtStsDT+8,A2",
+      "comment": " point to channel A dispatch vectors",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "ExtStsDT+8,A2",
+      "inline_comment_retained": true
+    },
+    "0x401acc": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1975,
+      "original_code": "ExtABInt\tMOVE.B\t#15,(A1)",
+      "comment": " * point to SCC register 15,",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#15,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401ad0": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1977,
+      "original_code": "MOVE.B\t(A3),D1",
+      "comment": " get old status",
+      "preceding_comments": [
+        [
+          1976,
+          "\t\t\t\t\t\t\t\t\t\t\t\t\t;\tappropriate channel"
+        ]
+      ],
+      "op": "MOVE.B",
+      "operand": "(A3),D1",
+      "inline_comment_retained": true
+    },
+    "0x401ad2": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1978,
+      "original_code": "MOVE.B\tD0,(A3)",
+      "comment": " update the old",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D0,(A3)",
+      "inline_comment_retained": true
+    },
+    "0x401ad4": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1979,
+      "original_code": "EOR.B\tD0,D1",
+      "comment": " get changed bits",
+      "preceding_comments": [],
+      "op": "EOR.B",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x401ad6": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1980,
+      "original_code": "AND.B\t(A0),D1",
+      "comment": " * only look at enabled ext/sts bits",
+      "preceding_comments": [],
+      "op": "AND.B",
+      "operand": "(A0),D1",
+      "inline_comment_retained": true
+    },
+    "0x401ae0": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1981,
+      "original_code": "MOVE.B\t#$10,(A1)",
+      "comment": " * clear the ext/status interrupt",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#$10,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401ae4": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1983,
+      "original_code": "MOVE.L\t(A2),A2",
+      "comment": " get the vector",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A2),A2",
+      "inline_comment_retained": true
+    },
+    "0x401ae6": {
+      "path": "OS/InterruptHandlers.a",
+      "line": 1984,
+      "original_code": "JMP \t(A2)",
+      "comment": " go to it",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(A2)",
+      "inline_comment_retained": true
+    },
+    "0x401ae8": {
+      "path": "OS/Clock.a",
+      "line": 154,
+      "original_code": "ADDQ.L\t#1,Time",
+      "comment": " count the second",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#1,Time",
+      "inline_comment_retained": true
+    },
+    "0x401af2": {
+      "path": "OS/Clock.a",
+      "line": 155,
+      "original_code": "BCLR\t#5,AlarmState",
+      "comment": " flag GNEFilter to flash if enabled",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#5,AlarmState",
+      "inline_comment_retained": true
+    },
+    "0x401af8": {
+      "path": "OS/Clock.a",
+      "line": 157,
+      "original_code": "TST.B\tSPVolCtl",
+      "comment": " bit 7 is alarm enable",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "SPVolCtl",
+      "inline_comment_retained": true
+    },
+    "0x401afc": {
+      "path": "OS/Clock.a",
+      "line": 158,
+      "original_code": "BPL.S\t@done",
+      "comment": " exit if not enabled",
+      "preceding_comments": [],
+      "op": "BPL.S",
+      "operand": "@done",
+      "inline_comment_retained": true
+    },
+    "0x401afe": {
+      "path": "OS/Clock.a",
+      "line": 159,
+      "original_code": "MOVE.L\tSPAlarm,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SPAlarm,D0"
+    },
+    "0x401b02": {
+      "path": "OS/Clock.a",
+      "line": 160,
+      "original_code": "BEQ.S\t@done",
+      "comment": " exit if no alarm",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@done",
+      "inline_comment_retained": true
+    },
+    "0x401b04": {
+      "path": "OS/Clock.a",
+      "line": 161,
+      "original_code": "CMP.L\tTime,D0",
+      "comment": " is it past time?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "Time,D0",
+      "inline_comment_retained": true
+    },
+    "0x401b08": {
+      "path": "OS/Clock.a",
+      "line": 162,
+      "original_code": "BHI.S\t@done",
+      "comment": " exit if not",
+      "preceding_comments": [],
+      "op": "BHI.S",
+      "operand": "@done",
+      "inline_comment_retained": true
+    },
+    "0x401b0a": {
+      "path": "OS/Clock.a",
+      "line": 166,
+      "original_code": "BCLR\t#1,AlarmState",
+      "comment": " flag GNEFilter to flash",
+      "preceding_comments": [
+        [
+          164,
+          "; flash apple menu item if there's a window world"
+        ]
+      ],
+      "op": "BCLR",
+      "operand": "#1,AlarmState",
+      "inline_comment_retained": true
+    },
+    "0x401b10": {
+      "path": "OS/Clock.a",
+      "line": 167,
+      "original_code": "@done\t\tRTS",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t<1.3>",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4201026,
+      "op": "MOVEM.L",
+      "operand": "D0-D3/A0-A3,-(SP)",
+      "bytes": "48e7f0f0",
+      "rom_instruction": "moveml %d0-%d3/%a0-%a3,%sp@-"
+    },
+    {
+      "address": 4201030,
+      "op": "TST.B",
+      "operand": "SCSIFlag",
+      "bytes": "4a380b22",
+      "rom_instruction": "tstb 0xb22"
+    },
+    {
+      "address": 4201034,
+      "op": "BRA.S",
+      "operand": "DispatchVIA",
+      "bytes": "6014",
+      "rom_instruction": "bras 0x401a60"
+    },
+    {
+      "address": 4201036,
+      "op": "MOVE.L",
+      "operand": "#5767168,A0",
+      "bytes": "207c00580000",
+      "rom_instruction": "moveal #5767168,%a0"
+    },
+    {
+      "address": 4201042,
+      "op": "BTST",
+      "operand": "#4,80(A0)",
+      "bytes": "082800040050",
+      "rom_instruction": "btst #4,%a0@(80)"
+    },
+    {
+      "address": 4201048,
+      "op": "BEQ.S",
+      "operand": "DispatchVIA",
+      "bytes": "6706",
+      "rom_instruction": "beqs 0x401a60"
+    },
+    {
+      "address": 4201050,
+      "op": "TST.B",
+      "operand": "112(A0)",
+      "bytes": "4a280070",
+      "rom_instruction": "tstb %a0@(112)"
+    },
+    {
+      "address": 4201054,
+      "op": "BRA.S",
+      "operand": "Level1Exit",
+      "bytes": "601e",
+      "rom_instruction": "bras 0x401a7e"
+    },
+    {
+      "address": 4201056,
+      "op": "LEA",
+      "operand": "Lvl1DT-4,A0",
+      "bytes": "41f8018e",
+      "rom_instruction": "lea 0x18e,%a0"
+    },
+    {
+      "address": 4201064,
+      "op": "MOVE.B",
+      "operand": "vIFR(A1),D0",
+      "bytes": "10291a00",
+      "rom_instruction": "moveb %a1@(6656),%d0"
+    },
+    {
+      "address": 4201072,
+      "op": "BSET",
+      "operand": "#7,D0",
+      "bytes": "08c00007",
+      "rom_instruction": "bset #7,%d0"
+    },
+    {
+      "address": 4201076,
+      "op": "ADDQ.L",
+      "operand": "#4,A0",
+      "bytes": "5888",
+      "rom_instruction": "addql #4,%a0"
+    },
+    {
+      "address": 4201078,
+      "op": "LSR.B",
+      "operand": "#1,D0",
+      "bytes": "e208",
+      "rom_instruction": "lsrb #1,%d0"
+    },
+    {
+      "address": 4201080,
+      "op": "BCC.S",
+      "operand": "FindVIAInterrupt",
+      "bytes": "64fa",
+      "rom_instruction": "bccs 0x401a74"
+    },
+    {
+      "address": 4201084,
+      "op": "JSR",
+      "operand": "(A0)",
+      "bytes": "4e90",
+      "rom_instruction": "jsr %a0@"
+    },
+    {
+      "address": 4201086,
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0-D3/A0-A3",
+      "bytes": "4cdf0f0f",
+      "rom_instruction": "moveml %sp@+,%d0-%d3/%a0-%a3"
+    },
+    {
+      "address": 4201090,
+      "op": "RTE",
+      "operand": "",
+      "bytes": "4e73",
+      "rom_instruction": "rte "
+    },
+    {
+      "address": 4201092,
+      "op": "MOVEM.L",
+      "operand": "D0-D3/A0-A3,-(SP)",
+      "bytes": "48e7f0f0",
+      "rom_instruction": "moveml %d0-%d3/%a0-%a3,%sp@-"
+    },
+    {
+      "address": 4201122,
+      "op": "BLT.S",
+      "operand": "GoLvl2",
+      "bytes": "6d04",
+      "rom_instruction": "blts 0x401aa8"
+    },
+    {
+      "address": 4201128,
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "bytes": "d040",
+      "rom_instruction": "addw %d0,%d0"
+    },
+    {
+      "address": 4201130,
+      "op": "MOVE.L",
+      "operand": "0(A2,D0.W),A2",
+      "bytes": "24720000",
+      "rom_instruction": "moveal %a2@(0000000000000000,%d0:w),%a2"
+    },
+    {
+      "address": 4201136,
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0-D3/A0-A3",
+      "bytes": "4cdf0f0f",
+      "rom_instruction": "moveml %sp@+,%d0-%d3/%a0-%a3"
+    },
+    {
+      "address": 4201140,
+      "op": "RTE",
+      "operand": "",
+      "bytes": "4e73",
+      "rom_instruction": "rte "
+    },
+    {
+      "address": 4201176,
+      "op": "CMPI.B",
+      "operand": "#8,D1",
+      "bytes": "0c010008",
+      "rom_instruction": "cmpib #8,%d1"
+    },
+    {
+      "address": 4201180,
+      "op": "BNE.S",
+      "operand": "ClearExtStatus",
+      "bytes": "6602",
+      "rom_instruction": "bnes 0x401ae0"
+    },
+    {
+      "address": 4201182,
+      "op": "ADDQ.W",
+      "operand": "#4,A2",
+      "bytes": "584a",
+      "rom_instruction": "addqw #4,%a2"
+    },
+    {
+      "address": 4201196,
+      "op": "MOVE.B",
+      "operand": "#1<<ifCA2,vIFR(A1)",
+      "bytes": "137c00011a00",
+      "rom_instruction": "moveb #1,%a1@(6656)"
+    }
+  ],
+  "restored_equates": {},
+  "restored_symbolic_operands": {
+    "4201056": "Lvl1DT-4,A0",
+    "4201064": "vIFR(A1),D0",
+    "4201068": "vIER(A1),D0",
+    "4201160": "ExtStsDT+8,A2",
+    "4201196": "#1<<ifCA2,vIFR(A1)"
+  },
+  "retained_data": {},
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 208,
+    "checked_entry_points": 14,
+    "instruction_count": 66,
+    "source_operation_matches": 39,
+    "rom_only_operation_count": 27,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-early-interrupts-verify",
+    "source_sha256": "65b243a6608bf0affdd54d5838d1841790165222d47c959a25b6694504c08693",
+    "assembled_sha256": "42eec37439b283aeadaa276b0604235c240f6374e431e3bd2158e190cc34ea0b",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

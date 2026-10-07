@@ -1,0 +1,116 @@
+{
+  "module": "SCSI driver loader",
+  "source": "Reconstruction/Source/OS/SCSIBoot.a",
+  "source_sha256": "ead16a19f4c66efd217abcd95576ac0dbf0c5ba3b27aa5a1a14d9be3021b22cc",
+  "originals": [
+    {
+      "path": "OS/SCSIMgr/SCSIBoot.a",
+      "sha256": "a16f53dd4f041cf9b12972a0cc34728901e4e64bfeca0fb72e711f9a51d047f0",
+      "role": "Driver descriptor scan, read command construction, surviving operations, and historical revisions."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "role": "Descriptor fields, SCSI selectors and macros, globals, trap words, and the system-heap flag.",
+      "declaration_lines": [
+        305
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SCSI.a",
+      "sha256": "9420495b6e83b3743419c6f7a02e40f91c26f9d92bcf3305e22684493bb15904",
+      "role": "Descriptor fields, SCSI selectors and macros, globals, trap words, and the system-heap flag.",
+      "declaration_lines": [
+        120,
+        123,
+        121,
+        122,
+        110,
+        114,
+        115,
+        116,
+        124,
+        109,
+        108,
+        95,
+        158,
+        159,
+        46,
+        156,
+        160,
+        157,
+        92,
+        101
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "role": "Descriptor fields, SCSI selectors and macros, globals, trap words, and the system-heap flag.",
+      "declaration_lines": [
+        1137
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "role": "Descriptor fields, SCSI selectors and macros, globals, trap words, and the system-heap flag.",
+      "declaration_lines": [
+        2803,
+        274,
+        1556
+      ]
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 60,
+  "rom": {
+    "start": "0x407d40",
+    "end_exclusive": "0x407e58",
+    "bytes": 280,
+    "sha256": "56f4f439703ede3c7c028355eddc65c528ac58c0b76a18d6c7259918d15c317d"
+  },
+  "changes": [
+    "SCSILoad tests the signed SCSI configuration byte, saves D0\u2013D7/A0\u2013A6, and scans device IDs six through zero. It skips IDs already set in SCSIDrvrs. The later input bitmap and extended device scan are absent.",
+    "Two NOP instructions occupy $407D4A and $407D4C. The source history records removal of a SCSIReset call in May 1986. The ROM establishes the NOP encoding; the lost source directive that produced it remains unknown.",
+    "OpenIt restores a 256-byte stack buffer and reads 256 bytes of block zero. It finds the Macintosh driver descriptor, allocates from the system heap, reads the driver, reads 256 bytes of partition block one, and invokes the driver. Descriptor fields and the surviving scan, allocation, and transfer instructions retain their original comments.",
+    "The ROM does not check for a zero descriptor count before searching, and it does not check the NewPtr result. Its exit does not release an allocated driver after a read error. Later partition-map searches, driver checksums, non-Macintosh boot paths, and heap changes are absent.",
+    "SRead builds the original six-byte read command and a transfer instruction list on the stack. It invokes Get, Select, Cmd, Read, and Complete through the five original SCSI selector macros. The earlier completion path returns zero or minus one and lacks later retries, device-status checks, cache flushes, and register preservation.",
+    "The system-heap allocation is expressed as DC.W _NewPtr+SYS, using the released trap word and flag equate; it emits $A51E. The source retains original attribution, histories through January 1986, descriptor equates, and applicable read-sequence comments. Restored instructions use named labels and symbolic fields."
+  ],
+  "verification": {
+    "name": "scsiboot",
+    "source": "Reconstruction/Source/OS/SCSIBoot.a",
+    "source_sha256": "ead16a19f4c66efd217abcd95576ac0dbf0c5ba3b27aa5a1a14d9be3021b22cc",
+    "start": "0x407d40",
+    "end_exclusive": "0x407e58",
+    "bytes": 280,
+    "sha256": "56f4f439703ede3c7c028355eddc65c528ac58c0b76a18d6c7259918d15c317d",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/SCSIBoot.a",
+        "sha256": "ead16a19f4c66efd217abcd95576ac0dbf0c5ba3b27aa5a1a14d9be3021b22cc"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "scsiboot",
+    "source": "Reconstruction/Source/OS/SCSIBoot.a",
+    "start": "0x407d40",
+    "end_exclusive": "0x407e58",
+    "entry_points": {
+      "SCSILoad": "0x407d40",
+      "SCSIBootEnd": "0x407e58",
+      "checknext": "0x407d50",
+      "exit": "0x407dc6",
+      "founddd": "0x407d9c",
+      "loaddone": "0x407d60",
+      "nextdd": "0x407d8c",
+      "openit": "0x407d62",
+      "rderr": "0x407e4e",
+      "scsiboots": "0x407d40",
+      "sread": "0x407dcc"
+    }
+  },
+  "historical_limits": "The source comparison and exact assembly verify emitted instructions and data. They do not exercise SCSI devices or recover the lost source text."
+}

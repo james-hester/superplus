@@ -1,0 +1,166 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Interfaces/AIncludes/SonyEqu.a
+;
+;	File:		SonyEqu.a
+;
+;
+;
+;	Copyright:	© 1991-1993 by Apple Computer, Inc., all rights reserved.
+;
+
+		INCLUDE 'Private.a'
+
+firstDCD EQU 3
+maxGCRSectors 	EQU 		12        				;12 GCR sectors/track side (max)
+diskUnitPtr   	EQU 		0         				; pointer to device control entry
+diskQVE   		EQU 		diskUnitPtr+4     		; disk VBL task control block
+drive 			EQU 		diskQVE+14    			; * 0001 = int drive, 0002 = ext drive
+wait  			EQU 		drive+2       			; extra wait time for speed changes
+sideTrack 		EQU 		wait+2        			; destination side/track
+oneToOne  		EQU 		sideTrack+2       		; open up rupts flg (no longer used)
+active			EQU 		oneToOne+1    			; * non-zero when driver is active
+timeOut   		EQU 		active+1      			; * power time out
+diskBuffer		EQU 		timeOut+2     			; pointer to track data buffer
+firstSect 		EQU 		diskBuffer+4      		; low sector number needed on a track
+sectMap   		EQU 		firstSect+2       		; bit map of sectors needed on a track
+firstFSeq 		EQU 		sectMap+4     			; first file seq # for current r/w request
+fBlksDone 		EQU 		firstFSeq+2       		; file blocks done previous to this track
+readErrInit   	EQU 		fBlksDone+2       		; init value, read error countdown cntr
+readErrCnt		EQU 		readErrInit+1     		; read error countdown cntr
+recalInit 		EQU 		readErrCnt+1      		; init value, recal count
+recalCnt  		EQU 		recalInit+1       		; recal count
+wrgSectInit   	EQU 		recalCnt+1    			; init value, wrong sector countdown cnt
+wrgSectCnt		EQU 		wrgSectInit+1     		; wrong sector countdown cnt
+badSpdInit		EQU 		wrgSectCnt+1      		; init value, bad speed
+badSpdCnt 		EQU 		badSpdInit+1      		; bad speed countdown value
+command   		EQU 		badSpdCnt+1       		; I/O command
+headSettle		EQU 		command+2     			; disk head settle time (@100usec)
+spdChgTime		EQU 		headSettle+2      		; motor speed change time (@100usec)
+pwrOnTime 		EQU 		spdChgTime+2      		; * power-on wait time (@100usec)
+pwrOffTime		EQU 		pwrOnTime+2       		; * power down time (@1/2sec)
+seekTime  		EQU 		pwrOffTime+2      		; seek wait time (@100usec)
+sectTime  		EQU 		seekTime+2    			; * sector time (@100usec)
+dskVBLTime		EQU 		sectTime+2    			; VBL task time (@16ms)
+ejectTime 		EQU 		dskVBLTime+2      		; Eject time (@100usec)
+ckDelta   		EQU 		ejectTime+2       		; delta time before speed recheck
+ejectWait 		EQU 		ckDelta+4     			; VBL times after eject to ignore DIP
+gapSync   		EQU 		sectMap       			; (2) start with 7 groups of intersector sync
+twoSided  		EQU 		command       			; (1) set non-zero for 2-sided format
+sectSave  		EQU 		firstSect     			; (2) SectMpSave must follow
+sectMapSave   	EQU 		sectMap       			; (8) uses SectMap, FirstFSeq, FBlksDone
+sectCnt   		EQU 		firstSect     			; (2) loop counter . . .
+drvLclLth 		EQU 		66
+drive1			EQU 		ejectWait+2       		; * internal drive variables
+drive2			EQU 		drive1+drvLclLth  		; * external drive variables
+floppyLclEnd EQU drive2+drvLclLth
+track 			EQU 		0         				; current track location (used for spd)
+writeProt 		EQU 		2         				; * bit7=1=write-protected
+diskInPlace   	EQU 		3         				; * $FC-$FF= just ejected,
+installed 		EQU 		4         				; * 0=don't know, 1=inst., $FF=not inst.
+sides 			EQU 		5         				; * bit7=0=1 sided
+dqel  			EQU 		6         				; drive queue element for this drive
+driveQVers		EQU 		10
+driveSize 		EQU 		18        				; drive block size (DCD only!)
+twoSideFmt		EQU 		18        				; * non-zero if 2-sided format
+newIntf   		EQU 		19        				; $FF if new interface, $00 for old 
+driveErrs 		EQU 		20        				; drive soft errs
+driveS1   		EQU 		20        				; drive block size (high word)
+driveType 		EQU 		22        				; old OffSpeed (no longer supported)
+driveChar 		EQU 		26
+spdAdjCnt 		EQU 		24        				; speed adjust count this drive
+trkSpeedTbl   	EQU 		26        				; 5-entry track speed table
+tSTblTicks		EQU 		4         				; longword last time checked tick cnt
+wakeTimeCnt   	EQU 		floppyLclEnd      		; WakeUp remainder count
+tagSize   		EQU 		20        				; 20 bytes tags/block
+dcdLclLth 		EQU 		28        				; (use fields through DriveMisc)
+devChEject		EQU 		4         				; ejectable if 1
+devChWP   		EQU 		3         				; write protected if 1
+devChIcon 		EQU 		2         				; icon available if 1
+dqDIP 			EQU 		-3        				; $FC-$FF = disk just ejected,
+kSeekTime 		EQU 		120       				; 12 ms trk-to-trk
+kEjectTime		EQU 		7500      				; .75 seconds eject time
+kEjectWait		EQU 		-4        				; - number of VBL calls after eject before dip check
+kSectTime 		EQU 		100       				; minimum sector time in 100 us increments (10 ms)
+kPowerOn  		EQU 		4000      				; read/write powerup time in 100 us increments
+kRWPOff   		EQU 		5         				; read/write power off time (in 1/2 seconds)
+kDskVBLTime   	EQU 		30        				; happens every 1/2 second
+kSpdChgTime   	EQU 		1500      				; speed change wait time = 150ms
+kCkDelta  		EQU 		14400     				; speed check delta time (in 1/60 sec) (4 min)
+dirHAdr   		EQU 		1
+rdDtaAdr  		EQU 		1         				; side 0 read data
+rdDta1Adr 		EQU 		3         				; side 1 read data
+stepLAdr  		EQU 		4         				; step low and step sense address
+mtrOnAdr  		EQU 		8
+mtrOffAdr 		EQU 		9
+ejectHAdr 		EQU 		13
+dipAdr			EQU 		2         				; disk in place sense address
+wrProtAdr 		EQU 		6         				; write protect sense address
+sidesAdr  		EQU 		9         				; sense for number of sides
+tk0Adr			EQU 		10        				; track 0 sense address
+readyAdr  		EQU 		11        				; /Ready sense address
+drvExstAdr		EQU 		13        				; sense=0 when a drive is connected
+tachAdr   		EQU 		14        				; tach feedback sense address
+newIntfAdr		EQU 		15        				; implements ready handshake if 1
+fmtByte   		EQU 		$02       				; 2-1 interleave, single-sided
+fmt2Byte  		EQU 		$22       				; 2-1 interleave, double-sided
+mustFindCt		EQU 		1500
+minSync   		EQU 		4         				; min number of inter-sector sync groups
+blkSize   		EQU 		512       				; 512 bytes data/block
+syncByte  		EQU 		$AA       				; Sync byte for start of transmission
+nonZerStat		EQU 		1
+comErr			EQU 		2
+wrtHsLw   		EQU 		$10       				; HSHK low before starting
+wrtHSLwTO 		EQU 		$11       				; Time out waiting for HSHK to go low
+wrtHSHighTO   	EQU 		$13       				; Time out waiting for HSHK to go high
+rdHsHi			EQU 		$20       				; HSHK high before starting
+rdSyncTO  		EQU 		$21       				; Time out waiting for sync ($AA) bye
+rdGroupTO 		EQU 		$22       				; Time out waiting for group
+rdHoffSyncTO  	EQU 		$24       				; Time out waiting for sync after holdoff
+rdHsHiTO  		EQU 		$25       				; Time out waiting for HSHK high
+rdChksumErr   	EQU 		$26       				; Checksum error on response packet
+invalidResp   	EQU 		$30       				; First byte in response packet was wrong
+sqncNumErr		EQU 		$31       				; Sequence number in response packet was wrong
+noResp			EQU 		$40       				; No response packet ever received
+opFailed  		EQU 		24        				; bit to test for operation failed
+bChksum   		EQU 		30        				; bit number for checksum error
+resetonce 		EQU 		0
+retryonce 		EQU 		1
+maxTries  		EQU 		4         				; max # times to try command
+tSeekChk  		EQU 		10        				; check during a seek every 1 ms
+tSeekMax  		EQU 		10000     				; max time for seek = 10 secs
+tStsChk   		EQU 		10        				; check during a status every 1 ms
+tStsMax   		EQU 		10000     				; max time for status = 10 secs
+tQuickTime		EQU 		100
+tNextChk  		EQU 		7         				; check for next block after 700 µsec
+tNextMax  		EQU 		10000     				; max time for next block = 7 secs
+tFVChk			EQU 		100       				; check during fmt/vfy every 10 ms
+tFVMax			EQU 		18000     				; max time for fmt/vfy = 3 minutes
+tRstAssert		EQU 		1000      				; assert reset for 100 msec
+tRstSettle		EQU 		20000     				; 2 sec wait for busy to settle
+tRstChk   		EQU 		100       				; check during reset every 10 ms
+tRstMax   		EQU 		1600      				; max time for reset = 16 seconds
+verifyCC  		EQU 		5         				; 'verify' control code
+formatCC  		EQU 		6         				; 'format' control code
+tagBufCC  		EQU 		8         				; 'set tag buffer' control code
+tCacheCC  		EQU 		9         				; 'track cache' control 
+iconCC			EQU 		21        				; 'get icon' control code
+jFigTrkSpd		EQU 		DiskVars
+jDiskPrime		EQU 		jFigTrkSpd+4
+jRdAddr   		EQU 		jDiskPrime+4
+jRdData   		EQU 		jRdAddr+4
+jWrData   		EQU 		jRdData+4
+jSeek 			EQU 		jWrData+4
+jSetUpPoll		EQU 		jSeek+4
+jRecal			EQU 		jSetUpPoll+4
+jControl  		EQU 		jRecal+4
+jWakeUp   		EQU 		jControl+4
+jReSeek   		EQU 		jWakeUp+4
+jMakeSpdTbl   	EQU 		jReSeek+4
+jAdrDisk  		EQU 		jMakeSpdTbl+4
+jSetSpeed 		EQU 		jAdrDisk+4
+niblTbl   		EQU 		jSetSpeed+4
+jDiskSel  		EQU 		$B40      				; (long) vector to .Sony DiskSelect routine 
+jSendCmd  		EQU 		$B44      				; (long) vector to .Sony DCD SendCmd routine
+jDCDReset 		EQU 		$B48      				; (long) vector to .Sony DCD DCDReset routine

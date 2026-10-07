@@ -1,0 +1,711 @@
+;
+;	File:		StartBoot.a
+;
+;	Contains:	This part of the Start Manager locates the Startup Device, loads its driver
+; 				(if it hasn't already been loaded by InitIO), and asks the driver to get the boot blocks.
+;				It uses information in the boot blocks to initialize system variables,
+;				decide whether to load a debugger, and launch a Startup Application.
+;
+;	Written by:	Larry Kenyon				February 1985
+;	modified by Wayne R. Loofbourrow		August 1986
+;
+;	Copyright:	© 1985-1994 by Apple Computer, Inc.  All rights reserved.
+;
+;
+;	File:		Boot1.a (formerly BootBlocks.a)
+;
+;	Contains:	Macintosh disk-based boot code
+;
+;				This code goes into the two disk boot blocks and is loaded into RAM
+;				after ROM initialization is complete and a boot diskette is in place.
+;
+;				In the System file, this code lives in the 'boot' 1 resource.
+;
+;				When this code is entered, the interrupt system, Memory Manager, and
+;				ROM-based I/O drivers have been initialized.  This code finds the
+;				System file and loads the contents of its data fork, and turns over
+;				the rest of the booting process to the code that it finds there.
+;
+;	Original written by:	Larry Kenyon
+;	Written by:				Darin Adler
+;
+;	Copyright:	© 1983-1992 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				  5/7/84	LAK 	reverted to early rev num to placate MacWorks.
+;				 4/20/84	SC		drop the font fix... (f--k I’m brilliant)
+;				 4/16/84	SC		soften event number and do appl font fix
+;				 2/23/84	SC		Max event and file # maximums
+;				 2/23/84	AJH 	fixed system heap size for systems > 512K
+;				 2/13/84	SC		there’s a 512 version tacked on end. Copy entire .PROC, chg to
+;									boot512 and uncomment code @ H512 label
+;				 1/13/84	AJH 	don’t SetAppBase until after InitResources
+;				 1/12/84	AJH 	load in INIT routines in resID order
+;				 1/12/84	AJH 	check to see the file to launch exists
+;				 1/10/84	AJH/LAK read-only permissions for Macsbug, clear less FS globals
+;				  1/6/84	AJH 	set up applZone after file system init, set up version #
+;				  1/5/84	AJH 	changed default names, more FCBs for bigger system heaps
+;				  1/2/84	AJH 	added system heap CompactMem, increased size in sysHeap, new
+;									version
+;				12/20/83	LAK 	updated version number to $0081.
+;				12/18/83	AJH 	fixed up mouse scaling cause the ROM uses the wrong bit...
+;				12/13/83	AJH 	got rid of start-up, use "INIT" resources instead
+;				 12/2/83	AJH 	final overhaul -- 256K support, startUp file detach, etc
+;				11/13/83	AJH 	get rid of bootBlock deepShit alert; put in Sys.rsrc set up
+;									screenRow
+;				10/13/83	LAK 	movescreen now uses CopyBits for Lisa compatibility; scrounged
+;									bytes from various places.
+;				  9/7/83	LAK 	added call to _ZeroScrap. optimized IO to make it fit.
+;				  9/5/83	SC		scrap vars point to name
+;				  9/4/83	LAK 	added CLR.L ResErrProc for resources,
+;				 8/28/83	AJH 	added whichAlerts option for DS alerts
+;				 8/20/83	LAK 	Added event queue count in header. Added scrap name in header.
+;									Changed param. memory for key stuff. Added param. mem. for click
+;									and caret. Added DoDetach for saving code.
+;				 8/17/83	LAK 	added init of EvtBufLen; FinderName var moved in lomem.
+;				  8/9/83	AJH 	fixed bug releasing bootAlerts; misc cleanup
+;				 7/13/83	LAK 	changed CLR.L Keylast to CLR.W Keylast.
+;				 6/10/83	AJH 	added "Hello" fileName for initial launch
+;				  6/8/83	AJH 	finderName is 12 long, not 16...
+;				  6/7/83	AJH 	set up master block start address, ext file system fields
+;				  6/5/83	AJH 	set up key repeat parms from parameter RAM
+;				  6/4/83	AJH 	implemented system heap sizing and page 2 reservation
+;				  6/3/83	AJH 	KEYM -> KEYC; detached keyProcs and deep shit alerts
+;				  6/2/83	AJH 	cleared theScrap, set up vidPage launch param set up sysResName
+;									and put MacSys there
+;				 5/31/83	AJH 	MacSys.Code no longer necessary to boot
+;
+;	File:		Boot3.a (formerly BootCode.a)
+;
+;	Contains:	boot code for the Macintosh system
+;	Written by: Darin Adler, based on old boot blocks and StartBoot.a
+;
+;	Copyright:	© 1990-1993 by Apple Computer, Inc.  All rights reserved.
+;
+
+*R This file restores the Mac Plus ROM boot flow, file-system initialization,
+*R and event-queue initialization.
+*R The headers and early history above describe the released source files.
+*R The later disk boot sources retain some operations and comments; the
+*R missing Mac Plus flow and older loader interface are restored from ROM.
+*R Evidence/startup-boot.json and startup-fs.json retain the earlier fragment
+*R boundaries, provenance, and exact checks.
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'BootEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+		INCLUDE 'FSEqu.a'
+		INCLUDE 'FSPrivate.a'
+
+MyIOPBA6	EQU 	-$400							; A6 offset for IO parameter block
+HFSStkLen EQU $500 ;]
+PMSPSwOS EQU 24 ;]
+WDCBSwOS EQU 20 ;]
+
+        IMPORT BootRetry,DSHook,InitCache ;]
+        EXPORT InitEvents,InitFS
+        EXPORT TheBoot ;]
+
+StartBootModule PROC ;]
+;------------------------------------------------------------------------------------------------
+; A5	=	points to "A5 world" data, the first long of which is a pointer to QuickDraw globals.
+; A6	=	points to the boot blocks, which have been read from the Startup Device.
+; SP	=	I/O parameter block = -$400(A6).
+;------------------------------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------------------------
+;	check for executable boot blocks
+;------------------------------------------------------------------------------------------------
+
+*R The ROM executes boot blocks only when the high version byte is $44. It then applies the older heap rules and initializes events and the file system.
+
+TheBoot
+        CMPI.B    #bbOldExecVers,bbVersion(A6) ;]
+; If not, don't execute them
+        BNE.S     SizeBootHeap ;]
+        JSR       bbEntry(A6)	; Execute the boot blocks
+
+*R Versions through $14 receive a $B700 large-machine heap size. The ROM selects bb128KSHeap when the high word of MemTop is at most two; otherwise it selects bb512KSHeap.
+
+SizeBootHeap ;]
+        CMPI.W    #bbOldVers,bbVersion(A6) ;]
+        BHI.S     GetBootHeapSize ;]
+        MOVE.L    #$B700,bb512KSHeap(A6) ;]
+
+GetBootHeapSize ;]
+        MOVE.L    bb128KSHeap(A6),D0 ;]
+        CMPI.W    #2,MemTop
+        BLE.S     SetBootHeapSize ;]
+        MOVE.L    bb512KSHeap(A6),D0 ;]
+
+SetBootHeapSize ;]
+        MOVE.L    SysZone,A0
+        ADD.L     D0,A0
+        _SetAppBase
+        MOVE.L    SysZone,TheZone
+
+InitializeEventManager
+        MOVE.W    bbCntEvts(A6),D0 ;]
+        _InitEvents
+        MOVE.W    bbCntFCBs(A6),D0 ;]
+        _InitFS   	; note to future generations: InitFS trashes A2!
+
+MountStartupDisk
+        MOVE.L    SP,A0
+        MOVE.W    BootDrive,ioDrvNum(a0)	; set up drive number
+        _MountVol 	; mount startup disk
+        BNE.W     ReBoot ;]
+
+FindBlessedFolder
+        CLR.L     ioFileName(a0)	; we don’t want the disk’s name
+        CLR.W     ioVolIndex(a0)	; use the vRefNum left over from MountVol
+        _HGetVInfo	; see if there is a system folder
+        BNE.S     SetSystemName ;]
+        MOVE.L    ioVFndrInfo+4(a0),a4	; save dirID of startup app. in a4 for pre-7.0 systems
+        MOVE.L    ioVFndrInfo(A0),D0 ;]
+        BSR.W     SetDefaultFolder ;]
+
+SetSystemName ;]
+        LEA       SysResName,A1
+        LEA       bbSysName(A6),A0 ;]
+        MOVEQ     #16,D0
+        _BlockMove
+
+*R The positive loader mode reads the entire startup screen at $800(A6). The ROM uses a fixed 512-by-342 bitmap and records loader failure in D7 to enable boot alerts.
+
+ShowStartupScreen
+        LEA       bbScreenName(A6),A1 ;]
+        MOVEQ     #1,D3
+        BSR.W     LoadBelowBufPtrCommon ;]
+        SNE       D7
+        BNE.S     InitializeResourceManager ;]
+        MOVE.L    #((342<<16)+512),-(SP)	; put a rect the size of the original Mac screen
+        CLR.L     -(sp)	; on the stack (0,0,342,512) as bounds for a bitMap
+        MOVE.W    ScreenRow,-(SP) ;]
+        PEA       2048(A6) ;]
+        LEA       -510(A6),A2 ;]
+        MOVE.L    sp,-(sp)	; srcBits is here
+        PEA       (A2)
+        PEA       14(SP)
+        PEA       6(A2) ;]
+        CLR.W     -(sp)	; srcCopy mode
+        CLR.L     -(sp)	; no maskRgn
+        _CopyBits 
+        ADD.W     #14,SP
+
+InitializeResourceManager
+        SUBQ.W    #2,sp	; make room for function result
+        CLR.L     ResErrProc
+        _InitResources	; open that system file
+        TST.W     (sp)+	; did we get it?
+        BMI.W     ReBoot ;]
+
+*R The ROM loads DSAT resource zero into D5. A missing resource clears D7 and continues through font initialization with alerts disabled.
+
+AfterInitResources ;]
+        SUBQ.W    #4,sp	; room for returned handle
+        MOVE.L    #'DSAT',-(SP)
+        CLR.W     -(SP)
+        _GetResource
+        MOVE.L    (SP)+,D5
+        BEQ.W     NoDSAT ;]
+        MOVE.L    D5,A0
+        MOVE.L    (a0),DSAlertTab
+
+InitializeFonts ;]
+        _InitFonts
+        MOVEQ     #dsGreeting,D0	; put up the greeting
+        BSR.W     BootAlert
+
+*R A positive page flag reserves $600 bytes; a negative flag reserves $8000 bytes. Zero reserves neither block.
+
+ReservePage2 ;]
+        MOVE.L    #1536,D0 ;]
+        MOVE.W    bbPageFlags(A6),D1 ;]
+        BEQ.S     LoadDebugger ;]
+        BPL.S     ReserveSecondPage ;]
+        MOVEQ     #1,D0
+        ROR.W     #1,D0
+
+ReserveSecondPage ;]
+        SUB.L     D0,BufPtr
+
+LoadDebugger
+; Load the MacsBug debugger, and optionally the other debug thing (Disassembler).
+; If there is no MacsBug, no attempt is made to load Disassmbler.
+; Before loading MacsBug (below BufPtr), 1024 bytes of globals are reserved.
+; MacsBug and the Disassembler are responsible for lowering BufPtr themselves after being loaded.
+; If they don’t, they will be overwritten by the stack and globals of the first application.
+        SUBI.L    #debuggerGlobalSize,BufPtr	; leave space for MacsBug globals
+        LEA       bbDbg1Name(A6),A1 ;]
+        BSR.W     LoadBelowBufPtr
+        BNE.W     NoDebugger ;]
+        JSR       (A1)
+; NOTE: the following code must not change in length - MacsBug depends upon it (blegh!)
+; If MacsBug punts, it adds the magic offset 6 (bytes, that is) to the return address
+; to skip over this code.  Ideally, the interface should allow the debugger to return
+; an error code (in, say, D0?) to allow happy bypassing of this message.
+        MOVEQ     #dsMacsBugInstalled,D0	; alert saying we got MacsBug
+        BSR.W     BootAlert
+        LEA       bbDbg2Name(A6),A1 ;]
+        BSR.W     LoadBelowBufPtr
+; branch if there’s no disassembler
+        BNE.S     LoadSystemData ;]
+        JSR       (A1)
+; see above NOTE for MacsBug: the disassembler works the same way
+        MOVEQ     #dsDisassemblerInstalled,D0	; alert saying we got the disassembler
+        BSR.W     BootAlert
+
+*R The negative loader mode allocates memory with NewPtr and reads the System data fork after its first 512 bytes, then calls the loaded code if the read succeeds.
+
+LoadSystemData ;]
+        LEA       SysResName,A1
+        MOVEQ     #-1,D3
+        BSR.W     LoadBelowBufPtrCommon ;]
+        BNE.W     PrepareBootINITs ;]
+        JSR       (A1)
+
+*R The ROM records SysZone in RAMBase, creates a cleared 12-byte application parameter handle, initializes the application zone, installs ROM drivers, and releases the DSAT resource.
+
+PrepareBootINITs ;]
+        MOVE.L    SysZone,RAMBase
+        MOVEQ     #12,D0
+        _NewHandle ,SYS,CLEAR
+        MOVE.L    A0,AppParmHandle ;]
+        _InitApplZone
+        _RDrvrInstall
+        MOVE.L    D5,-(SP)
+        _ReleaseResource
+        MOVEQ     #0,D6
+
+*R The ROM visits INIT IDs zero through 35, detaches each resource that exists, strips its address to 24 bits, and calls it. BootTmp8 preserves A5 and A6 around each call.
+
+BootINITLoop ;]
+        MOVEM.L   A5-A6,BootTmp8 ;]
+        SUBQ.W    #4,SP
+        MOVE.L    #'INIT',-(SP)
+        MOVE.W    D6,-(SP)
+        _GetResource
+        MOVE.L    (SP),D7 ;]
+        BEQ.W     MissingBootINIT ;]
+        _DetachResource
+        MOVE.L    D7,A0
+        MOVE.L    (A0),D0
+        AND.L     Lo3Bytes,D0
+        MOVE.L    D0,A0
+        JSR       (A0)
+
+NextBootINIT ;]
+        MOVEM.L   BootTmp8,A5-A6 ;]
+        ADDQ.W    #1,D6
+        CMPI.W    #36,D6
+        BLT.S     BootINITLoop ;]
+
+FinishBootINITs ;]
+        MOVEQ     #2,D0
+        SWAP      D0
+        _PurgeMem ,SYS
+        PEA       -512(A6) ;]
+        _ClosePort
+
+*R The ROM writes the sound driver reference number through SP while writing the control fields through A0. This reconstruction retains those operands.
+        LEA       MyIOPBA6(A6),A0
+        MOVE.W    #-5,ioRefNum(SP) ;]
+        MOVE.W    #9,csCode(A0)
+        MOVE.W    #$FF01,csCode+2(A0) ;]
+        _Control  
+
+SetScrapName ;]
+        LEA       ScrapTag,A1
+        MOVE.L    A1,ScrapName
+        LEA       bbScrapName(A6),A0 ;]
+        MOVEQ     #16,D0
+        _BlockMove
+
+SetFinderName ;]
+        LEA       bbShellName(A6),A0 ;]
+        LEA       FinderName,A1
+        MOVEQ     #16,D0
+        _BlockMove
+        CLR.W     CurApRefNum
+        MOVE.L    A4,D0
+        BSR.W     SetDefaultFolder ;]
+
+*R The ROM first checks bbHelloName, then bbShellName. It launches the first existing file and reports dsFinderErr if neither exists or Launch returns.
+
+FindStartupApplication ;]
+        LEA       bbHelloName(A6),A3 ;]
+        BSR.S     CheckBootFile ;]
+        BEQ.S     LaunchStartupApplication ;]
+        LEA       bbShellName(A6),A3 ;]
+        BSR.S     CheckBootFile ;]
+        BNE.S     NoBootApplication ;]
+
+LaunchStartupApplication ;]
+        MOVE.L    SP,A0
+        CLR.L     ioFileName(A0)
+        _GetVol   
+        MOVE.W    ioDrvNum(A0),BootDrive ;]
+        CLR.W     -(SP)
+        CLR.L     -(SP)
+        MOVE.L    A3,-(SP)
+        MOVE.L    SP,A0
+        _Launch   
+
+NoBootApplication ;]
+        MOVEQ     #dsFinderErr,D0 ;]
+        _SysError 
+        _Debugger 
+
+MissingBootINIT ;]
+        ADDQ.W    #4,SP
+        BRA.W     NextBootINIT ;]
+
+;------------------------------------------------------------------------------------------------
+;	reboot if the boot blocks fail
+;------------------------------------------------------------------------------------------------
+
+ReBoot
+        LEA       MyIOPBA6(A6),A0	; use stack parameter block
+        MOVE.W    BtDskRfN,IORefNum(A0)	; driver refnum
+        MOVE.W    #EjectCode,CSCode(A0)
+        MOVE.W    BootDrive,D3	; Get current boot drive number
+        MOVE.W    D3,IODrvNum(A0)	; d3 = BootDrive, must be a drive# here!
+        _Control  	; eject the bad diskette
+        BEQ.S     RetryBoot ;]
+        MOVE.W    BootMask,D0
+        BCLR      D3,D0
+        MOVE.W    D0,BootMask
+
+RetryBoot ;]
+        BRA.W     BootRetry ;]
+
+NoDSAT ;]
+        MOVEQ     #0,D7
+        BRA.W     InitializeFonts ;]
+
+; BootAlert posts the boot alert specified; it may be disabled if there is a startup screen.
+;
+; d7.B	->	0 to disable boot alerts.
+
+BootAlert
+        TST.B     d7	; did we get a startup screen?
+        BEQ.S     BootAlertDone ;]
+        _SysError 	; post the alert
+
+BootAlertDone ;]
+        RTS       
+
+NoDebugger ;]
+        ADDI.L    #debuggerGlobalSize,BufPtr	; otherwise, dealloc MacsBug globals
+        BRA.W     LoadSystemData ;]
+
+CheckBootFile ;]
+        LEA       MyIOPBA6(A6),A0
+        CLR.W     ioDrvNum(A0)
+        CLR.L     ioFileType(A0) ;]
+        MOVE.L    A3,ioFileName(A0) ;]
+        _GetFileInfo
+        RTS       
+
+; Load the data fork of a file into high memory (just below BufPtr).
+
+*R The zero loader mode skips the first 512 bytes and loads below BufPtr. D3 selects the mode; A1 returns the loaded address, D4 the byte count, and D0 the status.
+
+LoadBelowBufPtr
+        MOVEQ     #0,D3
+
+; a1	->	name for file to load
+
+LoadBelowBufPtrCommon
+        LEA       MyIOPBA6(A6),A0
+        MOVEQ     #-1,D2
+        LEA       ioFileName(A0),A2	; point to params we use
+        MOVE.L    A1,(A2)+	; ioFileName(A0)
+        CLR.L     (A2)+	; ioDrvNum(A0), ioRefNum(A0) use default drive?
+        CLR.B     (A2)+	; ioFileType(A0) type 0
+        MOVE.B    #fsRdPerm,(A2)+	; read-only permissions
+        PEA       1024(A6) ;]
+        MOVE.L    (SP)+,(A2)
+        _Open     
+        BNE.S     LoadBootFileDone ;]
+        _GetEOF   
+        BNE.S     CloseBootFile ;]
+        MOVE.L    (A2)+,D4
+        MOVEQ     #2,D6
+        ASL.W     #8,D6
+        SUB.L     D6,D4
+        TST.W     D3
+        BMI.S     LoadSystemCode ;]
+        BNE.S     LoadStartupScreen ;]
+        MOVE.L    BufPtr,A1
+        SUB.L     D4,A1 ;]
+
+ReadBootFile ;]
+        LEA       MyIOPBA6(A6),A0
+        LEA       ioBuffer(A0),A2 ;]
+        MOVE.L    A1,(A2)+
+        MOVE.L    D4,(A2)+
+        ADDQ.W    #ioPosMode-ioNumDone,A2 ;]
+        MOVE.W    #fsFromStart,(A2)+ ;]
+        MOVE.L    D6,(A2) ;]
+        _Read     
+        BNE.S     CloseBootFile ;]
+        MOVEQ     #0,D2
+
+CloseBootFile ;]
+        LEA       MyIOPBA6(A6),A0
+        _Close    
+
+LoadBootFileDone ;]
+        MOVE.W    D2,D0
+        RTS       
+
+LoadStartupScreen ;]
+        LEA       2048(A6),A1 ;]
+        ADD.L     D6,D4
+        MOVEQ     #0,D6
+        BRA.S     ReadBootFile ;]
+
+*R A successful NewPtr clears D2 before the read. If that read fails, this mode still returns zero in D0. The ROM behavior is retained.
+
+LoadSystemCode
+        MOVE.L    D4,D0
+        _NewPtr   
+        MOVE.W    D0,D2
+        BNE.S     CloseBootFile ;]
+        MOVE.L    A0,A1
+        BRA.S     ReadBootFile ;]
+
+*R Directory IDs zero and two leave the default folder unchanged. Other IDs use OpenWD through HFSDispatch, followed by SetVol on success.
+
+SetDefaultFolder ;]
+        TST.L     D0
+        BEQ.S     SetDefaultFolderDone ;]
+        LEA       MyIOPBA6(A6),A0
+        CMPI.L    #fsRtDirID,D0
+        BEQ.S     SetDefaultFolderDone ;]
+        MOVE.L    D0,ioWDDirID(A0)
+        CLR.L     ioFileName(A0)
+        MOVE.L    #'ERIK',ioWDProcID(a0)	; magic incantation from hell
+        MOVEQ     #1,D0
+        _HFSDispatch
+        BNE.S     SetDefaultFolderDone ;]
+        _SetVol   	; make blessed folder the default volume
+
+SetDefaultFolderDone ;]
+        RTS       
+
+*R InitFS and InitEvents follow the boot helpers in ROM order.
+*R Later sources moved these routines from StartBoot into TFS.a and OSEventMgr.a.
+*R Their headers and applicable comments remain below. The later switch-table
+*R format, file-system variable block, and event-queue guard are absent in this ROM.
+*R _NewPtr below encodes the original SYS,CLEAR options.
+*R Branch widths preserve the target instruction encodings.
+
+;
+;	File:		TFS.a
+;
+;	Contains:	This file is the controlling file for the Macintosh Turbo file
+;				system.  It contains initialization code and the file system's
+;				queueing and dispatch routines.
+;
+;	Roots:		This system exploits the dispatching mechanism used by the earlier
+;				Macintosh file system written by Larry Kenyon et al.  Relevant
+;				code was taken from that system and modified as appropriate.
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc.  All rights reserved.
+;
+*R This original history records the later source relocation.
+;	   <1.2>	11/17/88	GGD		Moved file system initialization code from StartBoot into TFS.a,
+;									Changed BigJsr's into Jsr, since they now reach.
+
+;
+;	File:		OSEventMgr.a
+;
+;	Contains:	Macintosh OS Event Manager
+;
+;	Written by:	Andy Hertzfeld   02-Nov-81
+;
+;	Copyright:	© 1981-1993 by Apple Computer, Inc.  All rights reserved.
+;
+*R These original histories identify the removed guard and relocation.
+;	   <SM9>	12/30/92	rab		Made a change to InitEvents so that it does nothing if the
+;									EventQueue has already been set up. This keeps DiskInsertEvents
+;									from getting lost if the boot fails.
+;	   <SM8>	12/16/92	SWC		Moved InitEvents here from StartBoot.
+
+*R The ROM places the shared allocation-failure return before InitFS.
+FSInitErr	MOVEQ	#-1,D0						; we failed
+			RTS
+
+;-----------------------------------------------------------------
+; Initialize the file system.
+;
+; D0	->	number of FCBs to allocate.
+;
+;-----------------------------------------------------------------
+
+InitFS		TST.W	FSFCBLen					; are we in already?
+			BPL.W	FSInitOK					; br if so
+
+; first, announce the presence of TFS by publishing the FCB size:
+
+			MOVE.W	#FCBEntLen,FSFCBLen  		; Store size of TFS FCB there; non- -1 value means TFS is in
+
+; next, zero the low-memory file system area
+
+			LEA 	FileVars,A0 		 		; initialize our lomem vars to 0
+			MOVEQ	#(FSClrWdLen/2)-1,D1 		; esp. VCB, FS queue hdrs, params, FSBusy
+InitFSClear ;]
+			CLR.W	(A0)+
+			DBRA	D1,InitFSClear ;]
+
+			MOVE.W	#StrtDir,DRMstrBlk			; set up master block address
+
+; get some memory for the FCBs
+
+			CMP.W	#2,MemTop					; 128K machine? 						<25Oct85>
+; no multiplier for 128K				<22Oct85>
+			BLE.S	InitFSAlloc ;]
+			LSL.W	#2,D0						; mult by 4 for 512K+					<25Oct85>
+
+InitFSAlloc ;]
+			MOVE	D0,D2						; save for WDCB allocation				<25Oct85>
+			MULU	#FCBEntLen,D0				; number of bytes needed for FCBs		<25Oct85>
+			ADDQ.W	#2,D0						; and 2 for length prefix				<25Oct85>
+			MOVE.W	D0,D1						; and save in D1						<25Oct85>
+			_NewPtr ,SYS,CLEAR					; get buffer with D0 bytes in it.
+			BNE.S	FSInitErr					; Stop execution on any errors
+
+			MOVE.W	D1,(A0) 					; first word is FCB part length
+			MOVE.L	A0,FCBSPtr					; set the FCB pointer
+
+; Set up a WDCB array with the same number of entries as the FCB array:
+
+			MULU	#WDCBLen,D2 				; number of bytes needed for WDCBs		<25Oct85>
+			MOVE.L	D2,D0						;										<25Oct85>
+			ADDQ.W	#2,D0						; and 2 for length prefix				<08Aug85>
+			MOVE.W	D0,D1						; and save in D1						<11Apr85>
+			_NewPtr ,SYS,CLEAR					; Allocate room for the WDCB array		<11Apr85>
+			BNE.S	FSInitErr					; Crash and burn on errors				<11Apr85>
+
+			MOVE.W	D1,(A0) 					; Store length of WDCB array			<11Apr85>
+			MOVE.L	A0,WDCBsPtr 				; Store pointer in lomem				<11Apr85>
+
+*R The ROM switch table stores short addresses and a word length.
+			MOVE.L	SwitcherTPtr,A2 ;]
+			MOVE.W	A0,WDCBSwOS(A2) ;]
+			MOVE.W	D1,WDCBSwOS+2(A2) ;]
+
+; Allocate a File System Stack:
+
+			MOVE.L	#(HFSStkLen+HFSTmpSize),D0	; Size of stack area 					<26Aug85><C206>
+			_NewPtr ,SYS,CLEAR					; Allocate space in system heap 		<11Apr85>
+			BNE.S	FSInitErr					; Stop execution on any errors			<11Apr85>
+			ADD 	#HFSStkLen,A0				; Point beyond the end of the stack 	<25Oct85><C206>
+			MOVE.L	A0,HFSStkTop				; Store pointer in lo-mem				<11Apr85><C206>
+
+			MOVEQ	#PMSPSize,D0				; Size of Poor Man's Search Path        <18Aug85>
+			_NewPtr ,SYS,CLEAR					; Allocate space for it 				<18Aug85>
+			BNE.S	FSInitErr					; Punt on errors						<18Aug85>
+
+*R A2 still points to the switch table from WDCB initialization.
+			MOVE.W	A0,PMSPSwOS(A2) ;]
+			ADDQ.L	#SPHdrSize,A0				; Point beyond PMSP header				<18Aug85>
+			MOVEQ	#(PMSPSize-SPHdrSize),D0	; Get length of remaining table	<18Aug85>
+			MOVE.W	D0,(A0) 					; Stash it at the start of the table	<18Aug85>
+			MOVE.L	A0,PMSPPtr					; Set up the lo-mem pointer 			<18Aug85>
+
+; Set up the lomem system cache pointers: (hack in until new cache arrives . . .)
+
+			MOVE.W	#512,D1 					; Set up cache block size				<26Aug85>
+
+			MOVEQ	#1,D0						; Allocate 1-block bitmap cache 		<26Aug85>
+			JSR	InitCache	; Set up the cache						<26Aug85><1.2>
+			BNE.W	FSInitErr					;										<26Aug85>
+			MOVE.L	A1,SysBMCPtr				; Bitmap cache pointer. 				<26Aug85>
+
+			MOVEQ	#1,D0						; Allocate a 1-block volume cache		<20Sep85>
+			CMP.W	#2,MemTop					; 128K machine? 						<20Sep85>
+; br if so								<20Sep85>
+			BLE.S	InitFSVolCache ;]
+			MOVEQ	#2,D0						; Allocate a 2-block volume cache		<20Sep85>
+InitFSVolCache ;]
+        JSR	InitCache	; Set up the cache						<20Sep85><1.2>
+			BNE.W	FSInitErr					;										<26Aug85>
+			MOVE.L	A1,SysVolCPtr				; Volume cache pointer					<26Aug85>
+
+			MOVEQ	#4,D0						; Allocate a small B*-Tree cache		<04Nov85>
+			CMP.W	#2,MemTop					; 128K machine? 						<27Aug85>
+; br if so								<27Aug85>
+			BLE.S	InitFSCtlCache ;]
+			MOVEQ	#16,D0						; Allocate a LARGE B*-Tree cache		<20Sep85>
+InitFSCtlCache ;]
+        JSR	InitCache	; Create a new cache					<26Aug85><1.2>
+			BNE.W	FSInitErr					;										<26Aug85>
+			MOVE.L	A1,SysCtlCPtr				; B*-Tree Control cache pointer 		<26Aug85>
+
+; Set up a disk switch hook
+
+			LEA 	DSHook,A0	; Point to the disk switch code 		<22Jul85>
+			MOVE.L	A0,DskSwtchHook 			; Make it available for use 			<22Jul85>
+
+FSInitOK	MOVEQ	#0,D0						; success!
+			RTS
+
+
+*R InitEvents always allocates and resets the queue in this ROM.
+;_______________________________________________________________________
+;
+; Routine:		InitEvents
+;
+; Arguments:	D0 (input)   --  number of elements in the event queue
+;				D0 (output)  --  result code
+;
+; Function: 	This routine initializes the event queue to the size
+;				specified in D0.
+;
+; Other:		uses D0,D1,D2,A0,A1
+;_______________________________________________________________________
+
+InitEvents
+			MOVE.W	D0,D2
+			MOVEQ	#EvtQBlkSize,D0
+			MULU	D2,D0
+			MOVE.L	D0,D1						; save a copy of the size
+			_NewPtr ,SYS,CLEAR					; get memory for storage allocator
+
+			LEA 	EvtBufCnt,A1
+			SUBQ	#1,D2						; set up lo mem event buffer count (-1)
+			MOVE.W	D2,(A1) 					; EvtBufCnt
+
+			CLR.L	-(A1)						; EventQueue QTail
+			CLR.L	-(A1)						; EventQueue QHead
+			CLR.W	-(A1)						; EventQueue QFlags
+
+			MOVE.L	A0,-(A1)					; SysEvtBuf
+												; fill buffer with all ones
+InitEvLoop ;]
+	NOT.W	(A0)+						; 0000 -> FFFF
+			SUBQ	#2,D1						; more to do?
+; size must have been divisible by 4
+			BNE.S	InitEvLoop ;]
+
+			MOVE.W	#$FFEF,-(A1)				; SysEvtMask - enable all events except key up
+
+			CLR.W	KeyLast 					; initialize keyboard repeat stuff
+			RTS
+
+
+StartBootEnd ;]
+        ENDPROC
+        END

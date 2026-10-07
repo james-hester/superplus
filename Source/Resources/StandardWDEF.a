@@ -1,0 +1,898 @@
+*R Mac Plus v3 WDEF 0, including its ROM resource block header.
+*R The ROM uses version 5 with monochrome drawing and zoom support.
+*R The preserved header also credits the later color interface.
+*R Later inline comment tags refer to the surviving source revisions.
+*R A3 holds the window, D3 the parameter, D5 the masked variant and D6 the full variant.
+*R D7 holds the title height. Helpers use A4 or A0 for rectangles.
+*R Explicit instruction sizes retain the ROM encodings. See Evidence/standard-wdef.json.
+;
+;
+;	File:		StandardWDEF.a
+;
+;	Contains:	This file contains the window definition procedure
+; 				"DocumentProc", the standard Mac window type.
+;  				It is a rectangular window with a title bar.
+;
+;	Written by:	Andy Hertzfeld  Aug 4, 1982; color interface by Chris Derossi
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc., all rights reserved.
+;
+*R Original modification history through the ROM build:
+;	 21-Aug-82	AJH  Made DocumentProc support rectangular windows only
+;	 30-Aug-82	AJH  Added growIcon hit detection, fixed hit to exclude perimeter drag
+;	 07-Sep-82	AJH  Added handler for grow message
+;	 12-Sep-82	AJH  Made it so proc doesn't have to calcRgns when not visible
+;	 20-Sep-82	AJH  Added go-away button drawing and hit-testing
+;	 25-Sep-82	AJH  Added cheap dialogBox window definition proc
+;	 28-Sep-82	AJH  New GoAway button; restructured goAway drawing
+;	 05-Oct-82	AJH  Removed Init message to save code
+;	 06-Oct-82	AJH  Fixed dialogBox dragRgn bug
+;	 10-Oct-82	AJH  Converted to QuickDraw trap interface
+;	 16-Oct-82	AJH  Fixed GoAway hit-test origin bug
+;	 17-OCt-82	AJH  Made both windowProcs preserve A1
+;	 07-Nov-82	AJH  Changed DocumentProc hiliting to Lisa way
+;	 14-Nov-82	AJH  Improved shape of Grow outline ala Lisa
+;	 16-Nov-82	AJH  Made branch table offset-based to save space
+;	 16-Nov-82	AJH  Special-cased hiliting of small windows
+;	 20-Dec-82	AJH  Changed title bar to 20 pixels tall
+;	 24-Dec-82	AJH  Made wProcAsm a separate assembly
+;	 17-Mar-83	AJH  Added third variant -- shadowless dBoxProc
+;	 27-Apr-83	AJH  only plot, hit-test goAway if window is active
+;	 25-Jul-83	SC	 Fixed third variant -- frame was incorrect, see DrawDBox
+;	 06-Aug-83	AJH  changed hiliting to use pattern
+;	 09-Aug-83	AJH  added draw grow icon message receiver
+;	 20-Aug-83	AJH  made it only hit-test or draws goAway if window is active
+;	 29-Oct-83	AJH  new dBox border
+;	 10-Nov-83	AJH  added variant 4 -- just like variant 0, but no inGrow
+;	 24-Dec-83	AJH  fixed structRgn calc bug in variant 1
+;	 24-Feb-84	AJH  fixed hit-testing of go-away -- was off by 2
+;	 09-Jan-85	JTC  modified for MDS assembly: label DocumentProc changed
+;					 to DocProc to avoid collision.
+;	 15-Jan-85	EHB  fixed erase of 3 pixels of content rgn in DrawFrame;
+;					 prevented erase of top line in DoTitleString.
+;	 15-Jan-85	EHB  eliminated title flicker in CheckHilite; gnrl cleanup
+;	 30-Jan-85	EHB  fixed boundary testing of GoAwayBox
+;	 14-Feb-85	JTC  named rsrc.
+;	 16-May-85	EHB  For GrowBox hitTesting, changed D4=16 to D4=14
+;v3  16-May-85	EHB  Check left of window title when no grow box too
+;	 29-Jul-85	EHB  converted back to porkshop
+;v4   5-Aug-85	EHB  Allow variable size titles
+;v5  29-Aug-85	EHB  Variant 8 knows how to zoom
+;	 18-Sep-85	EHB  Added routine ChkPoint to allow slop on large zoom size
+;	 09-Oct-85	EHB  Added designer zoom icon, restored old close mask
+;	 18-Oct-85	EHB  New Zoom positioning (avoid lawsuits). Needs title fixes too
+;					 Add tempRgn to frame to save clip, to calc window's region
+;	 18-Oct-85	EHB  Only allow zooming on new ROMs (just in case)
+;	 21-Oct-85	EHB  In HitDoc, use BuildTBarRect to hit-test title bar.  The old
+;					 way didn't work with null content regions.
+;	 03-Nov-85	EHB  Zoom was one pixel too far left (fix draw and hit)
+
+; FUNCTION MyWindow(varCode: INTEGER; window: WindowPtr;
+;					message: INTEGER; param: LongInt): LongInt
+
+
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+top   			EQU 		0         				; top coordinate [word]
+left  			EQU 		2         				; left coordinate [word]
+bottom			EQU 		4         				; bottom coordinate [word]
+right 			EQU 		6         				; right coordinate [word]
+topLeft   		EQU 		0         				; upper left corner [point]
+botRight  		EQU 		4         				; lower right corner [point]
+portRect  		EQU 		$10       				; port's rectangle [rect]
+portBits  		EQU 		$2        				; port's bitmap [bitmap]
+clipRgn   		EQU 		$1C       				; clipping region [handle]
+bounds			EQU 		6         				; bounding box [rectangle]
+rgnBBox   		EQU 		2         				; bounding box [rectangle]
+white           EQU     -8
+black           EQU     -16
+screenBits      EQU     -122
+patAlign        EQU     -168
+zoomBit         EQU     3                       ; bit 3 is zoom bit
+growBit         EQU     2                       ; bit 2 is grow bit
+minTitleH       EQU     19                      ; minimum title bar height without SICN
+scrollBarSize   EQU     16                      ; size of scroll bar area
+
+WAscent         EQU     0
+WDescent        EQU     2
+WHeight         EQU     4
+WBoxDelta       EQU     6
+; record for font and other info
+WInfo           EQU     -8 ;]
+; temporary region handle
+TempRgn         EQU     -12 ;]
+; size of all the local variables
+LinkSize        EQU     TempRgn ;]
+param           EQU     8                       ; addition information based on message
+message         EQU     12                      ; operation to perform
+window          EQU     14                      ; the window pointer
+varCode         EQU     18                      ; variation code
+ProcResult      EQU     20                      ; function’s result returned to caller
+ParamSize       EQU     12                      ; size of all the passed parameters
+
+ResourceBlockFlags EQU $C0 ;]
+MasterPointerOffset EQU $70 ;]
+
+WDEFResourceBlock ;]
+                DC.L    ResourceBlockFlags*$1000000+WDEFResourceEnd-WDEFResourceBlock ;]
+                DC.L    MasterPointerOffset ;]
+
+WDEF0 PROC EXPORT
+DocProc
+                BRA.S   WDEFStart
+                DC.W    0                       ; flags word
+                DC.B    'WDEF'                  ; resource type
+                DC.W    0                       ; resource ID
+                DC.W    5                       ; version number
+
+
+; ------------- setup window info -------------
+WDEFStart
+                LINK.W  A6,#LinkSize            ; set stack frame to address params
+                MOVEM.L D3-D7/A1-A4,-(SP)       ; save work registers
+                MOVE.L  (A5),A0                 ; get pointer to QuickDraw globals
+                MOVE.L  (A0),-(SP)
+                MOVE.L  WMgrPort,(A0)
+                LEA     WInfo(A6),A3 ;]
+                MOVE.L  A3,-(SP)                ; push pointer to a FontInfoRec
+                _GETFONTINFO                    ; and get the font’s info
+                MOVE.W  (A3)+,D7
+                ADD.W   (A3)+,D7 ;]
+                ADDQ.W  #4,D7                   ; get the height
+                BSET    #0,D7                   ; make height odd for symmetry
+                MOVEQ   #minTitleH,D1           ; get min title height for no icon
+                CMP.W   D1,D7                   ; force height to minimum
+                BGE.S   StoreTitleHeight ;]
+                SUB.W   D7,D1                   ; how much less than minimum is it?
+                LSR.W   #1,D1                   ; used for centering tiny fonts
+                ADD.W   D1,WInfo+WAscent(A6)    ; make the ascent "bigger"
+                MOVEQ   #minTitleH,D7 ;]
+StoreTitleHeight ;]
+                MOVE.W  D7,(A3)+
+                MOVE.W  D7,D0                   ; get height
+                SUB.W   #13,D0                  ; subtract height of box
+                LSR.W   #1,D0                   ; divide by 2
+                MOVE.W  D0,(A3)
+                CLR.L   -(SP)
+                _NEWRGN                         ; get a new region
+                MOVE.L  (SP)+,TempRgn(A6)       ; and save in our frame
+                LEA     param(A6),A0 ;]
+                MOVE.L  (A0)+,D3
+                MOVE.W  (A0)+,D0
+                MOVE.L  (A0)+,A3
+                MOVE.W  (A0)+,D5
+                MOVE.W  D5,D6
+                AND.W   #3,D5                   ; ignore "inGrow" variant
+                CLR.L   (A0)
+                ADD.W   D0,D0                   ; double for word index
+                LEA     GoDocProc,A0	; get jump table address
+                ADD.W   GoDocProc(PC,D0.W),A0 ;]
+                JSR     (A0)
+                MOVE.L  TempRgn(A6),-(SP)       ; dispose of temp region
+                _DISPOSRGN                      ;
+                _SETPORT
+                MOVEM.L (SP)+,D3-D7/A1-A4       ; restore work registers
+                UNLK    A6                      ; unlink stack frame
+                MOVE.L  (SP)+,A0                ; get return address
+                ADD.W   #ParamSize,SP           ; strip parameters
+                JMP     (A0)                    ; return to caller
+GoDocProc
+                dc.w	DrawDoc-GoDocProc	; draw is message #0
+			dc.w	HitDoc-GoDocProc	; hit test is message #1
+			dc.w	CalcDoc-GoDocProc	; calc test is message #2
+			dc.w	InitDoc-GoDocProc	; init is message #3
+			dc.w	DisposeDoc-GoDocProc ; dispose is message #4
+			dc.w	GrowDoc-GoDocProc	; grow message is #5
+			dc.w	DrawGIcon-GoDocProc ; draw grow icon is #6
+
+InitDoc
+                BTST    #zoomBit,D6 ;]
+                BEQ.S   InitDone                ; no, then we’re done
+                CLR.B   wZoom(A3) ;]
+                TST.W   ROM85
+                BMI.S   InitDone ;]
+                MOVEQ   #8+8,D0                 ; space for 2 rects
+                _NewHandle ,CLEAR
+                BNE.S   InitDone ;]
+                ADDQ.B  #1,wZoom(A3)            ; set zoom flag to TRUE
+                MOVE.L  A0,wDataHandle(A3)      ; save handle to data
+                MOVE.L  (A0),A4                 ; point to data
+                ADDQ.W  #8,A4
+                MOVE.L  (A5),A1
+                MOVE.L  screenBits+bounds(A1),(A4)+ ;]
+                MOVE.L  screenBits+bounds+4(A1),(A4)+ ;]
+                MOVEQ   #3,D0                   ; get indent
+                SUB.W   D0,-(A4) ;]
+                SUB.W   D0,-(A4) ;]
+                ADD.W   D0,-(A4) ;]
+                ADD.W   D0,-(A4) ;]
+                ADD.W   D7,(A4) ;]
+                ADD.W   D7,(A4) ;]
+                MOVE.L  (A0),A4                 ; point at userState
+GetRect
+                MOVE.L  A4,-(SP)                ; push address of rect
+                MOVE.L  portRect(A3),(A4)
+                MOVE.L  portRect+botRight(A3),botRight(A4); get locals
+                MOVE.L  portBits+bounds(A3),-(SP) ;]
+                NEG.W   (SP)                    ; make offset positive
+                NEG.W   2(SP)
+                _OFFSETRECT                     ; convert rect to global
+InitDone
+                RTS
+
+; ================================================
+; IsItSmall returns NE if the window has been resized or moved (NE if window "small")
+; It updates smallsize if it has.  (If tab, only move small window).
+IsItSmall
+                SUBQ.W  #8,SP
+                MOVE.L  SP,A4
+                BSR.S   GetRect                 ; rectReg = curSize
+                MOVE.L  wDataHandle(A3),A0      ; get data handle
+                MOVE.L  (A0),A2                 ; A2 = bigSize
+                ADDQ.W  #8,A2
+                BSR.S   ChkPoint                ; compare topleft
+                BNE.S   IsSmall                 ; => not close enough
+                BSR.S   ChkPoint                ; compare botRight
+                BEQ.S   NotSmall                ; => it’s close enough
+IsSmall
+                MOVE.L  wDataHandle(A3),A0      ; get data handle
+                MOVE.L  (A0),A4                 ; save window’s current size
+                BSR.S   GetRect                 ; rectReg = curSize
+                MOVEQ   #1,D0                   ; return NE!
+NotSmall
+                ADDQ.W  #8,SP
+                RTS                             ; we’re done
+
+*R ChkPoint compares successive corners at A4 and A2.
+*R Each comparison accepts a square extending seven pixels in each direction.
+ChkPoint
+                MOVE.L  (A2),-(SP)              ; make point into a rect
+                MOVE.L  (A2)+,-(SP)             ; by pushing twice
+                MOVE.L  SP,-(SP)                ; and insetting by 7
+                MOVE.L  #$FFF9FFF9,-(SP)        ;
+                _INSETRECT                      ;
+                CLR.W   -(SP)                   ; is cursize within 7 of
+                MOVE.L  (A4)+,-(SP)             ; that point?
+                PEA     6(SP)                   ;
+                _PTINRECT                       ;
+                SUBQ.B  #1,(SP)                 ; reverse sign of result
+                MOVE.B  (SP)+,D0                ;
+                ADDQ.W  #8,SP                   ; strip off the rect
+                RTS                             ; exit w/EQ if "Big"
+CheckZoom ;]
+                BTST    #zoomBit,D6 ;]
+                BEQ.W   CheckZoomDone ;]
+                TST.B   wZoom(A3)               ; did we get the handle?		<36>
+CheckZoomDone ;]
+                RTS
+
+; ================================================
+; wDispose message
+; ================================================
+; DisposeDoc is called when the window is being closed.  All we need to do is
+; give back the handle we borrowed.
+DisposeDoc
+                BSR.S   CheckZoom ;]
+                BEQ.S   DisposeDone             ; no, then we’re done
+                MOVE.L  wDataHandle(A3),A0
+                _DISPOSHANDLE                   ; release it, ignoring errors
+DisposeDone
+                RTS
+
+; ================================================
+; wDraw message
+; ================================================
+; DrawDoc -- draw the document window.   The windowPtr is in windowReg
+; First test for a EORGoAway call and special case it
+; Put shadowing about into D4.
+DrawDoc
+                TST.B   wVisible(A3)            ; is it visible?
+                BEQ.W   DrawDocDone ;]
+                CMP.W   #4,D3
+                BGE.W   EORStuff                ; if so, go handle it
+                _PENNORMAL                      ; we want the normal pen
+                TST.W   D5                      ; documentProc?
+                BNE.W   DrawDBox ;]
+                BSR.W   BuildTBarRect
+                PEA     TempRect
+                MOVE.L  (SP),-(SP)
+                MOVE.L  (SP),-(SP)              ; also for _EraseRect
+                _FRAMERECT                      ; frame the body
+                MOVE.L  OneOne,-(SP)            ;
+                _INSETRECT                      ; inset TempRect
+                _ERASERECT                      ; erase the contents
+                BSR.W   DoTitleString
+                TST.B   wHilited(A3)            ; Is window highlighted?
+                BEQ.W   DrawFrame ;]
+DoHilite
+                PEA     TempRect
+                MOVE.W  #1,-(SP)                ; push dh
+                MOVE.W  WInfo+WBoxDelta(A6),-(SP); push dv
+                _INSETRECT                      ; inset it some
+                MOVE.W  TempRect+right,-(SP) ;]
+                MOVE.W  D3,TempRect+right ;]
+                MOVE.L  TempRect,D0 ;]
+                AND.L   #$00070007,D0           ; only use mod 8
+                MOVE.L  (A5),A4 ;]
+                MOVE.L  D0,patAlign(A4) ;]
+                PEA     TempRect
+                PEA     HilitePattern	; push the pattern address
+                _FILLRECT                       ; fill left half with the pattern
+                BSR.W   CheckZoom ;]
+                BEQ.S   RestoreTitleRight ;]
+                MOVE.W  (SP),D0                 ; else get right edge of box
+                SUB.W   #26,D0                  ; how much room is there?
+                CMP.W   D4,D0                   ; need at least 26 pixels
+                BGE.S   RestoreTitleRight ;]
+                MOVE.W  D0,D4                   ; else use right-26
+RestoreTitleRight ;]
+                MOVE.W  (SP)+,TempRect+right ;]
+                MOVE.W  D4,TempRect+left ;]
+                PEA     TempRect
+                PEA     HilitePattern	; push the pattern address
+                _FILLRECT
+                CLR.L   patAlign(A4)
+                TST.B   wGoAway(A3)             ; is there a goaway button?
+                BEQ.S   DoZoom                  ; => if not, try for zoom
+                BSR.W   BuildTBarRect
+                LEA     GoAwayData,A1 ;]
+                MOVEQ   #0,D0
+                BSR.W   PlotGoAway
+DoZoom
+                BSR.W   CheckZoom ;]
+                BEQ.S   DrawFrame ;]
+                BSR.W   BuildTBarRect
+                LEA     ZoomData,A1 ;]
+                MOVEQ   #0,D0
+                BSR.W   PlotZoom                ; and plot the symbol
+DrawFrame
+                MOVE.L  OneOne,D4
+GetStructure ;]
+                MOVE.L  structRgn(A3),A0
+                MOVE.L  (A0),A0
+                LEA     rgnBBox(A0),A4
+                SUB.W   D4,bottom(A4) ;]
+                SUB.W   D4,right(A4) ;]
+                MOVE.L  A4,-(SP)                ; push rect address
+                _FRAMERECT                      ; frame the body
+                CMP.W   #3,D5
+                BEQ.S   DrawDropShadow ;]
+                TST.W   D5
+                BNE.S   NoDrop ;]
+DrawDropShadow ;]
+                BSR.W   DrawShadow ;]
+NoDrop
+                CMP.W   #1,D5                   ; dBoxProc?
+                BNE.S   RestoreStructure ;]
+                MOVE.L  (A4),TempRect ;]
+                MOVE.L  botRight(A4),TempRect+botRight ;]
+                PEA     TempRect
+                MOVE.L  (SP),-(SP)
+                MOVE.L  (SP),-(SP)
+                MOVE.L  OneOne,-(SP)            ;
+                _INSETRECT                      ; inset TempRect
+                MOVE.L  #$00070007,-(SP) ;]
+                _PENSIZE                        ; get a thick pen
+                MOVE.L  (A5),A0
+                PEA     white(A0)
+                _PENPAT                         ; set pen pattern
+                _FRAMERECT                      ; and frame TempRect
+                MOVE.L  (A5),A0
+                PEA     black(A0)
+                _PENPAT                         ; set pen pattern
+                MOVE.L  #$00020002,-(SP)
+                MOVE.L  (SP),-(SP)
+                _PENSIZE                        ; get a thick pen
+                _INSETRECT                      ; inset TempRect
+                PEA     TempRect
+                _FRAMERECT                      ; and frame TempRect
+                _PENNORMAL                      ; back to normal pen
+RestoreStructure ;]
+                ADD.W   D4,bottom(A4)
+                ADD.W   D4,right(A4)
+DrawDocDone ;]
+                RTS
+HilitePattern
+			dc.w	$FF00,$FF00,$FF00,$FF00
+
+
+; ================================================
+; BuildTBarRect builds a rectangle enclosing the titleBar in TempRect
+BuildTBarRect
+                LEA     TempRect,A0
+                MOVE.L  structRgn(A3),A1
+                MOVE.L  (A1),A1
+                ADDQ.W  #rgnBBox,A1
+                MOVE.L  (A1)+,(A0)
+                MOVE.L  (A1),botRight(A0) ;]
+                MOVE.W  (A0),D0
+                ADD.W   D7,D0                   ; add precomputed height
+                MOVE.W  D0,bottom(A0)
+                SUBQ.W  #1,right(A0)
+                RTS                             ; return to caller
+
+; ------------- goAway and zoom box highliting -------------
+; decide which icon needs hiliting
+EORStuff
+                BEQ.S   EORGoAway               ; => it’s the goAway
+                BSR.W   CheckZoom ;]
+                BEQ.S   PlotDone ;]
+                BSR.S   BuildTBarRect
+                LEA     ZoomHiliteData,A1 ;]
+                MOVEQ   #2,D0
+
+; ------------- plot the zoom box  -------------
+PlotZoom
+                LEA     TempRect,A0
+                MOVE.W  right(A0),left(A0) ;]
+                MOVEQ   #-22,D1 ;]
+                BRA.S   PlotIt
+EORGoAway
+                BSR.S   BuildTBarRect
+                LEA     GoAwayHiliteData,A1 ;]
+                MOVEQ   #2,D0
+
+; ------------- plot the goAway box  -------------
+PlotGoAway
+                LEA     TempRect,A0
+                MOVEQ   #7,D1
+
+; ------------- plot the little dude face  -------------
+; make Temprect into a 16x16 square for our little bitmap
+PlotIt
+                ADD.W   D1,left(A0) ;]
+                MOVE.W  WInfo+WBoxDelta(A6),D1
+                ADD.W   D1,(A0)
+                SUBQ.W  #1,(A0)
+                MOVE.L  (A0)+,(A0)
+                MOVEQ   #16,D1
+                ADD.W   D1,(A0)+
+                ADD.W   D1,(A0)
+                MOVE.L  #$00100010,D1
+                BSR.W   PlotSymbol
+PlotDone ;]
+                RTS
+DrawDBox ;]
+                MOVE.L  #$00020002,D4
+                CMP.W   #3,D5                   ; does it have shadow?
+                BEQ.W   GetStructure ;]
+                MOVEQ   #0,D4                   ; otherwise no shadow
+                BRA.W   GetStructure ;]
+
+; ------------- DoTitleString  -------------
+; To prevent title flicker, DoTitleString leaves the left edge of the
+; title in D3 and the right edge in D4.  If the title bar needs to be
+; highlighted, the highlighting is done in 2 sections, one on each side
+; of the title.  DoTitleString draws the title centered in tempRect.
+; Warning -- it trashes D3 and D4.
+DoTitleString
+                MOVE.W  TempRect+right,D4 ;]
+                MOVE.W  D4,D3                   ;
+                SUB.W   TempRect+left,D3
+                SUB.W   wTitleWidth(A3),D3      ; compute extra x
+                ASR.W   #1,D3                   ; divide by 2
+                MOVEQ   #2,D0                   ; start title at x = 2
+                TST.B   wGoAway(A3)             ; is there a go away button
+                BEQ.S   CheckTitleIndent ;]
+                MOVEQ   #32,D0                  ; start title at x = 32
+CheckTitleIndent ;]
+                CMP.W   D0,D3                   ; to left of x?
+                BGE.S   ApplyTitleIndent ;]
+                MOVE.W  D0,D3
+ApplyTitleIndent ;]
+                ADD.W   TempRect+left,D3
+                MOVE.W  D4,-(SP)                ; save right across clip
+                BSR.W   CheckZoom ;]
+                BEQ.S   ClipTitle ;]
+                SUB.W   #32,D4                  ; get default right edge
+ClipTitle ;]
+                MOVE.L  TempRgn(A6),-(SP)       ; get our temp region
+                MOVE.L  (SP),-(SP)              ; copy for SectRgn
+                _GETCLIP                        ; and save for restore
+                MOVE.W  D4,TempRect+right ;]
+                PEA     TempRect
+                _CLIPRECT                       ; set clipping to it
+                MOVE.L  (A5),A0                 ; get globals
+                MOVE.L  (A0),A0                 ; get port
+                MOVE.L  clipRgn(A0),-(SP)       ; and the rect region
+                MOVE.L  (SP),-(SP)              ; copy for SectRgn
+                _SECTRGN                        ; get the intersection
+                MOVE.W  (SP)+,TempRect+right ;]
+                MOVE.W  D3,-(SP)                ; push left for MoveTo
+                MOVE.W  TempRect,D0 ;]
+                ADD.W   WInfo+WAscent(A6),D0    ; move down to baseline
+                ADDQ.W  #1,D0                   ; leave 2 pixels white space
+                MOVE.W  D0,-(SP)                ; push baseline
+                _MOVETO
+                MOVE.L  wTitleHandle(A3),A0     ; get titleHandle
+                MOVE.L  (A0),-(SP)              ; push title pointer
+                _DRAWSTRING                     ; draw it
+                MOVE.L  TempRgn(A6),-(SP)       ; get our temp region
+                _SETCLIP                        ; and restore it
+                MOVE.W  D3,D0                   ; save left indent in D0							<15>
+                SUBQ.W  #6,D3                   ; indent to the left
+                ADD.W   wTitleWidth(A3),D0 ;]
+                CMP.W   D4,D0
+                BGE.S   TitleStringDone ;]
+                MOVE.W  D0,D4
+TitleStringDone ;]
+                ADDQ.W  #6,D4                   ; indent on right
+                RTS
+ZoomData
+*R sixteen rows of monochrome bitmap data restored from the ROM.
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $BFFB                   ;] #.###########.##
+                DC.W    $2088                   ;] ..#.....#...#...
+                DC.W    $A08B                   ;] #.#.....#...#.##
+                DC.W    $2088                   ;] ..#.....#...#...
+                DC.W    $A08B                   ;] #.#.....#...#.##
+                DC.W    $2088                   ;] ..#.....#...#...
+                DC.W    $BF8B                   ;] #.#######...#.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $A00B                   ;] #.#.........#.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $BFFB                   ;] #.###########.##
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+
+ZoomHiliteData
+*R sixteen rows of monochrome bitmap data restored from the ROM.
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0180                   ;] .......##.......
+                DC.W    $09A0                   ;] ....#..##.#.....
+                DC.W    $05C0                   ;] .....#.###......
+                DC.W    $0080                   ;] ........#.......
+                DC.W    $1CF0                   ;] ...###..####....
+                DC.W    $1F80                   ;] ...######.......
+                DC.W    $0540                   ;] .....#.#.#......
+                DC.W    $0920                   ;] ....#..#..#.....
+                DC.W    $0100                   ;] .......#........
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+
+GoAwayData
+*R sixteen rows of monochrome bitmap data restored from the ROM.
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $BFFB                   ;] #.###########.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $A00B                   ;] #.#.........#.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $A00B                   ;] #.#.........#.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $A00B                   ;] #.#.........#.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $A00B                   ;] #.#.........#.##
+                DC.W    $2008                   ;] ..#.........#...
+                DC.W    $BFFB                   ;] #.###########.##
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+
+GoAwayHiliteData
+*R sixteen rows of monochrome bitmap data restored from the ROM.
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0100                   ;] .......#........
+                DC.W    $0920                   ;] ....#..#..#.....
+                DC.W    $0540                   ;] .....#.#.#......
+                DC.W    $0000                   ; ................
+                DC.W    $1C70                   ;] ...###...###....
+                DC.W    $0000                   ; ................
+                DC.W    $0540                   ;] .....#.#.#......
+                DC.W    $0920                   ;] ....#..#..#.....
+                DC.W    $0100                   ;] .......#........
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+
+
+; wHit message
+; ================================================
+; paramReg holds the mousePoint in global coordinates .
+; windowReg holds the window pointer
+HitDoc
+                CLR.W   -(SP)                   ; make room for function result
+                MOVE.L  D3,-(SP)                ; push the mouse point
+                MOVE.L  contRgn(A3),-(SP)
+                _PTINRGN
+                TST.B   (SP)+                   ; well, is it?
+                BEQ.S   NotInContent            ; if not, go check out drag region
+                TST.W   D5                      ; dialog window?
+                BNE.S   JustContent             ; if so, its only in the content
+                BTST    #growBit,D6 ;]
+                BGT.S   JustContent             ; if not, skip
+                TST.B   wHilited(A3)            ; is it active?						<JDR 20-FEB-90
+                BEQ.S   JustContent             ; if not, it cant be in grow
+                MOVE.L  contRgn(A3),A0          ; get region handle				<JDR 20-FEB-90
+                MOVE.L  (A0),A0                 ; get region ptr
+                MOVE.L  rgnBBox+botRight(A0),D0 ; get bottom left of content
+                MOVEQ   #14,D4                  ; keep 14 in a register to save code
+                SUB.W   D4,D0                   ; offset x by 14
+                CMP.W   D0,D3                   ; if <, just in content
+                BLT.S   JustContent
+                SWAP    D0                      ; its within range on x so try y
+                SUB.W   D4,D0                   ; check out y dimension
+                SWAP    D3
+                CMP.W   D0,D3                   ; compare y coordinates
+                BLT.S   JustContent
+                MOVEQ   #wInGrow,D0             ; flag in grow Icon
+                BRA.W   DoneHitDoc              ; go store function result and return
+
+; the point is in the content region so return a ‘1’
+JustContent
+                MOVEQ   #wInContent,D0          ; return in content
+                BRA.W   DoneHitDoc              ; go store function result and return
+NotInContent
+                TST.W   D5
+                BNE.W   DoneHitDoc2 ;]
+                BSR.W   BuildTBarRect
+                CLR.W   -(SP)                   ; make room for function result
+                MOVE.L  D3,-(SP)                ; push the mouse point
+                MOVE.L  A0,-(SP)
+                _PTINRECT                       ; is the point in the title bar?
+                TST.B   (SP)+                   ; examine result
+                BEQ.S   DoneHitDoc2             ; if not, return already = 0
+                TST.B   wHilited(A3)            ; is it hilited?
+                BEQ.S   ItsInDrag               ; if not, can’t be in GoAway
+
+; ------------- hit in goAway or Zoom?  -------------
+; test vertical first for goAway and Zoom since they’re the same
+                MOVE.L  D3,D0                   ; check vertical
+                SWAP    D0                      ; which is high word of mousePoint
+                ADD.W   portBits+bounds(A3),D0 ;]
+                SUB.W   portRect(A3),D0 ;]
+                ADD.W   WInfo+WBoxDelta(A6),D0  ; below box?
+                BPL.S   ItsInDrag               ; => yes
+                ADD.W   #11,D0                  ; in box?
+                BMI.S   ItsInDrag               ; => no
+                TST.B   wGoAway(A3)             ; is there a goAway button?
+                BEQ.S   HitZoom                 ; => no, hit-test zoom
+                MOVE.L  D3,D0                   ; get mousePt
+                ADD.W   portBits+bounds+left(A3),D0 ;]
+                SUB.W   portRect+left(A3),D0    ; compensate for origin
+                CMP.W   #18,D0                  ; is it too far right?
+                BGT.S   HitZoom                 ; if so, its in drag
+                SUBQ.W  #8,D0                   ; it must be at least 7
+                BMI.S   ItsInDrag               ; => no
+                MOVEQ   #wInGoAway,D0           ; its in the goAway button so signal it
+                BRA.S   DoneHitDoc
+HitZoom
+                BSR.W   CheckZoom ;]
+                BEQ.S   ItsInDrag               ; => not in these here parts
+                MOVE.W  D3,D0                   ; get mousePt
+                ADD.W   portBits+bounds+left(A3),D0 ;]
+                SUB.W   portRect+right(A3),D0   ; make right edge = 0
+                CMP.W   #-19,D0                 ; too far left?
+                BLT.S   ItsInDrag               ; => if so, it’s in drag
+                CMP.W   #-9,D0                  ; too far right?
+                BGT.S   ItsInDrag               ; => if so, it’s in drag
+                BSR.W   IsItSmall               ; is window big?
+                BEQ.S   Zoomed ;]
+                MOVEQ   #wInZoomOut,D0          ; say window small
+                BRA.S   DoneHitDoc              ; und scram-muller
+Zoomed ;]
+                MOVEQ   #wInZoomIn,D0           ; say window big
+                BRA.S   DoneHitDoc              ; und scram-muller
+ItsInDrag
+                MOVEQ   #wInDrag,D0             ; flag in drag region
+DoneHitDoc
+                MOVE.L  D0,ProcResult(A6)       ; update function result
+DoneHitDoc2
+                RTS
+
+; ================================================
+; wCalcRgns message
+; ================================================
+; CalcDoc  -- calculate the structure and content regions for the window pointed
+; to by windowReg.  First update size for zooming if necessary
+CalcDoc
+                BSR.W   CheckZoom ;]
+                BEQ.S   CalcContent ;]
+                BSR.W   IsItSmall               ; update window size
+CalcContent ;]
+                LEA     TempRect,A0
+                MOVE.L  A0,-(SP)
+                MOVE.L  portRect(A3),(A0)+
+                MOVE.L  portRect+botRight(A3),(A0) ;]
+                MOVE.L  portBits+bounds(A3),-(SP) ;]
+                NEG.W   (SP)
+                NEG.W   2(SP)
+                _OFFSETRECT                     ; offset it
+                MOVE.L  contRgn(A3),-(SP)       ; content region gets result
+                PEA     TempRect
+                _RECTRGN                        ; go make the region into content region
+                MOVE.L  #$00020002,D4           ; get the shadow factor for DBox
+                MOVE.L  structRgn(A3),-(SP)     ; push the structRgn for later
+                PEA     TempRect
+                MOVE.L  (SP),-(SP)              ; save another copy
+                MOVE.L  MinusOne,-(SP)          ; make 1 pixel bigger, all around
+                _INSETRECT                      ; make it bigger
+                TST.W   D5                      ; is it dBox?
+                BNE.S   DoDBoxCalc              ; skip if it is
+                MOVE.W  D7,D0                   ; move up to top of window
+                SUBQ.W  #1,D0                   ; tweak it
+                SUB.W   D0,TempRect ;]
+                LSR.L   #1,D4                   ; adjust shadow factor
+CalcCommon
+                _RECTRGN                        ; RectRgn(structRgn,tempRect)
+                TST.W   D5                      ; is it dBox?
+                BEQ.S   CalcShadow ;]
+                CMP.W   #3,D5                   ; is it variant 3?
+                BNE.S   CalcDone                ; if not, no shadow
+CalcShadow ;]
+                MOVE.L  TempRgn(A6),-(SP)       ; get temp region
+                PEA     TempRect
+                MOVE.L  (SP),-(SP)              ; save another copy
+                MOVE.L  D4,-(SP)                ; push shadow factor
+                _OFFSETRECT                     ; offset it
+                _RECTRGN
+                MOVE.L  structRgn(A3),-(SP)
+                MOVE.L  TempRgn(A6),-(SP)       ; get temp region
+                MOVE.L  structRgn(A3),-(SP)     ; structure gets the result
+                _UNIONRGN                       ; add it in
+CalcDone
+                RTS                             ; all done with CalcDocRgns
+DoDBoxCalc
+                CMP.W   #1,D5                   ; is it variant 1?
+                BNE.S   CalcCommon
+                PEA     TempRect
+                MOVE.L  #$FFF9FFF9,-(SP)        ; push (-7,-7)
+                _INSETRECT                      ; inset it
+                BRA.S   CalcCommon
+
+; ================================================
+; wGrow message
+; ================================================
+; GrowDoc handles the grow message by drawing a grow outline based on
+; the rectangle held in paramReg.  First make it one pixel bigger to
+; jibe with the structure then frame the entire window.
+GrowDoc
+                MOVE.L  D3,-(SP)                ; push the rect
+                MOVE.L  MinusOne,-(SP)          ; push (-1,-1)
+                _INSETRECT
+                MOVE.L  D3,A3                   ; get rect ptr
+                MOVE.L  (A3),-(SP)
+                MOVE.W  D7,D0                   ; adjust for title
+                SUBQ.W  #1,D0                   ; and tweak it
+                SUB.W   D0,(A3) ;]
+                MOVE.L  D3,-(SP)                ; push the rect
+                _FRAMERECT                      ; frame it
+
+; ------------- draw the lower horizontal -------------
+; line at the top of the horizontal scroll bar area
+                MOVE.W  left(A3),-(SP)          ; push left
+                MOVE.W  bottom(A3),-(SP)        ; push bottom
+                SUB.W   #scrollBarSize,(SP)     ; a few pixels above bottom
+                MOVE.L  (SP),-(SP)              ; make a copy of this point
+                _MOVETO                         ; move to it
+                MOVE.W  right(A3),2(SP)         ; now go to the right edge
+                _LINETO                         ; draw the horizontal line
+
+; line below the title bar area
+                MOVE.L  (SP),(A3) ;]
+                MOVE.L  (SP),-(SP)              ; make a copy of this point
+                _MOVETO                         ; move to it
+                MOVE.W  right(A3),2(SP)         ; now go to the right edge
+                _LINETO                         ; draw the horizontal line
+
+; line along left edge of the vertical scroll bar
+                MOVE.W  right(A3),-(SP)         ; push right
+                SUB.W   #scrollBarSize,(SP)     ; few pixels to the left
+                MOVE.W  (A3),-(SP)
+                MOVE.L  (SP),-(SP)              ; make a copy of this point
+                _MOVETO                         ; move to it
+                MOVE.W  bottom(A3),(SP)         ; now go to bottom edge
+                _LINETO                         ; draw the vertical line
+                MOVE.L  D3,-(SP)                ; push the rect
+                MOVE.L  OneOne,-(SP)            ; push (1,1)
+                _INSETRECT
+                RTS
+DrawShadow ;]
+                MOVE.L  D4,-(SP)                ; push shadow factor
+                _PENSIZE                        ; make penSize = shadow factor
+                MOVE.W  right(A4),D0
+                MOVE.W  D0,-(SP)
+                MOVE.W  (A4),-(SP)
+                ADD.W   D4,(SP)                 ; add shadow factor
+                MOVE.W  D0,-(SP)
+                MOVE.W  bottom(A4),D0
+                MOVE.W  D0,-(SP)
+                MOVE.W  left(A4),-(SP)          ; push left
+                ADD.W   D4,(SP)                 ; add shadow factor
+                MOVE.W  D0,-(SP)
+                _MOVETO
+                _LINETO                         ; LineTo(right,bottom)
+                _LINETO
+                _PENNORMAL                      ; restore normal pen
+                RTS
+PlotSymbol
+                LEA     IconBitmap,A0           ; get pointer to source bitmap
+                MOVE.L  A1,(A0)+
+                MOVE.W  #2,(A0)+ ;]
+                CLR.L   (A0)+
+                MOVE.L  D1,(A0)
+                PEA     IconBitmap              ; push pointer source bitmap
+                MOVE.L  (SP),A0                 ; remember in A0, too
+                MOVE.L  (A5),A1
+                MOVE.L  (A1),A1
+                PEA     portBits(A1)            ; that’s the destination bitmap
+                PEA     bounds(A0)              ; boundsRect of bitmap is source
+                PEA     TempRect
+                MOVE.W  D0,-(SP)
+                CLR.L   -(SP)                   ; no mask region
+                _COPYBITS                       ; let Bill stretch those bits
+                RTS
+
+; wDrawGIcon message
+; ================================================
+;  Draw the grow icon.	First make this window the current grafPort
+DrawGIcon
+                MOVE.L  A3,-(SP)                ; push the window’s port
+                _SETPORT                        ; make that the port
+                LEA     TempRect,A4
+                MOVE.L  portRect+botRight(A3),botRight(A4)
+                MOVE.L  botRight(A4),(A4) ;]
+                SUB.W   #15,(A4) ;]
+                SUB.W   #15,left(A4) ;]
+                TST.B   wHilited(A3)            ; is it hilited?
+                BEQ.S   EraseGrow ;]
+                LEA     GrowBits,A1 ;]
+                MOVEQ   #0,D0
+                MOVE.L  #$00100010,D1
+                BSR.S   PlotSymbol
+
+; ------------- plot the boundary lines -------------
+; plot the left edge of the vertical scroll bar area and the top edge
+; of the horizontal scroll bar area.
+PlotBoundary
+                MOVE.W  left(A4),-(SP)          ; push tempRect.left
+                MOVE.W  (SP),-(SP)              ; copy it again for later
+                MOVE.W  portRect(A3),-(SP) ;]
+                _MOVETO                         ; move to it
+                MOVE.W  portRect+botRight(A3),-(SP) ;]
+                _LINETO                         ; draw the vertical line
+                MOVE.W  portRect+left(A3),-(SP) ; push portRect.left
+                MOVE.W  (A4),-(SP)
+                _MOVETO                         ; move to it
+                MOVE.W  portRect+right(A3),-(SP); push portRect.right
+                MOVE.W  (A4),-(SP)
+                _LINETO                         ; draw the horizontal line
+                RTS
+EraseGrow ;]
+                PEA     TempRect
+                _ERASERECT                      ;
+                BRA.S   PlotBoundary            ;
+GrowBits
+*R sixteen rows of monochrome bitmap data restored from the ROM.
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $0000                   ; ................
+                DC.W    $1FE0                   ;] ...########.....
+                DC.W    $1020                   ;] ...#......#.....
+                DC.W    $103E                   ;] ...#......#####.
+                DC.W    $1022                   ;] ...#......#...#.
+                DC.W    $1022                   ;] ...#......#...#.
+                DC.W    $1022                   ;] ...#......#...#.
+                DC.W    $1022                   ;] ...#......#...#.
+                DC.W    $1FE2                   ;] ...########...#.
+                DC.W    $0402                   ;] .....#........#.
+                DC.W    $0402                   ;] .....#........#.
+                DC.W    $0402                   ;] .....#........#.
+                DC.W    $07FE                   ;] .....##########.
+                DC.W    $0000                   ; ................
+
+
+                ENDP
+WDEFResourceEnd ;]
+                END

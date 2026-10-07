@@ -1,0 +1,47 @@
+{
+  "module": "LCursor",
+  "source": "Reconstruction/Source/QuickDraw/LCursor.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/LCursor.m.a",
+      "sha256": "455f24b21000bdd9dfdac4a006cf5e1285cb3a7eadaa651ebd934843feba4bbe"
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+    }
+  ],
+  "integration_manifest": {
+    "name": "lcursor",
+    "source": "Reconstruction/Source/QuickDraw/LCursor.a",
+    "start": "0x4082c6",
+    "end_exclusive": "0x408334",
+    "entry_points": {
+      "InitCursor": "0x4082c6",
+      "SetCursor": "0x4082d6",
+      "HideCursor": "0x4082f2",
+      "ShowCursor": "0x4082f8",
+      "ShieldCursor": "0x4082fe",
+      "ObscureCursor": "0x40832e"
+    }
+  },
+  "changes": [
+    "Retained the complete LCursor procedure bodies, vector equates, and comments in their original order.",
+    "Omitted the later EASE archive wrapper. Copied the required GrafTypes.m.a equates and their dependencies.",
+    "Made the SetCursor PC-relative call explicit. No algorithm or return sequence changed."
+  ],
+  "verification": {
+    "name": "lcursor",
+    "source": "Reconstruction/Source/QuickDraw/LCursor.a",
+    "source_sha256": "42ff9ce0b9e512e109c832cdcf05c9b66963f3bf25627bd721f71bb7b2e3b4fd",
+    "start": "0x4082c6",
+    "end_exclusive": "0x408334",
+    "bytes": 110,
+    "sha256": "7664bc4ec88d8f7661c6f03284ffb5758f9dc413fa6e46ef92153e5e8bdb9af2",
+    "matches_rom": true
+  },
+  "limitations": [
+    "The shared verifier checks all 110 bytes and six entry points. Historical MPW assembly has not been run.",
+    "The low-memory cursor vectors point to system routines outside this excerpt. Their destinations are not verified by this module."
+  ]
+}

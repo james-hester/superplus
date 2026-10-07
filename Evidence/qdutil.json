@@ -1,0 +1,102 @@
+{
+  "module": "QuickDraw/QDUtil.a",
+  "source_path": "Reconstruction/Source/QuickDraw/QDUtil.a",
+  "source_sha256": "550e22bd670a07b967736e9223b32a0dd7bd131ea89ef7b8e04f786ee934d5b3",
+  "upstream_source": {
+    "path": "QuickDraw/QDUtil.a",
+    "sha256": "bc4fdd2b54d795cd35d0f1b4a7ac40dff18008106062254e62b257f5e5c80fb6",
+    "instruction_lines": [
+      160,
+      329
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x408334",
+      "end_address_exclusive": "0x4083ee",
+      "rom_offset": "0x8334",
+      "length": 186,
+      "sha256": "0206570648460e4ee7b1f522104b95397317e2912e3433788f7d8623e098c06b",
+      "first_symbol": "BitNot",
+      "last_symbol": "Random"
+    }
+  ],
+  "symbols": {
+    "BitNot": "0x408334",
+    "BitAnd": "0x40833c",
+    "BitXor": "0x408344",
+    "BitOr": "0x40834e",
+    "BitShift": "0x408356",
+    "SHLEFT": "0x408364",
+    "DONE": "0x408368",
+    "BitTst": "0x40836c",
+    "BitSet": "0x40837a",
+    "BitClr": "0x408384",
+    "SHARE": "0x40838e",
+    "Random": "0x40839c",
+    "UPDATE": "0x4083dc",
+    "NUMOK": "0x4083e8"
+  },
+  "equates": {
+    "GrafGlobals": {
+      "value": 0,
+      "source": "Interfaces/AIncludes/QuickDraw.a:274"
+    },
+    "randSeed": {
+      "value": -126,
+      "source": "Interfaces/AIncludes/QuickDraw.a:275-283",
+      "derivation": "0 - 5*8 - 68 - 14 - 4"
+    }
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained BitNot through Random in their original order, with their original instructions and applicable comments."
+    },
+    {
+      "kind": "header",
+      "description": "Retained the filename, copyright notice, and UTIL.TEXT heading. Omitted the later build names and change history for routines outside this excerpt."
+    },
+    {
+      "kind": "comment_removal",
+      "upstream_line": 245,
+      "description": "Removed the stale comment about a 68040 workaround. The earlier NOP had already been removed from SuperMario, and the Mac Plus span has no NOP."
+    },
+    {
+      "kind": "assembly_directive",
+      "description": "Selected MC68000 and added the two required equates and closing directives. These directives add no bytes."
+    },
+    {
+      "kind": "reconstruction_notes",
+      "description": "Added marked notes that identify the ROM span, evidence file, and equate sources."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "source_sha256": "550e22bd670a07b967736e9223b32a0dd7bd131ea89ef7b8e04f786ee934d5b3",
+    "checked_bytes": 186,
+    "assembled_sha256": "0206570648460e4ee7b1f522104b95397317e2912e3433788f7d8623e098c06b",
+    "rom_span_sha256": "0206570648460e4ee7b1f522104b95397317e2912e3433788f7d8623e098c06b",
+    "linked_relocations": 0,
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Historical MPW assembly has not been tested.",
+      "The translator supports the constructs used by the current excerpts.",
+      "Byte equality does not establish the exact historical source text or prove completion of the ROM."
+    ]
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "module": "OS/SCSIMgr.a",
+  "source_path": "Reconstruction/Source/OS/SCSIMgr.a",
+  "source_sha256": "a67250213e6e63ecfe2f208789a20715a8424ea9464f7d20beec44d99def5647",
+  "upstream_source": {
+    "path": "OS/SCSIMgr/SCSIMgrOld.a",
+    "sha256": "8a30fa6a13b9a83f3d6dabfc184025c056a84de97625b3d121c5025f7f8c95e2"
+  },
+  "upstream_related_sources": [
+    {
+      "path": "OS/SCSIMgr/SCSIMgrHW.a",
+      "sha256": "8a2acb8f0e946737b832e67e593a65231693e013f5ba4d7733eb315b01b38a48"
+    }
+  ],
+  "upstream_equates": [
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/SCSI.a",
+      "sha256": "9420495b6e83b3743419c6f7a02e40f91c26f9d92bcf3305e22684493bb15904"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x41712c",
+      "end_address_exclusive": "0x4175d2",
+      "rom_offset": "0x1712c",
+      "length": 1190,
+      "sha256": "e0e70ec74898927a3db085b22505a3a1ceeda27e539005e7541d81d9c25f2641",
+      "first_symbol": "SCSIMgr",
+      "last_symbol": "CheckPhase"
+    }
+  ],
+  "boundary_evidence": {
+    "description": "The exported SCSIMgr symbol starts at $41712C. The reference comment marks the final RTS at $4175D0 as the end of SCSIMgrOld.a. InsTime begins at $4175D2. The reconstructed span includes every byte between those boundaries.",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv",
+    "comment_reference": "Reconstruction/Evidence/ghidra-comments.json"
+  },
+  "symbols": {
+    "SCSIMgr": "0x41712c",
+    "SCSI": "0x417132",
+    "JmpTable": "0x41713e",
+    "DoSCSIInstall": "0x417168",
+    "DoSCSIStat": "0x41716a",
+    "DoSCSIReset": "0x41717c",
+    "NoByteExit": "0x417184",
+    "DoSCSIGet": "0x41718a",
+    "SCARBDONE": "0x417192",
+    "DoSCSISelect": "0x417198",
+    "SCSELDONE": "0x4171a4",
+    "DoSCSICmd": "0x4171ae",
+    "SCCOMMAND": "0x4171be",
+    "DoSCSIRead": "0x4171c8",
+    "dataCommon": "0x4171cc",
+    "DoSCSIWrite": "0x41724c",
+    "DoSCSIComplete": "0x417256",
+    "SCSIComplete": "0x417258",
+    "StdEntry": "0x417294",
+    "SCSTDENT": "0x417294",
+    "SCSIStdExit": "0x4172b0",
+    "Arbitrate": "0x4172bc",
+    "Select": "0x417306",
+    "SendCMD": "0x41734c",
+    "DataXfer": "0x41739c",
+    "GetStat": "0x417464",
+    "GetMsg": "0x41749a",
+    "ReadCDIO": "0x4174d4",
+    "busdelay": "0x4174de",
+    "ResetDrive": "0x4174e6",
+    "SCRESETDRV": "0x4174e6",
+    "wfbsy": "0x417510",
+    "wfnBSY": "0x417524",
+    "wfnREQ": "0x41753a",
+    "wfREQ": "0x417550",
+    "CyclePhase": "0x417566",
+    "WriteFiller": "0x417596",
+    "CycleHndshk": "0x4175a6",
+    "CycleRts0": "0x4175be",
+    "CycleRts": "0x4175c0",
+    "CheckPhase": "0x4175c2"
+  },
+  "external_references": {
+    "Ticks": "0x00016a",
+    "SCSIRd": "0x580000",
+    "SCSIWr": "0x580001"
+  },
+  "edits": [
+    {
+      "kind": "header",
+      "description": "Preserved the original attribution, copyright notices, module description and history entries through 1985. Retained applicable body comments. Omitted later revision history and comments tied to removed behavior; reconstruction notes are separate."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required hardware, TIB, error and low-memory equates from the interface files. Selected the Mac Plus hardware bases. Replaced the later include and WITH directives with these explicit equates."
+    },
+    {
+      "kind": "dispatch",
+      "description": "Restored the inline branch table for selectors 0 through 10. Removed later selector validation, SCSI globals, queueing, power management, cleanup hooks and additional selector implementations. Selector 7 returns immediately; selectors 8 and 9 reuse read and write with bit 15 of D4 set."
+    },
+    {
+      "kind": "calling_convention",
+      "description": "Restored StdEntry at each handler: LINK A6, save D2-D7/A2-A4, load A3 with $580000 and A4 with $580001, clear D7 and D4. Restored the matching register restore and argument cleanup in SCSIStdExit."
+    },
+    {
+      "kind": "tib_interpreter",
+      "description": "Restored the eight SUBQ/BEQ tests in opcode order, direct DataXfer calls, D2 pointer increments and the earlier LOOP and COMPARE operations. The ancestor records TIB fixes on July 2, 1987. Retained the ROM behavior instead of those fixes."
+    },
+    {
+      "kind": "data_transfer",
+      "description": "Restored the contiguous DataXfer routine, its polling and blind loops, and the read/write aliases at base plus $200. SCSIMgrOld.a records blind-transfer support on September 18, 1985 and compare support on October 29, 1985. SCSIMgrHW.a retains related read, write and compare routines after the module split. The ROM supplies the earlier register allocation, loop order, sizes and cleanup."
+    },
+    {
+      "kind": "completion",
+      "description": "Restored the D6 tick deadline, signed deadline comparison and direct error return. Removed the later error word on the stack, DMA setup and cleanup hooks. The ancestor records completion error fixes on November 6, 1986."
+    },
+    {
+      "kind": "hardware_protocol",
+      "description": "Restored the fixed host ID $80, single arbitration attempt, direct write-base operands, fixed loop timeouts and earlier status/message handshakes. Removed later ATN selection, retries, TimeSCSIDB calibration, extended handshakes and tape-drive delays."
+    },
+    {
+      "kind": "support_routines",
+      "description": "Restored ReadCDIO, ResetDrive and wfnBSY from complete ROM instruction sequences. ReadCDIO is a descriptive reconstruction name for the ten-byte routine at $4174D4. ResetDrive also retains the reference name SCRESETDRV. These older implementations are absent from the surviving SCSIMgrOld.a body."
+    },
+    {
+      "kind": "cycle_phase",
+      "description": "Restored CyclePhase without the later saved error word, with filler byte $01 and the remaining D1 timeout counter. The ancestor records an error-return fix on November 4, 1986; its later filler byte is $EE."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made branch widths and the PC-relative dispatcher operand explicit. Preserved the ROM instruction sizes, CLR versus MOVEQ choices, and signed branch conditions. No instruction uses a raw byte or word directive."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x41716e",
+      "description": "SCSIStat writes to 8(SP) and 9(SP), not 8(A6) and 9(A6). After StdEntry, those bytes belong to the saved D4 value. The reconstruction preserves the writes."
+    },
+    {
+      "address": "0x41717c",
+      "description": "DoSCSIReset calls ResetDrive and reaches NoByteExit without writing the function result slot. The reconstruction preserves this omission."
+    },
+    {
+      "address": "0x417226",
+      "description": "TIB LOOP decrements D2 and branches to STOP when the result is zero, before writing the count back. It stops the TIB rather than continuing at the next instruction. An initial zero count wraps to $FFFFFFFF."
+    },
+    {
+      "address": "0x417236",
+      "description": "TIB COMPARE writes 1 into the low byte of D4 and branches to the incrementing transfer. The interpreter does not clear that compare state after the transfer."
+    },
+    {
+      "address": "0x4172fc",
+      "description": "Arbitration failure writes error 2 with MOVE.B. The later source returns scArbNBErr, whose interface value is 3."
+    },
+    {
+      "address": "0x4173dc",
+      "description": "DataXfer reads through $580200 and writes through $580201. It does not add the later sIDR offset $60. The ancestor records a DMA read-register fix on June 2, 1986."
+    },
+    {
+      "address": "0x417566",
+      "description": "CyclePhase reuses D1 for its wait routines without loading a fresh timeout. It clears D0 after reaching the desired phase and does not report that it discarded data or wrote filler."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 1190 assembled bytes equal the ROM span. All 41 recorded symbols match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Translated the final source with the shared verifier, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "preserved_original_comment_occurrences": 247,
+    "preserved_original_body_comment_occurrences": 181,
+    "authored_comment_lines": 11,
+    "temporary_driver": "/tmp/evidence-scsi.py",
+    "temporary_build": "/tmp/scsimgr-build",
+    "commands": [
+      "python3 /tmp/evidence-scsi.py",
+      "vale /tmp/scsimgr-authored.md"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the original formatting, removed source text or names of reconstructed labels.",
+      "The earlier source for the complete DataXfer, ReadCDIO, ResetDrive and wfnBSY implementations has not been found. Their instructions are restored from the ROM; the surviving source supports the surrounding interfaces and protocol."
+    ]
+  },
+  "prose_lint": {
+    "command": "vale /tmp/scsimgr-authored.md",
+    "result": "Zero errors, warnings or suggestions. Preserved historical comments were excluded."
+  },
+  "integration_manifest": {
+    "name": "scsimgr",
+    "source": "Reconstruction/Source/OS/SCSIMgr.a",
+    "start": "0x41712c",
+    "end_exclusive": "0x4175d2",
+    "entry_points": {
+      "SCSIMgr": "0x41712c",
+      "SCSI": "0x417132",
+      "JmpTable": "0x41713e",
+      "DoSCSIInstall": "0x417168",
+      "DoSCSIStat": "0x41716a",
+      "DoSCSIReset": "0x41717c",
+      "NoByteExit": "0x417184",
+      "DoSCSIGet": "0x41718a",
+      "SCARBDONE": "0x417192",
+      "DoSCSISelect": "0x417198",
+      "SCSELDONE": "0x4171a4",
+      "DoSCSICmd": "0x4171ae",
+      "SCCOMMAND": "0x4171be",
+      "DoSCSIRead": "0x4171c8",
+      "dataCommon": "0x4171cc",
+      "DoSCSIWrite": "0x41724c",
+      "DoSCSIComplete": "0x417256",
+      "SCSIComplete": "0x417258",
+      "StdEntry": "0x417294",
+      "SCSTDENT": "0x417294",
+      "SCSIStdExit": "0x4172b0",
+      "Arbitrate": "0x4172bc",
+      "Select": "0x417306",
+      "SendCMD": "0x41734c",
+      "DataXfer": "0x41739c",
+      "GetStat": "0x417464",
+      "GetMsg": "0x41749a",
+      "ReadCDIO": "0x4174d4",
+      "busdelay": "0x4174de",
+      "ResetDrive": "0x4174e6",
+      "SCRESETDRV": "0x4174e6",
+      "wfbsy": "0x417510",
+      "wfnBSY": "0x417524",
+      "wfnREQ": "0x41753a",
+      "wfREQ": "0x417550",
+      "CyclePhase": "0x417566",
+      "WriteFiller": "0x417596",
+      "CycleHndshk": "0x4175a6",
+      "CycleRts0": "0x4175be",
+      "CycleRts": "0x4175c0",
+      "CheckPhase": "0x4175c2"
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "module": "QuickDraw/Points.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Points.a",
+  "source_sha256": "850bb5ddadd98151518505cabf0840aa2b8692341e7b6658345235ff36a0df69",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/GrafAsm.m.a",
+    "sha256": "998e2d9925d9eca1fc34f6571e444e78bfc97bf2987670ba7e7a3dbd3e0de9fc",
+    "instruction_lines": [
+      291,
+      580
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        162
+      ],
+      [
+        169,
+        175
+      ],
+      [
+        184,
+        184
+      ],
+      [
+        248,
+        253
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        508
+      ]
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x408956",
+      "end_address_exclusive": "0x408ab6",
+      "rom_offset": "0x8956",
+      "length": 352,
+      "sha256": "b7a43b514cf73db64e4b0fec9706d5567a1cb4bff11e86d3266e96604e19ff31",
+      "first_symbol": "LocalToGlobal",
+      "last_symbol": "EqualPt"
+    }
+  ],
+  "symbols": {
+    "LocalToGlobal": "0x408956",
+    "GlobalToLocal": "0x40895e",
+    "AddPt": "0x40898a",
+    "SubPt": "0x408992",
+    "SetPort": "0x4089b0",
+    "GetPort": "0x4089b8",
+    "GrafDevice": "0x4089c2",
+    "SetPortBits": "0x4089c8",
+    "BackPat": "0x4089e0",
+    "PortSize": "0x4089ee",
+    "MovePortTo": "0x408a0e",
+    "SetOrigin": "0x408a3a",
+    "ClipRect": "0x408a6e",
+    "SetClip": "0x408a80",
+    "GetClip": "0x408a8c",
+    "SetPt": "0x408aa0",
+    "EqualPt": "0x408aaa"
+  },
+  "external_routines": {
+    "PortWord": "0x408402",
+    "OffsetRgn": "0x40bec2",
+    "RectRgn": "0x40beb4",
+    "CopyRgn": "0x40bdfe"
+  },
+  "external_routine_evidence": {
+    "PortWord": "The ROM jump at 0x4089c4 targets 0x408402. Its target instructions match PortWord in QuickDraw/Classic/Util.m.a:274-279.",
+    "OffsetRgn": "The ROM call at 0x408a66 targets 0x40bec2, named OfsetRgn in the Ghidra symbols. The source uses OffsetRgn.",
+    "RectRgn": "The ROM call at 0x408a7a targets the Ghidra RectRgn symbol at 0x40beb4.",
+    "CopyRgn": "The ROM jump at 0x408a9c targets the Ghidra CopyRgn symbol at 0x40bdfe."
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained LocalToGlobal through EqualPt in source order, including the intervening port and clip routines. Preserved their original comments."
+    },
+    {
+      "kind": "header",
+      "description": "Retained the original filename, copyright notice, and GRAFASM.TEXT heading. Omitted placeholder fields and later change history. Points.a is a reconstruction filename."
+    },
+    {
+      "kind": "instruction_encoding",
+      "upstream_lines": [
+        300,
+        313,
+        341,
+        352
+      ],
+      "description": "Spelled the two loads of 1 into D2 as MOVEQ and the two loads of 0 as CLR.L. These spellings match the ROM encoding; the later source uses MOVE.L immediates."
+    },
+    {
+      "kind": "conditional_removal",
+      "upstream_lines": [
+        371,
+        373
+      ],
+      "description": "Omitted the hasPenFraction block in SetPort. The source history dates this addition to May 1990. The ROM branches to the shared return after setting the port."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for PortWord, OffsetRgn, RectRgn, and CopyRgn. Replaced IMPORT directives with equates for their verified ROM addresses."
+    },
+    {
+      "kind": "assembly_directive",
+      "description": "Selected MC68000, copied the required field equates, and added closing directives. These directives add no bytes."
+    },
+    {
+      "kind": "reconstruction_notes",
+      "description": "Added marked notes that identify the ROM span, evidence file, source path, and equates."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "source_sha256": "850bb5ddadd98151518505cabf0840aa2b8692341e7b6658345235ff36a0df69",
+    "checked_bytes": 352,
+    "assembled_sha256": "b7a43b514cf73db64e4b0fec9706d5567a1cb4bff11e86d3266e96604e19ff31",
+    "rom_span_sha256": "b7a43b514cf73db64e4b0fec9706d5567a1cb4bff11e86d3266e96604e19ff31",
+    "linked_relocations": 0,
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Historical MPW assembly has not been tested.",
+      "The translator supports the constructs used by the current excerpts.",
+      "Byte equality does not establish the exact historical source text or prove completion of the ROM."
+    ]
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

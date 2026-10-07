@@ -1,0 +1,168 @@
+{
+  "module": "QuickDraw/DrawLine.a",
+  "source_path": "Reconstruction/Source/QuickDraw/DrawLine.a",
+  "source_sha256": "f775a82897c331e08b6b2528e54162bd93f69159ddc85b82296df5772f24f8e9",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/DrawLine.m.a",
+    "sha256": "8c835a2c0114bc945ae559bc9075422f07f60c14fc4179b9d303f3033d61b62f",
+    "instruction_lines": [
+      36,
+      776
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        184
+      ],
+      [
+        210,
+        212
+      ],
+      [
+        248,
+        272
+      ],
+      [
+        281,
+        290
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        524
+      ]
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40984c",
+      "end_address_exclusive": "0x409d94",
+      "rom_offset": "0x984c",
+      "length": 1352,
+      "sha256": "33e648b0f328880e174c054bd026408c0811d74e096b3e101387fd8d6830667a",
+      "first_symbol": "DrawLine",
+      "last_symbol": "HVSETUP"
+    }
+  ],
+  "symbols": {
+    "DrawLine": "0x40984c",
+    "MODEMAP": "0x40994e",
+    "INITONE": "0x409ad6",
+    "SEEKMASK": "0x409c20",
+    "RECTJMP": "0x409c30",
+    "HVSETUP": "0x409d64"
+  },
+  "manifest_entry": {
+    "name": "drawline",
+    "source": "Reconstruction/Source/QuickDraw/DrawLine.a",
+    "start": "0x40984c",
+    "end_exclusive": "0x409d94",
+    "entry_points": {
+      "DrawLine": "0x40984c",
+      "MODEMAP": "0x40994e",
+      "INITONE": "0x409ad6",
+      "SEEKMASK": "0x409c20",
+      "RECTJMP": "0x409c30",
+      "HVSETUP": "0x409d64"
+    }
+  },
+  "external_routines": {
+    "RgnBlt": "0x40a732",
+    "RSect": "0x40a110",
+    "ShieldCursor": "0x4082fe",
+    "ShowCursor": "0x4082f8",
+    "TrimRect": "0x40c1ba",
+    "InitRgn": "0x40c2c6",
+    "SeekRgn": "0x40c2fe",
+    "PatExpand": "0x408498",
+    "ColorMap": "0x408560",
+    "XorSlab": "0x408642",
+    "DrawSlab": "0x408686",
+    "SlabMode": "0x408716",
+    "FastSlabMode": "0x408770",
+    "MaskTab": "0x408438"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable DrawLine.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved the original file name, copyright notice, drawing header, and routine comments. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC indexing explicit for MODEMAP and RECTJMP. Made branch widths explicit, including the word branches from the horizontal and vertical drawing loops to DONE."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call and supplied the eight-byte return sequence: UNLK A6, MOVE.L (SP)+,A0, ADDQ #8,SP, JMP (A0). The later GrafTypes macro uses RTD_."
+    },
+    {
+      "kind": "traps",
+      "description": "Defined the existing _MFixRatio and _MFixMul calls as the ROM trap words $A869 and $A868."
+    },
+    {
+      "kind": "data",
+      "description": "Preserved the eight MODEMAP bytes and four RECTJMP word offsets as their original data definitions."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 1352,
+    "checked_entry_points": 6,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-drawline-verify",
+    "temporary_verifier": "/tmp/verify-lines-cluster.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "f775a82897c331e08b6b2528e54162bd93f69159ddc85b82296df5772f24f8e9",
+    "assembled_sha256": "33e648b0f328880e174c054bd026408c0811d74e096b3e101387fd8d6830667a",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "original_data_spans": [
+    {
+      "label": "MODEMAP",
+      "start": "0x40994e",
+      "end_exclusive": "0x409956",
+      "length": 8
+    },
+    {
+      "label": "RECTJMP",
+      "start": "0x409c30",
+      "end_exclusive": "0x409c38",
+      "length": 8
+    }
+  ]
+}

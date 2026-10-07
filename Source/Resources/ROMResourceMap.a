@@ -1,0 +1,129 @@
+*R The ROM resource map at $4176F8 follows the old layout
+*R documented in Toolbox/ResourceMgr/ResourceMgr.a. References use offsets
+*R from the ROM base. The copied resource-file header and map-link fields
+*R retain their ROM values; the original resource file is unavailable.
+*R Names and reference order come from the ROM map.
+
+;The old stucture of the ROM is as follows:
+;		ROMRsrcStart:	(long)			; offset to Rom Rsrc stuff
+;		Rom Rsrc Stuff
+;			X:			(2)		number of rsrc's in rom
+;			Y:			(2)		size of rom rsrc map in rom
+;			Map:		(Y)		the rom map
+;			rsrc's:		(x)		the rsrc's
+
+		IMPORT ATPDriver,BaseOfROM,Curs1,Curs2,Curs3,Curs4 ;]
+		IMPORT ELEMS68K,Font0,Font12,FP68K,MDEF0,MPPDriver ;]
+		IMPORT PKG7,PrintHeader,SERDResource,SonyHeader,SoundHeader,WDEF0 ;]
+		EXPORT RomResourceMap ;]
+
+ResourceAttributes EQU $58 ;]
+
+RomResourceMap PROC ;]
+RomResourceCount DC.W (ReferencesEnd-References)/12 ;]
+	DC.W MapEnd-RomMap ;]
+RomMap ;]
+ResourceFileHeader ;]
+	DC.L $100,$8838,$8738,MapEnd-RomMap ;]
+MapNext DC.L $CC1C ;]
+MapFile DC.W 2
+MapAttributes ;]
+ DC.W $8000
+	DC.W TypeList-RomMap,NameList-RomMap ;]
+TypeList
+ DC.W (TypeEntriesEnd-TypeEntries)/8-1 ;]
+TypeEntries ;]
+	DC.L 'DRVR' ;]
+	DC.W (DRVRRefsEnd-DRVRRefs)/12-1,DRVRRefs-TypeList ;]
+	DC.L 'SERD' ;]
+	DC.W (SERDRefsEnd-SERDRefs)/12-1,SERDRefs-TypeList ;]
+	DC.L 'MDEF' ;]
+	DC.W (MDEFRefsEnd-MDEFRefs)/12-1,MDEFRefs-TypeList ;]
+	DC.L 'WDEF' ;]
+	DC.W (WDEFRefsEnd-WDEFRefs)/12-1,WDEFRefs-TypeList ;]
+	DC.L 'PACK'
+	DC.W (PACKRefsEnd-PACKRefs)/12-1,PACKRefs-TypeList ;]
+	DC.L 'CURS' ;]
+	DC.W (CURSRefsEnd-CURSRefs)/12-1,CURSRefs-TypeList ;]
+	DC.L 'FONT' ;]
+	DC.W (FONTRefsEnd-FONTRefs)/12-1,FONTRefs-TypeList ;]
+TypeEntriesEnd ;]
+References ;]
+DRVRRefs ;]
+	DC.W 2,PrintName-NameList ;]
+	DC.L ResourceAttributes*$1000000+(PrintHeader-BaseOfROM) ;]
+	DC.L 0
+	DC.W 3,SoundName-NameList ;]
+	DC.L ResourceAttributes*$1000000+(SoundHeader-BaseOfROM) ;]
+	DC.L 0
+	DC.W 4,SonyName-NameList ;]
+	DC.L ResourceAttributes*$1000000+(SonyHeader-BaseOfROM) ;]
+	DC.L 0
+	DC.W 10,ATPName-NameList ;]
+	DC.L ResourceAttributes*$1000000+(ATPDriver-BaseOfROM) ;]
+	DC.L 0
+	DC.W 9,MPPName-NameList ;]
+	DC.L ResourceAttributes*$1000000+(MPPDriver-BaseOfROM) ;]
+	DC.L 0
+DRVRRefsEnd ;]
+SERDRefs ;]
+	DC.W 0,$FFFF
+	DC.L ResourceAttributes*$1000000+(SERDResource-BaseOfROM) ;]
+	DC.L 0
+SERDRefsEnd ;]
+MDEFRefs ;]
+	DC.W 0,$FFFF
+	DC.L ResourceAttributes*$1000000+(MDEF0-BaseOfROM) ;]
+	DC.L 0
+MDEFRefsEnd ;]
+WDEFRefs ;]
+	DC.W 0,$FFFF
+	DC.L ResourceAttributes*$1000000+(WDEF0-BaseOfROM) ;]
+	DC.L 0
+WDEFRefsEnd ;]
+PACKRefs ;]
+	DC.W 7,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(PKG7-BaseOfROM) ;]
+	DC.L 0
+	DC.W 5,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(ELEMS68K-BaseOfROM) ;]
+	DC.L 0
+	DC.W 4,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(FP68K-BaseOfROM) ;]
+	DC.L 0
+PACKRefsEnd ;]
+CURSRefs ;]
+	DC.W 2,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(Curs2-BaseOfROM) ;]
+	DC.L 0
+	DC.W 3,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(Curs3-BaseOfROM) ;]
+	DC.L 0
+	DC.W 1,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(Curs1-BaseOfROM) ;]
+	DC.L 0
+	DC.W 4,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(Curs4-BaseOfROM) ;]
+	DC.L 0
+CURSRefsEnd ;]
+FONTRefs ;]
+	DC.W 0,ChicagoName-NameList ;]
+	DC.L ResourceAttributes*$1000000+(Font0-BaseOfROM) ;]
+	DC.L 0
+	DC.W 12,$FFFF ;]
+	DC.L ResourceAttributes*$1000000+(Font12-BaseOfROM) ;]
+	DC.L 0
+FONTRefsEnd ;]
+ReferencesEnd ;]
+NameList ;]
+MPPName
+ DC.B 4,'.MPP' ;]
+ATPName
+ DC.B 4,'.ATP' ;]
+SonyName DC.B 5,'.Sony' ;]
+SoundName DC.B 6,'.Sound' ;]
+PrintName
+ DC.B 6,'.Print' ;]
+ChicagoName DC.B 7,'Chicago' ;]
+MapEnd ;]
+	END

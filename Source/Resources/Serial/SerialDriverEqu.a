@@ -1,0 +1,17 @@
+*R System constants retain their original include definitions.
+*R Table lengths and the resource header use expressions from the restored layout.
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+InitLth EQU GetSCCAddrs-InitData ;]
+MasterPointerOffset EQU $68 ;]
+ResetLth EQU ResetDataEnd-ResetData ;]
+ResourceBlockFlags EQU $C0 ;]
+SCCData EQU 4
+SCCWriteOffset EQU SCCWBase-SCCRBase ;]
+Version EQU 2 ;]
+

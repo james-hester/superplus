@@ -1,0 +1,13 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Interfaces/AIncludes/PrPrivate.a
+;
+;	File:		PrPrivate.a
+;
+;
+;
+;	Copyright:	© 1991 by Apple Computer, Inc., all rights reserved.
+;
+
+PrintVars 		EQU 		$944      				; print code variables [16 bytes]

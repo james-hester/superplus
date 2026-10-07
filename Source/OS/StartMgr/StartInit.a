@@ -1,0 +1,1330 @@
+*R This file groups the ROM header, hardware initialization, trap-table setup,
+*R startup services, boot-device search, and initial heap setup in ROM order.
+*R StartSearch.a dates from September 1986. The later StartInit history records
+*R moving InitDispatcher into Dispatch.a in November 1988.
+*R Matching instructions, comments, attribution, and history remain from those
+*R sources. The ROM supplies code absent from the released tree.
+*R Hiram replaces the zero checksum after linking the complete ROM.
+*R Evidence/startup-prefix.json, startup-hardware.json, init-dispatcher.json,
+*R and startup-system.json retain the earlier fragment boundaries and checks.
+
+;__________________________________________________________________________________________________
+;
+;	File:		StartInit.a
+;
+;	Contains:	This code must be placed at the very beginning of the ROM. It contains the hardware
+;				start vectors and low level hardware initialization code.  It is entered through the
+;				reset vector on a hardware reset or cold start.
+;
+;	Originally written			by Larry Kenyon				February 1983
+;	Substantially rewritten		by Wayne R. Loofbourrow		June 1986
+;	Hopelessly scrambled		by Jerome T. Coonen			mid-September 1986
+;	Mercilessly hacked			by everyone but the Pope	throughout 1989 and beyond
+;	Unscrupulously kludged		by TERRORists				first year, last decade, 20th century
+;	Totally messed up			by SuperMario players		Nov 1991-Jan 92
+;	Released upon the world		by Pandorists (Not!)		MCMXCII
+;	Scrambled again				by SuperMario World			May 92 - Dec 92
+;	Repaired					by PDM guys					1993
+;	Spell-Checked				by TNT guys					shortly thereafter
+;
+;	Copyright:	© 1983-1994 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+
+*R The following later history records changes to the restored paths.
+*R Excerpts from StartFail.a and Clock.a retain their original text.
+
+;	   <1.3>	 6/10/89	SWC		Removed Mac Plus/SE references to HappyMac because it's now
+;									handled the same way for all machines in StartBoot (it even uses
+;									QuickDraw!). Rewrote DeadMac to use a standard ICON since it no
+;									longer has to draw the HappyMac too. Removed PutSymbol code and
+;									EXPORT since it's not used by anyone. Removed nEqu.d load from
+;									include file list.
+;	   <1.2>	 5/24/89	GGD		Converted to feature based conditionals. Deleted the code to
+;									turn off the floppy disk motor, because it doesn't work with
+;									SWIMs or IOPs and used an absolute base address.
+;	  <C152>	 9/17/86	WRL		Fixed CritErr to display 2 lines for all machines.
+;	   <C84>	 7/29/86	WRL		Removed NuMac version of BlackScreen - it wasn't being used.
+;	   <C28>	  6/3/86	CSL		Added changes for Aladdin (onMacPP).
+;	   <C27>	 5/30/86	WRL		Changed TMEntry1 to TMRestart to ignore register contents. Made
+;									second longword of Sad Mac info appear below first.
+;	   <C56>	 6/26/86	WRL		Put ClkNoMem, ReadFrClk, and SendToClk back in this file (from
+;									StartInit).
+;				 10/3/85	so		these routines can be called from the start code (before memory
+;									test). This is done via three macros: RTS5, BSR6 and RTS6. Also
+;									supported is the extended command for reads and writes to the
+;									new clock chip for mac. The entry for the lowest level routine
+;									just added is ClkNoMem, and it is accessed via BSR5. Added two
+;									new traps to access all of extra parameter ram, ReadXPRam and
+;									WriteXPRam.
+;				 10/2/85	BBM		made the lowest level routines not use any memory (like the
+;									stack),
+;				 7/24/85	RDC		new today - moved from Sysutil.text added changes for MidMac to
+;									use new interface, int levels
+;___________________________________________________________________________________
+
+;	   <9.8>	  7/6/89	GGD		Un-Proc'd WriteSCC because code falls into it, and alignment
+;									would screw it up. Changed the FMC rev 1 vs 2 code to produce
+;									code that is the same size in both cases. Added some padding for
+;									overpatching.
+;
+;	File:		StartSearch.a
+;
+;	Contains:	This collection of subroutines is used to search out the most appropriate device to become
+;				the startup device, and to load the boot blocks from that device.  It also provides the user
+;				with feedback as to what is happening.
+;
+;	Written by:	Wayne R. Loofbourrow - September, 1986
+;
+;	Copyright:	© 1986-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;	  <C198>	 10/2/86			Fixed bug in flashing X on disk icon.
+;	  <C152>	 9/30/86			Creation based loosely on the Mac Plus boot code.
+;
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'HardwarePrivateEqu.a'
+		INCLUDE 'FSEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'FSPrivate.a'
+		INCLUDE 'InternalOnlyEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+ROMChecksum     EQU     0 ;]
+TROMCode        EQU     $55AAAA55               ;special code in Test ROMs
+BeepSamples EQU 370 ;]
+BeepWavePattern EQU $C006FA40 ;]
+BootStackReserve EQU $400 ;]
+FailureCount EQU ScreenLow+$2EDF ;]
+FailureText EQU ScreenLow+$2CDD ;]
+hiIntMask 		EQU 		$0300					; programmer switch only
+PRAMValidByte EQU $A8 ;]
+PRAMValidCommand EQU -$3F ;]
+PRAMVolumeCommand EQU -$5F ;]
+RAMDecode EQU SCCRBase-1 ;]
+ScreenColumns EQU 512 ;]
+ScreenDPI EQU 72 ;]
+ScreenRows EQU 342 ;]
+ScreenStride EQU ScreenColumns/8 ;]
+ScreenLongs EQU ScreenRows*ScreenStride/4 ;]
+VIAStartupA EQU $6B ;]
+arrow EQU -108 ;]
+bounds EQU 6
+gray EQU -24 ;]
+MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
+QDBootGlobalsSize	EQU		$190						; a mere 400 bytes for QD
+screenBits EQU -122 ;]
+SwitchLen EQU 32 ;]
+
+        IMPORT DoEject,RomResourceMap,StartUpROMTest,CrsrVBLTask,DeadMac,ExtAInt ;]
+        IMPORT ExtBInt,FSIODneTbl,InitCrTable,INITQUEUE,Level1Int,Level2Return ;]
+        IMPORT MH1Int,MV1Int,OneSecDone,OneSecInt,SccDecode,SysErrInit ;]
+        IMPORT VBLInt,Dispatch,DispTable,EMT1010,CrossMark,DiskOutline ;]
+        IMPORT HappyMac,InitKeyboard,PutIcon,PutSymbolRow,QuestionMark,SCSILoad ;]
+        IMPORT SystemError,TheBoot,ResetAndReloadSCSI ;]
+        EXPORT BaseOfROM,BootRetry,ClkNoMem,CritErr,StartBoot,InitDispatcher
+        EXPORT BadTrap,InitSCC
+        EXPORT ROMEject,BootBeep,WriteSCC ;]
+
+*R These macros restore the original stackless call convention.
+*R BSR5 and BSR6 use word branches for the 68000.
+*R Their later source definitions select the 68020 and long branches.
+	MACRO
+	BSR5 &label
+	LEA @1,A5
+	BRA.W &label ;]
+@1
+	ENDM
+	MACRO
+	BSR6 &label
+	LEA @1,A6
+	BRA.W &label ;]
+@1
+	ENDM
+
+
+  				MACRO
+  				RTS5
+  				JMP 		(A5)
+  				ENDM
+
+
+
+  				MACRO
+  				RTS6
+  				JMP 		(A6)
+  				ENDM
+
+StartInit PROC ;]
+BaseOfROM
+CheckSum
+        DC.L    ROMChecksum ;]
+StartPC
+; [ 4] RESET vector
+         DC.L    ResetEntry-BaseOfROM+ROMStart ;]
+ROMVersion      DC.B    Machine                 ; [ 8] machine number
+                DC.B    $75 ;]
+
+;---------------------------------------------------
+; ROM vectors & entry points
+;---------------------------------------------------
+
+StBoot
+; [ A] jump to start code for a restart
+          BRA.W   StartBoot ;]
+BadDisk
+; [ E] eject disk, and reboot
+         BRA.W   RejectBootDevice ;]
+PhaseReadEntry  BRA.W   DoPhaseRead ;]
+TestEntry       BRA.W   StoreByteThenTest ;]
+RomRsrc
+; [1A] ROMStart -> HiRam -> offset to ROM resource header
+         DC.L    RomResourceMap-BaseOfROM ;]
+Eject
+           JMP     DoEject	;] [1E] jump to utility to eject and notify Bruce
+ReservedHeader ;]
+  DC.L    0,0
+ResetEntry
+      BRA.W   CheckDiagROM ;]
+
+*R Local test-loop names are inferred.
+StoreByteThenTest ;]
+                MOVE.B  D0,(A0)
+RepeatTest      LEA     TestReturn,A6 ;]
+                BRA.W   StartUpROMTest ;]
+TestReturn      BNE.W   CritErr ;]
+                SUBQ.L  #1,SP ;]
+                MOVE.L  SP,D0
+                BNE.S   RepeatTest ;]
+
+CheckDiagROM ;]
+                MOVEM.L DiagROM,D0/A0 ;]
+                CMP.L   #TROMCode,D0
+                BNE.S   StartBoot ;]
+                LEA     StartBoot,A1 ;]
+                JMP     (A0)
+
+DoPhaseRead ;]
+                MOVEM.W PhaseRead,D0-D2 ;]
+                JMP     (A5)
+ROMEject        EQU     Eject ;]
+
+*R The ROM starts with phase reads and fixed hardware addresses before RAM is tested.
+StartBoot
+	MOVE.W #$2700,SR	; Disable processor interrupts.
+	LEA FinishPhaseRead,A5 ;]
+	BRA.S DoPhaseRead ;]
+FinishPhaseRead ;]
+	MOVEQ #1,D7
+	LEA RAMDecode,A6 ;]
+	TST.B (A6)+ ;]
+	AND.W D7,D0
+	AND.W D7,D1
+	AND.W D7,D2
+	ADD.W D2,D0
+	ADD.W D1,D0
+	SUBQ.W #1,D0
+	BLE.S InitEarlyHardware ;]
+	TST.W (A6)
+InitEarlyHardware ;]
+	SUB.L A3,A3
+	MOVE.L #ScreenLow,A2 ;]
+	MOVE.L #VBase,A5 ;]
+	MOVE.B #$87,vDirB(A5) ;]
+	MOVE.B #$87,(A5) ;]
+	MOVEQ #PRAMValidCommand,D1 ;]
+	BSR5 ClkNoMem ;]
+CheckPRAMSignature ;]
+	CMPI.B #PRAMValidByte,D2 ;]
+	BEQ.S ReadPRAMVolume ;]
+	MOVEQ #7,D2
+	BRA.S InitVolume ;]
+ReadPRAMVolume ;]
+	MOVEQ #PRAMVolumeCommand,D1 ;]
+	BSR5 ClkNoMem ;]
+InitVolume ;]
+	MOVEQ #7,D4
+	AND.B D2,D4
+	MOVEQ #-8,D2 ;]
+	ANDI.B #VIAStartupA,D2 ;]
+	OR.B D4,D2 ;]
+	MOVE.L #VBase,A5 ;]
+	MOVE.B D2,vBufA(A5) ;]
+	MOVE.B #127,vDirA(A5) ;]
+	MOVE.B (A5),D6 ;]
+	LSL.B #4,D6 ;]
+	MOVE.B #$82,vIER(A5) ;]
+	CLR.B vPCR(A5) ;]
+	BSR6 ClearScreen ;]
+StartBootSound ;]
+	MOVEQ #40,D3 ;]
+	BSR6 BootBeep ;]
+InitIWM
+	BSET #7,(A5) ;]
+	MOVE.L #DBase,A0 ;]
+	MOVEQ #31,D0
+SetIWMMode
+	TST.B mtrOff(A0)	; change the IWM mode now
+	TST.B Q6H(A0)	; set IWM to sense state
+	MOVE.B Q7L(A0),D2	; sense the mode register
+	BTST #5,D2	; no disks should be enabled
+	BNE.S SetIWMMode ;]
+	AND.B D0,D2	; see if low bits match mode we want
+	CMP.B D0,D2
+	BEQ.S StartMemoryTest ;]
+	MOVE.B D0,Q7H(A0)	; set to twiggy mode
+	TST.B Q7L(A0)
+	BRA.S SetIWMMode ;]
+StartMemoryTest ;]
+	TST.B Q6L(A0)	; and back to read mode
+	BSR6 StartUpROMTest
+StartTestResult ;]
+	BEQ.W ContinueBoot ;]
+
+*R CritErr preserves the older fixed-screen failure path. The digit table survives in StartFail.a.
+CritErr
+	MOVEM.L D0-D7/A0-A7,seRegs
+	TST.B DBase+mtrOff ;]
+	LEA ScreenLow,A2 ;]
+	BSR6 ClearScreen ;]
+DrawFailureIcon ;]
+	MOVE.W A4,D0
+	BSR5 DeadMac ;]
+FormatFailureCode ;]
+	SWAP D0
+	MOVE.W D1,D0
+	LSL.L #8,D0
+	MOVE.L #FailureText,A2 ;]
+	MOVEQ #5,D4
+FailLoop
+	ROL.L #4,D0	; get nibble in low order
+	MOVE.W D0,D5
+	ANDI #15,D5
+	MULU #3,D5	; 3 bytes per digit
+	LEA numFont(PC,D5.W),A1 ;]
+	MOVEQ #-61,D1 ;]
+	MOVEQ #2,D3
+chLoop
+	MOVE.B (A1),D5	; get the next byte
+	LSR.W #2,D5	; get high nibble
+	OR.W D1,D5
+	MOVE.B D5,(A2)
+	ADD.W #ScreenStride,A2 ;]
+	MOVE.B (A1)+,D5	; get the next byte
+	LSL.W #2,D5	; get low nibble
+	OR.W D1,D5
+	MOVE.B D5,(A2)
+	ADD.W #ScreenStride,A2 ;]
+	DBRA D3,chLoop	; Loop until character is done.				<C152>
+	SUB.W #6*ScreenStride-1,A2 ;]
+	DBRA D4,FailLoop	; loop until all characters are drawn
+	MOVE.L #FailureCount,A2 ;]
+	MOVE.W #$2700,SR	; Disable processor interrupts.
+
+*R The failure path leaves a counter visible and loops with interrupts disabled.
+FailureCounter ;]
+	ADDQ.L #1,D0
+	SWAP D0
+	MOVE.B D0,(A2)
+	MOVE.B (A2),1(A2) ;]
+	SWAP D0
+	BRA.S FailureCounter ;]
+
+;----------------------------------------------------------------------------
+; The digits 0-F are 4x6 bitmaps stored as 3 bytes/digit
+;----------------------------------------------------------------------------
+
+numFont		DC.B	$96,$42,$69 				; 0
+			DC.B	$B3,$BB,$B1 				; 1
+			DC.B	$96,$ED,$B0 				; 2
+			DC.B	$0E,$9E,$69 				; 3
+
+			DC.B	$66,$60,$EE 				; 4
+			DC.B	$07,$1E,$69 				; 5
+			DC.B	$87,$16,$69 				; 6
+			DC.B	$0E,$DD,$BB 				; 7
+
+			DC.B	$96,$96,$69 				; 8
+			DC.B	$96,$68,$E1 				; 9
+			DC.B	$96,$60,$66 				; A
+			DC.B	$16,$16,$61 				; B
+
+			DC.B	$87,$77,$78 				; C
+			DC.B	$16,$66,$61 				; D
+			DC.B	$07,$17,$70 				; E
+			DC.B	$07,$17,$77 				; F
+
+
+
+
+*R ClearScreen fills the fixed 512-by-342 display and returns through A6.
+ClearScreen ;]
+	MOVEQ #-1,D3
+	MOVE.W #ScreenLongs-1,D2 ;]
+ClearScreenLoop ;]
+	MOVE.L D3,(A2)+
+	DBRA D2,ClearScreenLoop ;]
+	RTS6
+
+*R ClkNoMem uses A1 for the VIA and A5 for return. D1 supplies the command; D2 supplies or receives data. This older body predates the later clock primitive interface.
+ClkNoMem
+	ORI #HiIntMask,SR
+	MOVE.L #VBase,A1 ;]
+	MOVE.B (A1),D3
+	MOVEQ #1,D4
+	ANDI.B #$F9,D3 ;]
+	MOVE.W D1,D6
+	ANDI #120,D6 ;]
+	CMP.W #56,D6 ;]
+	BNE.S ClockCommand ;]
+	MOVE.W D1,D6
+	BSR6 SendToClk
+ClockExtended ;]
+	LSR.W #8,D1
+	TST.B D6
+	BRA.S ClockDirection ;]
+ClockCommand ;]
+	TST.B D1
+ClockDirection ;]
+	BMI.S ClockRead ;]
+	BSR6 SendToClk
+ClockWriteData ;]
+	MOVE.W D2,D1
+	BSR6 SendToClk
+ClockWriteDone ;]
+	BRA.S ClockDone ;]
+ClockRead ;]
+	BSR6 SendToClk
+ClockReadData ;]
+	BSR6 ReadFrClk
+ClockDone ;]
+	BSET #2,(A1) ;]
+	RTS5
+
+*R The following descriptions, loop labels, and bit-transfer comments come from
+*R OS/IoPrimitives/ClockPRAMPrimitives.a. The Plus uses different registers and
+*R masks VIA interrupts with HiIntMask ($0300). D3 holds the VIA output value.
+;
+;________________________________________________________________________________________
+;
+; Routine:	SendToClk						[RTC utility routine]
+;
+; Inputs:	D1	-	command/data byte to write to RTC
+;]			A1	-	VIA1 base address
+;			A6	-	return address (BSR6)
+;]			D3	-	VIA buffer B with clock and enable bits cleared
+;]			D4	-	RTC clock bit number (1)
+;
+; Outputs:	none
+;
+;] Trashes:	D1,D3,D5
+;
+; Function:	writes a command or data byte to the RTC
+;________________________________________________________________________________________
+
+SendToClk
+	MOVEQ #8-1,D5				; shifting out 8 bits
+
+@ShiftLoop
+; shift the bits to position the RTC data bit (bit 0)
+	ROR.B #1,D3 ;]
+	ROXL.B #1,D1					; shift the next data bit into the extend bit
+	ROXL.B #1,D3					; shift the data bit from the extend bit to the RTC data bit
+	MOVE.B D3,(A1)				; stuff it back into the VIA register
+;  and clock the bit out
+	BSET D4,(A1) ;]
+; -> keep looping until all bits are shifted out
+	DBRA D5,@ShiftLoop ;]
+	RTS6
+
+
+;________________________________________________________________________________________
+;
+; Routine:	ReadFrClk						[RTC utility routine]
+;
+;] Inputs:	A1	-	VIA1 base address
+;			A6	-	return address (BSR6)
+;]			D3	-	VIA buffer B with clock and enable bits cleared
+;
+;] Outputs:	D2	-	data byte read from RTC
+;
+;] Trashes:	D1,D4,D5
+;
+; Function:	reads a data byte from the RTC
+;________________________________________________________________________________________
+
+*R The Plus reads eight bits with a counter. The later routine uses a flag bit.
+ReadFrClk
+	MOVEQ #8-1,D5
+; set the RTC data bit's direction to input
+	BCLR #0,vDirB(A1) ;]
+	MOVE.B D3,D4
+	BSET #1,D4
+
+@ShiftLoop
+	MOVE.B D3,(A1)				; clock the next bit in
+	MOVE.B D4,(A1)
+	MOVE.B (A1),D1				; read the register
+	LSR.B #1,D1					; shift the RTC data bit into the carry/X
+; shift in the new bit towards the msb
+	ROXL.B #1,D2 ;]
+; -> keep looping until all bits are shifted out
+	DBRA D5,@ShiftLoop ;]
+; restore the RTC data bit's direction to output
+	BSET #0,vDirB(A1) ;]
+	RTS6
+
+*R BootBeep builds a waveform in the fixed sound buffer, filters it once per frame, then fills the buffer with silence.
+BootBeep ;]
+	LEA VBase,A5 ;]
+	LEA SoundLow,A0 ;]
+	MOVE.L A0,A4
+	MOVE.W SR,D5
+	ANDI #1792,D5 ;]
+	BNE.S BeepWaitVIA ;]
+	MOVE.L Ticks,D0
+BeepWaitTick ;]
+	CMP.L Ticks,D0
+	BEQ.S BeepWaitTick ;]
+	BRA.S BeepDelay ;]
+BeepWaitVIA ;]
+	MOVEQ #-1,D0
+BeepPollVIA ;]
+	BTST #1,vIFR(A5) ;]
+	DBNE D0,BeepPollVIA ;]
+	MOVE.B #2,vIFR(A5) ;]
+BeepDelay ;]
+	MOVE.W #3328,D0
+BeepDelayLoop ;]
+	DBRA D0,BeepDelayLoop ;]
+	MOVEQ #4,D0
+BeepWave ;]
+	MOVE.L #BeepWavePattern,D1 ;]
+BeepWaveByte ;]
+	MOVEQ #19,D2
+BeepWaveRun ;]
+	MOVE.B D1,(A0)
+	ADDQ.W #2,A0
+	SUBQ.W #1,D2
+	BNE.S BeepWaveRun ;]
+	LSR.L #8,D1
+	BNE.S BeepWaveByte ;]
+	DBRA D0,BeepWave ;]
+	BCLR #7,(A5) ;]
+	ADDQ.W #1,D3
+	BRA.S BeepNextFrame ;]
+BeepFilter ;]
+	MOVE.L A4,A0
+	LEA 146(A0),A1 ;]
+	MOVEQ #73,D0 ;]
+BeepFilterLoop ;]
+	MOVE.B (A1),D2
+	ADDQ.W #4,A1
+	MOVE.B (A1),D1
+	ADD.W D1,D2
+	SUBQ.W #2,A1
+	MOVE.B (A1),D1
+	ADD.W D1,D2
+	ADD.W D1,D2
+	ADDQ.W #3,D2
+	ASR.W #2,D2
+	MOVE.B D2,(A0)
+	ADDQ.W #2,A0
+	DBRA D0,BeepFilterLoop ;]
+	MOVE.W #295,D0
+BeepRepeatWave ;]
+	MOVE.B -74(A0),(A0) ;]
+	ADDQ.W #2,A0
+	DBRA D0,BeepRepeatWave ;]
+BeepNextFrame ;]
+	MOVEQ #-1,D0
+	TST.W D5
+	BNE.S BeepNextVIA ;]
+	MOVE.L Ticks,D0
+BeepNextTick ;]
+	CMP.L Ticks,D0
+	BEQ.S BeepNextTick ;]
+	BRA.S BeepFrameDone ;]
+BeepNextVIA ;]
+	BTST #1,vIFR(A5) ;]
+	DBNE D0,BeepNextVIA ;]
+	MOVE.B #2,vIFR(A5) ;]
+BeepFrameDone ;]
+	DBRA D3,BeepFilter ;]
+	MOVE.L A4,A0
+	MOVEQ #-128,D0
+	MOVE.W #BeepSamples-1,D1 ;]
+BeepSilence ;]
+	MOVE.B D0,(A0)
+	ADDQ.W #2,A0
+	DBRA D1,BeepSilence ;]
+	RTS6
+
+*R The successful test path fills RAM, installs exception handlers, and checks the diagnostic ROM entry.
+ContinueBoot ;]
+	MOVE.L A3,A0
+	MOVEQ #-1,D1
+	SUB.L A3,D0
+	LSR.L #2,D0
+FillWithOnes
+	MOVE.L D1,(A0)+
+	SUBQ.L #1,D0
+	BNE.S FillWithOnes ;]
+	BSR6 SysErrInit
+CheckBootROM ;]
+	MOVEM.L DiagROM+$80,D0/A0 ;]
+	CMPI.L #TROMCode,D0
+	BNE.S SetMemoryGlobals ;]
+	LEA BootRetry,A1 ;]
+	JMP (A0)
+SetMemoryGlobals ;]
+	MOVE.L A5,MemTop ;]
+	MOVE.L A5,A1
+	SUB.W #pwm2MemTop,A1 ;]
+	MOVE.L A1,PWMBuf2 ;]
+	MOVE.L A1,PWMBuf1 ;]
+	MOVE.W #-1,PWMValue
+	MOVE.L A5,A1
+	SUB.W #snd2MemTop,A1 ;]
+	MOVE.L A1,SoundBase ;]
+	SUB.W #scrn2MemTop,A5 ;]
+	MOVE.L A5,BufPtr
+
+*R BootRetry restores the original low-memory globals and interrupt vectors. Later universal hardware and expanded-memory setup are absent.
+BootRetry
+	MOVE.W #$2700,SR	; Disable processor interrupts.
+	MOVE.B #127,ROM85 ;]
+	MOVE.L #ROMStart,ROMBase ;]
+	SUB.L A3,A3
+	MOVE.L MemTop,D0
+	LSR.L #1,D0
+	MOVE.L D0,A6
+	MOVE.L D0,SP
+	SUB.W #BootStackReserve,SP ;]
+	CLR.L DSAlertTab	; no deep shit alerts yet
+	MOVE.L #$00010001,OneOne	; set up magic constants
+	MOVEQ #-1,D0
+	MOVE.L D0,MinusOne	; set up MinusOne
+	MOVE.W D0,FSFCBLen	; mark that FS needs (re)initialization
+	CLR.W SCSIFlag ;]
+	MOVE.L ROMStart+$20000,D0 ;]
+	CMP.L ROMStart+$40000,D0 ;]
+	BEQ.S InitSystemGlobals ;]
+	MOVE.B #$C0,SCSIFlag ;]
+InitSystemGlobals ;]
+	CLR.L PollProc	; no proc to handle SCC poll data
+	MOVE.L #VBase,VIA ;]
+	MOVE.L #DBase,IWM ;]
+	LEA FSIODneTbl,A0 ;]
+	LEA JFetch,A1	; point to 1st jump table entry
+	MOVEQ #2,D1	; there are 3 vectors
+	BSR.W JmpTblInit
+	ST SysMap
+	CLR.L TopMapHndl
+	CLR.L DskVerify ;]
+	CLR.W SysEvtMask	; don't allow any events to be posted
+	CLR.L JKybdTask	; no keyboard task yet
+	CLR.L StkLowPt	; set stack low at this time (turn off check during VBL)
+	LEA VBLQueue,A1
+	JSR INITQUEUE ;]
+	CLR.L Ticks	; clear system tick count
+	CLR.L MBTicks	; set timestamp for mouse button
+	CLR.L SysFontFam	; clear SysFontFam and SysFontSize
+	CLR.L WidthTabHandle	; clear global width table handle
+	CLR.W teSysJust	; clear default Text justification
+	CLR.B WordReDraw	; don't draw words in RecalDraw
+	MOVE.B VBase,D0 ;]
+	ASL.B #4,D0
+	MOVE.B D0,MBState
+
+*R Cursor initialization retains the original fixed display geometry and jump table.
+InitCrsrVars
+	LEA GrafBegin,A0	; start of global vars
+	LEA GrafEnd,A1
+ZeroCursorVars ;]
+	CLR.W (A0)+
+	CMP.L A1,A0
+	BLT.S ZeroCursorVars ;]
+	MOVE.L BufPtr,ScrnBase ;]
+	MOVE.W #ScreenStride,ScreenRow ;]
+	MOVE.L #ScreenDPI*$10001,ScrVRes ;]
+InitCrsrMgr
+	MOVE.L #$000F000F,D0
+	LEA MTemp,A0	; point to the temp mouse variable
+	MOVE.L D0,(A0)+
+	MOVE.L D0,(A0)+
+	MOVE.L D0,(A0)+
+	CLR.L (A0)+
+	MOVE.W #ScreenRows,(A0)+ ;]
+	MOVE.W #ScreenColumns,(A0) ;]
+	LEA CrsrVBLTask,A0 ;]
+	MOVE.L A0,-(A1)	; JCrsrTask
+	MOVE.W #6,-(A1)
+	LEA InitCrTable,A0 ;]
+	LEA GrafBegin,A1 ;]
+	MOVEQ #7,D1
+	BSR.W JmpTblInit
+	MOVEQ #-1,D0
+	MOVE.W D0,CrsrNew	; flag cursor as changed, turn on tracking
+	MOVE.L D0,MouseMask	; No jerkiness with $FFFFFFFF mask
+InitInterruptVectors ;]
+	LEA Lvl1DT,A0 ;]
+	LEA OneSecDone,A1 ;]
+	MOVE.L A0,A2
+	MOVEQ #15,D0
+InitEmptyVectors ;]
+	MOVE.L A1,(A0)+
+	DBRA D0,InitEmptyVectors ;]
+	LEA OneSecInt,A0 ;]
+	MOVE.L A0,(A2)+
+	LEA VBLInt,A0 ;]
+	MOVE.L A0,(A2)
+	LEA AutoInt1,A2
+	LEA Level1Int,A0
+	MOVE.L A0,(A2)+
+	LEA SccDecode,A0
+	MOVE.L A0,(A2)+
+	LEA Level2Return,A0 ;]
+	MOVE.L A0,(A2)
+	LEA ExtStsDT,A2
+	LEA MV1Int,A0 ;]
+	MOVE.L A0,(A2)+
+	MOVE.L A0,(A2)+
+	LEA MH1Int,A0 ;]
+	MOVE.L A0,(A2)+
+	MOVE.L A0,(A2)
+	LEA Lvl2DT+4,A2 ;]
+	LEA ExtBInt,A0 ;]
+	MOVE.L A0,(A2)
+	LEA ExtAInt,A0 ;]
+	MOVE.L A0,16(A2) ;]
+
+*R Hardware initialization falls through into InitDispatcher below.
+
+;
+;	File:		Dispatch.a
+;
+;	Written by:	Andy Hertzfeld   July 15, 1982
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+
+*R The table decoder and CPU probe follow hardware initialization. The ROM fills unused entries
+*R with BadTrap before decoding the table. Later source writes BadTrap
+*R when it encounters an unused entry during decoding.
+*R The CPU probe executes MOVEC D0,CACR. An illegal-instruction
+*R exception distinguishes 68000 and 68010 frames; success identifies a
+*R 68020. The code restores the vector and stack before installing Dispatch
+*R or EMT1010. Execution then falls through into GetPRAM.
+*R Evidence/init-dispatcher.json records provenance and exact checks.
+
+
+;_______________________________________________________________________
+; InitDispatcher: Load Tool and OS trap tables, separate blocks of 512 and 256
+;	32-bit addresses.
+;
+; Encoded table contains 512 Tooltraps, then as many OS traps as used.	Format of entries is:
+;	$80 		==> skip entry
+;	$FF 		==> next 4 bytes are absolute ROM address
+;	1xxx xxxx	==> xxxx xxx0 is a positive offset from last trap address
+;	0yyy ... y	==> yyyy yyyy yyyy yyy0 is a SIGNED offset from last trap address
+;	0000 ... 0	==> end of table
+; Table begins at offset DispTableOff from base of ROM.
+;
+; Destroys	D0-D3/A0-A4
+; Called by	StartInit
+;_______________________________________________________________________
+
+InitDispatcher
+        LEA       ToolTable,A0 ;]
+        LEA       BadTrap,A1 ;]
+        MOVE.W    #numTbTrap-1,D0
+
+FillToolTable ;]
+        MOVE.L    A1,(A0)+
+        DBRA      D0,FillToolTable ;]
+        LEA       OSTable,A0 ;]
+        MOVE.W    #numOsTrap-1,D0
+
+FillOSTable ;]
+        MOVE.L    A1,(A0)+
+        DBRA      D0,FillOSTable ;]
+
+DecodeDispatchTable ;]
+        LEA       DispTable,A0
+        LEA       ToolTable,A1
+        MOVE.L    ROMBase,A2
+        MOVE.W    #numTbTrap,D0 ;]
+        MOVEQ     #127,D2
+
+TablesLoop ;]
+        MOVE.B    (A0)+,D1
+        BMI.S     NotSignedWord ;]
+        ASL.W     #8,D1
+        MOVE.B    (A0)+,D1
+
+DoubleOffset ;]
+        ADD.W     D1,D1
+        EXT.L     D1
+        BEQ.S     DetectCPU ;]
+
+AddOffset ;]
+        ADD.L     D1,A2
+
+WriteEntry ;]
+        MOVE.L    A2,(A1)
+
+NextEntry
+        ADDQ.W    #4,A1
+        SUBQ.W    #1,D0
+        BNE.S     TablesLoop ;]
+        MOVEQ     #-1,D0
+        LEA       OSTable,A1
+        BRA.S     TablesLoop ;]
+
+NotSignedWord ;]
+        AND.W     D2,D1
+        BEQ.S     NextEntry
+        CMP.W     D2,D1
+        BNE.S     DoubleOffset ;]
+        MOVEQ     #3,D3
+
+ReadAbsoluteOffset ;]
+        ASL.L     #8,D1
+        MOVE.B    (A0)+,D1
+        DBRA      D3,ReadAbsoluteOffset ;]
+        MOVE.L    ROMBase,A2
+        BRA.S     AddOffset ;]
+
+DetectCPU ;]
+        LEA       IlglVector,A1 ;]
+        MOVE.L    (A1),D2
+        LEA       ILLEGALCPUPROBE,A0 ;]
+        MOVE.L    A0,(A1)
+        MOVE.L    SP,A0
+        CLR.W     -(SP)
+        MOVEQ     #2,D1
+        MOVEQ     #1,D0
+        MACHINE MC68020
+        MOVEC     D0,CACR
+        MACHINE MC68000
+        BRA.S     FinishCPUProbe ;]
+
+IllegalCPUProbe ;]
+        MOVEQ     #1,D1
+        CMPI.W    #16,6(SP) ;]
+        BEQ.S     FinishCPUProbe ;]
+        MOVEQ     #0,D1
+
+FinishCPUProbe ;]
+        MOVE.L    A0,SP
+        MOVE.L    D2,(A1)
+        MOVE.B    D1,CPUFlag ;]
+        LEA       EMT1010,A0
+        BEQ.S     InstallDispatcher ;]
+        LEA       Dispatch,A0 ;]
+
+InstallDispatcher ;]
+        MOVE.L    A0,Line1010
+
+;________________________________________________________________________________________
+;
+; Routine:	GetPRAM
+;
+; Inputs:	none
+; Outputs:	none
+; Trashes:	D0-D2, A0-A1
+;
+; Function:	reads in the original 20 bytes of PRAM, and sets up globals based on the saved state
+;________________________________________________________________________________________
+
+*R The preceding contract describes only PRAM conversion. This ROM falls through into startup instead of returning. It derives keyboard, caret, and click timing directly from PRAM without the later fallback for zero keyboard nibbles.
+
+GetPRAM
+        _InitUtil 	; seed low memory PRAM buffer
+        BTST      #6,SPMisc2 ;]
+        SNE       CrsrScale ;]
+        MOVEQ     #-4,D1
+        MOVEQ     #$0F,D0
+        MOVE.B    SPKbd,D2 ;]
+        AND.B     D2,D0
+        ADD.W     D0,D0	; Convert to ticks.
+        SWAP      D0
+        MOVE.B    D2,D0
+        LSR.W     #2,D0
+        AND.W     D1,D0
+        SWAP      D0
+        MOVE.L    D0,KeyThresh ;]
+        MOVEQ     #$F,D0	; Caret time is in low nibble
+        MOVE.B    SPClikCaret,D2 ;]
+        AND.B     D2,D0
+        LSL.W     #2,D0
+        MOVE.L    D0,CaretTime	; Save caret time (in ticks)
+        MOVE.B    D2,D0
+        LSR.W     #2,D0
+        AND.W     D1,D0
+        MOVE.L    D0,DoubleTime	; Save double click time
+
+*R Initialize the heap, Resource Manager, Time Manager queue, keyboard, and drivers before testing for a diagnostic ROM at $F80088.
+
+InitStartupServices ;]
+        BSR.W     InitSysZone ;]
+        CLR.W     -(SP)
+        _InitResources
+        ADDQ.W    #2,SP
+        MOVEQ     #18,D0
+        _NewPtr ,SYS,CLEAR
+        MOVE.L    A0,TimeVars
+        LEA       MSQueue(A0),A1 ;]
+        JSR       INITQUEUE ;]
+        BSR.W     InitSCC
+        JSR       InitKeyboard ;]
+        LEA       DrvQHdr,A1
+        JSR       INITQUEUE ;]
+        BSR.W     LoadDrivers
+        MOVEM.L   $F80088,D0/A0 ;]
+        CMPI.L    #$55AAAA55,D0
+        BNE.S     EnableStartupEvents ;]
+        LEA       InstallDispatcher,A1 ;]
+        JMP       (A0)
+
+*R Enable interrupts and event delivery after the diagnostic return point. The alarm starts with all state bits except enable set.
+
+EnableStartupEvents ;]
+        MOVE.W    #8192,SR
+        CLR.W     SysVersion	; zero ram-patch version in low memory
+        MOVE.L    SysZone,RAMBase
+        MOVE.B    #254,AlarmState ;]
+        LEA       GNEFILTER,A0 ;]
+        MOVE.L    A0,JGNEFilter
+        CLR.L     IAZNotify	; no InitApplZone notify proc
+        MOVE.W    #$FF7F, FlEvtMask	; init for disable of DIP flushes (move to InitEvents??)
+        MOVEQ     #7,D0
+
+ClearPackHandles ;]
+        LEA       AppPacks,A0
+
+ClearPackHandle ;]
+        CLR.L     (A0)+
+        DBRA      D0,ClearPackHandle ;]
+        BRA.S     InitSwitcherTable ;]
+
+;
+;			Format is:
+;				address (word), byte count (word)	; save bytecount bytes at address
+;				.
+;				.
+;				0 (longword)						; terminates list
+;________________________________________________________________________________________
+
+*R This 32-byte switcher table uses word addresses for WDCBSwitch and PMSPSwitch. InitFS fills those entries after allocating their records.
+
+OurSwitch
+        DC.W OSTable,4*numOStrap ; OS dispatch table
+        DC.W ToolTable,4*numTBtrap ; Toolbox dispatch table
+; new switchables
+        DC.W $0B80,$0080 ;]
+        DC.W HFSFlags,2 ; TFS flags (PMSP status) & Cache flags
+        DC.W DefVRefNum,2 ; Default VRefNum/WDRefNum
+WDCBSwitch
+        DC.W 0,0 ; WDCB table
+PMSPSwitch
+; PMSP hook
+        DC.W 0,SPHdrSize-2 ;]
+        DC.L 0 ; terminate with a long of zeroes
+
+InitSwitcherTable
+        MOVEQ     #32,D0	; allocate a switcher table in
+        _NewPtr ,SYS,CLEAR
+        MOVE.L    A0,A1	; make it the destination
+        LEA       OURSWITCH,A0	; template table
+        MOVEQ     #SwitchLen,D0	; copy it - needs to be updated with
+        _BlockMove	;  WDCBSwitch, PMSPSwitch later
+        MOVE.L    A1,SwitcherTPtr	; Set the pointer up for Switcher
+
+*R The temporary GrafPort starts 512 bytes below the boot blocks. QuickDraw paints the screen and fills its rounded rectangle with gray.
+
+DrawBeepScreen
+        LEA       QDBootGlobalsSize(SP),A5
+        PEA       -4(A5)	; set up QuickDraw global area
+        _InitGraf 
+        PEA       -512(A6) ;]
+        _OpenPort 
+        MOVE.L    (A5),A2	; point to QuickDraw globals
+        PEA       arrow(A2)	; show the arrow cursor
+        _SetCursor
+        PEA       screenBits+bounds(A2)
+        MOVE.L    (SP),-(SP)
+        _PaintRect
+        MOVE.L    #$00100010,-(SP)	;  rounding factor
+        PEA       gray(A2)	;  fill pattern
+        _FillRoundRect	; fill the screen with 50% gray
+
+*R The original drive search polls the drive queue and SCSI loader. It retains the mouse-button eject path, BootMask exclusions, and flashing disk symbols.
+
+SearchBootDevices ;]
+        LEA       QuestionMark,A0 ;]
+        MOVE.L    A0,D7
+        MOVEM.L   D7/A5-A6,-(SP) ;]
+        BSR.W     DrawBootDisk ;]
+        MOVEM.L   (SP)+,D7/A5-A6 ;]
+        MOVEQ     #0,D4
+        MOVE.L    DrvQHdr+QHead,D6 ;]
+
+WaitForBootDrive ;]
+        BEQ.S     WaitForBootDrive ;]
+        BTST      #4,SPMisc2 ;]
+        BNE.W     TrySCSILoad ;]
+
+ReadBootBlocks ;]
+        MOVE.L    SP,A0
+        MOVE.W    #1,IOPosMode(A0)	; position relative to start
+        CLR.L     IOPosOffset(A0)	; start at byte position 0
+        MOVE.L    A6,IOBuffer(A0)	; load boot blocks at (A6)
+        MOVE.L    #$400,IOReqCount(A0)
+
+SelectBootDrive ;]
+        TST.L     D6
+        BEQ.W     TrySCSILoad ;]
+        MOVE.L    D6,A1
+        MOVE.W    dqRefNum(A1),D3 ;]
+        MOVE.W    D3,IORefNum(A0)
+        MOVE.W    D3,BtDskRfN ;]
+        MOVE.W    dqDrive(A1),D3 ;]
+        MOVE.W    D3,IODrvNum(A0)
+        MOVE.W    D3,BootDrive ;]
+        MOVEQ     #0,D1
+        TST.B     MBState
+        BPL.S     EjectBootDevice ;]
+
+ReadBootDevice ;]
+        _Read     	; read the boot blocks
+        BNE.S     ReactToFailure ;]
+        CMPI.W    #'LK',(A6)	; check if it's a true boot block
+        BNE.S     RejectBootDevice ;]
+
+BootDeviceFound ;]
+        _HideCursor
+        MOVEM.L   A5-A6,-(SP)
+        LEA       ENTERTHEBOOT,A5 ;]
+        BRA.W     HappyMac ;]
+
+EnterTheBoot ;]
+        MOVEM.L   (SP)+,A5-A6
+        BRA.W     TheBoot ;]
+
+ReactToFailure
+        CMPI.W    #OffLinErr,D0	; is the disk present and up to speed?
+; -> no, leave it alone so we can try it later
+        BEQ.S     TrySCSILoad ;]
+        CMPI.W    #NoDriveErr,D0	; is the drive present?
+; -> no, don't talk to it again
+        BEQ.S     DisableBootDrive ;]
+
+RejectBootDevice ;]
+        MOVEQ     #-1,D1
+
+EjectBootDevice ;]
+        MOVE.W    #7,CSCode(A0) ;]
+        _Control  
+        TST.W     D1
+        BEQ.S     TrySCSILoad ;]
+        TST.W     D0
+        BEQ.S     ShowBadDisk ;]
+
+DisableBootDrive ;]
+        MOVE.W    BootMask,D0	; get failure info
+        BCLR      D3,D0
+        MOVE.W    D0,BootMask	;  and update the failure info
+
+TrySCSILoad ;]
+        JSR       SCSILoad ;]
+        MOVE.L    D6,A1
+        MOVE.L    (A1),D6 ;]
+        BNE.S     CheckBootMask ;]
+        MOVE.L    DrvQHdr+QHead,D6 ;]
+        BRA.S     FlashDiskIcon ;]
+
+CheckBootMask ;]
+        MOVE.L    D6,A1
+        MOVE.W    dqDrive(A1),D3 ;]
+        MOVE.W    BootMask,D0	; get failure info
+        BTST      D3,D0
+; -> yes, skip it
+        BEQ.S     TrySCSILoad ;]
+        BRA.W     ReadBootBlocks ;]
+
+ShowBadDisk ;]
+        LEA       CrossMark,A0 ;]
+        MOVE.L    A0,D7
+        MOVEQ     #8,D5
+
+FlashDiskIcon ;]
+        MOVEM.L   D3-D7/A5-A6,-(SP) ;]
+        LSR.W     #1,D4
+        BCC.S     DrawFlashingDisk ;]
+        MOVEQ     #0,D7
+
+DrawFlashingDisk ;]
+        BSR.S     DrawBootDisk ;]
+        MOVEM.L   (SP)+,D3-D7/A5-A6 ;]
+        MOVEQ     #4,D0
+        SWAP      D0
+
+BootFlashDelay ;]
+        SUBQ.L    #1,D0
+        BNE.S     BootFlashDelay ;]
+        ADDQ.W    #1,D4
+        SUBQ.W    #1,D5
+        BNE.S     TryBootAgain ;]
+        LEA       QuestionMark,A0 ;]
+        MOVE.L    A0,D7
+
+TryBootAgain ;]
+        BRA.W     ReadBootBlocks ;]
+
+*R The disk outline and its symbol use fixed addresses in the 512-pixel startup screen. The routine waits for a tick before changing the display.
+
+DrawBootDisk ;]
+        _HideCursor
+        MOVE.L    Ticks,D0
+
+WaitForTick ;]
+        CMP.L     Ticks,D0
+        BEQ.S     WaitForTick ;]
+        LEA       DiskOutline,A4 ;]
+        MOVE.L    #ScreenLow+145*64+30,A2 ;]
+        LEA       DRAWDISKSYMBOL,A6 ;]
+        BRA.W     PutIcon ;]
+
+DrawDiskSymbol ;]
+        TST.W     D7
+        BEQ.S     ShowBootCursor ;]
+        MOVE.L    #ScreenLow+160*64+31,A2 ;]
+        MOVE.L    D7,A4
+        MOVEQ     #14,D2
+        LEA       SHOWBOOTCURSOR,A6 ;]
+        BRA.W     PutSymbolRow ;]
+
+ShowBootCursor ;]
+        _ShowCursor
+        RTS       
+
+*R BadTrap reports system error 12. Several captured Ghidra names alias this unimplemented-trap destination.
+
+BadTrap
+        MOVEQ     #12,D0
+        BRA.W     SystemError ;]
+
+*R Each pair names an SCC register and its initial value. The first sixteen bytes configure channel B; the next sixteen configure channel A.
+
+InitSCCData ;]
+        DC.B $09,$40,$04,$4C,$02,$00,$03,$C0 ;]
+        DC.B $0F,$08,$00,$10,$00,$10,$01,$01 ;]
+        DC.B $09,$80,$04,$4C,$03,$C0,$0F,$08 ;]
+        DC.B $00,$10,$00,$10,$01,$01,$09,$0A ;]
+
+InitSCC
+        MOVE.L    #$BFFFF9,A0 ;]
+        MOVE.L    #$9FFFF8,A1 ;]
+        MOVE.L    A0,SCCWr ;]
+        MOVE.L    A1,SCCRd ;]
+        LEA       INITSCCDATA,A2 ;]
+        MOVEQ     #16,D1
+        BSR.S     WriteSCC
+        ADDQ.L    #2,A0
+        ADDQ.L    #2,A1
+        MOVEQ     #16,D1
+
+*R Two stack-to-stack moves provide the delay before each SCC write. It reads the control port before writing the byte sequence.
+
+WriteSCC
+        MOVE.B    (A1),D2
+        BRA.S     NextSCCByte ;]
+
+WriteSCCByte ;]
+        MOVE.L    (SP),(SP)
+        MOVE.L    (SP),(SP)
+        MOVE.B    (A2)+,(A0)
+
+NextSCCByte ;]
+        DBRA      D1,WriteSCCByte ;]
+        RTS       
+
+;________________________________________________________________________________________
+;
+; Routine:	JmpTblInit, JmpTbl2
+;
+; Inputs:	A0	-	pointer to table of routine word offsets (A0-relative)
+;			A1	-	pointer to destination jump table in RAM
+;			D1	-	number of vectors to install - 1
+;
+; Outputs:	A0	-	pointer to next entry in offset table
+;			A1	-	pointer to next jump table entry in RAM
+;
+; Trashes:	D0-D2
+;
+; Function:	sets up RAM-based jump tables from ROM-routine offset tables
+;________________________________________________________________________________________
+
+JmpTblInit
+        MOVE.L    A0,D0	; remember its address
+
+JmpTbl2
+        MOVEQ     #0,D2	; clear high part for arithmetic
+        MOVE.W    (A0)+,D2	; get the next offset
+        ADD.L     D0,D2	; compute the address
+        MOVE.L    D2,(A1)+	; install it in the jump table
+        DBRA      D1,JmpTbl2	; loop for all vectors
+        RTS       
+
+DiskName
+        DC.B 5,'.Sony' ;]
+
+SndName
+        DC.B 6,'.Sound',' ' ;]
+
+;
+; Routine:	LoadDrivers
+;
+; Inputs:	none
+; Outputs:	none
+; Trashes:	???
+;
+; Function:	issues initialization calls to all the component drivers.
+;________________________________________________________________________________________
+
+LoadDrivers
+        MOVEQ     #48,D0
+        MOVE.W    D0,UnitNtryCnt
+        ASL.L     #2,D0
+        _NewPtr ,SYS,CLEAR
+        MOVE.L    A0,UTableBase
+        SUB.W     #IOQElSize,SP
+        MOVE.L    SP,A0	; iopb on the stack
+        CLR.B     IOPermssn(A0)	; r/w permissions
+        LEA       DISKNAME,A1
+        MOVE.L    A1,IOFileName(A0)
+        _Open     	;OPEN Floppy disk driver
+
+OpenSoundDriver ;]
+        LEA       SNDNAME,A1
+        MOVE.L    A1,IOFileName(A0)
+        _Open     	; OPEN sound driver
+        ADD.W     #IOQElSize,SP
+
+*R The ROM tail helper resets SCSI and loads its drivers. The following NOP and SERD resource installation retain their original positions.
+
+LoadExtraDrivers ;]
+        JSR       (ResetAndReloadSCSI-BaseOfROM+ROMStart).L ;]
+        NOP       
+        SUBQ.W    #4,sp	; allocate space for return value
+        MOVE.L    #'SERD',-(SP)	; push serial driver resource type
+        CLR.W     -(sp)	; classic serial driver is 'SERD' (0)
+        MOVE.W    #mapTrue,ROMMapInsert	; get resource from ROM
+        _GetResource
+        MOVE.L    (sp)+,d0	; did it get the handle?
+        BEQ.S     ExitDrivers ;]
+        MOVE.L    d0,a0
+        MOVE.L    (a0),a0
+        JSR       (A0)	; call the install code
+
+ExitDrivers ;]
+        RTS       
+
+*R The alarm filter checks its state, Window Manager activity, and the Apple menu title before inverting eighteen screen rows. It passes an eight-byte rectangle on the stack to the cursor shield call.
+
+GNEFilter ;]
+        LEA       AlarmState,A1 ;]
+        BSET      #5,(A1) ;]
+        BNE.S     AlarmDone ;]
+        MOVEQ     #3,D0
+        AND.B     (A1),D0
+        BNE.S     AlarmDone ;]
+        TST.B     WWExist
+        BNE.S     AlarmDone ;]
+        MOVE.L    MenuList,D0
+        BEQ.S     AlarmDone ;]
+        MOVE.L    D0,A0
+        MOVE.L    (A0),A0
+        TST.W     (A0)
+        BLE.S     AlarmDone ;]
+        MOVE.L    6(A0),A0 ;]
+        MOVE.L    (A0),A0
+        CMPI.W    #276,14(A0) ;]
+        BNE.S     AlarmDone ;]
+        MOVE.L    #65553,-(SP) ;]
+        MOVE.L    #1245214,-(SP) ;]
+        MOVE.L    JShieldCursor,A0
+        JSR       (A0)
+        MOVE.L    ScrnBase,A0 ;]
+        MOVE.W    ScreenRow,D0
+        MOVE.L    #$00007FFC,D1 ;]
+        MOVEQ     #17,D2 ;]
+
+InvertAlarmRow ;]
+        ADD.W     D0,A0
+        EOR.L     D1,(A0) ;]
+        DBRA      D2,InvertAlarmRow ;]
+        MOVE.L    JShowCursor,A0 ;]
+        JSR       (A0)
+        BCHG      #7,(A1)
+        BCLR      #6,(A1) ;]
+        BEQ.S     AlarmDone ;]
+        MOVE.W    #8,-(SP)
+        _SysBeep  
+
+AlarmDone ;]
+        RTS       
+
+*R These fourteen bytes initialize Lo3Bytes, MinStack, DefltStack, and MMDefFlags. The following fourteen-byte InitZone record creates a heap from $1400 to $4E00 with thirty-two master pointers per allocation.
+
+InitialMaskPtr ;]
+        DC.L $00FFFFFF
+
+InitialMinStack ;]
+        DC.L 1024 ;]
+
+InitialDefltStack ;]
+        DC.L 8192
+
+InitialMMDefFlags ;]
+        DC.W 0
+
+SysHeap
+        DC.L HeapStart,$4E00 ;]
+        DC.W 32 ;]
+        DC.L 0
+
+InitSysZone ;]
+        LEA       INITIALMASKPTR,A0 ;]
+        LEA       Lo3Bytes,A1 ;]
+        MOVEQ     #6,D0
+
+CopyMemoryGlobals ;]
+        MOVE.W    (A0)+,(A1)+
+        DBRA      D0,CopyMemoryGlobals ;]
+        _InitZone 	; set up initial system heap
+        MOVE.L    theZone,SysZone	; save pointer to the new zone
+        RTS       
+
+*R This second InitZone wrapper accepts an existing parameter record in A0.
+
+InitSysZoneFromParams ;]
+        _InitZone 	; set up initial system heap
+        MOVE.L    theZone,SysZone	; save pointer to the new zone
+        RTS       
+
+StartInitEnd ;]
+        ENDPROC
+        END

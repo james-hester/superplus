@@ -1,0 +1,67 @@
+{
+  "module": "BitBlt",
+  "source": "Reconstruction/Source/QuickDraw/BitBlt.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/BitBlt.m.a",
+      "sha256": "6d0e76ae0e5492fe84f1c4d8e1c23d8b12fdeab11a3220e8a5a00cddd6b6edd6"
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+    }
+  ],
+  "target": {
+    "program": "Mac Plus",
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "base_address": "0x400000",
+    "size": 131072,
+    "checksum": "0x4d1f8172",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "ghidra_import_path": "/home/james/Mac OS/Mac_ROMs/68k/128k/Macintosh Plus/1986-03 - 4D1F8172 - MacPlus v3.ROM"
+  },
+  "integration_manifest": {
+    "name": "bitblt",
+    "source": "Reconstruction/Source/QuickDraw/BitBlt.a",
+    "start": "0x40a284",
+    "end_exclusive": "0x40a732",
+    "entry_points": {
+      "BitBlt": "0x40a284",
+      "GoHome": "0x40a442",
+      "ModeTab": "0x40a450",
+      "Left0": "0x40a470",
+      "CopyBig": "0x40a4ea",
+      "Copy32": "0x40a502",
+      "Copy31": "0x40a524",
+      "Word8": "0x40a5a2",
+      "Fill32": "0x40a620",
+      "Xor32": "0x40a6b6"
+    }
+  },
+  "span": {
+    "start": "0x40a284",
+    "end_exclusive": "0x40a732",
+    "length": 1198,
+    "sha256": "cbb6a1e4c4dd79cf4b1b3710126939c489a7fe947eb1307f34f8a4e057521419",
+    "boundary_evidence": "The source begins with BitBlt at 0x40a284. The final scanline branch ends at 0x40a710, followed by the original 34-byte copyright string. RgnBlt begins at 0x40a732."
+  },
+  "changes": [
+    "Retained the complete BitBlt procedure, all scanline loops, both symbolic mode tables, and the original copyright string. Every body comment remains unchanged.",
+    "Omitted the later EASE archive wrapper and include dependency. Copied the seven required bitmap and rectangle equates from GrafTypes.m.a.",
+    "Made PC-relative external calls, code addresses, and indexed loop jumps explicit. Selected the short conditional branches, short local loop branch, and quick additions and decrements used by the ROM.",
+    "Restored UNLINK as UNLK A6; MOVE.L (SP)+,A0; ADD.W #22,SP; JMP (A0). The source still invokes its macro with PARAMSIZE.",
+    "Added DC.B string support to the translator so the original copyright declaration emits its MacRoman bytes. The declaration remains unchanged in the source."
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "source_sha256": "737a7024ab6f36464ecfa7576d216eb92da8014817cfae7ec5152e469d1e36cc",
+    "checked_bytes": 1198,
+    "entry_points_checked": 10,
+    "body_comments_preserved": 664,
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "limitations": [
+      "Byte equality verifies every emitted instruction and data byte. It does not establish the exact historical macro text or archive wrapper.",
+      "The caller handles clipping and the cursor. BitBlt itself transfers the supplied rectangle without clipping, as its original interface describes."
+    ]
+  }
+}

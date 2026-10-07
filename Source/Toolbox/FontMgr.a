@@ -1,0 +1,694 @@
+;—————————————————————————————————————————————————————————————————————————————————————————————————————
+;
+;	File:		FontMgr.a
+;
+;	Copyright:	© 1983-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Scaling Font Manager for MacIntosh User Interface ToolBox
+;
+;	written by Andy Hertzfeld	February 5, 1983
+;
+;	New 128K ROM version, AJH, last week of April 1985
+;
+;	Here it is, the new scaling font manager which supports independent
+;	typeFaces and sizes.  The font manager is built on top of the
+;	resource manager and provides a simple swapping mechanism for fonts,
+;	based on the resource/memory manager's purgable objects. It is passed
+;	an input record from QuickDraw consisting of the font face, device, style
+;	and scale and selects the closest font to the requested size that it can.
+;	It is optimized so that it is very fast if the request is the same as the
+;	last time.
+;
+;	Printer support is provided via two control/status calls defined by the font .
+;	manager. After it figures out what everything should be, it gives the
+;	appropriate device a control call to let it change things.  Also, it makes
+;	a status call to get a table of style values to aid in in figuring things out.
+;
+;	Major changes for the new (128K) ROM include a new font addressing
+;	scheme using family definition records as resource type "FONT",
+;	which allows up to 64K different font families and tweaked fonts for
+;	bold, italic, etc.  Fractional widths are fully supported.
+;
+;
+*R This file restores the Mac Plus Font Manager suffix.
+*R It covers GetFontName through BuildCharTable at $40F0C0 through $40F455.
+*R The sources are Toolbox/FontMgr/FontMgr.a and FontMgrPatch.a.
+*R See Evidence/fontmgr.json for the restored instructions and source history.
+;
+*R The ROM stores the FOND purge state in the high byte
+*R of LastFOND and keeps the current FOND flags in WidthListHand.
+*R GetFNum uses its older stack frame. FontMetrics saves A2 and A3.
+*R BuildCharTable uses a local mask table and calculates each band's height
+*R before merging it into the character table.
+;
+		IMPORT FPointOne,GetStrike,InValWidths,MyFixMul,MyFixRatio ;]
+		EXPORT BuildCharTable,FontMetrics,GetFNum,GetFOND,GetFontName,RealFont ;]
+		EXPORT SetFontLock,SetFScaleDisable ;]
+
+		MACHINE	MC68000
+		STRING	ASIS
+		BLANKS	ON
+
+*R Global addresses and font fields follow ToolUtils.a.
+
+		INCLUDE 'ColorEqu.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+		INCLUDE 'fontPrivate.a'
+
+
+; the following word values are to be placed into the
+; word located at RomMapInsert
+
+MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
+
+FMDefaultSize 	EQU 		$987      				; default size [byte]
+
+;new FONT manager stuff
+
+
+; Font Header Data Record
+
+
+
+
+
+
+
+; format of a width table:
+
+WidTabSize	EQU 	WidthASize+2			;total size of a width table.
+
+	
+
+; FOND format definition
+
+FONDFlags		EQU 	0					; 0 (word) Flags word for family
+FONDFamID	EQU 	FONDFlags+2 			; 2 (word) Family ID number
+FONDFirst		EQU 	FONDFamID+2 			; 4 (word) first character in font
+FONDLast		EQU 	FONDFirst+2 			; 6 (word) last character in font
+FONDAscent	EQU 	FONDLast+2			; 8 (word) maximum Ascent expressed for 1 pt.
+FONDDescent 	EQU 	FONDAscent+2			; A (word) maximum Descent expressed for 1 pt.
+FONDLeading 	EQU 	FONDDescent+2			; C (word) maximum Leading expressed for 1 pt.
+FONDWidMax	EQU 	FONDLeading+2			; E (word) maximum MaxWidth expressed for 1 pt.
+FONDWTabOff 	EQU 	FONDWidMax+2			;10 (long) Offset to width table
+FONDKernOff 	EQU 	FONDWTabOff+4		;14 (long) Offset to kerning table
+FONDStylOff 	EQU 	FONDKernOff+4			;18 (long) Offset to Style Mapping Table
+FONDProperty	EQU 	FONDStylOff+4			;1C (12 words) contains style property info
+FONDAssoc	EQU 	FONDProperty+24 		;34 (variable length) Font Association Table.
+
+
+ScrapSize EQU $9FA ;]
+
+FontManager PROC EXPORT
+; PROCEDURE GetFontName(familyID: INTEGER; VAR theName: Str255);
+;
+;	Get the name of the font, given the family ID
+
+GetFontName
+
+; first check if we have a family definition record
+            MOVE.L D3,-(SP)
+            MOVE.W 12(SP),D3	;]get the requested family ID
+            MOVE.W #MapFALSE,ROMMapInsert ;set ResLoading False		<10 Jul 85>
+            BSR.S GetFONDMap             ;is there a FOND for this family?
+            BNE.S @askForName            ;if so, skip
+
+; make sure the ID is in range
+
+            CMP.W #512,D3                ;ID in range?
+            BCC.S @returnNilString       ;if not, skip
+
+; no luck, so try it the old way
+
+            ASL #7,D3                    ;set size field to 0
+            BSR GetStrike               ;get the fontHandle
+            BEQ.S @returnNilString       ;if NIL, return empty string
+@askForName
+            MOVE.L D0,-(SP)              ;push the resource handle
+            PEA ScrapSize ;]
+            MOVE.L (SP),-(SP)
+            MOVE.L 20(SP),-(SP)          ;place for name (where app wants)
+            MOVE.W #MapFALSE,ROMMapInsert ;get from ROM if possible		<10 Jul 85>
+            _GetResInfo                  ;get it!
+@doneGetFName
+            MOVEQ #-1,D3
+            MOVE.W D3,FONDID
+            CLR.L LastFOND
+            MOVE.L (SP)+,D3
+            MOVE.L (SP)+,A0
+            ADDQ #6,SP
+            JMP (A0)                    ;return to caller
+
+@returnNilString
+            MOVE.L 8(SP),A0              ;get the string pointer
+            CLR.W (A0)                  ;make it NIL
+            BRA.S @doneGetFName
+
+; Common code used by GetFontName and RealFont.  GetFOND entry point is used by TryFOND.
+;
+*R The ROM maps family 1 to ApFontID and caches the FOND.
+
+GetFOND
+            MOVE.W #MapTrue,ROMMapInsert ;get from ROM if possible		<10 Jul 85>
+GetFONDMap
+            CMP #1,D3                    ;is it the same as the apFontID?
+            BNE.S @notApFont ;]
+            MOVE ApFontID,D3
+@notApFont ;]
+            CMP.W FONDID,D3              ;same as last time
+            BEQ.S @sameFDef              ;if so, short-circuit
+            SUBQ #4,SP
+            MOVE.L #'FOND',-(SP)         ;push type "FOND"
+            MOVE.W D3,-(SP)              ;push the ID
+            _GetResource                ;look for it
+
+; OK, we're changing the state of the cache so restore the purge state of
+; the old one (if any), and make the new one unpurgable
+
+            MOVE.L LastFOND,D1
+            BEQ.S @oldStateRestored ;]
+            MOVE.L D1,A0
+            MOVE.B LastFOND,(A0) ;]
+@oldStateRestored ;]
+            MOVE.L (SP)+,D0
+            MOVE.L D0,A0
+            BEQ.S @doneFDEFGet           ;if no FOND, skip caching
+            MOVE.L (A0),A0
+            MOVE.B (A0),WidthListHand ;]
+            MOVE.L D0,A0
+            MOVE.B (A0),D1
+            BCLR #purge,(A0) ;]
+            ROL.L #8,D0
+            MOVE.B D1,D0
+            ROR.L #8,D0
+@doneFDEFGet
+            MOVE.W D3,FONDID
+            MOVE.L D0,LastFOND ;]
+
+; the cache worked, so fetch it from low memory
+
+@sameFDef
+            MOVE.L LastFOND,D0
+            AND.L Lo3Bytes,D0
+            RTS
+
+; PROCEDURE GetFNum(familyName: Str255; VAR theID: INTEGER);
+;
+;	Get the family ID of the font, given the name
+;
+*R The ROM predates the August 1986 stack reduction.
+
+GetFNum
+            LINK A6,#-270 ;]
+            MOVE.L D3,-(SP)
+            ST D3
+            SUBQ #4,SP                   ;make room for function result
+            MOVE.L #'FOND',-(SP)         ;resource type
+            MOVE.L 12(A6),-(SP)
+            MOVE.W #MapFALSE,ROMMapInsert ;do with ResLoad false 	 <10 Jul 85>
+            _GetNamedResource            ;get the resource
+            MOVE.L (SP)+,D0              ;did it get it?
+            BNE.S @gotFID ;]
+            MOVEQ #0,D3
+            SUBQ #4,SP                   ;make room for function result
+            MOVE.L #'FONT',-(SP)         ;resource type
+            MOVE.L 12(A6),-(SP)
+            MOVE.W #MapFALSE,ROMMapInsert ;do with ResLoad false 	 <10 Jul 85>
+            _GetNamedResource            ;get the resource
+            MOVE.L (SP)+,D0              ;did it get it?
+            BEQ.S @notFound
+
+; we got it, so look up the ID
+
+@gotFID
+            MOVE.L D0,-(SP)              ;push the resource handle
+            PEA -4(A6)                   ;place for ID
+            PEA -8(A6)
+            PEA -270(A6) ;]
+            MOVE.W #MapFALSE,ROMMapInsert ;get from ROM if possible		<10 Jul 85>
+            _GetResInfo                  ;get it!
+            MOVE.L 8(A6),A0
+            MOVE.W -4(A6),D0	;]get the ID
+            TST.B D3                     ;got FOND?
+            BNE.S @storeFID ;]
+            LSR #7,D0                    ;divide by 128
+@storeFID ;]
+            MOVE.W D0,(A0)               ;return the ID
+
+; all done so restore registers and return to caller
+
+@doneGFID
+            MOVE.L (SP)+,D3
+            UNLK A6
+            MOVE.L (SP)+,A0
+            ADDQ #8,SP
+            JMP (A0)
+@notFound
+            MOVE.L 8(A6),A0
+            CLR.W (A0)                   ;make it NIL
+            BRA.S @doneGFID
+
+; PROCEDURE SetFontLock(lockFlag:Boolean) -- makes the current font purgable
+; or unpurgable.
+
+SetFontLock
+            MOVE.L FOutFontHandle,A1     ;get the font handle
+            TST.B 4(SP)                  ;set or clear lock?
+            BNE.S @lockFont ;]
+
+; we no longer need the font so make it purgable
+
+            BSET #purge,(A1)
+            TST.L LastFOND ;]
+            BEQ.S @doneSFL
+            BSET #purge,LastFOND ;]
+@doneSFL
+            MOVE.L (SP)+,A0
+            ADDQ #2,SP
+            JMP (A0)                    ;return to caller
+
+; we want to lock the font down so make sure its loaded and make it unpurgable
+
+@lockFont ;]
+            MOVE.L A1,-(SP)              ;push font handle for release/load
+            MOVE.W #MapTrue,ROMMapInsert ;get it from ROM if possible	<10 Jul 85>
+            _LoadResource                ;load it in
+            BCLR #purge,(A1)
+            BCLR #purge,LastFOND ;]
+            BRA.S @doneSFL
+
+; FUNCTION RealFont(famID: INTEGER; size: INTEGER): BOOLEAN;
+;
+;	RealFont is a boolean function that returns true if we have a real bitmap
+;	(as opposed to a stretched one) for the requested font
+
+RealFont
+            CLR.W 8(SP)                  ;assume we don't have it (set result false)
+            MOVE.L D3,-(SP)
+            MOVE.W 10(SP),D3	;]get the font family
+            BSR GetFOND                  ;is there a FOND for this family?
+            BNE.S @newKindOfFont ;]
+
+; make sure the ID is in range for an old-style font
+
+            CMP.W #512,D3                ;ID in range?
+            BCC.S @notReal               ;if not, return false
+
+; there's no family definition record so do it the old way
+
+            ASL #7,D3                    ;shift FamID into place
+            MOVE.W 8(SP),D1
+            AND.W #$007F,D1              ;only use low 7 bits of size
+            BEQ.S @notReal
+            OR D1,D3                     ;compute resource ID
+            BSR GetStrike                ;do we have it
+            BEQ.S @notReal               ;good! (branch if we couldn't find it)
+@itsReal
+            ADDQ.B #1,12(SP)	;]return TRUE
+@notReal
+            MOVE.L (SP)+,D3
+            MOVE.L (SP)+,(SP)
+            RTS
+
+; we have a family definition record (handle in D0), so scan it to see
+; if the record contains an entry for that size
+
+@newKindOfFont ;]
+            MOVE.L D0,A0
+            MOVE.L (A0),A0               ;handle->pointer
+            LEA FONDAssoc(A0),A0          ;skip header
+            MOVE.W (A0)+,D2              ;pick up the count
+            BMI.S @notReal               ;if none, skip
+            MOVE.W 8(SP),D1
+@nrfLoop
+            CMP.W (A0),D1                ;got it?
+            BEQ.S @itsReal               ;if so, its real
+            BLT.S @notReal               ;if past it we're done
+            ADDQ #FAssocSiz,A0            ;skip to next entry
+            DBRA D2,@nrfLoop	;]check em all out
+            BRA.S @notReal               ;it must not be real...
+
+; PROCEDURE SetFScaleDisable(scaleDis:BOOLEAN);
+;
+;  Set to turn ScaleDisable on and off, invalidating the width cache.
+
+SetFScaleDisable
+            MOVE.L (SP)+,A0
+            MOVE.B (SP)+,FScaleDisable
+            MOVE.W #-1,CurFMFamily ;]
+            MOVE.L A0,-(SP)
+            BSR InValWidths
+            RTS
+
+			
+; PROCEDURE FontMetrics(VAR theMetrics:FontMetricRec);
+;
+;
+;  FontMetrics returns fractional information about the current font
+;  as specified in thePort.  It returns a Font Metric Record whose format
+;  is:
+;
+;	   ascent:			Fixed;
+;	   descent: 		Fixed;
+;	   leading: 		Fixed;
+;	   widMax:		Fixed;
+;	   WTabHandle:		Handle;
+;
+
+; first use CharWidth to force a SwapFont
+
+FontMetrics
+			SUBQ	#2,SP				;make room for result
+			MOVE	#' ',-(SP)				;push ASCII for blank
+			_CharWidth					;run through SwapFont
+			ADDQ	#2,SP				;we don't really care about result
+
+; get the parameter pointer
+
+			MOVEM.L	A2-A3,-(SP) 				;save work register
+			MOVE.L	12(SP),A2	;]point to result record
+
+; always derive things from the font itself
+
+			MOVE.L	FOutFontHandle,A1		;get font handle
+			MOVE.L	(A1),A1 				;handle->pointer
+			LEA 		FAscent(A1),A0		;point to ascent field
+			PEA 		FWidMax(A1) 			;save pointer to FWidMax for later
+			BSR.S	ScaleVFVal			;process ascent
+			BSR.S	ScaleVFVal			;process descent
+			BSR.S	ScaleVFVal			;process leading
+			MOVE.L	(SP)+,A0
+			MOVE.L	FScaleHFact,D1
+			LEA 		fmOutNumer+FOutRec+2,A1 ;point to horizontal numerator.
+			BSR.S	ScaleFVal				;process widMax
+
+; stuff the width table handle
+
+			MOVE.L	WidthTabHandle,(A2)	;]remember width handle
+
+; now adjust the results to compensate for style
+
+			MOVE.L	12(SP),A2	;]get result pointer back.
+			MOVEQ	#0,D0
+			MOVE.B	fmOutShadow+FOutRec,D0	;get shadow count
+			BEQ.S	@noShadow			;skip if zero
+			ADDQ.W	#1,(A2) 				;adjust ascent
+			ADD.W	D0,4(A2)				;adjust descent
+@noShadow
+			MOVE.L	WidthPtr,A0				;pointer to widths
+			MOVE.L	WidthStyle(A0),D0		;get the style extra.
+			ADD.L	D0,12(A2)			;add it in to the WidMax field.
+
+; now we're done
+
+			MOVEM.L	(SP)+,A2-A3	 			;restore work register
+			MOVE.L	(SP)+,(SP)			;strip parameter
+			RTS
+
+
+; ScaleFVal is a code saving utility that fetches the value pointed
+; to by A0, multiplies it by the scale factor and scale disable adjustment,
+;  and stuffs the normalized long result where A2 points
+
+ScaleVFVal
+			MOVE.L	FScaleVFact,D1
+			LEA 		fmOutNumer+FOutRec,A1	;point to vertical numerator.
+ScaleFVal
+			MOVE.W	(A0)+,D0				;get ascent
+			MOVE.L	A0,-(SP)
+			TST.B	FScaleDisable			;use 1.0 if scaling is enabled.
+			BNE.S	@2
+			MOVE.L	FPointOne,D1
+@2
+			SUBQ	#4,SP				;make space for result
+			MOVE.L	D1,-(SP)				;FScale adjustment for FixMul
+
+			SUBQ	#4,SP
+			CLR.W	-(SP)				;push the font's info as a fixed point value.
+			MOVE.W	D0,-(SP)
+
+			SUBQ	#4,SP
+				MOVE.W	4(A1),-(SP) 			;push V output denom
+			MOVE.W	(A1),-(SP)			;push V output numer
+			BSR	MyFixRatio	;]compute ratio.
+
+; multiply by the appropriate FScaleDisable factor in D1
+
+			BSR	MyFixMul	;]compute FScaleExtra*Value
+			BSR	MyFixMul	;]compute FScaleExtra*Value*ScaleFactor
+			MOVE.L	(SP)+,(A2)+ 			;remember it
+			MOVE.L	(SP)+,A0
+			RTS
+
+
+;———————————————————————————————————————————————————————————————————
+; BuildCharTable operates on the font passed in A0.  It makes room for
+; a character height table at the end of the font and then loops from
+; FirstChar to LastChar+1, computing it.
+;
+;
+; Registers used:
+;
+; D0 = scratch			D1 = scratch		D2 = scratch			D3 = character height
+; D4 = constant (16) 	D5 = table size		D6 = next entry, width	D7 = locTable entry
+; A0 = fontHandle (input)	A1 = strike pointer	A2 = fontPtr, locTable	A3 = fontHandle
+; A4 = character height
+
+
+		
+BuildCharTable
+			MOVEM.L 	D3-D7/A2-A4,-(SP)	;save registers
+
+			MOVE.L	A0,A3				;keep fontHandle in A3
+			MOVE.L	(A3),A1 				;point to the font
+			MOVE.W	(A1)+,D0				;get format word?
+			LSR 		#1,D0				;already got table?
+			BCS.S	DoneBCT 				;if so, we're done
+
+; get firstChar, lastChar and compute size of table
+
+			MOVE.W	(A1)+,D0				;get firstChar
+			MOVE.W	(A1),D5 				;get lastChar
+			SUB.W	D0,D5				;compute lastChar-firstChar
+			ADDQ	#3,D5				;# of chars, including missing
+			ADD.W	D5,D5				;compute size of table
+			EXT.L	D5
+
+; compute total new size of font: position of OWTable + 2 * D5
+
+			MOVE.L	(A3),A1 				;point to font
+			MOVEQ	#0,D0
+			MOVE.W	fOWTLoc(A1),D0		;get size till owTable
+			ADDQ.L	#8,D0				;8 header words in front
+			ADD.L	D0,D0				;double for bytes
+			MOVE.L	D0,D1				;remember in D1
+			SUB.L	D5,D1				;compute offset to LocTable
+			ADD.L	D5,D0				;add in owTable
+			MOVE.L	D0,D2				;remember offset to height table for later
+			ADD.L	D5,D0				;add in newTable
+
+; if the font has a built-in width table, make sure we take that into
+; account
+
+			BTST	#1,1(A1)				;built in width table?
+			BEQ.S	@growTheFont 			;if not, skip
+
+			ADD.L	D5,D0				;increase new size
+			ADD.L	D5,D2				;bump where heights go, too
+
+; grow it to include the table
+
+@growTheFont
+			_SetHandleSize					;try to grow it
+			BEQ.S	MakeCTable			;if we can, good
+
+; we couldn't grow the handle so give up.
+
+DoneBCT
+			MOVEM.L 	(SP)+,D3-D7/A2-A4
+			RTS
+
+; OK, D2 has the offset to the beginning of the character offset table,
+; D1 has offset to locTable, D3 has firstChar and D4 has lastChar. Loop
+; for the # of characters, walking down both tables, using locTable to
+; build the mask, counting the rows and filling out the charTable.
+
+MakeCTable
+			MOVE.L	(A3),A2 				;point to font
+			OR		#1,(A2) 				;turn on mode bit
+
+			MOVE.W	fFRectHeight(A2),D3 	;hold total height
+			ADD.L	D1,A2				;A2 points to locTable
+			MOVE.L	(A3),A4 				;point to font
+			ADD.L	D2,A4				;point to charTable
+
+; here's the start of the loop.  D5 has the number of entries *2 to
+; process.	From the words that A2 points to, make a mask/offset combo
+; in A1/D0.
+
+			SUBQ	#2,D5				;don't need extra bounds
+CTabLoop0
+			MOVE	#$FF00,(A4) 			;init top to FF, bot to 0
+
+			MOVE.W	(A2)+,D7				;get locTable entry
+			MOVE.W	(A2),D6 				;get next entry, too
+			SUB.W	D7,D6				;compute length in pixels
+			BEQ	EmptyChar			;if zero, its easy
+
+; Here's where we re-enter the loop for wide characters. Make A1 point
+; into word of font, and start building the mask in D0.
+			
+CTab1Loop
+			MOVE.W	D7,D2				;remember start
+			MOVE.W	D7,D0				;get start in D0
+			LSR.W	#4,D0				;divide by 16
+			ADD.W	D0,D0				;double for byte offset
+
+			MOVE.L	(A3),A1 				;get font pointer
+			ADD.W	#FRowWords+2,A1 		;point to strike
+			ADD.W	D0,A1				;point to proper word
+
+; now build the leftMask based on the remainder
+
+			AND 		#15,D2				;compute start mod 16
+			MOVE	D2,D1				;copy it
+			ADD.W	D1,D1				;double for word index
+
+			MOVEQ	#0,D0				;clear high part of D0
+			MOVE.W	CharMasks(PC,D1),D0	;]get leftMask
+			SWAP	D0					;keep in high word
+
+; now compute how many pixels were used up in the first word, and decrement
+; the width value
+
+			MOVEQ	#16,D1				;at most 16 used
+			SUB.W	D2,D1				;compute number used
+			ADD.W	D1,D7				;bump left index
+
+			SUB.W	D1,D6				;compute number left
+			BEQ.S	MaskBuilt				;if none, done building mask
+			BPL.S	CharMoreMask	;]if >0, turn on more bits
+
+; the width remaining is < 0, so we must turn off bits in the mask
+
+			MOVE	D6,D1				;get the delta
+			ADD.W	#16,D1				;compute 16-delta
+			ADD.W	D1,D1				;double for word index
+
+			MOVE.L	CharMasks(PC,D1),D2 ;]
+			NOT.L	D2				;get inverse mask in high word
+			AND.L	D2,D0				;turn off right bits
+			BRA.S	MaskBuilt				;OK, we got it
+
+
+*R The ROM keeps these 17 mask words beside their caller.
+CharMasks ;]
+            DC.W $FFFF,$7FFF,$3FFF,$1FFF,$0FFF,$07FF,$03FF,$01FF ;]
+            DC.W $00FF,$007F,$003F,$001F,$000F,$0007,$0003,$0001,$0000 ;]
+
+; here we handle the case where there's more in the next word to process,
+; so extend the mask into the low word.
+
+CharMoreMask ;]
+			MOVEQ	#16,D4				;useful constant!
+			MOVE.W	D6,D1				;get remaining count
+			CMP.W	D4,D1				;bigger than 16?
+			BLE.S	@notTopEnd			;if not, skip
+			MOVE.W	D4,D1				;if so, max out at 16
+@notTopEnd
+			ADD.W	D1,D1				;double for word index
+			MOVE.W	CharMasks(PC,D1),D2 ;]
+			NOT.W	D2				;get mask
+			OR		D2,D0				;extend the mask
+			SUB.W	D4,D6				;decrement remaining width
+			ADD.W	D4,D7				;bump index to next word
+
+; at this point, A1 points to the top long in the character and D0 has
+; the mask. D3 has the number of scan lines.  Loop, fetching a long
+; and masking to find top of character.
+
+MaskBuilt
+			MOVE.L	A1,-(SP)				;remember first pointer
+
+			MOVE	D3,D1				;init height counter
+			SUBQ	#1,D1				;bias for DBRA
+
+			MOVEQ	#0,D4				;D4 is current top
+			MOVE.L	(A3),A0 				;get font pointer
+			MOVE.W	fRowWords(A0),A0		;get rowWords in A0
+			ADD.W	A0,A0				;compute rowBytes
+TopMaskLoop
+			MOVE.L	(A1),D2 				;get the bits
+			AND.L	D0,D2				;any relevant one on?
+			BNE.S	MergeInTop			;if on, done with top
+
+			ADDQ	#1,D4				;bump top
+			ADD.W	A0,A1				;add in RowBytes
+			DBRA	D1,TopMaskLoop		;loop for all height
+
+; all blank so set up as (0,0)
+
+			ADDQ.L	#4,SP				;strip saved A1
+			MOVEQ	#0,D6
+EmptyChar
+			CLR.W	(A4)+				;stick 0,0 in table
+			BRA.S	NextChar				;go process next char
+
+; OK, so top is in D4.	Merge it into the table.
+
+MergeInTop
+			CMP.B	(A4),D4 				;is it smaller?
+			BHS	@0					;if not, skip
+			MOVE.B	D4,(A4) 				;update top
+
+; now try the bottom up
+
+@0
+			MOVE.L	(SP)+,A1				;recover character ptr
+
+			MOVE	D3,D2				;get height
+			SUBQ	#1,D2				;compute height-1
+
+			MOVE	A0,D4				;get rowBytes
+			MULU	D4,D2				;compute offset to bottom
+			ADD.L	D2,A1				;start with bottom word
+
+			MOVE	D3,D4				;start with height
+			MOVE	D3,D1				;get # of lines
+			SUBQ	#1,D1				;bias for DBRA
+BotMaskLoop
+			MOVE.L	(A1),D2 				;get the long
+			AND.L	D0,D2				;any relevant bits on?
+			BNE.S	MergeInBot
+
+			SUBQ	#1,D4				;one less high
+			SUB.W	A0,A1				;back up a scan line
+			DBRA	D1,BotMaskLoop
+			BRA.S	EmptyChar			;impossible to get here...
+
+; compute the height of the character and merge it in
+
+MergeInBot
+			SUB.B	(A4)+,D4 ;]
+			CMP.B	(A4)+,D4				;compare with last height
+			BLE.S	NextChar
+
+			MOVE.B	D4,-1(A4)			;its bigger, so use it
+
+; we're finally done with this band of the character (at least!) so see
+; if we're really done with it
+
+NextChar
+			SUBQ.L	#2,A4				;back up
+			TST 		D6					;done with this character?
+			BGT 		CTab1Loop			;if not, dive in again
+
+			ADDQ.L	#2,A4
+			SUBQ	#2,D5				;more to do?
+			BGT 		CTabLoop0			;if so, go do it
+			BRA 		DoneBCT 				;if not, we're done
+
+		ENDPROC
+		END

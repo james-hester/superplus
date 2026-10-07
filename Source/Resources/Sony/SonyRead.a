@@ -1,0 +1,585 @@
+*R This module restores the Mac Plus address and data readers.
+*R Fixed hardware addresses, inline SCC polling, and the 127-count first-byte
+*R timeout replace the later MFM, polling-stub, and processor-speed changes.
+*R Retained comments and nibble tables come from SonyRead.a.
+
+;
+;	File:		SonyRead.a
+;
+;	Contains:	This file contains disk driver routines used to read
+;				sector information from twiggy diskettes.
+;
+;	Written by:	Larry Kenyon
+;
+;	Copyright:	© 1982-1992 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				 11/2/85	LAK		Use NewIntf instead of Sides when adjusting MustFndCnt.
+;				 7/29/85	RDC		Changed interrupt level settings to use equates
+;				 7/24/85	LAK		Convert back to WorkShop.
+;				 1/15/85	JTC		convert to MDS.
+;				10/26/84	LAK		Patched RdAddr to compensate for missed nibbles after write
+;									(during erase) and increased no-nibble timeout.
+;				 8/18/83	LAK		Addresses of AdrMks and DtaMks tables are passed thru vectors.
+;				 8/11/83	LAK		Sets head select according to SideTrack.
+;				  8/4/83	LAK		Added verify-only read (does it if lowmem var DskVerify is
+;									non-zero).
+;				 4/17/83	LAK		Rewrote both RdAddr and RdData to incorporate SCC channel A
+;									polling scheme.
+;				12/17/82	LAK		Changed nibble "must-find" count to 1500 from 3000.
+;				11/18/82	LAK		Added head select setup and a search for some nibbles to avoid
+;									long delays on blank tracks
+;
+
+		IMPORT AdrDisk,DskRtn ;]
+		EXPORT jtRdData,RdAddr,RdAddrSetup,RdData,SetUpPoll ;]
+
+	INCLUDE 'SonyEqu.a'
+	INCLUDE 'SonyReadEqu.a' ;]
+
+
+;_______________________________________________________________________
+;
+; Routine:	RdAddr,SetUpPoll,RdAddrSetup
+; Arguments:	  A5.L (input)	-- ptr to 6522 A-reg (has head sel, wait/req)
+;		  A6.L (input)	-- ptr to  SCC A-channel data register
+;		  A2.L (input)	-- pointer to AdrMks table
+;		  D0.W (output) --
+;		   0-1499 = no error, 1500 - nybbles before address mark
+;			 -66 = no transitions found
+;			 -67 = no address mark found  (no header read)
+;			 -68 = bad	data nybble (header read aborted)
+;			 -69 = bad	checksum (header read but is inconsistent)
+;			 -70 = bad	bit slip marks (header read but may be bad)
+;		  D1.W (output) -- <side><track> (low-order 12 bits)
+;		  D2.W (output) -- <sector>
+;		  D3.W (output) -- <volume>
+;		  A3.L (output) -- ptr to <DNib-$96> (denibblizing table)
+;		  A4.L (output) -- DiskQ6L pointer
+;		  D4,D5,A0,A2 are trashed
+;		  D6-D7 and A1,A5-A6 are preserved
+; Function: This routine reads the next address mark that spins by.  On exit,
+;		the attributes of the mark are passed back as:
+;
+;			D1 = <side> <track>
+;			D2 = <sector>
+;			D3 = <volume>
+;
+;		The disk should be up to speed with the correct head
+;		selected, and interrupts should be disabled.
+;
+;		'Nibble must find' count may have to be tuned.
+;_______________________________________________________________________
+
+			BLANKS	ON
+			STRING	ASIS
+
+AdrMks		DC.B	$D5,$AA,$96,$DE,$AA,$FF
+
+
+; code-saving proc called by RdAddrSetUp and FigTrkSpeed
+
+SetUpPoll	MOVE.L	JSetUpPoll,-(SP)
+			RTS
+
+jtSetUpPoll
+	LEA SCCData,A6 ;]
+	LEA VIAHeadSel,A5 ;]
+			ORI 	#HiIntMask,SR		; no ints from now on!				<29Jul85>
+
+			MOVE.L	SP,PollStack		; init PollStack at current stack level
+			ADD.L	D0,PollStack		;  compensate for 1 or 2 levels
+			RTS
+
+RdAddrSetup MOVEQ	#8,D0				; init PollStack 8 bytes down
+			BSR.S	SetUpPoll
+
+			MOVEQ	#RdDtaAdr,D0		; assume side 0
+			BTST	#3,SideTrack(A1)	; side 1?
+			BEQ.S	@1					; br if not
+			MOVEQ	#RdDta1Adr,D0		; set for side 1
+@1			BSR 	AdrDisk
+
+RdAddr
+
+			LEA 	AdrMks,A2	; point to our mark table
+			MOVE.L	JRdAddr,-(SP)
+			RTS
+
+jtRdAddr
+
+*R The ROM's first-byte loop has a fixed 127-count timeout.
+			MOVEQ	#3,D3				; try for 3 bytes
+			MOVEQ	#127,D2
+			MOVEQ	#0,D5				; D5 is used for offsets, so clear it
+
+			MOVE.L #DBase+Q6L,A4 ;]
+
+			MOVE.L	(SP)+,DskRtnAdr 	; return address
+
+@1			TST.B (A5)
+	BMI.S @poll1 ;]
+	MOVE.B (A6),-(SP)
+@poll1 ;]
+
+@2			MOVE.B	(A4),D5 			; read a nibble
+			DBRA	D2,@3				; if no timeout yet, see if it was valid
+
+			MOVEQ	#NoNybErr,D0		; set CCR
+			BRA 	RdAddrXit
+
+@3			BPL.S	@1					; try again if no nibble
+			SUBQ.W	#1,D3				; leave D3=0
+			BNE.S	@1					; if we can find 3, should be ok
+			
+			MOVE.W	#MustFindCt,D0		; D0 holds nibble must find count
+			TST.B	NewIntf(A1,D1)		; new interface drive?				<02Nov85>
+			BEQ.S	@4
+			MOVE.W	#MustFindCt-32,D0
+
+@4
+			LEA 	(DNib-$96),A3	; A3 points to denibblizing table
+
+RdAddr1 	MOVE.L	A2,A0				; point to our mark table
+			MOVEQ	#3,D1				;
+
+@1			MOVE.B	(A4),D5 			;
+			BPL.S	@1					;
+			TST.B (A5)
+	BMI.S @poll2 ;]
+	MOVE.B (A6),-(SP)
+@poll2 ;]
+@2			DBRA	D0,@3				;
+			MOVEQ	#NoAdrMkErr,D0		; after 1500 tries report error
+			BRA.S	RdAddrXit
+
+@3			CMP.B	(A0)+,D5			;
+			BNE.S	RdAddr1 			;
+			SUBQ.W	#1,D1				;
+			BNE.S	@1					; leave D1=0  (returns <side><track>)
+
+; We found an address mark header so retrieve the information from the mark.
+
+RdAddrMk	MOVE.B	(A4),D5 			; read track number byte
+			BPL.S	RdAddrMk			;
+			MOVE.B	0(A3,D5.W),D1		; denibblize it
+			MOVE.B	D1,D4				; init the checksum
+			ROR.W	#6,D1				; make room for 6 bits of side . . .
+
+@2			MOVE.B	(A4),D5 			; read sector number byte
+			BPL.S	@2					;
+			MOVE.B	0(A3,D5.W),D2		; denibblize it
+			EOR.B	D2,D4				; calculate the checksum
+
+@3			MOVE.B	(A4),D5 			; read side number byte
+			BPL.S	@3					;
+			MOVE.B	0(A3,D5.W),D1		; denibblize it
+			EOR.B	D1,D4				; calculate the checksum
+			ROL.W	#6,D1				; D1,bits 0-11 = <side><track>
+
+			TST.B (A5)
+	BMI.S @poll3 ;]
+	MOVE.B (A6),-(SP)
+@poll3 ;]
+@4			MOVE.B	(A4),D5 			; read volume number byte
+			BPL.S	@4					;
+			MOVE.B	0(A3,D5.W),D3		; denibblize it
+			EOR.B	D3,D4				; calculate the checksum
+
+@5			MOVE.B	(A4),D5 			; read checksum nibble
+			BPL.S	@5					;
+			MOVE.B	0(A3,D5.W),D5		; denibblize it
+			EOR.B	D5,D4
+			BNE.S	BadCkSum			; report bad checksum
+
+			MOVEQ	#1,D4				; 2 bit slip marks
+RdAddrEnd
+
+@1			MOVE.B	(A4),D5 			; get first trail nibble			<2.1>
+			BPL.S	@1					;									<2.1>
+			TST.B (A5)
+	BMI.S @poll4 ;]
+	MOVE.B (A6),-(SP)
+@poll4 ;]
+			CMP.B	(A0)+,D5			; trail mark ok?
+			BNE.S	NoSlip				; br if not
+			DBRA	D4,RdAddrEnd
+
+RdAddrXit	BRA 	DskRtn				; return with D0 positive, BPL for ok
+
+BadCkSum	MOVEQ	#BadCkSmErr,D0
+			BRA.S	RdAddrXit
+
+NoSlip		MOVEQ	#BadBtSlpErr,D0
+			BRA.S	RdAddrXit
+;_______________________________________________________________________
+;
+; Routine:	RdData
+; Arguments:	  A0.L (input)	-- ptr to 512-byte data buffer
+;		  A3.L (input)	-- ptr to <DNib-$96> (denibblizing table)
+;		  A4.L (input)	-- DiskQ6L pointer
+;		  A5.L (input)	-- ptr to 6522 A-reg (has head sel, wait/req)
+;		  A6.L (input)	-- ptr to  SCC channel A data register
+;
+;		  D0.W (output) --
+;			0  = no error
+;			  -71 = no	data mark found
+;			  -72 = bad checksum
+;			  -73 = bad bit slip marks
+;		  A3-A6 are preserved
+;		  all other registers are trashed
+; Function: This routine reads the next data mark that spins by. The 524
+;		bytes of data are split as follows: the first 12 bytes are put
+;		into TagData, the remaining 512 bytes into the buffer at (A0).
+;		This routine denibblizes and computes the checksum on the fly,
+;		so it may be used for one-to-one reading.
+;
+;		The disk should be up to speed with the correct head
+;		selected, and interrupts should be disabled.  This routine
+;		should be called immediately after RdAddr for disk reads.
+;
+; To do:
+;
+; Currently (on the SCC version Macintosh), there is no time to check each
+; nibble when denibblizing data nibbles for $FF mappings; this should be added
+; when this routine is put in ROM or run on a faster processor.
+;
+; An optimization could be added for missed address marks: if the calling
+; routine is after a particular sector number and already knows which track
+; it is on, this routine could be modified to check for that sector in the
+; byte just before the encoded data, and return immediately on no match . . .
+;_______________________________________________________________________
+
+DtaMks		DC.B	$D5,$AA,$AD,$DE,$AA,$FF
+
+RdData
+
+			LEA 	DtaMks,A1
+			MOVE.L	JRdData,-(SP)
+			RTS
+
+jtRdData	MOVE.L	(SP)+,DskRtnAdr 	; save return address here
+			MOVEQ	#48,D2				; D2 holds nibble must find count
+			MOVEQ	#0,D3				; clear D3 for use as an index
+			MOVEQ	#-64,D0 			; $C0 used to mask off bits 0-5
+			MOVE.L	#$1FE000A,D4		; byte read counts for 2 buffers
+			MOVEQ	#0,D5				; init CkSumA
+			MOVEQ	#0,D6				; init CkSumB
+			MOVEQ	#0,D7				; init CkSumC
+
+; try to find a valid header until we've timed out
+
+RdData1 	MOVE.L	A1,A2				; address of address marks
+			MOVEQ	#3,D1
+
+@1			MOVE.B	(A4),D3
+			BPL.S	@1
+			TST.B (A5)
+	BMI.S @poll5 ;]
+	MOVE.B (A6),-(SP)
+@poll5 ;]
+@2			DBRA	D2,@3
+			MOVEQ	#NoDtaMkErr,D0		; after 48 tries report error
+			BRA.S	RdAddrXit
+
+@3			CMP.B	(A2)+,D3
+			BNE.S	RdData1
+			SUBQ.W	#1,D1
+			BNE.S	@1					; leave D1=0
+
+; We found a data mark header so retrieve the information from the mark.
+
+
+@4			MOVE.B	(A4),D3 			; read the encoded sector number
+			BPL.S	@4					;
+			LEA 	TagData+1,A1		; A1 points to buffer for extra bytes
+			MOVE.B	0(A3,D3.W),(A1)+	;
+
+;_______________________________________________________________________
+;
+; We found the header so the actual info is about to spin by.  There are 699
+; nibbles followed by 3 checksum nibbles.  We use a four nibble loop for the
+; data nibbles . . . the first 12 bytes go into a separate buffer, then 512
+; bytes are placed in the user's buffer.
+;
+;	D7 = CkSumC 		A7 = stack (where poll data is pushed)
+;	D6 = CkSumB 		A6 = ptr to SCC chan A data reg
+;	D5 = CkSumA 		A5 = ptr to 6522 A-reg
+;	D4 = loop counters		A4 = ptr to Q6L (IWM)
+;	D3 = buffer 		A3 = ptr to denibblizing table
+;	D2 = buffer 		A2 = ptr to trail mark table
+;	D1 = buffer for odd bits	A1 = ptr to data buffer
+;	D0 = $C0 mask			A0 = ptr to user buffer
+;_______________________________________________________________________
+
+RdData2 	TST.B (A5)
+	BMI.S @poll6 ;]
+	MOVE.B (A6),-(SP)
+@poll6 ;]
+
+@0			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	RdData2 			;
+			MOVE.B	0(A3,D3.W),D1		; D1 = [00][00][A7][A6][B7][B6][C7][C6]
+			ROL.B	#2,D1				; D1 = [A7][A6][B7][B6][C7][C6][00][00]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [A7][A6][00][00][00][00][00][00]
+
+@1			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@1					;
+			OR.B	0(A3,D3.W),D2		; D2 = ByteA' (no time for bad nibs)
+
+			MOVE.B	D7,D3				;
+			ADD.B	D7,D3				; ex <- CkSumC[7]
+			ROL.B	#1,D7				; CkSumC' <- ROL (CkSumC)
+
+			EOR.B	D7,D2				; ByteA <- ByteA' XOR CkSumC'
+			MOVE.B	D2,(A1)+			; store first byte
+			ADDX.B	D2,D5				; CkSumA',ex <- CkSumA + ByteA + ex
+			ROL.B	#2,D1				; D1 = [B7][B6][C7][C6][00][00][A7][A6]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [B7][B6][00][00][00][00][00][00]
+
+@2			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@2					;
+			OR.B	0(A3,D3.W),D2		; D2 = ByteB' (no time for bad nibs)
+			EOR.B	D5,D2				; D2 = ByteB
+			MOVE.B	D2,(A1)+			; store second byte
+			ADDX.B	D2,D6				; CkSumB',ex <- CkSumB + ByteB + ex
+
+			ROL.B	#2,D1				; D1 = [C7][C6][0][0][A7][A6][B7][B6]
+			AND.B	D0,D1				; D1 = [C7][C6][0][0][0][0][0][0]
+
+			TST.B (A5)
+	BMI.S @poll7 ;]
+	MOVE.B (A6),-(SP)
+@poll7 ;]
+
+@3			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@3					;
+			OR.B	0(A3,D3.W),D1		; D1 = ByteC' (no time for bad nibs)
+			EOR.B	D6,D1				; D1 = ByteC
+			MOVE.B	D1,(A1)+			; store third byte
+			ADDX.B	D1,D7				; CkSumC'' <- CkSumC' + ByteC + ex
+			SUBQ.W	#3,D4				; decrement counter by 3 bytes
+			BPL.S	RdData2 			; loop	(careful->subq changes ex bit)
+
+			SWAP	D4					; first time thru switch counters, buffers
+			TST.B	DskVerify			; doing a read verify?
+			BEQ.S	RdData3A			; br if not
+			BRA.S	RdVer1				; br if so (only verify, don't read)
+
+RdData3 	TST.B (A5)
+	BMI.S @poll8 ;]
+	MOVE.B (A6),-(SP)
+@poll8 ;]
+
+RdData3A	MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	RdData3 			;
+			MOVE.B	0(A3,D3.W),D1		; D1 = [00][00][A7][A6][B7][B6][C7][C6]
+			ROL.B	#2,D1				; D1 = [A7][A6][B7][B6][C7][C6][00][00]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [A7][A6][00][00][00][00][00][00]
+
+@1			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@1					;
+			OR.B	0(A3,D3.W),D2		; D2 = ByteA' (no time for bad nibs)
+
+			MOVE.B	D7,D3				;
+			ADD.B	D7,D3				; ex <- CkSumC[7]
+			ROL.B	#1,D7				; CkSumC' <- ROL (CkSumC)
+
+			EOR.B	D7,D2				; ByteA <- ByteA' XOR CkSumC'
+			MOVE.B	D2,(A0)+			; store first byte
+			ADDX.B	D2,D5				; CkSumA',ex <- CkSumA + ByteA + ex
+			ROL.B	#2,D1				; D1 = [B7][B6][C7][C6][00][00][A7][A6]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [B7][B6][00][00][00][00][00][00]
+
+@2			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@2					;
+			OR.B	0(A3,D3.W),D2		; D2 = ByteB' (no time for bad nibs)
+			EOR.B	D5,D2				; D2 = ByteB
+			MOVE.B	D2,(A0)+			; store second byte
+			ADDX.B	D2,D6				; CkSumB',ex <- CkSumB + ByteB + ex
+			TST.W	D4					; check counter
+			BEQ.S	RdCkSum 			; we are done when counter is 0
+
+			ROL.B	#2,D1				; D1 = [C7][C6][0][0][A7][A6][B7][B6]
+			AND.B	D0,D1				; D1 = [C7][C6][0][0][0][0][0][0]
+
+			TST.B (A5)
+	BMI.S @poll9 ;]
+	MOVE.B (A6),-(SP)
+@poll9 ;]
+
+@3			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@3					;
+			OR.B	0(A3,D3.W),D1		; D1 = ByteC' (no time for bad nibs)
+			EOR.B	D6,D1				; D1 = ByteC
+			MOVE.B	D1,(A0)+			; store third byte
+			ADDX.B	D1,D7				; CkSumC'' <- CkSumC' + ByteC + ex
+			SUBQ.W	#3,D4				; decrement counter by 3 bytes
+			BRA.S	RdData3 			; loop	(careful->subq changes ex bit)
+
+RVerify		TST.B (A5)
+	BMI.S @poll10 ;]
+	MOVE.B (A6),-(SP)
+@poll10 ;]
+
+RdVer1		MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	RVerify				;										<1.1/12feb88>
+			MOVE.B	0(A3,D3.W),D1		; D1 = [00][00][A7][A6][B7][B6][C7][C6]
+			ROL.B	#2,D1				; D1 = [A7][A6][B7][B6][C7][C6][00][00]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [A7][A6][00][00][00][00][00][00]
+
+@1			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@1					;
+			OR.B	0(A3,D3.W),D2		; D2 = ByteA' (no time for bad nibs)
+
+			MOVE.B	D7,D3				;
+			ADD.B	D7,D3				; ex <- CkSumC[7]
+			ROL.B	#1,D7				; CkSumC' <- ROL (CkSumC)
+
+			EOR.B	D7,D2				; ByteA <- ByteA' XOR CkSumC'
+			CMP.B	(A0)+,D2			; check first byte
+			BNE.S	@4					; (to RdVerErr) exit on errors
+			ADDX.B	D2,D5				; CkSumA',ex <- CkSumA + ByteA + ex
+			ROL.B	#2,D1				; D1 = [B7][B6][C7][C6][00][00][A7][A6]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [B7][B6][00][00][00][00][00][00]
+
+@2			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@2					;
+			OR.B	0(A3,D3.W),D2		; D2 = ByteB' (no time for bad nibs)
+			EOR.B	D5,D2				; D2 = ByteB
+			CMP.B	(A0)+,D2			; compare second byte
+			BNE.S	RdVerErr			; exit on errors
+			ADDX.B	D2,D6				; CkSumB',ex <- CkSumB + ByteB + ex
+			TST.W	D4					;
+			BEQ.S	RdCkSum 			; we are done when counter is 0
+
+			ROL.B	#2,D1				; D1 = [C7][C6][0][0][A7][A6][B7][B6]
+			AND.B	D0,D1				; D1 = [C7][C6][0][0][0][0][0][0]
+
+			TST.B (A5)
+	BMI.S @poll11 ;]
+	MOVE.B (A6),-(SP)
+@poll11 ;]
+
+@3			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@3					;
+			OR.B	0(A3,D3.W),D1		; D1 = ByteC' (no time for bad nibs)
+			EOR.B	D6,D1				; D1 = ByteC
+			CMP.B	(A0)+,D1			; compare third byte
+@4			BNE.S	RdVerErr			; exit on errors
+			ADDX.B	D1,D7				; CkSumC'' <- CkSumC' + ByteC + ex
+			SUBQ.W	#3,D4				; decrement counter by 3 bytes
+			BRA.S	RVerify				; loop	(careful->subq changes ex bit)	<1.1/12feb88>
+
+; now read the four checksum nibbles and compare . . .
+
+RdCkSum 	TST.B (A5)
+	BMI.S @poll12 ;]
+	MOVE.B (A6),-(SP)
+@poll12 ;]
+
+@0			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@0					;
+			MOVE.B	0(A3,D3.W),D1		; D1 = [00][00][A7][A6][B7][B6][C7][C6]
+			BMI.S	DCkSumBad			; branch if bad nibble
+			ROL.B	#2,D1				; D1 = [A7][A6][B7][B6][C7][C6][00][00]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [A7][A6][00][00][00][00][00][00]
+
+@1			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@1					;
+			MOVE.B	0(A3,D3.W),D3		; D3 = [0][0][A5][A4][A3][A2][A1][A0]
+			BMI.S	DCkSumBad			; br if bad nibble
+			OR.B	D3,D2				; D2 = CkSumA
+			CMP.B	D2,D5				; check against calculated value
+			BNE.S	DCkSumBad			; br if bad
+			ROL.B	#2,D1				; D1 = [B7][B6][C7][C6][00][00][A7][A6]
+			MOVE.B	D1,D2				;
+			AND.B	D0,D2				; D2 = [B7][B6][00][00][00][00][00][00]
+
+@2			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@2					;
+			MOVE.B	0(A3,D3.W),D3		; D3 = [0][0][B5][B4][B3][B2][B1][B0]
+			BMI.S	DCkSumBad			; branch if bad nibble
+			OR.B	D3,D2				; D2 = CkSumB
+			CMP.B	D2,D6				; check against calculated value
+			BNE.S	DCkSumBad			; br if bad
+			ROL.B	#2,D1				; D1 = [C7][C6][00][00][A7][A6][B7][B6]
+			AND.B	D0,D1				; D1 = [C7][C6][00][00][00][00][00][00]
+
+			TST.B (A5)
+	BMI.S @poll13 ;]
+	MOVE.B (A6),-(SP)
+@poll13 ;]
+
+@3			MOVE.B	(A4),D3 			; read a nibble
+			BPL.S	@3					;
+			MOVE.B	0(A3,D3.W),D3		; D3 = [00][00][C5][C4][C3][C2][C1][C0]
+			BMI.S	DCkSumBad			; branch if bad nibble
+			OR.B	D3,D1				; D1 = CkSumC
+			CMP.B	D1,D7				; check against calculated value
+			BEQ.S	RdSlip				;
+
+DCkSumBad	MOVEQ	#BadDCkSum,D0		; bad checksum
+			BRA.S	RdDataXit
+
+RdVerErr	MOVEQ	#DataVerErr,D0
+			BRA.S	RdDataXit
+
+; finally we must read the bit slip marks before giving our stamp of approval
+
+RdSlip		MOVEQ	#1,D4				; 2 bit slip marks
+@1			MOVE.B	(A4),D3 			; get next trail nibble
+			BPL.S	@1					;
+
+			TST.B (A5)
+	BMI.S @poll14 ;]
+	MOVE.B (A6),-(SP)
+@poll14 ;]
+
+@2			CMP.B	(A2)+,D3			; trail mark ok?
+			BNE.S	NoDSlip 			; br if not
+			DBRA	D4,@1
+
+			MOVEQ	#0,D0				; report success!!!
+RdDataXit	BRA 	DskRtn				; return with D0 positive, BPL for ok
+
+NoDSlip 	MOVEQ	#BadDBtSlp,D0		; bad slip nibbles is error code 3 .	. .
+			BRA.S	RdDataXit
+
+; Denibblizing Table (nibbles $96 thru $FF converted to $00 thru $3F)
+; $FF means illegal nibble: if we checked for illegal nibbles (currently we
+; don't have time for it), this table could be extended down to $80 . . .
+
+DNib
+
+			DC.B	$00,$01,$FF,$FF,$02,$03 ; $96,$97,	 ,	 ,$9A,$9B
+			DC.B	$FF,$04,$05,$06,$FF,$FF ;	 ,$9D,$9E,$9F,	 ,
+			DC.B	$FF,$FF,$FF,$FF,$07,$08 ;	 ,	 ,	 ,	 ,$A6,$A7
+			DC.B	$FF,$FF,$FF,$09,$0A,$0B ;	 ,	 ,	 ,$AB,$AC,$AD
+			DC.B	$0C,$0D,$FF,$FF,$0E,$0F ; $AE,$AF,	 ,	 ,$B2,$B3
+			DC.B	$10,$11,$12,$13,$FF,$14 ; $B4,$B5,$B6,$B7,	 ,$B9
+			DC.B	$15,$16,$17,$18,$19,$1A ; $BA,$BB,$BC,$BD,$BE,$BF
+			DC.B	$FF,$FF,$FF,$FF,$FF,$FF ;	 ,	 ,	 ,	 ,	 ,
+			DC.B	$FF,$FF,$FF,$FF,$FF,$1B ;	 ,	 ,	 ,	 ,	 ,$CB
+			DC.B	$FF,$1C,$1D,$1E,$FF,$FF ;	 ,$CD,$CE,$CF,
+			DC.B	$FF,$1F,$FF,$FF,$20,$21 ;	 ,$D3,	 ,	 ,$D6,$D7
+			DC.B	$FF,$22,$23,$24,$25,$26 ;	 ,$D9,$DA,$DB,$DC,$DD
+			DC.B	$27,$28,$FF,$FF,$FF,$FF ; $DE,$DF,
+			DC.B	$FF,$29,$2A,$2B,$FF,$2C ;	 ,$E5,$E6,$E7,	 ,$E9
+			DC.B	$2D,$2E,$2F,$30,$31,$32 ; $EA,$EB,$EC,$ED,$EE,$EF
+			DC.B	$FF,$FF,$33,$34,$35,$36 ;	 ,	 ,$F2,$F3,$F4,$F5
+			DC.B	$37,$38,$FF,$39,$3A,$3B ; $F6,$F7,	 ,$F9,$FA,$FB
+			DC.B	$3C,$3D,$3E,$3F 		; $FC,$FD,$FE,$FF
+
+
+
+SonyReadEnd ;]
+	END

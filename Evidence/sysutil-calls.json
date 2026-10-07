@@ -1,0 +1,64 @@
+{
+  "module": "SysUtilCalls",
+  "source": "Reconstruction/Source/OS/SysUtilCalls.a",
+  "originals": [
+    {
+      "path": "OS/SysUtil.a",
+      "sha256": "a15fc9ba95239f3361e06b2db8d7bfbca433aa6813e795ac4616a2b33c176e8f"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    }
+  ],
+  "target": {
+    "program": "Mac Plus",
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "base_address": "0x400000",
+    "size": 131072,
+    "checksum": "0x4d1f8172",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "ghidra_import_path": "/home/james/Mac OS/Mac_ROMs/68k/128k/Macintosh Plus/1986-03 - 4D1F8172 - MacPlus v3.ROM"
+  },
+  "integration_manifest": {
+    "name": "sysutil-calls",
+    "source": "Reconstruction/Source/OS/SysUtilCalls.a",
+    "start": "0x40f790",
+    "end_exclusive": "0x40f7dc",
+    "entry_points": {
+      "ReadParam": "0x40f790",
+      "XferPRam": "0x40f79a",
+      "WriteParam": "0x40f7aa",
+      "ReadDateTime": "0x40f7ca",
+      "SetDateTime": "0x40f7d4"
+    }
+  },
+  "span": {
+    "start": "0x40f790",
+    "end_exclusive": "0x40f7dc",
+    "length": 76,
+    "sha256": "4fdf3814b0a0f191be8e9e413a4f5f228a77fd9573d2d8b4bc4dbd128eb0f2dd",
+    "boundary_evidence": "ReadParam starts at 0x40f790 after InstallRDrivers. The SetDateTime branch ends at 0x40f7dc, where Delay begins."
+  },
+  "changes": [
+    "Extracted ReadParam through SetDateTime from SysUtil.a. Preserved the original author, copyright, applicable history, and routine comments.",
+    "Removed the later WriteParam A0/A1 save and restore. The ROM has neither instruction. The source history records a read-back verification change in July 1990.",
+    "Removed the later Trap suffixes. Added low-memory equates from the original interface files and target addresses for the four clock calls. Branches retain the word widths found in the ROM.",
+    "Added a note correcting the original ReadDateTime description while retaining the original comment text. ReadDateTime calls ReadTime and copies the Time global to the caller's buffer."
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "source_sha256": "553979d7987c0b9b26d92d671189631b549a0f5afe1eebcc6745c153f3d7f162",
+    "checked_bytes": 76,
+    "entry_points_checked": 5,
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "limitations": [
+      "The four clock call targets are established by their encoded ROM displacements. This excerpt does not reconstruct the target procedures.",
+      "Byte equality verifies the complete span. Exact historical source spelling and file boundaries remain inferred."
+    ]
+  }
+}

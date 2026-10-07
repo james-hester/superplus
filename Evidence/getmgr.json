@@ -1,0 +1,103 @@
+{
+  "module": "Resource-loading Toolbox helpers",
+  "source": "Reconstruction/Source/Toolbox/GetMgr.a",
+  "source_sha256": "1f6269b5c3d049b49da59970842a05c79b614085de2596992e94d4d95413689d",
+  "originals": [
+    {
+      "path": "Toolbox/GetMgr/GetMgr.a",
+      "sha256": "9beb2473c442caea601681fa8c5c9111b71b9520c4f020ffb842307aa430e903",
+      "role": "Resource helpers, template handling, menu creation, and interface contracts."
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "role": "Menu fields, resource globals, and trap words.",
+      "declaration_lines": [
+        181,
+        338,
+        168,
+        175
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "role": "Menu fields, resource globals, and trap words.",
+      "declaration_lines": [
+        673,
+        708,
+        709,
+        716,
+        717,
+        731,
+        746,
+        888,
+        895,
+        922,
+        927,
+        1648
+      ]
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 210,
+  "rom": {
+    "start": "0x415ecc",
+    "end_exclusive": "0x41608e",
+    "bytes": 450,
+    "sha256": "dc31f163ee05082d55c3bf9596069cf57d3d01f50b24eb9b4f1cda92eff3985c"
+  },
+  "changes": [
+    "GetPattern and GetCursor use the ordinary resource search. The later ROM-first requests are absent. The common wrappers for patterns, cursors, strings, icons, and pictures otherwise retain their released bodies.",
+    "GetNewWindow restores its zero-byte stack frame and direct GetResource call. It pushes the original template fields, locks the template with master-pointer bit seven, calls NewWindow, and releases the resource. Color windows, automatic positioning, palettes, color tables, and delayed visibility are omitted.",
+    "GetNewControl similarly restores its zero-byte stack frame, combined template-field pushes, direct master-pointer lock, and ReleaseResource call. Color tables and delayed visibility are absent.",
+    "GetMenu retains the April 1985 resource-state and initialization checks, the July 1985 ROM-map insertion before loading MDEF, and CalcMenuSize. The later ROM-map insertion before GetResInfo and the menu color-table path are absent.",
+    "GetNewMBar calls the local GetMenu routine with BSR.W and releases the menu-bar template after loading it. The original menu-bar save, replacement, and restoration sequence remains.",
+    "Original attribution, 1983\u20131985 histories, routine contracts, and inline comments remain where they describe the earlier code. The header omits GetNewCWindow and the control-template comment uses the correct CNTL resource type. Three short-branch forms retain the ROM encodings."
+  ],
+  "verification": {
+    "name": "getmgr",
+    "source": "Reconstruction/Source/Toolbox/GetMgr.a",
+    "source_sha256": "1f6269b5c3d049b49da59970842a05c79b614085de2596992e94d4d95413689d",
+    "start": "0x415ecc",
+    "end_exclusive": "0x41608e",
+    "bytes": 450,
+    "sha256": "dc31f163ee05082d55c3bf9596069cf57d3d01f50b24eb9b4f1cda92eff3985c",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Toolbox/GetMgr.a",
+        "sha256": "1f6269b5c3d049b49da59970842a05c79b614085de2596992e94d4d95413689d"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "getmgr",
+    "source": "Reconstruction/Source/Toolbox/GetMgr.a",
+    "start": "0x415ecc",
+    "end_exclusive": "0x41608e",
+    "entry_points": {
+      "GetPattern": "0x415ecc",
+      "GetMgrEnd": "0x41608e",
+      "donegetmbar": "0x41607a",
+      "dotheget": "0x416010",
+      "getcommon": "0x415ed2",
+      "getcursor": "0x415ee6",
+      "geticon": "0x415ef6",
+      "getmbloop": "0x416052",
+      "getmdone": "0x416004",
+      "getmenu": "0x415fac",
+      "getnewcontrol": "0x415f5c",
+      "getnewmbar": "0x41602a",
+      "getnewwindow": "0x415f06",
+      "getpicture": "0x415efe",
+      "getstring": "0x415eee",
+      "getwdone": "0x415f48",
+      "gmgr": "0x415ecc",
+      "loadmdef": "0x415fe4",
+      "loadmenu": "0x415fde",
+      "nogetnew1": "0x415f50",
+      "nonew2": "0x415fa2"
+    }
+  },
+  "historical_limits": "The source comparison and exact assembly verify emitted instructions and data. They do not exercise resource loading with applications or recover the lost source text."
+}

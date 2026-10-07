@@ -1,0 +1,186 @@
+{
+  "module": "QuickDraw/Arcs.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Arcs.a",
+  "source_sha256": "0fd1ab6281cc88269f55ef7d7572232dde1d5d3c25569d1b2d3cee750adbb914",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/Arcs.m.a",
+    "sha256": "d143046c4609f4a94cfb482a4715b8d67aead97007b32ba6509bbff245618803",
+    "instruction_lines": [
+      14,
+      171
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        103,
+        107
+      ],
+      [
+        161,
+        184
+      ],
+      [
+        228,
+        233
+      ],
+      [
+        248,
+        272
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        529
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40af58",
+      "end_address_exclusive": "0x40b020",
+      "rom_offset": "0xaf58",
+      "length": 200,
+      "sha256": "9f6c4585c7eb9de612d02beca524653e8ece652e357c0a1f3fa650573248eccd",
+      "first_symbol": "StdArc",
+      "last_symbol": "CallArc"
+    }
+  ],
+  "symbols": {
+    "StdArc": "0x40af58",
+    "FrameArc": "0x40afd6",
+    "PaintArc": "0x40afda",
+    "EraseArc": "0x40afde",
+    "InvertArc": "0x40afe2",
+    "FillArc": "0x40afe6",
+    "CallArc": "0x40affc"
+  },
+  "manifest_entry": {
+    "name": "arcs",
+    "source": "Reconstruction/Source/QuickDraw/Arcs.a",
+    "start": "0x40af58",
+    "end_exclusive": "0x40b020",
+    "entry_points": {
+      "StdArc": "0x40af58",
+      "FrameArc": "0x40afd6",
+      "PaintArc": "0x40afda",
+      "EraseArc": "0x40afde",
+      "InvertArc": "0x40afe2",
+      "FillArc": "0x40afe6",
+      "CallArc": "0x40affc"
+    }
+  },
+  "external_routines": {
+    "CheckPic": "0x40e448",
+    "PutPicVerb": "0x40e34a",
+    "PutPicRect": "0x40e2ea",
+    "PushVerb": "0x409ee0",
+    "DrawArc": "0x40b020",
+    "PutPicWord": "0x40e2bc"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable Arcs.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled the final Fill routine branch to the next instruction as NOP, matching the ROM. This changes no control flow."
+    },
+    {
+      "kind": "configuration",
+      "description": "Selected the Mac Plus Toolbox table at $C00."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 52,
+      "original": "JSR \tCHECKPIC",
+      "restored": "JSR\tCHECKPIC(PC)"
+    },
+    {
+      "upstream_line": 56,
+      "original": "JSR \tPutPicVerb",
+      "restored": "JSR\tPutPicVerb(PC)"
+    },
+    {
+      "upstream_line": 61,
+      "original": "JSR \tPutPicRect",
+      "restored": "JSR\tPutPicRect(PC)"
+    },
+    {
+      "upstream_line": 63,
+      "original": "JSR \tPutPicWord",
+      "restored": "JSR\tPutPicWord(PC)"
+    },
+    {
+      "upstream_line": 65,
+      "original": "JSR \tPutPicWord",
+      "restored": "JSR\tPutPicWord(PC)"
+    },
+    {
+      "upstream_line": 85,
+      "original": "JSR \tPushVerb",
+      "restored": "JSR\tPushVerb(PC)"
+    },
+    {
+      "upstream_line": 91,
+      "original": "JSR \tDrawArc",
+      "restored": "JSR\tDrawArc(PC)"
+    },
+    {
+      "upstream_line": 147,
+      "original": "BRA.S\tCallArc",
+      "restored": "NOP"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 200,
+    "checked_entry_points": 7,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-arcs-verify",
+    "temporary_verifier": "/tmp/verify-shapes.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "0fd1ab6281cc88269f55ef7d7572232dde1d5d3c25569d1b2d3cee750adbb914",
+    "assembled_sha256": "9f6c4585c7eb9de612d02beca524653e8ece652e357c0a1f3fa650573248eccd",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

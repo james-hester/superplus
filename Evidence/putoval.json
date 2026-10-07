@@ -1,0 +1,183 @@
+{
+  "module": "QuickDraw/PutOval.a",
+  "source_path": "Reconstruction/Source/QuickDraw/PutOval.a",
+  "source_sha256": "a4237fa75c565d84673591a1821366af19aa6dd96c2d9e67ace07e66216e0cf4",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/PutOval.m.a",
+    "sha256": "e363519e0f23b41a4a3cec40f16b027bbb4633d04627f76e0c67789a657ffff8",
+    "instruction_lines": [
+      37,
+      276
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        175
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40ae1a",
+      "end_address_exclusive": "0x40af58",
+      "rom_offset": "0xae1a",
+      "length": 318,
+      "sha256": "92e37148b86f4deabd7e426785160f4cd6e8440cf6d31fdf21d12ed798376b9a",
+      "first_symbol": "PutOval",
+      "last_symbol": "PUTPT"
+    }
+  ],
+  "symbols": {
+    "PutOval": "0x40ae1a",
+    "PUTPT": "0x40af10"
+  },
+  "manifest_entry": {
+    "name": "putoval",
+    "source": "Reconstruction/Source/QuickDraw/PutOval.a",
+    "start": "0x40ae1a",
+    "end_exclusive": "0x40af58",
+    "entry_points": {
+      "PutOval": "0x40ae1a",
+      "PUTPT": "0x40af10"
+    }
+  },
+  "external_routines": {
+    "InitOval": "0x40b6ac",
+    "BumpOval": "0x40b74e",
+    "SetHSize": "0x408798"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable PutOval.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made the short BLT back to NXTVERT explicit."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 107,
+      "original": "JSR \tINITOVAL",
+      "restored": "JSR\tINITOVAL(PC)"
+    },
+    {
+      "upstream_line": 149,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 151,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 168,
+      "original": "JSR \tBUMPOVAL",
+      "restored": "JSR\tBUMPOVAL(PC)"
+    },
+    {
+      "upstream_line": 177,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 179,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 187,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 189,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 192,
+      "original": "RIGHTOK ADD \t#1,D6",
+      "restored": "RIGHTOK\tADDQ\t#1,D6"
+    },
+    {
+      "upstream_line": 194,
+      "original": "BLT \tNXTVERT",
+      "restored": "BLT.S\tNXTVERT"
+    },
+    {
+      "upstream_line": 202,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 204,
+      "original": "JSR \tPUTPT",
+      "restored": "JSR\tPUTPT(PC)"
+    },
+    {
+      "upstream_line": 251,
+      "original": "JSR \tSETHSIZE",
+      "restored": "JSR\tSETHSIZE(PC)"
+    },
+    {
+      "upstream_line": 271,
+      "original": "SUB \t#4,A3",
+      "restored": "SUBQ\t#4,A3"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 318,
+    "checked_entry_points": 2,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-putoval-verify",
+    "temporary_verifier": "/tmp/verify-shapes.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "a4237fa75c565d84673591a1821366af19aa6dd96c2d9e67ace07e66216e0cf4",
+    "assembled_sha256": "92e37148b86f4deabd7e426785160f4cd6e8440cf6d31fdf21d12ed798376b9a",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

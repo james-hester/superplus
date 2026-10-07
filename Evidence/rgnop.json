@@ -1,0 +1,126 @@
+{
+  "module": "QuickDraw/RgnOp.a",
+  "source_path": "Reconstruction/Source/QuickDraw/RgnOp.a",
+  "source_sha256": "f7148d916bf09ac0b0876a00bc5fcaddb5eb5e8e4007885a44f2a2c45dd9b170",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/RgnOp.m.a",
+    "sha256": "e2a44390efee9552294f3085fb7d63b5f5382fa65b758c67366572b83e930df2"
+  },
+  "upstream_equates": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x40c3d6",
+      "end_address_exclusive": "0x40c6a8",
+      "rom_offset": "0xc3d6",
+      "length": 722,
+      "sha256": "7700c4500ebb18a4d91b81ef96c36d8da080094b3879ad9403b66db8465f293d",
+      "first_symbol": "RgnOp",
+      "last_symbol": "XorScan"
+    }
+  ],
+  "symbols": {
+    "RgnOp": "0x40c3d6",
+    "EXPAND": "0x40c59e",
+    "SectScan": "0x40c5fc",
+    "DiffScan": "0x40c602",
+    "UnionScan": "0x40c606",
+    "InsetScan": "0x40c648",
+    "XorScan": "0x40c692"
+  },
+  "external_references": {
+    "SetHSize": "0x408798"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete RgnOp module and applicable original comments. Omitted the later EASE header."
+    },
+    {
+      "kind": "equates",
+      "description": "Replaced the GrafTypes include with its required equates and their dependencies. Retained procedure parameters and local EQU declarations."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Made PC operands, branch sizes and applicable ADDQ or SUBQ encodings explicit. Matched source branches to ROM branches in order; every branch condition agrees."
+    },
+    {
+      "kind": "macro_reversion",
+      "description": "Retained every UNLINK invocation and supplied the restored 68000 macro used by the reconstructed Regions module."
+    },
+    {
+      "kind": "external_reference",
+      "description": "Set SetHSize to $408798, the destination of the ROM JSR instructions."
+    },
+    {
+      "kind": "instruction_reversion",
+      "description": "Replaced the three C970 instructions that zero-extend MAXBYTES with ADD MAXBYTES(A6),A0. The ROM uses signed word addition; the November 22, 1987 history entry records the later change to unsigned addition."
+    },
+    {
+      "kind": "macro_reversion",
+      "description": "Retained the _StackAvail invocation and restored its inline MOVE.L SP,D0 and SUB.L HeapEnd,D0 instructions. HeapEnd is $0114, as defined in Interfaces/AIncludes/SysEqu.a. The GrafTypes history records the later switch to the stack-space routine on June 6, 1989."
+    },
+    {
+      "kind": "comments",
+      "description": "Preserved the original file heading, copyright notice and routine comments. Removed the C970 history entry and the three comments attached to its removed instructions."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 722 assembled instruction bytes equal the ROM span. All 7 recorded entry points match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Used the shared translator on the preserved source, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "original_body_comments": 376,
+    "preserved_original_body_comments": 373,
+    "removed_comment_texts": [
+      "zero hi-word of register\t\t<C970/22Nov87> DAF",
+      "get long version of MaxBytes   <C970/22Nov87> DAF",
+      "add MaxBytes to BufStart\t\t<C970/22Nov87> DAF"
+    ],
+    "temporary_driver": "/tmp/check-region-support.py",
+    "temporary_build": "/tmp/region-support-build",
+    "commands": [
+      "python3 /tmp/check-region-support.py"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the original macro spelling, source formatting or label spelling."
+    ]
+  },
+  "integration_manifest": {
+    "name": "rgnop",
+    "source": "Reconstruction/Source/QuickDraw/RgnOp.a",
+    "start": "0x40c3d6",
+    "end_exclusive": "0x40c6a8",
+    "entry_points": {
+      "RgnOp": "0x40c3d6",
+      "EXPAND": "0x40c59e",
+      "SectScan": "0x40c5fc",
+      "DiffScan": "0x40c602",
+      "UnionScan": "0x40c606",
+      "InsetScan": "0x40c648",
+      "XorScan": "0x40c692"
+    }
+  },
+  "additional_equates_source": {
+    "path": "Interfaces/AIncludes/SysEqu.a",
+    "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+    "symbol": "HeapEnd",
+    "value": "0x114"
+  }
+}

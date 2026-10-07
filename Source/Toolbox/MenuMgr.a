@@ -1,0 +1,2001 @@
+*R Mac Plus v3 Menu Manager, from InitMenus through PlotIcon.
+*R The ROM uses sixteen menu slots, direct monochrome drawing and a forty-byte selection frame.
+*R The menu-bar definition procedure, color tables and hierarchical menus belong to later code.
+*R This file restores the earlier paths and retains the original comments that still apply.
+*R Later comment tags identify revisions in the surviving source.
+*R Explicit instruction sizes preserve the ROM encodings.
+*R See Evidence/menumgr.json for restored paths, source mappings and uncertain internal names.
+;
+;
+;	File:		MenuMgr.a
+;
+;	Contains:	Menu Manager for MacIntosh User Interface ToolBox
+;
+;				This file contains the MacIntosh menu manager, which is based on Bill Atkinson’s
+;				Lisa menu manager.
+;
+;	Written by:	Andy Hertzfeld
+;
+;	Copyright:	© 1982-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+*R Original modification history through the ROM build:
+;	Lonely Hearts ROMs (Macintosh Plus)
+;
+;				 11/2/85	EHB		Reinstated call to _TextFont in InsertMenu (no one should change
+;									it, but...).
+;				 9/30/85	EHB		Removed underline of FONDs in AddResMenu (put back CalcMenuSize)
+;				  9/6/85	EHB		GetItemProperty was clearing a word result instead of a byte.
+;				  8/5/85	EHB		.DEF CalcMBHeight for use by wmgr
+;				  8/5/85	EHB		Modified for variable sized system font
+;				  7/9/85	EHB		Get MDEF 0 from ROM map
+;				 5/21/85	EHB		Made AddResMenu, InsertResMenu sort items as they go in
+;				  5/9/85	EHB		Added new procedure InsMenuItem -- like append menu, but inserts
+;									anywhere. Now AppendMenu,InsMenuItem,AddResMenu,InsrtResMenu all
+;									share same insert code.
+;				  5/7/85	EHB		In AddResMenu, make sure each name added is unique. Compare is
+;									done using CompString, also used by the Res Manager for
+;									getNamedResource.
+;				  5/3/85	EHB		Oops! forgot to delete enable bits in DelMenuItem. All better
+;									now.
+;				 4/23/85	EHB		In Insert/AddResMenu, if adding 'FONT', add 'FOND' too.
+;				 4/15/85	EHB		Added new procedure DelMenuItem -- remove a menu item from its
+;									menu
+;				 4/15/85	EHB		In routine MenuKey, use UprString to upshift the passed
+;									keystroke.
+;				 4/11/85	EHB		Check for purged menuList and menu on all internal references If
+;									purged, I generate DS #54 (MenuPrgErr).
+;				 4/11/85	EHB		Made menus of 0 size work. To do this, tweaked DirtyMenuSize to
+;									invalidate size with -1 instead of 0.
+;				  4/9/85	EHB		Do GetMouse after WaitMouseUp to avoid invalid flashes CLR.L
+;									FuncResult(A6) to avoid returning invalid items
+;				 3/13/85	EHB		Fixed stack frame for MenuSelect
+;				 3/13/85	EHB		Fixed stack offset in DirtyMenuSize (oops!)
+;				  3/6/85	EHB		Use update to restore menus if out of memory
+;				  3/5/85	EHB		Added Routine DirtyMenuSize so that CalcMenuSize only gets
+;									called before drawing.
+;				  3/5/85	EHB		Call CalcMenuSize, if necessary, before drawing
+;				  3/5/85	EHB		In AddResMenu, preserve state of resLoad
+;				 1/24/85	EHB		In SetItemProperty, don’t CalcMenuSize if item = check mark
+;				 1/24/85	EHB		Preserved the clip region in FlashMenuBar
+;				 1/24/85	EHB		Tweaked DrawTheMenu to not save the menu bar
+;				 1/24/85	EHB		Reset alarm parity in DrawMenuBar
+;				  9/7/83	AJH		save in DrawMBar
+;				 8/27/83	AJH		saved a little code in CalcMenuSize (use common subroutine)
+;				 8/27/83	AJH		Made it include "SysErr"
+;				 8/27/83	AJH		handled out of memory case in SaveBits by deep-shitting
+;				 8/23/83	BLH		(with LAK) Fixed bug in GetMHandle (didn’t return result!)
+;				 8/19/83	AJH		Moved loc of menu flash bits.
+;				 8/13/83	SC		The code scrunch-a-matic pass... Made NoIndex fall into GotIndex
+;									Moved getIndex, invertTitle.  Added utility GetNInvert.  Made
+;									saveBits inline.
+;				  8/9/83	AJH		Made it reference "WmgrGray"
+;				 6/30/83	AJH		fixed bug in InsrtResMenu when there’s none of that type
+;				 6/15/83	AJH		Added InsrtResMenu
+;				 6/14/83	AJH		made SetItem call CalcMenuSize
+;				 5/18/83	AJH		fixed GetMHandle bug
+;				 5/11/83	AJH		Added CountMItems
+;				  5/6/83	AJH		fixed PlotIcon bug (didnt set up topLeft)
+;				 4/28/83	AJH		moved calcMenuSize into the defProc
+;				 4/21/83	AJH		Made CalcMenuSize add some extra for command line
+;				 4/17/83	AJH		Made MenuKey know about desk ornament menus
+;				 4/13/83	AJH		Tweaked MBarEnable logic in MenuSelect
+;				  4/4/83	AJH		Made it get menuFlash from parameter RAM
+;				 3/18/83	AJH		Made InvertTitle go one pixel higher
+;				 3/16/83	AJH		Made CalcMenuSize not bold disabled items
+;				 3/15/83	AJH		Made Enable/DisableItem not recalc menu size
+;				 2/13/83	AJH		Made PlotIcon use copyBits instead of XferRect
+;				  2/5/83	AJH		Changed "AddRsrcMenu" to "AddResMenu" to keep Caroline happy
+;				  2/5/83	AJH		AddRsrcMenu -> AddResMenu; made it not load the objects
+;				 1/28/83	AJH		Added "FlashMenuBar"
+;				 1/28/83	AJH		Improved CalcMenuSize
+;				 1/25/83	AJH		Fixed outline/shadow reversal bug
+;				 1/25/83	AJH		Fixed MenuSelect mouse-ahead problem
+;				 1/24/83	AJH		Added support for deskOrns stealing the menuBar
+;				 1/23/83	LAK		Adapted for new equate files.
+;				 1/21/83	AJH		Fixed bug in GetSizeLeft in SetItem
+;				 1/20/83	AJH		Fixed purged defProc problem (lock after LoadResource)
+;				12/27/82	AJH		Moved menuData to end of block; defProc as resource
+;				12/19/82	AJH		Added "AddRsrcMenu" call
+;				12/11/82	AJH		Made space between menus less wide (14 pixels)
+;				11/22/82	AJH		Made TextMenuProc and CalcMenuSize externally accessible
+;				11/16/82	AJH		Made the menuBar 4 pixels wider
+;				 11/7/82	AJH		Made menuKey case insensitive
+;				10/25/82	AJH		Made space between menus wider for 512 dots (12 -> 18)
+;				10/16/82	AJH		Made it independent of screen size (use wmgr^.portRect)
+;				10/10/82	AJH		Converted to QuickDraw Trap Interface
+;				 9/20/82	AJH		Fixed problem in DeleteMenu
+;				  9/7/82	AJH		Added "DrawMBar" entry point
+;				  9/7/82	AJH		Made DrawMBar a separate routine to save code
+;				 8/22/82	AJH		Got rid of menu manager dependency on icon manager
+;				  8/2/82	AJH		Converted for new memory manager; no more oh’s!
+;				 7/24/82	AJH		Fixed left corner problem in DrawMenuBar
+;				 6/29/82	AJH		New today.
+
+		IMPORT RestorePort,SetWPort,WMgrGray ;]
+		EXPORT AddResMenu,AppendMenu,CalcMBHeight,CalcMenuSize,CheckItem,ClearMenuBar ;]
+		EXPORT CountMItems,DeleteMenu,DelMenuItem,DisableItem,DisposeMenu,DrawMBar ;]
+		EXPORT DrawMenuBar,EnableItem,FlashMenuBar,GetItem,GetItemIcon,GetItemMark ;]
+		EXPORT GetItemStyle,GetMenuBar,GetMHandle,HiliteMenu,InsertMenu,InsMenuItem ;]
+		EXPORT InsrtResMenu,MenuKey,MenuSelect,NewMenu,PlotIcon,SetItem ;]
+		EXPORT SetItemIcon,SetItemMark,SetItemStyle,SetMenuBar,SetMenuFlash ;]
+
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+bottom			EQU 		4         				; bottom coordinate [word]
+bounds			EQU 		6         				; bounding box [rectangle]
+clipRgn   		EQU 		$1C       				; clipping region [handle]
+FuncResult EQU 12                               ; longword function result (menu,item)
+GrafGlobals EQU 0
+ItemBuffer EQU ItemCount+2                      ;256 byte buffer for items
+ItemCount EQU ItemFlags+1                       ;integer -- number of chars in buffer
+ItemFlags EQU ItemState+1                       ;one byte enable flag field
+ItemLinkSize EQU ItemProperties ;]
+ItemProperties EQU -280                         ;4 attribute bytes of item
+ItemResult EQU 14                               ; item portion of funcResult
+ItemState EQU ItemProperties+4                  ;one byte parse state field
+left  			EQU 		2         				; left coordinate [word]
+MapTRUE EQU -1 ;]
+MenuCapacity EQU 16 ;]
+MenuEntrySize EQU 6 ;]
+MenuListSize EQU 102 ;]
+MenuRect EQU SaveBitmap-8 ;]
+MSavePort EQU MenuRect-4
+patBic EQU 11
+portBits  		EQU 		$2        				; port's bitmap [bitmap]
+portRect  		EQU 		$10       				; port's rectangle [rect]
+right 			EQU 		6         				; right coordinate [word]
+rowBytes  		EQU 		4         				; row bytes (must be even) [word]
+SaveBitmap EQU -20 ;]
+SaveRect EQU MSavePort-8 ;]
+SelectFrame EQU SaveRect ;]
+StartPt EQU 8                                   ; 1st parameter is 8, and is 4 bytes long
+thePort EQU 0
+
+
+
+;
+; PROCEDURE InitMenus -- initialize the menu manager by allocating an empty menuList
+;
+
+InitMenus PROC EXPORT
+                BSR.S   NewMList ;]
+                MOVE.L  A0,MENULIST             ;make it the current menuList
+                MOVEQ   #$0C,D0                 ;only use 2 bits worth
+                AND.B   SPMisc2,D0              ;get pRam flags
+                LSR.W   #2,D0                   ;get menuFlash in the low bits
+                MOVE.W  D0,MenuFlash            ;set up menuFlash field
+                CLR.W   MBarEnable              ;initally, application owns MBar
+                CLR.L   MBarHook                ;<SM13> init MBarHook
+                CLR.L   MENUHOOK                ;init user hook
+                BSR.S   CalcMBHeight ;]
+                _CLEARMENUBAR                   ;initialize menuBar parameters and clear it
+                _DRAWMENUBAR
+                RTS                             ; <SM13> this was mistakenly deleted at some point
+
+*R the bar height is ascent plus descent plus five pixels.
+
+CalcMBHeight
+                BSR.S   GetMenuInfo             ; get font info for wmgr port
+                MOVEQ   #5,D1
+                ADD.W   D0,D1                   ; add descent
+                SWAP    D0                      ; get ascent
+                ADD.W   D0,D1                   ; add ascent
+                MOVE.W  D1,MBarHeight           ; save it in low memory
+                RTS
+
+;-----------------------------------------------
+; Utility -- GetMenuInfo
+;-----------------------------------------------
+;
+; GetMenuInfo is a utility that returns the ascent of the window manager's font in the high
+; half of D0, and the descent in the low half.  It trashes only insignificant registers.
+
+GetMenuInfo
+                MOVE.L  D4,-(SP)
+                JSR     SetWPort ;]
+                SUBQ.W  #8,SP                   ; make room for a font info record
+                MOVE.L  SP,-(SP)                ; point to 8 byte info record
+                _GETFONTINFO                    ; get font info for the system font
+                JSR     RestorePort ;]
+                MOVE.L  (SP)+,D0                ; return ascent, descent in D0
+                ADDQ.W  #4,SP                   ; flush record
+                MOVE.L  (SP)+,D4
+                RTS
+
+*R a six-byte header precedes sixteen six-byte menu entries.
+
+NewMList ;]
+                MOVEQ   #MenuListSize,D0 ;]
+                _NEWHANDLE
+
+InitMList
+                MOVE.L  (A0),A1
+                CLR.W   (A1)+
+                MOVE.W  #mbMenu1Loc,(A1)+ ;]
+                CLR.W   (A1)+
+                MOVEQ   #MenuCapacity*MenuEntrySize/4-1,D0 ;]
+
+ClearMListLoop ;]
+                CLR.L   (A1)+
+                DBRA    D0,ClearMListLoop ;]
+                RTS
+
+;
+; PROCEDURE ClearMenuBar -- clear the menuBar/menuList data structure
+;
+
+ClearMenuBar
+                BSR.W   GetA0List               ; check for purged list			<EHB 11-Apr-85>
+                MOVE.L  MENULIST,A0             ; get handle to menuList
+                BSR.S   InitMList
+                CLR.W   THEMENU                 ; no menu is hilited
+                RTS
+
+*R title widths and entry shifts restore the fixed menu-list layout.
+
+;
+;	PROCEDURE InsertMenu(menu: menuInfoHandle; beforeId: INTEGER);
+;
+;		insert a menu into the menuList.  beforeID is the menuID of the menu
+;	that the new menu should be inserted before.  If beforeID can’t be found,
+;	the new menu is inserted at the end of the list.  If the menu is already
+;	in the list, don’t insert it
+;
+
+InsertMenu
+                MOVEM.L D3-D4/A2-A4,-(SP)
+                BSR.W   GetA0List               ; get menuList into A0			<EHB 11-Apr-85>
+                MOVE.L  A0,A3                   ; get pointer into A3			<EHB 11-Apr-85>
+                CMP.W   #MenuCapacity*MenuEntrySize,(A3) ;]
+                BGE.S   DoneInsert ;]
+                MOVE.L  26(SP),A4 ;]
+                MOVE.L  (A4),A2
+                MOVE.W  (A2),D1
+                BSR.S   GetIndex                ; is it already in the list?
+                BNE.S   DoneInsert ;]
+                JSR     SetWPort ;]
+                CLR.L   -(SP)
+                _TEXTFONT
+                _TEXTFACE
+                CLR.W   -(SP)
+                PEA     menuData(A2) ;]
+                _STRINGWIDTH
+                MOVEQ   #13,D3 ;]
+                ADD.W   (SP)+,D3
+                MOVE.W  24(SP),D1
+                BSR.S   GetIndex                ; get index into menuList of beforeID menu
+                BNE.S   InsertBefore ;]
+                MOVE.W  LASTMENU(A3),D0         ; get # of menus in menuList.
+                ADDQ.W  #6, d0                  ; and insert this one AFTER it			<FJL C222>
+                MOVE.W  lastRight(A3),D1
+                BRA.S   InstallMenu ;]
+
+InsertBefore ;]
+                MOVE.W  menuLeft(A3,D0.W),D1 ;]
+                MOVE.W  (A3),D2
+
+ShiftMenuRight ;]
+                MOVE.L  menuOH(A3,D2.W),MenuEntrySize+menuOH(A3,D2.W) ;]
+                MOVE.W  menuLeft(A3,D2.W),MenuEntrySize+menuLeft(A3,D2.W) ;]
+                ADD.W   D3,MenuEntrySize+menuLeft(A3,D2.W) ;]
+                SUBQ.W  #6,D2
+                CMP.W   D0,D2
+                BGE.S   ShiftMenuRight ;]
+
+InstallMenu ;]
+                ADD.W   D3,lastRight(A3) ;]
+                MOVE.L  A4,menuOH(A3,D0.W) ;]
+                MOVE.W  D1,menuLeft(A3,D0.W) ;]
+                ADDQ.W  #6,(A3) ;]
+                JSR     RestorePort ;]
+
+DoneInsert ;]
+                MOVEM.L (SP)+,D3-D4/A2-A4
+
+SixBytExit
+                MOVE.L  (SP)+,A0                ; get return address
+                ADDQ.W  #6,SP                   ; strip parameters
+                JMP     (A0)                    ; return to caller
+
+;---------------------------------------------------------------------------------------------
+;
+;	GetIndex is a utility routine that returns an index into the menuList given a
+;	menuId.  The menuId is passed in D1 while the index is returned in D0.  If the
+;	menuId can't be found, D0 will return a zero.  A0, A1 and D2 are trashed.
+;	The Z-flag can be used to determine if one was found. As a special bonus, on
+;	exit A0 points to the menu, if a menu was found.
+;
+
+GetIndex
+                TST.W   D1                      ; is index 0?
+                BEQ.S   NoIndex                 ; if so, return 0
+                BSR.W   GetA1List               ; get menuList into A1			<EHB 11-Apr-85>
+                MOVE.W  LASTMENU(A1),D2         ; get # of menus
+                BEQ.S   NoIndex                 ; if none, say we can't find it
+
+GILoop
+                MOVE.L  MENUOH(A1,D2),D0        ; get the handle
+                BEQ.S   NextIndex ;]
+                MOVE.L  D0,A0                   ; get handle in A-reg
+                MOVE.L  (A0),A0                 ; handle -> pointer
+                CMP.W   MENUID(A0),D1           ; is this the one?
+                BEQ.S   GotIndex                ; if they match, we're done
+
+NextIndex
+                SUBQ.W  #6,D2                   ; bump to next entry
+                BNE.S   GILoop                  ; loop if there's more to do
+
+NoIndex
+                MOVEQ   #0,D2                   ; return 0
+
+GotIndex
+                MOVE.W  D2,D0                   ; get index in D0
+                RTS
+
+;
+;	PROCEDURE DeleteMenu(menuID: INTEGER)	-- delete a given menu from the menuList.
+;	Note that deleteMenu will not de-allocate the menu, since it may be in other
+;	menuLists.
+;
+
+DeleteMenu
+                MOVE.W  4(SP),D1                ; get the menuID
+                BSR.S   GetIndex                ; get the index into D0
+                BEQ.S   TwoBytExit
+                BSR.W   GetA1List               ; get menuList into A1				<EHB 11-Apr-85>
+                CMP.W   LASTMENU(A1),D0         ;is this one the last one?
+                BNE.S   DeleteMiddle ;]
+                MOVE.W  MenuLeft(A1,D0),lastRight(A1);set new lastRight
+                BRA.S   DeleteDone ;]
+
+DeleteMiddle ;]
+                MOVE.W  MenuEntrySize+menuLeft(A1,D0.W),D2 ;]
+                SUB.W   menuLeft(A1,D0.W),D2 ;]
+                SUB.W   D2,lastRight(A1) ;]
+
+DeleteLoop
+                MOVE.L  MenuEntrySize+menuOH(A1,D0.W),menuOH(A1,D0.W) ;]
+                MOVE.W  MenuEntrySize+menuLeft(A1,D0.W),menuLeft(A1,D0.W) ;]
+                SUB.W   D2,menuLeft(A1,D0.W) ;]
+                ADDQ.W  #6,D0
+                CMP.W   (A1),D0
+                BLE.S   DeleteLoop ;]
+
+DeleteDone ;]
+                SUBQ.W  #6,LASTMENU(A1)         ; one less menu in list
+
+TwoBytExit
+                MOVE.L  (SP)+,A0                ;get return address
+                ADDQ.W  #2,SP                   ;strip parameter
+                JMP     (A0)                    ;return to caller
+
+*R the title rectangle extends one pixel left and four pixels right.
+
+GetTitleRect
+                LEA     TempRect,A0             ; get address of the rectangle
+                MOVE.W  #1,(A0)+
+                MOVE.W  menuLeft(A1,D0.W),(A0) ;]
+                SUBQ.W  #1,(A0)+                ; really want left-1
+                MOVE.W  MBarHeight,(A0) ;]
+                SUBQ.W  #1,(A0)+                ; need bottom-1
+                CMP.W   (A1),D0
+                BEQ.S   LastTitleRight ;]
+                ADDQ.W  #6,D0
+                MOVE.W  menuLeft(A1,D0.W),(A0) ;]
+                BRA.S   ExtendTitleRight ;]
+
+LastTitleRight ;]
+                MOVE.W  lastRight(A1),(A0) ;]
+
+ExtendTitleRight ;]
+                ADDQ.W  #4,(A0)
+                RTS
+
+; Utility DrawMBar -- clear the menuBar and draw the line underneath it, leaving
+; the wmgrPort clipRgn clipped to it.  This is a separate routine so InitWindows
+; can call it to save code.
+
+DrawMBar
+                MOVE.L  WMgrPort,A3
+                MOVE.L  clipRgn(A3),-(SP)
+                CLR.L   -(SP)
+                MOVE.W  portRect+right(A3),-(SP)
+                MOVE.W  MBarHeight,-(SP)
+                _SETRECRGN
+                PEA     portRect(A3)
+                MOVE.L  #$00100010,-(SP)
+                _ERASEROUNDRECT
+                MOVE.W  portRect+right(A3),-(SP)
+                MOVEQ   #0,D0
+                MOVE.W  MBarHeight,D0
+                SUBQ.W  #1,D0
+                MOVE.W  D0,-(SP)
+                SWAP    D0
+                MOVE.L  D0,-(SP)
+                _MOVETO
+                _LINETO
+                RTS
+
+*R the ROM draws titles and applies gray or inverted title rectangles directly.
+
+;
+;	PROCEDURE DrawMenuBar -- draw the current menuList on the menuBar
+;
+
+DrawMenuBar
+                MOVEM.L D3-D6/A3-A4,-(SP)
+                BSET    #7,AlarmState           ; reset alarm parity					<EHB 1/24/85>
+                JSR     SetWPort ;]
+                BSR.S   DrawMBar ;]
+                JSR     FullClip ;]
+                MOVEQ   #6,D3
+                BSR.W   GetA0List
+                MOVE.L  A0,A3
+                TST.W   (A3)
+                BEQ.S   DrawBarDone ;]
+                BSR.W   GetMenuInfo
+                SWAP    D0
+                MOVE.W  D0,D6
+                ADDQ.W  #2,D6
+
+DrawTitleLoop ;]
+                MOVE.W  menuLeft(A3,D3.W),-(SP) ;]
+                ADDQ.W  #8,(SP)
+                MOVE.W  D6,-(SP)
+                _MOVETO
+                MOVE.W  D3,D5
+                BSR.W   GetMenuPtr
+                MOVE.L  A0,A4
+                PEA     menuData(A4)
+                _DRAWSTRING
+                BTST    #0,menuEnable+3(A4)
+                BEQ.S   GrayMenuTitle ;]
+                MOVE.W  TheMenu,D0
+                CMP.W   (A4),D0 ;]
+                BNE.S   NextTitle ;]
+                MOVE.W  D3,D0
+                BSR.W   InvertTitle ;]
+                BRA.S   NextTitle ;]
+
+GrayMenuTitle ;]
+                MOVE.W  D3,D0
+                MOVE.L  A3,A1
+                BSR.W   GetTitleRect
+                BSR.S   GrayTitle ;]
+
+NextTitle ;]
+                ADDQ.W  #6,D3
+                CMP.W   (A3),D3
+                BLE.S   DrawTitleLoop ;]
+
+DrawBarDone ;]
+                JSR     RestorePort ;]
+                MOVEM.L (SP)+,D3-D6/A3-A4
+                RTS
+
+GrayTitle ;]
+                MOVE.W  #patBic,-(SP)
+                _PENMODE
+                PEA     WMgrGray ;]
+                _PENPAT
+                PEA     TempRect
+                _PAINTRECT
+                _PENNORMAL
+                RTS
+
+;
+;	PROCEDURE HiliteMenu(menuID: INTEGER);	-- hilite the title of the menu with the
+;	specified menuID.  Since only one menu can be hilited at a time, unhilite any other one
+;
+
+HiliteMenu
+                MOVE.L  D4,-(SP)
+                JSR     SetWPort ;]
+                BSR.W   FullClip
+                MOVE.W  theMenu,D1              ; get the currently hilited menu
+                CMP.W   8(SP),D1 ;]
+                BEQ.S   HLDone                  ; already hilited, so skip				<DAF 20Aug86>
+                BSR.S   GetNInvert ;]
+                MOVE.W  8(SP),D1
+                MOVE.W  D1,TheMenu ;]
+                BSR.S   GetNInvert ;]
+
+HLDone
+                JSR     RestorePort ;]
+                MOVE.L  (SP)+,D4
+                BRA.W   TwoBytExit
+
+;	PROCEDURE EnableItem(menuHandle,item) -- enable an item in a menu or, if the item
+;	number is zero, enable the entire menu.  It has no effect if the item is already
+;	enabled.
+;
+
+EnableItem
+                BSR.S   EnableFetch             ;set up registers with shared code
+                BSET    D0,D1                   ;enable the item
+
+EnableCom
+                MOVE.L  D1,MENUENABLE(A0)       ; update the menu’s flags
+                BRA.W   SixBytExit              ; common exit saves code
+
+EnableFetch
+                MOVE.L  10(SP),A0               ; get the menu handle
+                MOVE.L  (A0),A0                 ; handle to pointer
+                MOVE.W  8(SP),D0                ; get bit index
+                MOVE.L  MENUENABLE(A0),D1       ; pick up current state of flags
+                RTS
+
+;
+; PROCEDURE DisableItem(menuHandle, item) -- disable an item in a menu, or if the item
+; is zero, disable the entire menu.  Shares code with EnableItem to stay small
+;
+
+DisableItem
+                BSR.S   EnableFetch             ;set up registers
+                BCLR    D0,D1                   ;disable the item
+                BRA.S   EnableCom               ;go update flags and return
+
+;-------------------------------------------------------------------------------------------
+; GetMenuPtr is a utility routine that given an index into the current menuList in D5,
+; returns a pointer to the menu in A0.  It returns a handle to the same menu in A1.
+;
+
+GetMenuPtr
+                BSR.S   GetA0List               ; get menuList pointer into A0		<EHB 11-Apr-85>
+                MOVE.L  MENUOH(A0,D5),A1        ; get menu handle
+                TST.L   (A1)                    ; has menu been purged?				<EHB 11-Apr-85>
+                BEQ.S   ListPurged              ; => yes, go to purgeatory			<EHB 11-Apr-85>
+                MOVE.L  (A1),A0                 ; handle -> pointer
+
+MenuPtrDone ;]
+                RTS
+
+;-------------------------------------------------------------------------------------------
+; GetA0List is a routine to get the menuList pointer into A0.  GetA1List is a routine to
+; get the menuList pointer into A1.  The reason for two routines is due to the complexity
+; and risk of getting the dozen routines that get menuList pointer to agree with each other.
+; These routines check to see if the menuList has been purged.  If it has it generates
+; a DS #54 (MenuPrgErr).
+
+GetA0List
+                MOVE.L  MenuList,A0             ; get the menuList handle			<EHB 11-Apr-85>
+
+ChkA0List ;]
+                TST.L   (A0)                    ; has it been purged?				<EHB 11-Apr-85>
+                BEQ.S   ListPurged              ; => yes, go to purgeatory			<EHB 11-Apr-85>
+                MOVE.L  (A0),A0                 ; else get the pointer				<EHB 11-Apr-85>
+                RTS                             ; and return						<EHB 11-Apr-85>
+
+GetA1List
+                MOVE.L  MenuList,A1             ; get the menuList handle			<EHB 11-Apr-85>
+                TST.L   (A1)                    ; has it been purged?				<EHB 11-Apr-85>
+                BEQ.S   ListPurged              ; => yes, go to purgeatory			<EHB 11-Apr-85>
+                MOVE.L  (A1),A1                 ; else get the pointer				<EHB 11-Apr-85>
+                RTS                             ; and go to heaven
+
+ListPurged
+                MOVEQ   #MenuPrgErr,D0          ; get our error code				<EHB 11-Apr-85>
+                _SYSERROR                       ; and roast in eternal damnation	<EHB 11-Apr-85>
+
+*R GetNInvert and InvertTitle precede the later title-state helpers.
+
+GetNInvert ;]
+                BSR.W   GetIndex
+                BEQ.S   MenuPtrDone ;]
+
+InvertTitle ;]
+                BSR.S   GetA1List
+                CMP.W   (A1),D0
+                BGT.S   InvertTitleDone ;]
+                AND.W   #-2,D0 ;]
+                BEQ.S   InvertTitleDone ;]
+                BSR.W   GetTitleRect
+                PEA     TempRect
+                _INVERRECT
+
+InvertTitleDone ;]
+                RTS
+
+*R MenuSelect restores the earlier mouse loop, bitmap save and update fallback.
+
+;
+;	FUNCTION MenuSelect(mousePt:Point): LongInt -- MenuSelect is the most important
+;	routine in the menu manager.  It is called when the application receives a
+;	mouse button down event on the menuBar and retains control until the mouse button
+;	goes up.  It returns a long integer contain 2 16 bit values.  The high word
+;	is called "whichMenu" and holds the menuId of the menu that was chosen; if its
+;	zero, no menu was chosen.  The low word is called "whichItem" and contains the item
+;	number of the selected item.  If no choice was selected, the longWord result is zero
+
+MenuSelect
+                LINK.W  A6,#SelectFrame         ;set up a stack frame
+                MOVEM.L D3-D7/A3,-(SP) ;]
+                CLR.L   -(SP)
+                _HILITEMENU                     ;make sure no menu is hilited
+                CLR.L   FUNCRESULT(A6)          ;assume nothing will be selected
+                CLR.L   SaveRect(A6) ;]
+                _WAITMOUSEUP                    ;is the mouse still down?
+                TST.B   (SP)+                   ;examine result
+                BEQ.W   DoneMSelect             ;if not still down, don’t bother
+                PEA     MSavePort(A6)
+                _GETPORT
+                MOVE.L  WMgrPort,-(SP)
+                _SETPORT
+                BSR.W   FullClip
+                CLR.W   D4                      ; oldMenuIndex is empty
+                MOVE.L  STARTPT(A6),D3          ; start off with initial mouse point
+                BRA.S   FindTitle ;]
+
+MSLoop
+                MOVEQ   #0,D0
+                MOVE.W  MBarHeight,D0
+                SWAP    D0
+                CMP.L   D0,D3
+                BGE.W   SameMenu ;]
+
+FindTitle ;]
+                CLR.W   d5                      ; no menu
+                BSR.S   GetA0List
+                CMP.W   lastRight(A0),D3 ;]
+                BGE.S   ChgMenu ;]
+                MOVE.W  (A0),D5
+
+FindTitleLoop ;]
+                CMP.W   menuLeft(A0,D5.W),D3 ;]
+                BGT.S   ChgMenu ;]
+                SUBQ.W  #6,D5
+                BNE.S   FindTitleLoop ;]
+
+;				At this point, D5 contains the menuIndex of the menu that the mouse points at,
+;				or a zero if no menu is pointed at.  Check to see if this menu is different than
+;				the previous one pointed at
+
+ChgMenu
+                MOVE.W  menuLeft(A0,D5.W),D6 ;]
+                CMP.W   d5, d4                  ; menuIndex = oldMenuIndex ?
+                BEQ.W   SameMenu                ; if the same, nothing to pull down
+                TST.W   D4
+                BEQ.S   NewSelection ;]
+                BSR.W   RestoreBits
+                MOVE.W  D4,D0
+                BSR.W   InvertTitle ;]
+
+NewSelection ;]
+                MOVE.W  D5,D4
+                CLR.L   FuncResult(A6)
+                TST.W   D5
+                BEQ.S   ChooseIfMenu ;]
+                BSR.W   GetMenuPtr
+                TST.L   menuWidth(A0)
+                BPL.S   MenuSizeReady ;]
+                MOVE.L  A0,-(SP)
+                MOVE.L  A1,-(SP)
+                _CALCMENUSIZE
+                MOVE.L  (SP)+,A0
+
+MenuSizeReady ;]
+                MOVE.W  (A0),FuncResult(A6) ;]
+                MOVE.L  WMgrPort,A1 ;]
+                MOVE.W  D6,D0
+                ADD.W   menuWidth(A0),D0
+                ADDQ.W  #8,D0
+                CMP.W   portRect+right(A1),D0 ;]
+                BLE.S   SetMenuRect ;]
+                MOVE.W  portRect+right(A1),D6 ;]
+                SUBQ.W  #8,D6
+                SUB.W   menuWidth(A0),D6 ;]
+
+SetMenuRect ;]
+                LEA     MenuRect(A6),A1
+                MOVE.W  MBarHeight,D1
+                MOVE.W  D1,(A1)+
+                MOVE.W  D6,(A1)+
+                ADD.W   menuHeight(A0),D1
+                MOVE.W  D1,(A1)+
+                ADD.W   menuWidth(A0),D6 ;]
+                MOVE.W  D6,(A1)+
+                MOVE.W  D5,D0
+                BSR.W   InvertTitle ;]
+                MOVE.L  MBarHook,D0
+                BEQ.S   PullDownMenu ;]
+                MOVE.L  D0,A0
+                PEA     MenuRect(A6)
+                JSR     (A0)
+                TST.W   D0
+                BNE.S   DoneMS ;]
+
+PullDownMenu ;]
+                BSR.W   DrawTheMenu
+
+SameMenu
+                TST.W   d5                      ; examine menu index
+
+ChooseIfMenu ;]
+                BEQ.S   NextMouse               ; don’t choose an item unless there’s one down
+                PEA     MenuRect(A6)
+                _CLIPRECT
+                BSR.W   GetMenuPtr
+                MOVE.W  #1,-(SP)
+                MOVE.L  A1,-(SP)
+                PEA     MenuRect(A6)
+                MOVE.L  D3,-(SP)
+                PEA     ItemResult(A6)
+                BSR.W   GetTheMProc ;]
+                JSR     (A0)
+                BSR.W   UnlockMProc ;]
+                BSR.W   FullClip
+
+; I put GetMouse after WaitMouseUp.  This ensures that FlashTheMenu is called with the	<EHB 9-Apr-85>
+; same mouse position that was processed above.
+
+NextMouse
+                CLR.W   -(SP)                   ;make room for stillDown result
+                _WAITMOUSEUP                    ;is the button still down?
+                TST.B   (SP)+                   ;test _WaitMouseUp result
+                BEQ.S   MouseUp ;]
+                SUBQ.W  #4,SP                   ;allocate place to get mouse
+                MOVE.L  SP,-(SP)                ;use temp buffer for mouse point
+                _GETMOUSE                       ;get mouse in wmgr coordinates
+                MOVE.L  (SP)+,D3                ;keep mouse point in D3
+                MOVE.L  MENUHOOK,D0
+                BEQ.S   NoMenuHook ;]
+                MOVE.L  D0,A0
+                JSR     (A0)
+
+NoMenuHook ;]
+                BRA.W   MSLoop                  ; => continue tracking mouse
+
+MouseUp ;]
+                TST.W   D5                      ;was one selected?
+                BEQ.S   NoFlash                 ;if not, dont bother
+                BSR.W   FlashFeedback           ;flash the choice for feedback
+                BSR.S   RestoreBits
+
+NoFlash
+                TST.W   ITEMRESULT(A6)          ; was an item selected?
+                BNE.S   SetTheMenu ;]
+                CLR.W   FUNCRESULT(A6)          ; otherwise, no menu was either
+                MOVE.W  d5, d0
+                BSR.W   InvertTitle ;]
+
+SetTheMenu ;]
+                MOVE.W  FuncResult(A6),TheMenu ;]
+                BMI.S   DoSysMenu               ; if < 0 then handle it
+                TST.W   MBarEnable              ;does deskOrn own the menuBar?
+                BMI.S   DoSysMenu               ;if so, go tell it about it
+
+DoneMS
+                MOVE.L  MSavePort(A6),-(SP)     ;get old port
+                _SETPORT                        ;restore callers grafPort
+
+DoneMSelect
+                MOVEM.L (SP)+,D3-D7/A3 ;]
+                UNLK    A6                      ;dismantle stack frame
+                MOVE.L  (SP)+,(SP)              ;strip sole parameter
+                RTS                             ;return to caller
+
+DoSysMenu
+                MOVE.L  FuncResult(a6),-(SP)    ; push the result
+                _SYSTEMMENU                     ; invoke desk manager
+                CLR.L   FuncResult(a6)          ; pretend we didn’t get anything
+                BRA.S   DoneMS                  ;let common code finish up
+
+*R a saved rectangle selects the update fallback after allocation fails.
+
+RestoreBits
+                TST.L   SaveRect(A6) ;]
+                BNE.S   RestoreByUpdate ;]
+                MOVE.L  SavedHandle,A0 ;]
+                MOVE.L  (A0),SaveBitmap(A6) ;]
+                PEA     SaveBitmap(A6) ;]
+                MOVE.L  WMgrPort,A0
+                PEA     portBits(A0)
+                BSR.S   CopyMenuBits ;]
+                MOVE.L  SavedHandle,A0 ;]
+                _DISPOSHANDLE
+                RTS
+
+RestoreByUpdate ;]
+                SUBQ.W  #4,SP
+                _NEWRGN
+                MOVE.L  (SP),-(SP)
+                PEA     SaveRect(A6)
+                _RECTRGN
+                SUBQ.W  #4,SP
+                _FRONTWINDOW
+                MOVE.L  4(SP),-(SP)
+                _PAINTBEHIND
+                _DISPOSRGN
+                BSR.W   FullClip
+                CLR.L   SaveRect(A6) ;]
+                RTS
+
+*R both CopyBits rectangles use the saved bitmap bounds.
+
+CopyMenuBits ;]
+                MOVE.L  (SP)+,D7
+                PEA     SaveBitmap+bounds(A6) ;]
+                MOVE.L  (SP),-(SP)
+                CLR.W   -(SP)
+                CLR.L   -(SP)
+                _COPYBITS
+                MOVE.L  D7,-(SP)
+                RTS
+
+SaveBitsFailed ;]
+                MOVE.L  (A3)+,SaveRect(A6) ;]
+                MOVE.L  (A3),SaveRect+4(A6) ;]
+                BRA.S   DrawMenuBody ;]
+
+*R SaveBits remains inline, as the original August 1983 history describes.
+
+DrawTheMenu
+                MOVEM.L D4/A2-A4,-(SP)
+                MOVE.L  #$00020002,D4
+                LEA     TempRect,A3 ;]
+                LEA     MenuRect(A6),A4
+                MOVE.L  A4,A2
+                MOVE.L  A3,-(SP)
+                MOVE.W  (A2)+,(A3) ;]
+                ADDQ.W  #4,(A3)+ ;]
+                MOVE.W  (A2)+,(A3)+
+                MOVE.L  (A2),(A3)+ ;]
+                MOVE.L  #$FFFCFFFC,-(SP)
+                _INSETRECT
+                MOVEQ   #15,D0
+                ADD.W   -(A3),D0 ;]
+                MOVE.W  -(A3),D1 ;]
+                SUB.W   -(A3),D0 ;]
+                SUB.W   -(A3),D1 ;]
+                LSR.W   #4,D0
+                ADD.W   D0,D0
+                MOVE.W  D0,SaveBitmap+rowBytes(A6) ;]
+                MULU.W  D1,D0
+                _NEWHANDLE
+                BNE.S   SaveBitsFailed ;]
+                MOVE.L  A0,SavedHandle ;]
+                MOVE.L  (A0),SaveBitmap(A6) ;]
+                MOVE.L  (A3)+,SaveBitmap+bounds(A6) ;]
+                MOVE.L  (A3),SaveBitmap+bounds+4(A6) ;]
+                MOVE.L  WMgrPort,A0
+                PEA     portBits(A0)
+                PEA     SaveBitmap(A6) ;]
+                BSR.S   CopyMenuBits ;]
+
+DrawMenuBody ;]
+                MOVE.L  A4,-(SP)
+                _ERASERECT
+                SUBQ.W  #2,SP
+                MOVE.L  A4,-(SP)
+                _EMPTYRECT
+                TST.B   (SP)+
+                BNE.S   DrawMenuDone ;]
+                _PENNORMAL
+                MOVE.L  (A2),-(SP)
+                MOVE.L  (SP),-(SP)
+                MOVE.L  (A4),-(SP)
+                SUBQ.W  #1,2(SP)
+                MOVE.L  (SP),-(SP)
+                MOVE.W  (A2),4(SP) ;]
+                MOVE.W  (A4),12(SP) ;]
+                _MOVETO
+                _LINETO
+                _LINETO
+                _LINETO
+                BSR.S   DrawMenuShadow ;]
+                MOVE.L  A4,-(SP)
+                _CLIPRECT
+                CLR.W   -(SP)
+                BSR.W   GetMenuPtr
+                MOVE.L  A1,-(SP)
+                MOVE.L  A4,-(SP)
+                SUBQ.W  #8,SP
+                BSR.S   GetTheMProc ;]
+                JSR     (A0)
+                BSR.S   UnlockMProc ;]
+                BSR.W   FullClip
+
+DrawMenuDone ;]
+                MOVEM.L (SP)+,D4/A2-A4
+                RTS
+
+*R A4 holds the menu rectangle; D4 packs the horizontal and vertical shadow size.
+
+DrawMenuShadow ;]
+                MOVE.L  D4,-(SP)
+                _PENSIZE
+                MOVE.W  right(A4),D0
+                MOVE.W  D0,-(SP)
+                MOVE.W  (A4),-(SP)
+                ADD.W   D4,(SP)
+                MOVE.W  D0,-(SP)
+                MOVE.W  bottom(A4),D0
+                MOVE.W  D0,-(SP)
+                MOVE.W  left(A4),-(SP)
+                ADD.W   D4,(SP)
+                MOVE.W  D0,-(SP)
+                _MOVETO
+                _LINETO
+                _LINETO
+                _PENNORMAL
+                RTS
+
+*R the original helper names survive in the later source history.
+*R A nil definition handle selects NoMenuDef. Its twelve-byte stack adjustment matches the ROM.
+
+GetTheMProc ;]
+                MOVE.L  menuDefHandle(A0),D0
+                LEA     NoMenuDef,A0 ;]
+                BEQ.S   MProcDone ;]
+                MOVE.L  D0,A0
+                MOVE.L  A0,-(SP)
+                _LOADRESOURCE
+                BSET    #7,(A0)
+                MOVE.L  (A0),A0
+
+MProcDone ;]
+                RTS
+
+NoMenuDef ;]
+                MOVE.L  (SP)+,A0
+                ADD.W   #12,SP
+                JMP     (A0)
+
+UnlockMProc ;]
+                BSR.W   GetMenuPtr
+
+UnlkMDef ;]
+                MOVE.L  menuDefHandle(A0),D0
+                BEQ.S   UnlkMDefDone ;]
+                MOVE.L  D0,A0
+                BCLR    #7,(A0)
+
+UnlkMDefDone ;]
+                RTS
+
+;-----------------------------------------------
+;	Utility -- FlashFeedBack
+;-----------------------------------------------
+;
+;	FlashFeedBack is a utility routine that implements flash feedback on menu selections.
+;	tThe "MenuFlash" global determines the number of flashes
+;
+
+FlashFeedback
+                MOVE.W  D4,-(SP)                ;save work register
+                MOVE.W  MENUFLASH,D4            ;get menu flash count
+                BEQ.S   FlashDone               ;if zero, no flashing at all
+                MOVE.W  ITEMRESULT(A6),TOOLSCRATCH;was anything selected?
+                BEQ.S   FlashDone               ;if not, don’t give feedback
+                PEA     MENURECT(A6)            ;clip to the menu
+                _CLIPRECT
+
+;
+; Here is the flash loop.  It uses TICKS for timing.
+;
+
+FlashLoop
+                MOVEQ   #0,D1                   ;zero point to force selection off
+                BSR.S   CallChoose              ;call the menuProc to turn it off
+                MOVE.L  D3,D1                   ;now use real point to turn it on
+                BSR.S   CallChoose              ;call menuProc to turn it on
+                SUBQ.W  #1,D4                   ;any more times?
+                BNE.S   FlashLoop               ;do it flashCount times
+                BSR.S   FullClip                ;restore full screen clipping
+
+FlashDone
+                MOVE.W  (SP)+,D4                ;restore D4
+                RTS                             ;return to caller
+
+;-----------------------------------------------
+;		Utility -- FullClip
+;-----------------------------------------------
+; FullClip is a utility that sets the clipping region of the wmgrPort to the portRect
+; It is used to save code.
+
+FullClip
+                MOVE.L  WMgrPort,A0
+                PEA     portRect(A0)
+                _CLIPRECT
+                RTS
+
+;
+;	CallChoose is a utility procedure to call a menu’s menuProc to select an item
+;
+
+CallChoose
+                MOVE.W  #MCHOOSEMSG,-(SP)       ;the message is choose
+                BSR.W   GetMenuPtr              ;get handle to menu specified by D5
+                MOVE.L  A1,-(SP)                ;push menuHandle
+                PEA     MENURECT(A6)            ;push rectangle of current menu
+                MOVE.L  D1,-(SP)                ;mouse point
+                PEA     TOOLSCRATCH             ;scratch location to store result
+                BSR.S   GetTheMProc ;]
+                JSR     (A0)
+                BSR.S   UnlockMProc ;]
+
+;
+; delay based on TICKS
+                MOVE.L  Ticks,D0
+                ADDQ.L  #3,D0
+
+ChooseDelay ;]
+                CMP.L   Ticks,D0
+                BGT.S   ChooseDelay ;]
+                RTS
+
+*R GetMenuBar and SetMenuBar copy all 102 bytes of the menu list.
+
+;------------------------------------------------------------------------------------
+;
+;	GetMenuBar
+
+GetMenuBar
+                BSR.W   NewMList ;]
+                MOVE.L  A0, 4(SP)
+                MOVE.L  (A0),A1
+                BSR.W   GetA0List
+
+CopyMList ;]
+                MOVEQ   #MenuListSize,D0 ;]
+                _BLOCKMOVE
+                RTS
+
+;------------------------------------------------------------------------------------
+;
+;	SetMenuBar
+;
+;------------------------------------------------------------------------------------
+
+SetMenuBar
+                MOVE.L  4(SP), a0               ; get the parameter menuList handle	<FJL C222>
+                BSR.W   ChkA0List ;]
+                BSR.W   GetA1List
+                MOVE.L  (SP)+, (SP)             ; strip the parameter				<FJL C222>
+                BRA.S   CopyMList ;]
+
+;------------------------------------------------------------------------------------
+;
+;	DisposeMenu
+;
+;------------------------------------------------------------------------------------
+; PROCEDURE DisposeMenu(menuHandle) -- dispose of the dynamic storage used by the
+; menu data structure
+
+DisposeMenu
+                MOVE.L  4(sp),a0
+                BTST    #5,(A0) ;]
+                BEQ.S   DisposeRAMMenu ;]
+                MOVE.L  A0,-(SP)
+                _RELEASERESOURCE
+                BRA.S   DisposeDone ;]
+
+DisposeRAMMenu ;]
+                _DISPOSHANDLE
+
+DisposeDone
+                MOVE.L  (sp)+,(sp)              ; strip menu handle parameter
+                RTS
+
+*R FlashMenuBar saves the clip region and directly inverts the selected area.
+*R The whole-bar path retains a fixed height of twenty pixels.
+
+;
+; PROCEDURE FlashMenuBar(menuID: INTEGER);
+;
+;	FlashMenuBar inverts the title of a given menu item.  If the menuID is 0,
+;	it inverts the whole menu bar.
+
+FlashMenuBar
+                MOVE.L  D4,-(SP)
+                MOVE.L  WMgrPort,A0
+                MOVE.L  clipRgn(A0),A0
+                MOVE.L  A0,-(SP)
+                _HANDTOHAND
+                MOVE.L  (SP)+,D0
+                MOVE.L  A0,-(SP)
+                MOVE.L  A0,-(SP)
+                MOVE.L  D0,-(SP)
+                JSR     SetWPort ;]
+                BSR.W   FullClip
+                MOVE.W  20(SP),D1 ;]
+                BEQ.S   FlashWholeBar ;]
+                BSR.W   GetNInvert ;]
+
+FlashBarDone ;]
+                JSR     RestorePort ;]
+                _COPYRGN
+                _DISPOSRGN
+                MOVE.L  (SP)+,D4
+                BRA.W   TwoBytExit
+
+FlashWholeBar ;]
+                MOVE.L  WMgrPort,A0
+                PEA     portRect(A0)
+                MOVE.L  clipRgn(A0),-(SP)
+                CLR.L   -(SP)
+                MOVE.W  portRect+right(A0),-(SP) ;]
+                MOVE.W  #20,-(SP)
+                _SETRECRGN
+                MOVE.L  #$00100010,-(SP)
+                _INVERROUNDRECT
+                BRA.S   FlashBarDone ;]
+
+;
+;	GetItemRecord is the main utility used for accessing the menu item data structure.
+;	It has a register interface to save code.  On entry, A0 points to a menuInfo block,
+;	while D0 has the item number of interest.  On exit, A0 points to the item string
+;	of interest while A1 points to that item’s attribute byte list.  If the item can’t
+;	be found, A0 and A1 both return NIL and the z-flag is set.
+;
+
+GetItemRecord
+                TST.W   D0                      ; make sure item number is valid
+                BLE.S   NoItem                  ; => invalid, don’t bother
+
+DoItem
+                MOVEQ   #0,D1                   ; clear D1 for byte arithmetic
+                LEA     MENUDATA(A0),A1         ; get menuData ptr
+                MOVE.B  (A1)+,D1                ; get title length
+                ADD.W   D1,A1                   ; skip over title string
+
+;
+; here is the item search loop.  A1 points to the beginning of the next item.
+;
+
+GetILoop
+                SUBQ.W  #1,D0                   ; is this the one we’re looking for?
+                BEQ.S   GotItem                 ; if so, we got it
+                MOVE.B  (A1),D1                 ; get length of current item			<EHB 8-May-85>
+                BEQ.S   NoItem                  ; length zero marks end of list
+                ADDQ.W  #5,D1                   ; 4 bytes of properties + 1 length		<EHB 8-May-85>
+                ADD.W   D1,A1                   ; bump to next item
+                BRA.S   GetILoop                ; loop till done
+
+;	the item couldn’t be found so return NIL
+;	put string pointer into D1 in case we want to find end byte
+;
+
+NoItem
+                MOVE.L  A1,D1                   ; return pointer to 0 byte in D1		<EHB 8-May-85>
+                SUB.L   A0,A0                   ;zero A0
+                MOVE.L  A0,A1                   ;and A1 too
+                MOVE.L  A0,D0                   ;set the z-flag
+                RTS                             ;return to caller
+
+
+GotItem
+                TST.B   (A1)                    ;is this the NIL item?
+                BEQ.S   NoItem                  ;if so, we really didn’t get one
+                MOVE.L  A1,A0                   ;A0 points to item string
+                MOVE.B  (A1)+,D1                ;get length
+                ADD.W   D1,A1                   ;bump to item properties
+                RTS                             ;return to caller (z-clear)
+
+;
+;	PROCEDURE SetItemProperty(menuHandle,itemNumber,propertyValue) -- an internal routine
+;	to set a property byte of an item.  A small integer offset in D2 determines
+;	which property.
+;
+
+SetItemProperty
+                MOVE.L  8(SP),A0                ;get menuHandle
+                MOVE.L  (A0),A0                 ;handle -> pointer
+                MOVE.W  6(SP),D0                ;get item number
+                BSR.S   GetItemRecord           ;find the item
+                BEQ.S   TwoParmExit             ;if not, skip
+                MOVE.B  5(SP),0(A1,D2)          ;move in the property byte
+                SUBQ.W  #ItemMark,D2            ; is it the check mark?			<EHB 1/24/85>
+                BEQ.S   TwoParmExit             ; yes, don’t recalculate		<EHB 1/24/85>
+                MOVE.L  8(SP),-(SP)             ;push the menuHandle
+                BSR.W   DirtyMenuSize           ; invalidate size				<EHB 5-Mar-85>
+
+TwoParmExit
+                MOVE.L  (SP)+,A0                ;get return address
+                ADDQ.W  #8,SP                   ;strip 8 bytes of parameters
+                JMP     (A0)                    ;return to caller
+
+*R the ROM clears byte zero and writes the property into byte one.
+*R A missing item leaves byte one unchanged; the source comment below is retained.
+
+;
+; PROCEDURE GetItemProperty(menuHandle,itemNumber, VAR propertyValue) -- is an internal
+; routine similar to SetItemProperty that gets a property of a requested item.
+; The property is selected by the small integer in D2.
+;
+
+GetItemProperty
+                MOVE.L  10(SP),A0               ;get menuHandle
+                MOVE.L  (A0),A0                 ;turn into menu pointer
+                MOVE.W  8(SP),D0                ;get item number
+                BSR.S   GetItemRecord           ;look it up
+                MOVE.L  4(SP),A0                ;get result pointer
+                CLR.B   (A0)                    ;assume result of zero			<EHB 6-Sep-85>
+                MOVE.L  A1,D0                   ;did we find the item?
+                BEQ.S   TenBytExit              ;if not, we’re done
+                MOVE.B  0(A1,D2),1(A0)          ;move the requested property byte
+
+TenBytExit
+                MOVE.L  (SP)+,A0                ;get return address
+                ADD.W   #10,SP                  ;strip 10 bytes of parameters
+                JMP     (A0)                    ;return to caller
+
+GetItemIcon
+                MOVEQ   #ITEMICON,D2            ;set up property selector
+                BRA.S   GetItemProperty         ;do it!
+
+SetItemIcon
+                MOVEQ   #0,D2
+                BRA.S   SetItemProperty
+
+GetItemStyle
+                MOVEQ   #3,D2
+                BRA.S   GetItemProperty         ;do it!
+
+SetItemStyle
+                MOVEQ   #ITEMSTYLE,D2           ;set up property selector
+                BRA.S   SetItemProperty
+
+GetItemMark
+                MOVEQ   #2,D2
+                BRA.S   GetItemProperty         ;do it!
+
+SetItemMark
+                MOVEQ   #ITEMMARK,D2            ;set up property selector
+                BRA.S   SetItemProperty
+
+;
+;	PROCEDURE CheckItem(menuHandle,itemNumber, checked: BOOLEAN)	-- check or unCheck
+;	an item.  Strategy: transform the boolean into the proper char right on the stack
+;
+
+CheckItem
+                TST.B   4(SP)                   ;test the boolean
+                BEQ.S   ClearCheck ;]
+                MOVE.W  #CHECKMARK,4(SP)
+                BRA.S   SetItemMark             ;go mark it
+
+ClearCheck ;]
+                CLR.W   4(SP)
+                BRA.S   SetItemMark             ;go do it
+
+UpChar
+                MOVE.B  D0,-(SP)                ; push character					<EHB 15-Apr-85>
+                MOVE.L  SP,A0
+                MOVEQ   #1,D0
+                _UprString ,MARKS
+                MOVE.B  (SP)+,D0                ; return shifted character			<EHB 15-Apr-85>
+                RTS
+
+*R the key search retains the original modulo-32 enable-bit tests.
+
+;
+; FUNCTION MenuKey(commandChr): LongInt --	menuKey is kind of a companion routine to
+; MenuSelect; it is called when a command character is typed and scans the current
+; menu data structure, returning a (whichMenu, whichItem) pair that corresponds to the
+; selected command.  If a command is not recognized, the result returned is zero
+;
+
+MenuKey
+                MOVEM.L D3-D5/A3,-(SP)
+                MOVE.B  21(SP),D0 ;]
+                BSR.S   UpChar
+                MOVE.B  D0,D4
+                BSR.W   GetA0List
+                MOVE.W  lastMenu(a0), d5        ; go to last menu
+
+KeyMenuLoop ;]
+                BSR.W   GetMenuPtr              ;get menu pointer in A0 from index in D5
+                MOVE.L  A0,A3                   ;stash in A3 for safe keeping
+                BTST    #0,13(A3)	;]is this menu enabled?
+                BEQ.S   NextKeyMenu ;]
+                MOVEQ   #1,D3                   ;start with item number 1
+
+KeyItemLoop
+                MOVE.L  MENUENABLE(A3),D0       ;get enable flags
+                BTST    D3,D0                   ;make sure this item is enabled
+                BEQ.S   NextKeyItem ;]
+                MOVE.L  A3,A0                   ;get menuPtr in A0
+                MOVE.W  D3,D0                   ;get item number in D0
+                BSR.W   GetItemRecord           ;search for item
+                BEQ.S   NextKeyMenu ;]
+                MOVE.B  ItemCmd(A1),D0          ;get the command char
+                BSR.S   UpChar                  ; upshift it in D0					<EHB 11-Apr-85>
+                CMP.B   D0,D4                   ;do they match?
+                BEQ.S   KeyMatch ;]
+
+NextKeyItem ;]
+                ADDQ.W  #1,D3                   ;bump to next item
+                BRA.S   KeyItemLoop             ;loop till we find it or no more
+
+NextKeyMenu ;]
+                SUBQ.W  #6, d5                  ; bump to next item
+                BNE.S   KeyMenuLoop ;]
+                CLR.L   22(SP) ;]
+
+MenuKeyDone ;]
+                MOVEM.L (SP)+,D3-D5/A3
+                BRA.W   TwoBytExit              ; standard exit saves code
+
+KeyMatch ;]
+                BSR.W   GetMenuPtr              ;get pointer to correct menuID
+                MOVE.W  (A0),D0
+                SWAP    D0
+                MOVE.W  D3,D0
+                MOVE.L  D0,22(SP) ;]
+                SWAP    D0
+                MOVE.W  D0,-(SP)
+                _HILITEMENU                     ;hilite it
+                TST.W   MBarEnable              ;does desk ornament own menuBar?
+                BMI.S   SysMenuKey ;]
+                MOVE.L  22(SP),D0 ;]
+                BPL.S   MenuKeyDone ;]
+
+SysMenuKey ;]
+                MOVE.L  D0,-(SP)
+                _SYSTEMMENU                     ; invoke desk manager
+                CLR.L   22(SP) ;]
+                BRA.S   MenuKeyDone ;]
+
+;
+; PROCEDURE GetItem(menuHandle,itemNumber,VAR string);	-- get the text of a menu item
+;
+
+GetItem
+                MOVE.L  10(SP),A0               ;get menuInfo handle
+                MOVE.L  (A0),A0                 ;handle to pointer
+                MOVE.W  8(SP),D0                ;get item number
+                BSR.W   GetItemRecord           ;look it up
+                MOVE.L  4(SP),A1                ;get result stringPtr,(zflag preserved)
+                BEQ.S   NoItem1                 ;if not, return empty string
+
+;
+; use blockMove to copy the string
+;
+                MOVEQ   #0,D0                   ;clear out D0
+                MOVE.B  (A0),D0                 ;get length of string
+                ADDQ.W  #1,D0                   ;move length byte, too
+                _BLOCKMOVE                      ;let memory manager move it fast
+
+DoneGI
+                BRA.W   TenBytExit              ;standard exit saves code
+
+;
+; item not found, so return the null string
+;
+
+NoItem1
+                CLR.B   (A1)                    ;set result string length to zero
+                BRA.S   DoneGI                  ;standard exit saves code
+
+;-----------------------------------------------
+;		Utility -- DirtyMenuSize
+;-----------------------------------------------
+;
+; Utility DirtyMenuSize(menuHandle) -- Say that the menu’s size is no longer valid by
+; setting the width and height to -1.
+
+DirtyMenuSize
+                MOVE.L  4(SP),A0                ; get menuHandle
+                MOVE.L  (A0),A0                 ; get menuPointer
+                MOVE.L  #-1,MenuWidth(A0)       ; clear size
+                BRA.S   OneParmExit
+
+;	PROCEDURE CalcMenuSize(menuHandle) -- scan the menuData of a menu and set the menu’s
+;	width and heigth fields accordingly, by invoking the menu definition proc
+
+CalcMenuSize
+                MOVE.W  #2,-(SP)                ; Tell mProc to calc size
+                MOVE.L  6(SP),A0
+                MOVE.L  A0,-(SP)                ; Push it
+                CLR.L   -(SP)                   ; Pass 12 bytes of bogus addresses/junk
+                CLR.L   -(SP)
+                CLR.L   -(SP)
+                MOVE.L  (A0),A0                 ; Get the menu ptr
+                BSR.W   GetTheMProc ;]
+                JSR     (A0)
+                MOVE.L  4(SP),A0
+                MOVE.L  (A0),A0
+                BSR.W   UnlkMDef ;]
+
+OneParmExit
+                MOVE.L  (SP)+,(SP)              ;strip parameter
+                RTS                             ;return to caller
+
+*R this helper tests the item bit in D4, then the menu bit.
+
+ItemEnabled ;]
+                MOVE.L  (A3),A0
+                MOVE.L  menuEnable(A0),D0
+                BTST    D4,D0
+                BEQ.S   ItemEnabledDone ;]
+                BTST    #0,D0
+
+ItemEnabledDone ;]
+                RTS
+
+;
+; FUNCTION NewMenu(menuID,titleString):menuHandle -- allocate a new menu block with
+; the specified menuID and title.
+;
+
+NewMenu
+                MOVEQ   #0,D1                   ;clear out the high part
+                MOVEQ   #MenuBlkSize+2,D0       ;get size of menuInfo block
+                MOVE.L  4(SP),A0                ;point to the title string
+                MOVE.B  (A0),D1                 ;get its length
+                ADD.W   D1,D0                   ;compute real length
+                _NEWHANDLE                      ;allocate it
+                MOVE.L  A0,10(SP)               ;return menuHandle as result
+                MOVE.L  (A0),A1                 ;get menu pointer
+                MOVE.W  D1,-(SP)                ;save title size for later
+
+; initialize the fields of the menu definition record
+;
+                MOVE.W  10(SP),(A1)+            ;init menuID
+                CLR.L   (A1)+                   ;zero width and heigth initially
+
+; initialize the menu defProc handle
+                SUBQ.W  #4,SP                   ;make room for function result
+                MOVE.L  #'MDEF',-(SP)           ;push MDEF resource type
+                CLR.W   -(SP)
+                MOVE.W  #MapTRUE,ROMMapInsert   ;get MDEF 0 from the ROM Map	<9 July 85>
+                _GETRESOURCE                    ;get it
+                MOVE.L  (SP)+,A0                ;get mDef handle in A0
+
+; since GetResource can allocate memory, better rebuild the ptr from its handle
+                MOVE.L  12(SP),A1               ;get menuHandle
+                MOVE.L  (A1),A1                 ;get menuPtr
+                ADDQ.W  #MenuDefHandle,A1       ;bump to defHandle
+                MOVE.L  A0,(A1)+                ;install menuProc
+                MOVE.L  MinusOne,(A1)+          ;everything’s enabled to start
+
+; move in the title string
+                MOVE.W  (SP)+,D1                ;get length of string
+                MOVE.L  4(SP),A0                ;get string ptr
+
+CopyMenuTitle ;]
+                MOVE.B  (A0)+,(A1)+             ;move in the string
+                DBRA    D1,CopyMenuTitle ;]
+
+; add the string of length zero on the end
+;
+                CLR.B   (A1)+                   ;string of length zero
+                BRA.W   SixBytExit              ;all done -- standard exit saves code
+
+;
+; PROCEDURE AppendMenu(menuHandle,itemString)	-- add the list of items represented by
+; the item string to the menu.  The itemString may contain one or more items, seperated
+; by carriage returns or semicolon characters.  The item strings are also scanned for
+; special meta-characters that change their initial properties.
+
+AppendMenu
+                MOVE.L  (SP)+,A0                ; add an "afterItem" param so			<EHB 8-May-85>
+                MOVE.W  #999,-(SP)              ; it looks like an InsMenuItem call		<EHB 8-May-85>
+                MOVE.L  A0,-(SP)                ; and fall into InsMenuItem				<EHB 8-May-85>
+
+; PROCEDURE InsMenuItems(MenuHandle: Handle; itemstring: str255; itemNum: INTEGER)
+; -- insert the items in the itemstring after the specified item (to insert at
+; beginning, pass item of 0).  ItemString is parsed just like the itemstring in
+; AppendMenu.  Multiple items are inserted in the reverse of their order in the
+; string.
+
+InsMenuItem
+                LINK.W  A6,#ItemLinkSize        ; allocate local space
+                MOVEM.L D3-D7/A2-A4,-(SP)       ; save some work registers
+                MOVE.L  10(A6),A4               ; get itemString ptr in A4
+                MOVE.L  14(A6),A3               ; get menuHandle in A3
+                MOVE.W  8(A6),D6                ; get insert point in D6
+                ADDQ.W  #1,D6                   ; make it a true index
+                BSR.S   AddString               ; make menu items out of the string
+                MOVEM.L (SP)+,D3-D7/A2-A4       ; restore the registers
+                UNLK    A6                      ; unbuild the stack frame
+                BRA.W   TenBytExit              ; standard exit save code
+
+*R the original byte-parser loop is restored from the commented instructions.
+*R The ROM enters the loop before testing the length, including for an empty string.
+
+; AddString parses the specified string, placing it into the ITEMBUFFER, and setting up
+; the other item properties.  When it encounters the end of an item, it transfers
+; it from the buffer into the menu.
+; On Entry:		A3		MenuHandle
+;				A4		ItemString pointer
+;				D6		Item to insert before
+
+AddString
+                CLR.W   D3                      ;									<PMAB568	07Sep88		EMT>
+                MOVE.B  (A4)+,D3                ;get length of itemString			<PMAB568	07Sep88		EMT>
+                BSR.S   InitItem                ; initialize local buffer for new item
+                SUBQ.W  #1,D3                   ; bias for DBRA loop				<PMAB568	07Sep88		EMT>
+
+;
+; process each character in the itemString, one character at a time
+;
+
+APLoop
+                MOVE.B  (A4)+,D0
+                BSR.S   AppendChar              ;process it
+                DBRA    D3,APLOOP               ;process each character				<PMAB568	07Sep88		EMT>
+                BSR.W   CloseItem               ;close out any item that may be open
+                MOVE.L  A3,-(SP)                ; push menu handle
+                BSR.W   DirtyMenuSize           ; invalidate size					<EHB 5-Mar-85>
+                RTS
+
+;
+; InitItem initializes the item buffer
+;
+
+InitItem
+                LEA     ITEMPROPERTIES(A6),A0   ;get address of item properties
+                CLR.L   (A0)+                   ;clear property parameters
+                CLR.L   (A0)                    ;clear out state/flags/count
+                RTS
+;
+;	Meta character definition table -- this table defines which meta-character
+;	perform what functions;	the order is icon,command,mark,style,delimiter,delimiter,
+;	disable.
+;
+MCHARTABLE		DC.B	'^'						;arrow is the icon character
+				DC.B	'/'						;slash is command character
+				DC.B	'!'						;exclamation point is mark character
+				DC.B	'<'						;less-than is the style character
+				DC.B	$0D						;carriage return is one delimiter
+				DC.B	';'						;semi-colon is the other
+				DC.B	'('						;leftParen is disable character
+;
+; style character table
+;
+STYLECHRTAB		DC.B	'BIUOS'					;bold,italic,underline,outline,shadow
+
+; AppendChar does all the real work.  It processes the character in D0 by checking out
+; what state its in.  If in a command state, it uses the character to update a
+; property byte.  In normal state, characters go into a buffer that is added to the
+; menu when a carriage return or semicolon is scanned
+
+AppendChar
+                CLR.W   D1
+                MOVE.B  ITEMSTATE(A6),D1        ;get current state
+                BEQ.S   NormState               ;if normal state, go handle it
+                CMP.B   #ITEMICON+1,D1          ;is it an icon item?
+                BNE.S   CheckStyle ;]
+                SUB.W   #$30,D0                 ;adjust ASCII
+
+CheckStyle ;]
+                CMP.B   #ITEMSTYLE+1,D1         ;is it a style?
+                BNE.S   UpdateProp              ;handle style characters special
+
+;
+; handle style properties special by scanning table and oring bits
+;
+                MOVEQ   #4,D2                   ;start at last one
+
+StyleLoop
+                CMP.B   StyleChrTab(PC,D2.W),D0 ;]
+                BEQ.S   AddToStyle              ;if so, modify D0
+                DBRA    D2,StyleLoop ;]
+                RTS
+
+AddToStyle
+                LEA     ITEMPROPERTIES-1(A6),A0 ;get property table address
+                MOVE.B  0(A0,D1),D0             ;get current property
+                BSET    D2,D0                   ;set appropriate property
+
+UpdateProp
+                LEA     ITEMPROPERTIES-1(A6),A0 ;get address of item property table
+                MOVE.B  D0,0(A0,D1)             ;update the property					<FJL C222>
+                CLR.B   ITEMSTATE(A6)           ;return state to normal
+                RTS
+
+*R the table contains seven special characters.
+
+NormState
+                LEA     MCharTable,A0	;get address of character table
+                MOVE.W  #6,D1 ;]
+
+NSLoop
+                CMP.B   0(A0,D1),D0             ;is it one of the special ones?
+                BEQ.S   SpecialChar ;]
+                DBRA    D1,NSLOOP
+
+;
+; it wasn’t in the exception table so it must be a normal character.  Just append it
+; to the item buffer.
+;
+                MOVE.W  ITEMCOUNT(A6),D1        ;get total number of characters
+                LEA     ITEMBUFFER(A6),A0       ;get address of buffer
+                MOVE.B  D0,0(A0,D1)             ;stick character in buffer
+                ADDQ.W  #1,ITEMCOUNT(A6)        ;bump buffer index
+                RTS
+
+SpecialChar
+                CMP.W   #3,D1                   ; which char was it?
+                BGT.S   CheckTerm ;]
+
+;
+; it was a property meta-character so update the state accordingly
+;
+                ADDQ.W  #1,D1                   ;bump state
+                MOVE.B  D1,ITEMSTATE(A6)        ;update state
+                RTS
+
+;
+; check for termination characters like carriage return or semicolon
+;
+
+CheckTerm
+                SUBQ.W  #6,D1                   ;was it enable character?
+                BNE.S   CloseItem               ;it must have been a termination character
+                ST      ItemFlags(A6)
+                RTS
+
+;
+; CloseItem is called to add the item in the buffer (and its associated properties) to
+; the actual menu data structure.  After this is done, re-initialize for the next item
+; On entry, the item insertion index is in D6
+;
+
+CloseItem
+                MOVE.W  ITEMCOUNT(A6),D0        ;get the # of characters in buffer
+                BEQ.S   CloseDone               ;if none, we’re done
+                BSR.S   InsertTheItem           ; put the new item into the menu		<EHB 8-May-85>
+                BSR.W   InitItem                ; prepare for next item
+
+CloseDone
+                RTS
+
+; ---------------
+; Utility GetGoodIndex -- takes an index into the menu list in D6 and a menu handle in A3.
+; Returns a valid insertion index in D5.  Trashes D0-D2, A0-A1
+
+GetGoodIndex
+                MOVE.W  D6,D5                   ; get proposed index
+                SUBQ.W  #2,SP                   ; count menu items
+                MOVE.L  A3,-(SP)                ; push menu handle
+                _COUNTMITEMS
+                MOVE.W  (SP)+,D0                ; get count
+                ADDQ.W  #1,D0                   ; make it an insertion index
+                CMP.W   D0,D5                   ; if D5 is bigger
+                BLE.S   GoodIndexDone ;]
+                MOVE.W  D0,D5                   ; preserve in D5
+
+GoodIndexDone ;]
+                RTS
+
+; InsertTheItem -- inserts the item in the item buffer before the item designated by D6.
+; If D6 is bigger than the last item, append the item to the end of the list.  Keeps true
+; insertion item # in D5
+
+InsertTheItem
+                BSR.S   GetGoodIndex            ; index in D6 -> good index in D5
+                MOVE.W  D5,D0                   ; get insertion index
+                MOVE.L  (A3),A0                 ; get menu pointer
+                BSR.W   GetItemRecord           ; point to item’s string
+                BEQ.S   BuildItemData ;]
+                MOVE.L  A0,D1                   ; else get pointer in D1
+
+; only need to insert enable bit if insert within range. (bits at end are all alike)
+                MOVE.L  (A3),A0                 ; get menu list pointer
+                BSR.S   InsertEnableBit         ; insert bit in pos’n in D5
+
+BuildItemData ;]
+                LEA     ITEMBUFFER(A6),A0       ; point to string data
+                MOVE.L  A0,A2                   ; save insertion string in A2
+                MOVE.W  ITEMCOUNT(A6),D2        ; get the string length
+                ADD.W   D2,A0                   ; point past end of string
+                LEA     ITEMPROPERTIES(A6),A1   ; get address of properties
+                MOVEQ   #3,D0                   ; and move in 4 property bytes
+
+CopyProperties ;]
+                MOVE.B  (A1)+,(A0)+             ; move a byte
+                DBRA    D0,CopyProperties ;]
+                SUBQ.W  #1,A2                   ; point to insertion count byte
+                ADDQ.W  #5,D2
+                EXT.L   D2                      ; (itemCount + 1 length + 4 property)
+                MOVE.L  D1,A1                   ; get address of data
+                SUB.L   (A3),A1                 ; get offset into menu list
+                SUBQ.W  #4,SP                   ; we’re here to get results
+                MOVE.L  A3,-(SP)                ; push handle to menu list
+                MOVE.L  A1,-(SP)                ; push offset into menu list
+                CLR.L   -(SP)                   ; no source string
+                CLR.L   -(SP)
+                MOVE.L  A2,-(SP)                ; just an insertion string
+                MOVE.L  D2,-(SP)                ; and its length
+                _MUNGER
+                ADDQ.W  #4,SP                   ; ignore results
+                TST.B   ITEMFLAGS(A6)           ; was it disabled?
+                BEQ.S   InsertDone              ; => no, don’t need to disable
+                MOVE.L  A3,-(SP)                ; push menu handle
+                MOVE.W  D5,-(SP)                ; and item number
+                BSR.W   DisableItem             ; and disable it
+
+InsertDone
+                RTS
+
+*R the ROM has no later guard for item numbers greater than 31.
+
+; InsertEnableBit -- insert a bit into the MenuEnable byte, turned on.
+; Index is in D5, menulist pointer is in A0.
+; Trashes D0,D2.
+
+InsertEnableBit
+                MOVE.L  MenuEnable(A0),D2       ; get current enable flags
+                ROR.L   D5,D2                   ; rotate n bits							<EHB 3-May-85>
+                MOVE.W  D5,D0                   ; get 32-n with extend
+                SUB.W   #32,D0                  ; by negating n-32
+                NEG.W   D0                      ; extend is inserted 1 bit
+                ROXR.L  D0,D2                   ; rotate in others
+                MOVE.L  D2,MenuEnable(A0)       ; replace the flags						<EHB 3-May-85>
+                RTS
+
+;	FUNCTION GetMHandle(menuID): menuHandle	-- convenience procedure which returns
+;	a menuHandle given a menuID.  If the menuID cannot be found in the current menuList,
+;	NIL is returned
+;
+
+GetMHandle
+                CLR.L   6(SP)                   ;set result to NIL
+                MOVE.W  4(SP),D1                ;get menuID
+                BSR.W   GetIndex                ; get menuIndex
+                BEQ.S   GetMHandleDone ;]
+                MOVE.W  D5,-(SP)                ;preserve D5
+                MOVE.W  D0,D5                   ;get menuIndex in D5
+                BSR.W   GetMenuPtr              ;get handle to menu in A1
+                MOVE.W  (SP)+,D5                ;restore D5
+                MOVE.L  A1,6(SP)                ;set function result
+
+GetMHandleDone ;]
+                BRA.W   TwoBytExit              ;standard exit saves code
+
+*R deletion retains the original enable-bit rotations without a range guard.
+
+; PROCEDURE DelMenuItem(MenuHandle:Handle; itemNum: INTEGER) -- delete the specified
+; item from the specified menu.  Shoves an extra return address on the stack to
+; make stack parallel with SetItem, below.
+
+DelMenuItem
+                MOVE.L  (SP),-(SP)              ; old RTS -> phony newItem
+                MOVEM.L D3-D4/A2-A4,-(SP)       ; save work registers
+                MOVE.L  30(SP),A3               ; get menu handle						<FJL C408>
+                MOVE.L  (A3),A0                 ; get menu ptr							<FJL C408>
+                MOVE.W  28(SP),D0               ; get item for GetItemRecord
+                MOVE.L  MenuEnable(A0),D1       ; get enable bits for menu items	<EHB 3-May-85>
+                MOVE.W  D0,D2                   ; get 32-n with extend set
+                SUB.W   #32,D2                  ; by negating n-32
+                NEG.W   D2
+                ROXL.L  D2,D1                   ; shift in new high bit (set)
+                ROL.L   D0,D1                   ; leave deleted bit in extend
+                MOVE.L  D1,MenuEnable(A0)       ; and save updated enable bits
+                BSR.W   GetItemRecord           ; look up the specified
+                BEQ.S   SetIDone
+                MOVEQ   #5,D4                   ; 4 property bytes + 1 length byte
+                MOVEQ   #0,D2                   ; length of replacement string
+                MOVE.L  D2,A2                   ; and NIL replacement string
+                BRA.S   SICommon                ; go parasitize host...
+
+; PROCEDURE SetItem(menuHandle:Handle; itemNum: INTEGER; newItem: String)	-- change
+; the specified item to the new string, keeping the same attributes as the old one
+
+SetItem
+                MOVEM.L D3-D4/A2-A4,-(SP)       ;save work registers
+                MOVE.L  30(SP),A3               ;get menu handle
+                MOVE.W  28(SP),D3               ;get item number
+                MOVE.L  24(SP),A2               ;get string pointer
+                MOVE.W  D3,D0                   ;get item in D0
+                MOVE.L  (A3),A0                 ;get menu ptr in A0
+                BSR.W   GetItemRecord           ;find our entry
+                BEQ.S   SetIDone                ;if not, we’re done
+                MOVEQ   #1,D4                   ; get 1 for length byte
+                MOVEQ   #1,D2                   ; get 1 for length byte
+                ADD.B   (A2),D2                 ; add in length of new string
+
+SICommon
+                MOVE.L  A0,A4                   ; remember item ptr in A4
+                SUB.L   (A3),A4                 ; offset = item pointer - menu start
+                ADD.B   (A0),D4                 ; Length = D4 + menuString length
+                SUBQ.W  #4,SP                   ; make room for result
+                MOVE.L  A3,-(SP)                ; push menu handle
+                MOVE.L  A4,-(SP)                ; offset to string to be replaced
+                CLR.L   -(SP)                   ; no search string
+                MOVE.L  D4,-(SP)                ; old length
+                MOVE.L  A2,-(SP)                ; ptr to new
+                MOVE.L  D2,-(SP)                ; length of new
+                _MUNGER
+                ADDQ.W  #4,SP                   ; ignore result
+                MOVE.L  A3,-(SP)                ; push the menu handle
+                BSR.W   DirtyMenuSize           ; invalidate size				<EHB 5-Mar-85>
+
+;
+; all done with SetItem
+;
+
+SetIDone
+                MOVEM.L (SP)+,D3-D4/A2-A4       ;restore work registers
+                BRA.W   TenBytExit              ;standard exit saves code
+
+;
+; PROCEDURE SetMenuFlash(flashCount: INTEGER) -- set the system global "flashCount" to
+; a new value, controlling the duration of the flash feedback given when a menu item
+; is selected
+;
+
+SetMenuFlash
+                MOVE.W  4(SP),MENUFLASH         ;update flashcount
+                BRA.W   TwoBytExit              ;standard exit saves code
+
+;
+;	PROCEDURE AddResMenu(theMenu: menuHandle; theType: RsrcType);
+;
+;	AddResMenu appends all the names of a given resource type class
+;	to the menu passed as a parameter.  It ignores names with a period or
+;	percent sign as their first character. It is simply a cover for InsrtResMenu,
+;	which it falls into.
+;
+
+AddResMenu
+                MOVE.L  (SP)+,A0                ; get return address
+                MOVE.W  #999,-(SP)              ; push large "afterItem"
+                MOVE.L  A0,-(SP)                ; restore return address
+
+*R the assembly body was removed from the surviving MenuMgr.a.
+*R The ROM restores sorted insertion with duplicate suppression and FONT/FOND passes.
+*R The later MenuMgr.c supplies related behavior; the ROM establishes the instruction sequence.
+*R D5 holds the first insertion index; D7 holds the index after the inserted range.
+*R D4 counts resources, D3 selects the resource and D6 selects the insertion point.
+
+InsrtResMenu
+                CMP.L   #'FONT',6(SP) ;]
+                BNE.S   SetUpResMenu ;]
+                MOVE.B  #'D',9(SP) ;]
+
+SetUpResMenu ;]
+                LINK.W  A6,#ItemLinkSize
+                MOVEM.L D3-D7/A2-A4,-(SP)
+                MOVE.W  ResLoad,-(SP)
+                CLR.W   ResLoad ;]
+                BSR.W   InitItem
+                MOVE.L  14(A6),A3
+                MOVE.W  8(A6),D6
+                ADDQ.W  #1,D6
+                BSR.W   GetGoodIndex
+                MOVE.W  D5,D7
+
+ResMenuPass ;]
+                SUBQ.W  #2,SP
+                MOVE.L  10(A6),-(SP)
+                _COUNTRESOURCES
+                MOVE.W  (SP)+,D4
+                BEQ.W   ResMenuPassDone ;]
+                MOVEQ   #1,D3
+
+ResMenuLoop ;]
+                SUBQ.W  #4,SP
+                MOVE.L  10(A6),-(SP)
+                MOVE.W  D3,-(SP)
+                _GETINDRESOURCE
+                LEA     ItemBuffer-1(A6),A4 ;]
+                CLR.L   -(SP)
+                CLR.L   -(SP)
+                MOVE.L  A4,-(SP)
+                _GETRESINFO
+                TST.B   (A4)
+                BEQ.S   NextResource ;]
+                CMP.B   #'.',1(A4) ;]
+                BEQ.S   NextResource ;]
+                CMP.B   #'%',1(A4) ;]
+                BEQ.S   NextResource ;]
+                MOVE.W  D5,D6
+                CMP.W   D7,D6
+                BEQ.S   InsertResName ;]
+                MOVE.L  (A3),A0
+                MOVE.W  D6,D0
+                BSR.W   GetItemRecord
+                MOVE.L  A0,A2
+
+CompareResName ;]
+                TST.B   (A2)
+                BEQ.S   InsertResName ;]
+                MOVE.L  A2,A0
+                MOVE.L  A4,A1
+                MOVEQ   #0,D0
+                MOVE.B  (A0)+,D0
+                SWAP    D0
+                MOVE.B  (A1)+,D0
+                _RELSTRING
+                BGT.S   InsertResName ;]
+                BEQ.S   NextResource ;]
+                MOVEQ   #0,D0
+                MOVE.B  (A2),D0
+                ADDQ.W  #5,D0
+                ADD.L   D0,A2
+                ADDQ.W  #1,D6
+                BRA.S   CompareResName ;]
+
+InsertResName ;]
+                MOVE.W  D5,-(SP)
+                BSR.W   CloseItem
+                MOVE.W  (SP)+,D5
+                ADDQ.W  #1,D7
+
+NextResource ;]
+                ADDQ.W  #1,D3
+                CMP.W   D4,D3
+                BLE.S   ResMenuLoop ;]
+
+ResMenuPassDone ;]
+                CMP.L   #'FOND',10(A6) ;]
+                BNE.S   ResMenuDone ;]
+                MOVE.B  #'T',13(A6) ;]
+                BRA.W   ResMenuPass ;]
+
+ResMenuDone ;]
+                MOVE.L  A3,-(SP)
+                _CALCMENUSIZE
+                _SETRESLOAD
+                MOVEM.L (SP)+,D3-D7/A2-A4
+                UNLK    A6
+                BRA.W   TenBytExit
+
+; FUNCTION CountMItems(mHandle: MenuHandle): INTEGER
+;
+;	CountMItems returns the number of items in a given menu
+;
+; TODO: Do not call GetItemRecord, since this just loops again!	Stupid way to do it.
+
+CountMItems
+                MOVEQ   #0,D2                   ;start with item 0
+
+CountMLoop
+                ADDQ.W  #1,D2                   ;bump item number
+                MOVE.L  4(SP),A0                ;get menu handle
+                MOVE.L  (A0),A0                 ;handle -> pointer
+                MOVE.W  D2,D0                   ;get item number in D0
+                BSR.W   GetItemRecord           ;look it up
+                BNE.S   CountMLoop              ;if we got it, bump count and try again
+
+; we couldn’t get the item in D2, so D2 must have the number of items + 1
+                SUBQ.W  #1,D2                   ;get number of items
+                MOVE.W  D2,8(SP)                ;return it as the result
+                MOVE.L  (SP)+,(SP)              ;strip the parameter
+                RTS                             ;return to caller
+
+;-----------------------------------------------------------------------------------------------
+; PROCEDURE PlotIcon(theRect: Rect; theIcon: IconHandle)
+;
+;	Plots a given icon at a given place in your local coordinate system.
+;	theMode is the LisaGraf penMode for the transfer
+
+PlotIcon
+                LEA     ICONBITMAP,A1           ;get address of icon mgr bitMap
+                MOVE.L  4(SP),D0                ;get the icon handle
+                BEQ.S   DoneIPlot               ;if NIL, dont plot
+                MOVE.L  D0,A0                   ;get iconHandle in address reg
+                MOVE.L  (A0),(A1)+              ;icon mptr is the base address
+                MOVE.W  #4,(A1)+                ;set up rowBytes
+                CLR.L   (A1)+                   ;set up topLeft
+                MOVE.L  #$00200020,(A1)         ;set up botRight
+                MOVE.L  8(SP),D1                ;get theRect
+                LEA     IconBitMap,A1           ;point A1 at bitmap again
+
+; push parameters for copyBits call
+;
+                MOVE.L  A1,-(SP)                ;source bitMap is iconBitMap
+                MOVE.L  GrafGLOBALS(A5),A0      ;get lisaGraf global baseaddress
+                MOVE.L  THEPORT(A0),A0          ;get thePort
+                PEA     PORTBITS(A0)            ;that’s the destination bitmap
+                PEA     BOUNDS(A1)              ;boundsRect of bitmap is source
+                MOVE.L  D1,-(SP)                ;theRect is the destination
+                CLR.W   -(SP)                   ;theMode is srcCopy (0)
+                CLR.L   -(SP)                   ;no mask region
+                _COPYBITS                       ;let Bill blit those bits
+
+DoneIPlot
+                BRA.W   TwoParmExit             ;standard exit saves code
+
+MenuMgrEnd ;]
+                ENDP
+                END

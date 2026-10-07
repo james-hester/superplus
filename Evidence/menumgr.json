@@ -1,0 +1,1541 @@
+{
+  "module": "Toolbox/MenuMgr.a",
+  "source_path": "Reconstruction/Source/Toolbox/MenuMgr.a",
+  "source_sha256": "a8f3b3f00075436871279f506ab79127b96cf797d983111bec42cfbb78e2f854",
+  "upstream_source": {
+    "path": "Toolbox/MenuMgr/MenuMgr.a",
+    "sha256": "18763856841833242b3e229d7a3d5db0b24f7566e79df538d665262a262a0e9a",
+    "description": "The surviving Menu Manager source contains the public routines, item parser, item-editing helpers and Macintosh Plus history. The reconstruction retains matching operations and comments while restoring the earlier menu-list layout, direct drawing, selection loop and resource-name insertion from the ROM."
+  },
+  "related_sources": [
+    {
+      "path": "Toolbox/MenuMgr/StandardMBDF.a",
+      "sha256": "ee07c61f77ebbb9e47f95adb73e6188dd16f5f5e79440b09ec86ab42a868aa92",
+      "description": "The later menu-bar definition procedure retains the GetMenuInfo and GetTitleRect contracts. Its matching font-info and rectangle comments support the restored helpers; later leading, color and system-menu changes are omitted."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.c",
+      "sha256": "e9b7a746ab5eefab5d2737d16aabb6c3a2d4c58833b29966fd92f1324c5362f6",
+      "description": "The later C implementation supplies related resource-name insertion behavior after that assembly routine was removed from MenuMgr.a. The ROM supplies the restored assembly instructions."
+    }
+  ],
+  "upstream_equates": [
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x412198",
+      "end_address_exclusive": "0x412d54",
+      "rom_offset": "0x12198",
+      "length": 3004,
+      "sha256": "d67f96a548b88938206260699aa7cee5e7afbd3b58b795fc2f08b75e517733de",
+      "first_symbol": "InitMenus",
+      "last_routine": "PlotIcon"
+    }
+  ],
+  "boundary_evidence": {
+    "description": "The reference symbol list places InitMenus at $412198 and NewControl at $412D54. The surviving MenuMgr.a ends with PlotIcon. Its ROM implementation begins at $412D18 and ends with a branch to TwoParmExit at $412D50, completing the span immediately before NewControl.",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv"
+  },
+  "code_spans": [
+    {
+      "start_address": "0x412198",
+      "end_address_exclusive": "0x412a6a",
+      "length": 2258
+    },
+    {
+      "start_address": "0x412a76",
+      "end_address_exclusive": "0x412d54",
+      "length": 734
+    }
+  ],
+  "data_spans": [
+    {
+      "start_address": "0x412a6a",
+      "end_address_exclusive": "0x412a71",
+      "length": 7,
+      "description": "MCharTable retains the original seven character declarations: caret, slash, exclamation mark, less-than sign, carriage return, semicolon and left parenthesis. The later hierarchical-menu escape character is absent."
+    },
+    {
+      "start_address": "0x412a71",
+      "end_address_exclusive": "0x412a76",
+      "length": 5,
+      "description": "StyleChrTab retains the original BIUOS string for bold, italic, underline, outline and shadow. No alignment byte separates the two tables or follows the complete twelve-byte table area."
+    }
+  ],
+  "symbols": {
+    "InitMenus": "0x412198",
+    "CalcMBHeight": "0x4121be",
+    "GetMenuInfo": "0x4121ce",
+    "NewMList": "0x4121e6",
+    "InitMList": "0x4121ea",
+    "ClearMListLoop": "0x4121f6",
+    "ClearMenuBar": "0x4121fe",
+    "InsertMenu": "0x41220e",
+    "InsertBefore": "0x412252",
+    "ShiftMenuRight": "0x412258",
+    "InstallMenu": "0x41226e",
+    "DoneInsert": "0x412280",
+    "SixBytExit": "0x412284",
+    "GetIndex": "0x41228a",
+    "GILoop": "0x412296",
+    "NextIndex": "0x4122a4",
+    "NoIndex": "0x4122a8",
+    "GotIndex": "0x4122aa",
+    "DeleteMenu": "0x4122ae",
+    "DeleteMiddle": "0x4122c6",
+    "DeleteLoop": "0x4122d2",
+    "DeleteDone": "0x4122e8",
+    "TwoBytExit": "0x4122ea",
+    "GetTitleRect": "0x4122f0",
+    "LastTitleRight": "0x412310",
+    "ExtendTitleRight": "0x412314",
+    "DrawMBar": "0x412318",
+    "DrawMenuBar": "0x412350",
+    "DrawTitleLoop": "0x41237a",
+    "GrayMenuTitle": "0x4123aa",
+    "NextTitle": "0x4123b4",
+    "DrawBarDone": "0x4123ba",
+    "GrayTitle": "0x4123c4",
+    "HiliteMenu": "0x4123da",
+    "HLDone": "0x4123fa",
+    "EnableItem": "0x412404",
+    "EnableCom": "0x412408",
+    "EnableFetch": "0x412410",
+    "DisableItem": "0x412420",
+    "GetMenuPtr": "0x412426",
+    "MenuPtrDone": "0x412432",
+    "GetA0List": "0x412434",
+    "ChkA0List": "0x412438",
+    "GetA1List": "0x412440",
+    "ListPurged": "0x41244c",
+    "GetNInvert": "0x412450",
+    "InvertTitle": "0x412456",
+    "InvertTitleDone": "0x41246c",
+    "MenuSelect": "0x41246e",
+    "MSLoop": "0x4124a2",
+    "FindTitle": "0x4124b0",
+    "FindTitleLoop": "0x4124bc",
+    "ChgMenu": "0x4124c6",
+    "NewSelection": "0x4124de",
+    "MenuSizeReady": "0x4124fa",
+    "SetMenuRect": "0x41251a",
+    "PullDownMenu": "0x41254a",
+    "SameMenu": "0x41254e",
+    "ChooseIfMenu": "0x412550",
+    "NextMouse": "0x41257a",
+    "NoMenuHook": "0x412594",
+    "MouseUp": "0x412598",
+    "NoFlash": "0x4125a2",
+    "SetTheMenu": "0x4125b2",
+    "DoneMS": "0x4125c0",
+    "DoneMSelect": "0x4125c6",
+    "DoSysMenu": "0x4125d0",
+    "RestoreBits": "0x4125dc",
+    "RestoreByUpdate": "0x412600",
+    "CopyMenuBits": "0x412622",
+    "SaveBitsFailed": "0x412634",
+    "DrawTheMenu": "0x41263e",
+    "DrawMenuBody": "0x41269a",
+    "DrawMenuDone": "0x4126e2",
+    "DrawMenuShadow": "0x4126e8",
+    "GetTheMProc": "0x412710",
+    "MProcDone": "0x412726",
+    "NoMenuDef": "0x412728",
+    "UnlockMProc": "0x412730",
+    "UnlkMDef": "0x412734",
+    "UnlkMDefDone": "0x412740",
+    "FlashFeedback": "0x412742",
+    "FlashLoop": "0x412758",
+    "FlashDone": "0x412766",
+    "FullClip": "0x41276a",
+    "CallChoose": "0x412776",
+    "ChooseDelay": "0x412796",
+    "GetMenuBar": "0x41279e",
+    "CopyMList": "0x4127ac",
+    "SetMenuBar": "0x4127b2",
+    "DisposeMenu": "0x4127c2",
+    "DisposeRAMMenu": "0x4127d2",
+    "DisposeDone": "0x4127d4",
+    "FlashMenuBar": "0x4127d8",
+    "FlashBarDone": "0x412800",
+    "FlashWholeBar": "0x41280e",
+    "GetItemRecord": "0x412830",
+    "DoItem": "0x412834",
+    "GetILoop": "0x41283e",
+    "NoItem": "0x41284c",
+    "GotItem": "0x412856",
+    "SetItemProperty": "0x412862",
+    "TwoParmExit": "0x412882",
+    "GetItemProperty": "0x412888",
+    "TenBytExit": "0x4128a4",
+    "GetItemIcon": "0x4128ac",
+    "SetItemIcon": "0x4128b0",
+    "GetItemStyle": "0x4128b4",
+    "SetItemStyle": "0x4128b8",
+    "GetItemMark": "0x4128bc",
+    "SetItemMark": "0x4128c0",
+    "CheckItem": "0x4128c4",
+    "ClearCheck": "0x4128d2",
+    "UpChar": "0x4128d8",
+    "MenuKey": "0x4128e4",
+    "KeyMenuLoop": "0x4128f6",
+    "KeyItemLoop": "0x412906",
+    "NextKeyItem": "0x412922",
+    "NextKeyMenu": "0x412926",
+    "MenuKeyDone": "0x41292e",
+    "KeyMatch": "0x412936",
+    "SysMenuKey": "0x412956",
+    "GetItem": "0x412960",
+    "DoneGI": "0x41297c",
+    "NoItem1": "0x412980",
+    "DirtyMenuSize": "0x412984",
+    "CalcMenuSize": "0x412994",
+    "OneParmExit": "0x4129b6",
+    "ItemEnabled": "0x4129ba",
+    "ItemEnabledDone": "0x4129c8",
+    "NewMenu": "0x4129ca",
+    "CopyMenuTitle": "0x412a0e",
+    "AppendMenu": "0x412a1a",
+    "InsMenuItem": "0x412a22",
+    "AddString": "0x412a44",
+    "APLoop": "0x412a4c",
+    "InitItem": "0x412a60",
+    "MCharTable": "0x412a6a",
+    "StyleChrTab": "0x412a71",
+    "AppendChar": "0x412a76",
+    "CheckStyle": "0x412a88",
+    "StyleLoop": "0x412a90",
+    "AddToStyle": "0x412a9c",
+    "UpdateProp": "0x412aa6",
+    "NormState": "0x412ab4",
+    "NSLoop": "0x412abc",
+    "SpecialChar": "0x412ad8",
+    "CheckTerm": "0x412ae6",
+    "CloseItem": "0x412af0",
+    "CloseDone": "0x412afc",
+    "GetGoodIndex": "0x412afe",
+    "GoodIndexDone": "0x412b10",
+    "InsertTheItem": "0x412b12",
+    "BuildItemData": "0x412b24",
+    "CopyProperties": "0x412b36",
+    "InsertDone": "0x412b66",
+    "InsertEnableBit": "0x412b68",
+    "GetMHandle": "0x412b7e",
+    "GetMHandleDone": "0x412b9a",
+    "DelMenuItem": "0x412b9e",
+    "SetItem": "0x412bd0",
+    "SICommon": "0x412bf0",
+    "SetIDone": "0x412c0e",
+    "SetMenuFlash": "0x412c16",
+    "AddResMenu": "0x412c20",
+    "InsrtResMenu": "0x412c28",
+    "SetUpResMenu": "0x412c38",
+    "ResMenuPass": "0x412c5c",
+    "ResMenuLoop": "0x412c6c",
+    "CompareResName": "0x412ca6",
+    "InsertResName": "0x412cc8",
+    "NextResource": "0x412cd2",
+    "ResMenuPassDone": "0x412cd8",
+    "ResMenuDone": "0x412cec",
+    "CountMItems": "0x412cfc",
+    "CountMLoop": "0x412cfe",
+    "PlotIcon": "0x412d18",
+    "DoneIPlot": "0x412d50",
+    "MenuMgrEnd": "0x412d54"
+  },
+  "symbol_provenance": {
+    "description": "Public entry names agree with the reference labels, allowing established aliases such as DisposMenu and DisposeMenu. Surviving source labels identify related helpers and loops but do not establish their exact spelling in the lost 1985 revision. The original history names GetMenuInfo, GetNInvert and InvertTitle; the CallMDefProc contract names the three replaced definition helpers. Other restored labels describe their operations.",
+    "descriptive_labels": [
+      "NewMList",
+      "ClearMListLoop",
+      "InsertBefore",
+      "ShiftMenuRight",
+      "InstallMenu",
+      "DeleteMiddle",
+      "DeleteLoop",
+      "DeleteDone",
+      "LastTitleRight",
+      "ExtendTitleRight",
+      "DrawTitleLoop",
+      "GrayMenuTitle",
+      "NextTitle",
+      "DrawBarDone",
+      "GrayTitle",
+      "MenuPtrDone",
+      "InvertTitleDone",
+      "FindTitle",
+      "FindTitleLoop",
+      "NewSelection",
+      "MenuSizeReady",
+      "SetMenuRect",
+      "PullDownMenu",
+      "ChooseIfMenu",
+      "RestoreByUpdate",
+      "CopyMenuBits",
+      "SaveBitsFailed",
+      "DrawMenuBody",
+      "DrawMenuDone",
+      "DrawMenuShadow",
+      "MProcDone",
+      "UnlkMDefDone",
+      "ChooseDelay",
+      "CopyMList",
+      "DisposeRAMMenu",
+      "DisposeDone",
+      "FlashBarDone",
+      "ClearCheck",
+      "KeyMenuLoop",
+      "NextKeyItem",
+      "NextKeyMenu",
+      "MenuKeyDone",
+      "KeyMatch",
+      "SysMenuKey",
+      "OneParmExit",
+      "ItemEnabled",
+      "ItemEnabledDone",
+      "CopyMenuTitle",
+      "CheckStyle",
+      "StyleLoop",
+      "GoodIndexDone",
+      "BuildItemData",
+      "CopyProperties",
+      "GetMHandleDone",
+      "SetUpResMenu",
+      "ResMenuPass",
+      "ResMenuLoop",
+      "CompareResName",
+      "InsertResName",
+      "NextResource",
+      "ResMenuPassDone",
+      "ResMenuDone",
+      "MenuMgrEnd"
+    ],
+    "reference_user_labels": {
+      "0x412198": [
+        "InitMenus"
+      ],
+      "0x4121ea": [
+        "InitMList?"
+      ],
+      "0x4121fe": [
+        "ClearMenuBar"
+      ],
+      "0x41220e": [
+        "InsertMenu"
+      ],
+      "0x412280": [
+        "@DoneInsert"
+      ],
+      "0x412284": [
+        "SixBytExit"
+      ],
+      "0x4122ae": [
+        "DeleteMenu"
+      ],
+      "0x412318": [
+        "??"
+      ],
+      "0x412350": [
+        "DrawMenuBar"
+      ],
+      "0x4123da": [
+        "HiliteMenu"
+      ],
+      "0x412404": [
+        "EnableItem"
+      ],
+      "0x412408": [
+        "EnableCom"
+      ],
+      "0x412410": [
+        "EnableFetch"
+      ],
+      "0x412420": [
+        "DisableItem"
+      ],
+      "0x412426": [
+        "GetMenuPtr"
+      ],
+      "0x412434": [
+        "GetA0List"
+      ],
+      "0x412438": [
+        "ChkA0List"
+      ],
+      "0x412440": [
+        "GetA1List"
+      ],
+      "0x41244c": [
+        "ListPurged"
+      ],
+      "0x41246e": [
+        "MenuSelect"
+      ],
+      "0x412710": [
+        "CallMDefProc??"
+      ],
+      "0x412728": [
+        "NoMenuDef"
+      ],
+      "0x41279e": [
+        "GetMenuBar"
+      ],
+      "0x4127b2": [
+        "SetMenuBar"
+      ],
+      "0x4127c2": [
+        "DisposMenu"
+      ],
+      "0x4127d8": [
+        "FlashMenuBar"
+      ],
+      "0x4128ac": [
+        "GetItmIcon"
+      ],
+      "0x4128b0": [
+        "SetItmIcon"
+      ],
+      "0x4128b4": [
+        "GetItmStyle"
+      ],
+      "0x4128b8": [
+        "SetItmStyle"
+      ],
+      "0x4128bc": [
+        "GetItmMark"
+      ],
+      "0x4128c0": [
+        "SetItmMark"
+      ],
+      "0x4128c4": [
+        "CheckItem"
+      ],
+      "0x4128e4": [
+        "MenuKey"
+      ],
+      "0x412960": [
+        "GetItem"
+      ],
+      "0x412994": [
+        "CalcMenuSize"
+      ],
+      "0x4129ca": [
+        "NewMenu"
+      ],
+      "0x412a1a": [
+        "AppendMenu"
+      ],
+      "0x412a22": [
+        "InsMenuItem"
+      ],
+      "0x412a6a": [
+        "MCHARTABLE"
+      ],
+      "0x412a71": [
+        "STYLECHRTAB"
+      ],
+      "0x412b7e": [
+        "GetMHandle"
+      ],
+      "0x412b9e": [
+        "DelMenuItem"
+      ],
+      "0x412bd0": [
+        "SetItem"
+      ],
+      "0x412c16": [
+        "SetMFlash"
+      ],
+      "0x412c20": [
+        "AddResMenu"
+      ],
+      "0x412c28": [
+        "InsertResMenu"
+      ],
+      "0x412cfc": [
+        "CountMItems"
+      ],
+      "0x412d18": [
+        "PlotIcon"
+      ]
+    },
+    "source_label_references": {
+      "InitMenus": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 437
+        }
+      ],
+      "CalcMBHeight": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 617
+        }
+      ],
+      "GetMenuInfo": [
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 558
+        }
+      ],
+      "InitMList": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 513
+        }
+      ],
+      "ClearMenuBar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 568
+        }
+      ],
+      "InsertMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 842
+        }
+      ],
+      "SixBytExit": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1042
+        }
+      ],
+      "GetIndex": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 805
+        }
+      ],
+      "GILoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 823
+        }
+      ],
+      "NextIndex": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 829
+        }
+      ],
+      "NoIndex": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 834
+        }
+      ],
+      "GotIndex": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 838
+        }
+      ],
+      "DeleteMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 681
+        }
+      ],
+      "TwoBytExit": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 753
+        }
+      ],
+      "GetTitleRect": [
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 1881
+        }
+      ],
+      "DrawMBar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1047
+        }
+      ],
+      "DrawMenuBar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1058
+        }
+      ],
+      "HiliteMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1169
+        }
+      ],
+      "HLDone": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1227
+        }
+      ],
+      "EnableItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1241
+        }
+      ],
+      "EnableCom": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1255
+        }
+      ],
+      "EnableFetch": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1265
+        }
+      ],
+      "DisableItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1273
+        }
+      ],
+      "GetMenuPtr": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1291
+        }
+      ],
+      "GetA0List": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1304
+        }
+      ],
+      "GetA1List": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1320
+        }
+      ],
+      "ListPurged": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1327
+        }
+      ],
+      "MenuSelect": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1378
+        }
+      ],
+      "MSLoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1541
+        }
+      ],
+      "ChgMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1566
+        }
+      ],
+      "SameMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1573
+        }
+      ],
+      "NextMouse": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1586
+        }
+      ],
+      "NoFlash": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1644
+        }
+      ],
+      "DoneMS": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1669
+        }
+      ],
+      "DoneMSelect": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1676
+        }
+      ],
+      "DoSysMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1706
+        }
+      ],
+      "RestoreBits": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2522
+        }
+      ],
+      "DrawTheMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2643
+        }
+      ],
+      "FlashFeedback": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2814
+        }
+      ],
+      "FlashLoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2833
+        }
+      ],
+      "FlashDone": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2845
+        }
+      ],
+      "FullClip": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2849
+        },
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 489
+        }
+      ],
+      "CallChoose": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2792
+        }
+      ],
+      "GetMenuBar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2883
+        }
+      ],
+      "SetMenuBar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2967
+        }
+      ],
+      "DisposeMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3028
+        }
+      ],
+      "FlashMenuBar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1101
+        }
+      ],
+      "GetItemRecord": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3224
+        },
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 2364
+        }
+      ],
+      "DoItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3235
+        }
+      ],
+      "GetILoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3242
+        },
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 2376
+        }
+      ],
+      "NoItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3254
+        },
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 2388
+        }
+      ],
+      "GotItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3263
+        },
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 2398
+        }
+      ],
+      "SetItemProperty": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3196
+        }
+      ],
+      "TwoParmExit": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3219
+        }
+      ],
+      "GetItemProperty": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3172
+        }
+      ],
+      "TenBytExit": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3191
+        }
+      ],
+      "GetItemIcon": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3102
+        }
+      ],
+      "SetItemIcon": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3142
+        }
+      ],
+      "SetItemStyle": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3162
+        }
+      ],
+      "GetItemMark": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3092
+        }
+      ],
+      "SetItemMark": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3132
+        }
+      ],
+      "CheckItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3077
+        }
+      ],
+      "UpChar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3671
+        }
+      ],
+      "MenuKey": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3684
+        }
+      ],
+      "KeyItemLoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3743
+        }
+      ],
+      "GetItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3952
+        }
+      ],
+      "DoneGI": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3971
+        }
+      ],
+      "NoItem1": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3977
+        }
+      ],
+      "DirtyMenuSize": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 1986
+        }
+      ],
+      "CalcMenuSize": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 2001
+        }
+      ],
+      "NewMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 3981
+        }
+      ],
+      "AppendMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4049
+        }
+      ],
+      "InsMenuItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4061
+        }
+      ],
+      "AddString": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4091
+        }
+      ],
+      "APLoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4111
+        }
+      ],
+      "InitItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4136
+        }
+      ],
+      "MCharTable": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4178
+        }
+      ],
+      "StyleChrTab": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4192
+        }
+      ],
+      "AppendChar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4146
+        }
+      ],
+      "AddToStyle": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4195
+        }
+      ],
+      "UpdateProp": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4199
+        }
+      ],
+      "NormState": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4213
+        }
+      ],
+      "NSLoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4218
+        }
+      ],
+      "SpecialChar": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4238
+        }
+      ],
+      "CheckTerm": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4252
+        }
+      ],
+      "CloseItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4261
+        }
+      ],
+      "CloseDone": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4273
+        }
+      ],
+      "GetGoodIndex": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4276
+        }
+      ],
+      "InsertTheItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4293
+        }
+      ],
+      "InsertDone": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4345
+        }
+      ],
+      "InsertEnableBit": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4349
+        }
+      ],
+      "GetMHandle": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4368
+        }
+      ],
+      "DelMenuItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4396
+        }
+      ],
+      "SetItem": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4444
+        }
+      ],
+      "SICommon": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4463
+        }
+      ],
+      "SetIDone": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4486
+        }
+      ],
+      "SetMenuFlash": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4491
+        }
+      ],
+      "AddResMenu": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4502
+        }
+      ],
+      "CountMItems": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4520
+        }
+      ],
+      "CountMLoop": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4528
+        }
+      ],
+      "PlotIcon": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4546
+        }
+      ],
+      "DoneIPlot": [
+        {
+          "path": "Toolbox/MenuMgr/MenuMgr.a",
+          "line": 4578
+        },
+        {
+          "path": "Toolbox/MenuMgr/StandardMBDF.a",
+          "line": 2976
+        }
+      ]
+    }
+  },
+  "external_references": [
+    {
+      "name": "SetWPort",
+      "address": "0x4114ce",
+      "description": "The Window Manager helper installs its port and preserves the caller port in D4."
+    },
+    {
+      "name": "RestorePort",
+      "address": "0x4114d8",
+      "description": "The Window Manager helper restores the port from D4."
+    },
+    {
+      "name": "WMgrGray",
+      "address": "0x411e52",
+      "description": "The Window Manager pattern supplies gray disabled-title drawing."
+    }
+  ],
+  "changes": [
+    {
+      "kind": "history",
+      "description": "Retained the original header and Macintosh Plus modification history through November 2, 1985. Original comments remain exact where their operations survive. Later inline revision tags identify their surviving source context and do not date the ROM instructions. Comments about removed color, hierarchical, system-menu and help-menu paths were omitted."
+    },
+    {
+      "kind": "menu_list",
+      "description": "Restored the fixed 102-byte menu list: a six-byte header followed by sixteen six-byte entries. InitMList clears the list in place. InsertMenu measures the title in system font and plain face, adds thirteen pixels, shifts entries and adjusts their left coordinates. DeleteMenu shifts entries back and reduces lastRight. GetMenuBar and SetMenuBar copy the whole fixed list."
+    },
+    {
+      "kind": "menu_bar",
+      "description": "Restored CalcMBHeight as ascent plus descent plus five pixels. GetMenuInfo saves D4 and calls SetWPort and RestorePort around GetFontInfo. DrawMBar clips to the bar, erases its rounded top and draws the separator line. DrawMenuBar draws titles directly and uses GrayTitle or InvertTitle as needed. Removed the later menu-bar definition procedure and color tables."
+    },
+    {
+      "kind": "title_hiliting",
+      "description": "Restored GetNInvert and InvertTitle, with a title rectangle extending one pixel left and four pixels right. HiliteMenu inverts the old title and the requested title. FlashMenuBar saves its clip region, directly inverts a title or the whole bar, and restores the clip. The whole-bar path retains its fixed twenty-pixel height."
+    },
+    {
+      "kind": "selection",
+      "description": "Restored the forty-byte MenuSelect frame and direct menu-title hit testing. D3 holds the mouse point, D4 the previous menu-list index, D5 the current index and D6 the menu edge. A changed menu restores the old bits, checks dirty dimensions, positions the menu rectangle and calls MBarHook. The selection loop calls the menu definition, waits for mouse release, reads the next mouse point and calls MenuHook."
+    },
+    {
+      "kind": "saved_bits",
+      "description": "Restored inline bitmap allocation and CopyBits calls in DrawTheMenu. The saved rectangle includes the border and shadow but excludes the menu bar. Allocation failure records the rectangle in SaveRect; RestoreBits then asks PaintBehind to redraw it through a temporary region. A successful allocation uses SavedHandle and the local bitmap. Removed later multi-menu save stacks and definition-procedure wrappers."
+    },
+    {
+      "kind": "definition_calls",
+      "description": "Restored GetTheMProc, UnlockMProc and UnlkMDef. GetTheMProc loads the definition resource, directly sets its handle lock bit and returns its pointer. The unlock helpers directly clear that bit. CalcMenuSize pushes the size message and twelve bytes of unused parameters. CallChoose retains its busy wait against Ticks instead of the later Delay trap."
+    },
+    {
+      "kind": "item_access",
+      "description": "Retained the compact item-record search and shared property access paths. Restored the older register and stack layouts for MenuKey and menu-bar operations. Removed hierarchical searches, system-menu partitions, color records, script-manager calls and later parameter checks."
+    },
+    {
+      "kind": "item_parser",
+      "description": "Restored the original byte loop in AddString from instructions retained as comments in the later source. The ROM uses the original 280-byte item frame and seven-character syntax table. Four item-property bytes follow each string. The source preserves the table declarations, including the quoted semicolon, and removes the later hierarchical escape character and multibyte parser."
+    },
+    {
+      "kind": "item_edits",
+      "description": "Retained shared InsertTheItem, Munger calls, item-property copying, enable-bit rotations and DirtyMenuSize calls. Removed later checks for item numbers above 31 and the later nil-pointer guards. CountMItems retains its repeated GetItemRecord search, including the original comment about its cost."
+    },
+    {
+      "kind": "resource_names",
+      "description": "Restored InsrtResMenu after the AddResMenu wrapper. It saves ResLoad, disables automatic resource loading, enumerates names, skips empty names and names beginning with a period or percent sign, and inserts names in sorted order without duplicates. The comparison uses trap $A050, named RelString in the interface. FONT requests first enumerate FOND, then FONT; direct FOND requests also continue with FONT. It restores ResLoad after recalculating the menu size."
+    },
+    {
+      "kind": "icon",
+      "description": "Retained PlotIcon through the end of the module. It constructs a 32-by-32 monochrome bitmap in IconBitmap and calls CopyBits into the current port."
+    },
+    {
+      "kind": "assembly",
+      "description": "Made branch widths, instruction sizes and PC addressing explicit where needed to reproduce the ROM. Restored low-memory, menu-field and stack-frame equates, and bound Window Manager helpers to their ROM addresses. Trap calls remain named OPWORD declarations. Only the two character tables use data directives; no instruction is a raw byte stub."
+    }
+  ],
+  "historical_evidence": [
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.a",
+      "source_lines": [
+        251,
+        294
+      ],
+      "description": "The Macintosh Plus history records variable system-font sizing, MDEF 0 from the ROM map, sorted resource names, shared insertion code, duplicate suppression, FONT/FOND handling, dirty dimensions, the allocation fallback and clip preservation."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.a",
+      "source_lines": [
+        295,
+        300
+      ],
+      "description": "The August 1983 history names GetNInvert and InvertTitle and records that SaveBits became inline."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.a",
+      "source_lines": [
+        131,
+        133
+      ],
+      "description": "The December 1989 history records removal of GetMenuInfo and rearrangement of procedures. The related helper survives in StandardMBDF.a."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.a",
+      "source_lines": [
+        2740,
+        2746
+      ],
+      "description": "The CallMDefProc contract explicitly names the older GetTheMProc, UnlockMProc and UnlkMDef helpers that it replaces."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.a",
+      "source_lines": [
+        4099,
+        4130
+      ],
+      "description": "The later byte-parser replacement leaves the original counter initialization, length fetch, count adjustment and DBRA loop as comments. The ROM restores those operations."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.a",
+      "source_lines": [
+        44,
+        45
+      ],
+      "description": "The June 1992 history records removal of InsrtResMenu in favor of MenuMgr.c. The ROM restores the missing assembly body."
+    },
+    {
+      "path": "Toolbox/MenuMgr/StandardMBDF.a",
+      "source_lines": [
+        539,
+        568
+      ],
+      "description": "HeightBar and GetMenuInfo retain the related font-info computation and contract. The ROM uses five pixels of extra height and omits the later leading adjustment."
+    },
+    {
+      "path": "Toolbox/MenuMgr/MenuMgr.c",
+      "source_lines": [
+        141,
+        217
+      ],
+      "description": "The later C routine retains resource-name filtering, duplicate suppression, font passes and ResLoad restoration. Script filtering and newer insertion behavior are absent from the ROM."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x412728",
+      "description": "NoMenuDef removes twelve argument bytes, although normal definition calls pass eighteen. This unusual cleanup is preserved without inferring a correction."
+    },
+    {
+      "address": "0x412888",
+      "description": "GetItemProperty clears the first byte of the result and writes a found property into the next byte. If the item is missing, the second byte remains unchanged. The original comment that assumes a zero result remains exact."
+    },
+    {
+      "address": "0x412a44",
+      "description": "AddString enters the byte-processing loop before its first DBRA check. A zero-length string therefore does not take an early exit. The reconstruction retains this behavior."
+    },
+    {
+      "address": "0x412404",
+      "description": "EnableItem and DisableItem pass the supplied item number directly to a register bit operation. The 68000 uses its low five bits; the later greater-than-31 guard is absent."
+    },
+    {
+      "address": "0x412b68",
+      "description": "InsertEnableBit and DelMenuItem retain their original rotations without validating the item range. DelMenuItem changes the enable flags before searching for the item."
+    },
+    {
+      "address": "0x41276a",
+      "description": "FullClip replaces the Window Manager clip with its port rectangle. FlashMenuBar separately saves and restores the prior clip."
+    },
+    {
+      "address": "0x412cfc",
+      "description": "CountMItems repeatedly searches from the beginning of the menu rather than scanning once. No performance correction was applied."
+    }
+  ],
+  "limitations": [
+    "The exact Macintosh Plus source revision is unavailable. This reconstruction combines surviving source operations and comments with instruction restoration from the complete ROM span.",
+    "The original names of several local branches and deleted helpers remain uncertain. The evidence distinguishes descriptive labels from surviving source names and reference labels.",
+    "The later C resource-insertion routine establishes related behavior. Its source cannot establish the original assembly spelling or instruction order.",
+    "Verification checks every code and data byte and all recorded labels. It does not execute menu drawing, mouse tracking or resource loading."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-menumgr.py",
+    "method": "Translated the final MPW source, assembled for the 68000, linked at $412198, rejected unresolved relocations and compared every emitted byte with the ROM. Checked all recorded labels.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 3004,
+    "instruction_count": 1082,
+    "matching_reference_instruction_rows": 1081,
+    "reference_decode_gap": {
+      "address": "0x4128de",
+      "description": "The reference instruction table omits the $A254 UprString trap variant. The source names it UprStringMarks from the interface flag and preserves its exact opcode."
+    },
+    "data_bytes": 12,
+    "entry_points_checked": 179,
+    "preserved_original_comment_occurrences": 904,
+    "authored_comment_lines": 38,
+    "result": {
+      "name": "menumgr",
+      "source": "Reconstruction/Source/Toolbox/MenuMgr.a",
+      "source_sha256": "a8f3b3f00075436871279f506ab79127b96cf797d983111bec42cfbb78e2f854",
+      "start": "0x412198",
+      "end_exclusive": "0x412d54",
+      "bytes": 3004,
+      "sha256": "d67f96a548b88938206260699aa7cee5e7afbd3b58b795fc2f08b75e517733de",
+      "matches_rom": true,
+      "source_dependencies": [
+        {
+          "path": "Reconstruction/Source/Toolbox/MenuMgr.a",
+          "sha256": "a8f3b3f00075436871279f506ab79127b96cf797d983111bec42cfbb78e2f854"
+        }
+      ]
+    },
+    "prose_lint": {
+      "command": "vale /tmp/menumgr-authored.md",
+      "config": "/Users/james/.vale.ini",
+      "result": "0 errors, 0 warnings, 0 suggestions",
+      "scope": "Authored source comments and evidence prose. Preserved original comments were excluded."
+    }
+  },
+  "verifier_change": {
+    "description": "Added quote-aware comment stripping throughout the shared MPW parser, macro expansion and translation so the original quoted semicolon table entry remains active. A focused assembly test covers a quoted semicolon, doubled quote and actual trailing comment. All 21 verifier tests pass.",
+    "paths": [
+      "Reconstruction/Tools/verify.py",
+      "Reconstruction/Tools/test_verify.py"
+    ],
+    "command": "python3 -m unittest discover -s Reconstruction/Tools -p 'test_*.py'"
+  },
+  "integration_manifest": {
+    "name": "menumgr",
+    "source": "Reconstruction/Source/Toolbox/MenuMgr.a",
+    "start": "0x412198",
+    "end_exclusive": "0x412d54",
+    "entry_points": {
+      "InitMenus": "0x412198",
+      "CalcMBHeight": "0x4121be",
+      "GetMenuInfo": "0x4121ce",
+      "NewMList": "0x4121e6",
+      "InitMList": "0x4121ea",
+      "ClearMListLoop": "0x4121f6",
+      "ClearMenuBar": "0x4121fe",
+      "InsertMenu": "0x41220e",
+      "InsertBefore": "0x412252",
+      "ShiftMenuRight": "0x412258",
+      "InstallMenu": "0x41226e",
+      "DoneInsert": "0x412280",
+      "SixBytExit": "0x412284",
+      "GetIndex": "0x41228a",
+      "GILoop": "0x412296",
+      "NextIndex": "0x4122a4",
+      "NoIndex": "0x4122a8",
+      "GotIndex": "0x4122aa",
+      "DeleteMenu": "0x4122ae",
+      "DeleteMiddle": "0x4122c6",
+      "DeleteLoop": "0x4122d2",
+      "DeleteDone": "0x4122e8",
+      "TwoBytExit": "0x4122ea",
+      "GetTitleRect": "0x4122f0",
+      "LastTitleRight": "0x412310",
+      "ExtendTitleRight": "0x412314",
+      "DrawMBar": "0x412318",
+      "DrawMenuBar": "0x412350",
+      "DrawTitleLoop": "0x41237a",
+      "GrayMenuTitle": "0x4123aa",
+      "NextTitle": "0x4123b4",
+      "DrawBarDone": "0x4123ba",
+      "GrayTitle": "0x4123c4",
+      "HiliteMenu": "0x4123da",
+      "HLDone": "0x4123fa",
+      "EnableItem": "0x412404",
+      "EnableCom": "0x412408",
+      "EnableFetch": "0x412410",
+      "DisableItem": "0x412420",
+      "GetMenuPtr": "0x412426",
+      "MenuPtrDone": "0x412432",
+      "GetA0List": "0x412434",
+      "ChkA0List": "0x412438",
+      "GetA1List": "0x412440",
+      "ListPurged": "0x41244c",
+      "GetNInvert": "0x412450",
+      "InvertTitle": "0x412456",
+      "InvertTitleDone": "0x41246c",
+      "MenuSelect": "0x41246e",
+      "MSLoop": "0x4124a2",
+      "FindTitle": "0x4124b0",
+      "FindTitleLoop": "0x4124bc",
+      "ChgMenu": "0x4124c6",
+      "NewSelection": "0x4124de",
+      "MenuSizeReady": "0x4124fa",
+      "SetMenuRect": "0x41251a",
+      "PullDownMenu": "0x41254a",
+      "SameMenu": "0x41254e",
+      "ChooseIfMenu": "0x412550",
+      "NextMouse": "0x41257a",
+      "NoMenuHook": "0x412594",
+      "MouseUp": "0x412598",
+      "NoFlash": "0x4125a2",
+      "SetTheMenu": "0x4125b2",
+      "DoneMS": "0x4125c0",
+      "DoneMSelect": "0x4125c6",
+      "DoSysMenu": "0x4125d0",
+      "RestoreBits": "0x4125dc",
+      "RestoreByUpdate": "0x412600",
+      "CopyMenuBits": "0x412622",
+      "SaveBitsFailed": "0x412634",
+      "DrawTheMenu": "0x41263e",
+      "DrawMenuBody": "0x41269a",
+      "DrawMenuDone": "0x4126e2",
+      "DrawMenuShadow": "0x4126e8",
+      "GetTheMProc": "0x412710",
+      "MProcDone": "0x412726",
+      "NoMenuDef": "0x412728",
+      "UnlockMProc": "0x412730",
+      "UnlkMDef": "0x412734",
+      "UnlkMDefDone": "0x412740",
+      "FlashFeedback": "0x412742",
+      "FlashLoop": "0x412758",
+      "FlashDone": "0x412766",
+      "FullClip": "0x41276a",
+      "CallChoose": "0x412776",
+      "ChooseDelay": "0x412796",
+      "GetMenuBar": "0x41279e",
+      "CopyMList": "0x4127ac",
+      "SetMenuBar": "0x4127b2",
+      "DisposeMenu": "0x4127c2",
+      "DisposeRAMMenu": "0x4127d2",
+      "DisposeDone": "0x4127d4",
+      "FlashMenuBar": "0x4127d8",
+      "FlashBarDone": "0x412800",
+      "FlashWholeBar": "0x41280e",
+      "GetItemRecord": "0x412830",
+      "DoItem": "0x412834",
+      "GetILoop": "0x41283e",
+      "NoItem": "0x41284c",
+      "GotItem": "0x412856",
+      "SetItemProperty": "0x412862",
+      "TwoParmExit": "0x412882",
+      "GetItemProperty": "0x412888",
+      "TenBytExit": "0x4128a4",
+      "GetItemIcon": "0x4128ac",
+      "SetItemIcon": "0x4128b0",
+      "GetItemStyle": "0x4128b4",
+      "SetItemStyle": "0x4128b8",
+      "GetItemMark": "0x4128bc",
+      "SetItemMark": "0x4128c0",
+      "CheckItem": "0x4128c4",
+      "ClearCheck": "0x4128d2",
+      "UpChar": "0x4128d8",
+      "MenuKey": "0x4128e4",
+      "KeyMenuLoop": "0x4128f6",
+      "KeyItemLoop": "0x412906",
+      "NextKeyItem": "0x412922",
+      "NextKeyMenu": "0x412926",
+      "MenuKeyDone": "0x41292e",
+      "KeyMatch": "0x412936",
+      "SysMenuKey": "0x412956",
+      "GetItem": "0x412960",
+      "DoneGI": "0x41297c",
+      "NoItem1": "0x412980",
+      "DirtyMenuSize": "0x412984",
+      "CalcMenuSize": "0x412994",
+      "OneParmExit": "0x4129b6",
+      "ItemEnabled": "0x4129ba",
+      "ItemEnabledDone": "0x4129c8",
+      "NewMenu": "0x4129ca",
+      "CopyMenuTitle": "0x412a0e",
+      "AppendMenu": "0x412a1a",
+      "InsMenuItem": "0x412a22",
+      "AddString": "0x412a44",
+      "APLoop": "0x412a4c",
+      "InitItem": "0x412a60",
+      "MCharTable": "0x412a6a",
+      "StyleChrTab": "0x412a71",
+      "AppendChar": "0x412a76",
+      "CheckStyle": "0x412a88",
+      "StyleLoop": "0x412a90",
+      "AddToStyle": "0x412a9c",
+      "UpdateProp": "0x412aa6",
+      "NormState": "0x412ab4",
+      "NSLoop": "0x412abc",
+      "SpecialChar": "0x412ad8",
+      "CheckTerm": "0x412ae6",
+      "CloseItem": "0x412af0",
+      "CloseDone": "0x412afc",
+      "GetGoodIndex": "0x412afe",
+      "GoodIndexDone": "0x412b10",
+      "InsertTheItem": "0x412b12",
+      "BuildItemData": "0x412b24",
+      "CopyProperties": "0x412b36",
+      "InsertDone": "0x412b66",
+      "InsertEnableBit": "0x412b68",
+      "GetMHandle": "0x412b7e",
+      "GetMHandleDone": "0x412b9a",
+      "DelMenuItem": "0x412b9e",
+      "SetItem": "0x412bd0",
+      "SICommon": "0x412bf0",
+      "SetIDone": "0x412c0e",
+      "SetMenuFlash": "0x412c16",
+      "AddResMenu": "0x412c20",
+      "InsrtResMenu": "0x412c28",
+      "SetUpResMenu": "0x412c38",
+      "ResMenuPass": "0x412c5c",
+      "ResMenuLoop": "0x412c6c",
+      "CompareResName": "0x412ca6",
+      "InsertResName": "0x412cc8",
+      "NextResource": "0x412cd2",
+      "ResMenuPassDone": "0x412cd8",
+      "ResMenuDone": "0x412cec",
+      "CountMItems": "0x412cfc",
+      "CountMLoop": "0x412cfe",
+      "PlotIcon": "0x412d18",
+      "DoneIPlot": "0x412d50",
+      "MenuMgrEnd": "0x412d54"
+    }
+  }
+}

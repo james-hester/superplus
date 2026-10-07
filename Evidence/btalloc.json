@@ -1,0 +1,241 @@
+{
+  "module": "BTALLOC",
+  "source": "Reconstruction/Source/OS/HFS/BTALLOC.a",
+  "originals": [
+    {
+      "path": "OS/HFS/BTALLOC.a",
+      "sha256": "5238de52c439ce42ad4e01a7658ff3e9ae96a3fd0d24ea7b29cec1a66fe260ad",
+      "line_ranges": [
+        [
+          1,
+          747
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/BTMAINT1.a",
+      "sha256": "511962668325f70d1faaa1e0207d8daa17c89ddbae07f67da985a61377a1695b",
+      "line_ranges": [
+        [
+          90,
+          120
+        ]
+      ],
+      "role": "RotateLT establishes the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          192,
+          192
+        ],
+        [
+          194,
+          194
+        ],
+        [
+          331,
+          331
+        ],
+        [
+          333,
+          335
+        ],
+        [
+          339,
+          339
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          362,
+          363
+        ],
+        [
+          368,
+          368
+        ],
+        [
+          383,
+          383
+        ],
+        [
+          385,
+          386
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          358,
+          358
+        ],
+        [
+          361,
+          361
+        ],
+        [
+          368,
+          368
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          181,
+          181
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          356,
+          358
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x406e38",
+      "end_exclusive": "0x40706c",
+      "rom_offset": "0x6e38",
+      "length": 564,
+      "sha256": "fdd4a69f39e850e13fb8263bb7657369d57527cb9e67dccc2955cb910c6998c7",
+      "start_label": "BTAlloc",
+      "end_label": "BTALLOCEnd",
+      "boundary_evidence": "The AllocNode vector begins at 0x406e38 after CalBTVars. RelMap returns at 0x40706a, before BTMAINT1 RotateLT at 0x40706c. The later UpdAltMDB body is absent."
+    }
+  ],
+  "entry_points": {
+    "BTAlloc": "0x406e38",
+    "AllocNode": "0x406e38",
+    "vAllocNode": "0x406e3e",
+    "ExtBTFile": "0x406ece",
+    "vExtBTFile": "0x406ed4",
+    "FreeNode": "0x406fb4",
+    "vFreeNode": "0x406fba",
+    "GetMap": "0x407006",
+    "RelMap": "0x407052",
+    "BTALLOCEnd": "0x40706c"
+  },
+  "integration_manifest": {
+    "name": "btalloc",
+    "source": "Reconstruction/Source/OS/HFS/BTALLOC.a",
+    "start": "0x406e38",
+    "end_exclusive": "0x40706c",
+    "entry_points": {
+      "BTAlloc": "0x406e38",
+      "AllocNode": "0x406e38",
+      "vAllocNode": "0x406e3e",
+      "ExtBTFile": "0x406ece",
+      "vExtBTFile": "0x406ed4",
+      "FreeNode": "0x406fb4",
+      "vFreeNode": "0x406fba",
+      "GetMap": "0x407006",
+      "RelMap": "0x407052",
+      "BTALLOCEnd": "0x40706c"
+    }
+  },
+  "changes": [
+    {
+      "location": "ExtBTFile",
+      "change": "Removed the InitNode error check added in December 1985, and the CacheFlag write and UpdAltMDB call added in January 1986.",
+      "evidence": "The InitNode call at 0x406f64 proceeds directly to saving A0 in A2. ExtBTFile returns after releasing the map through RelMap; it does not update the alternate MDB."
+    },
+    {
+      "location": "Module boundary and source configuration",
+      "change": "Omitted the later UpdAltMDB routine and its Sony configuration dependencies. Preserved the original header, applicable history, and comments for all retained routines.",
+      "evidence": "The ROM continues from RelMap directly into RotateLT. UpdAltMDB first appears in the source history in January 1986 and later gains the SuperDrive code and vector."
+    },
+    {
+      "location": "Surviving allocation bodies",
+      "change": "Retained the node bitmap allocation, extension, release, and map traversal bodies. Added required original equates and external addresses, with explicit PC-relative calls and word branches.",
+      "evidence": "All 564 bytes and 10 labels match. The branches at 0x406f32, 0x406fc4, 0x406ff8, and 0x407010 use word displacements."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "GetNode",
+      "address": "0x407402"
+    },
+    {
+      "name": "RelNode",
+      "address": "0x4075d0"
+    },
+    {
+      "name": "GetRecA",
+      "address": "0x40746e"
+    },
+    {
+      "name": "InitNode",
+      "address": "0x40748a"
+    },
+    {
+      "name": "ExtendFile",
+      "address": "0x405b7c"
+    },
+    {
+      "name": "MarkBlock",
+      "address": "0x4079f4"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x406e38, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "79a62e11257f8dcb8412a0f1eb3e2d5cb0f3e07bab00872563244a42dfef494d",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/BTALLOC.a",
+        "sha256": "79a62e11257f8dcb8412a0f1eb3e2d5cb0f3e07bab00872563244a42dfef494d"
+      }
+    ],
+    "assembled_length": 564,
+    "matched_bytes": 564,
+    "entry_points_checked": 10,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

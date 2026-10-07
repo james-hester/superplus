@@ -1,0 +1,299 @@
+; Copyright Apple Computer, Inc. 1984-1990
+; All Rights Reserved
+;----------
+; System Error, ROM Based Debugger Nub, MicroBug Equates
+;----------
+;-----
+; ROM based debugger nub
+;-----
+
+*R This file restores the Mac Plus serial ROM debugger
+*R at $4017E0. Its implementation does not survive in the released tree.
+*R HardwareEqu.a retains its variables, and StartErr.a retains its caller
+*R interface. The routine names below describe the decoded ROM behavior.
+*R The command offsets and SCC setup bytes form data tables.
+*R Evidence/rom-debugger.json records provenance and exact checks.
+
+		IMPORT GenExcps,WriteSCC ;]
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+
+
+ROMDebuggerModule PROC ;]
+        EXPORT ROMDebugger ;]
+
+*R Bit 15 identifies a Debugger trap call. A zero system-error value opens port A or B according to KeyMap bit 56. Other error values are sent to the connected debugger.
+
+ROMDebugger ;]
+        BCLR      #15,D0
+        BNE.S     SendDebugCommand ;]
+        TST.W     D0
+        BNE.W     SendSystemError ;]
+        MOVEQ     #1,D0
+        BTST      #0,KeyMap+7
+        BEQ.S     OpenSelectedPort ;]
+        MOVEQ     #2,D0
+
+OpenSelectedPort ;]
+        BRA.W     OpenDebugPort ;]
+
+SendMessage ;]
+        MOVE.W    D0,-(SP)
+        MOVE.B    D1,D0
+        BSR.W     SendByte
+        MOVE.W    (SP)+,D0
+        BRA.W     SendWord ;]
+
+;						Debugger (Arg1, Arg2, ... ArgN, SizeOfParams, CmdWord)
+;
+; 				SizeOfParams (INTEGER) is the number of bytes occupied by Arg1...ArgN
+; 				CmdWord (INTEGER) is the dispatch word (0...N) for the debugger
+;
+
+SendDebugCommand ;]
+        MOVE.L    A0,A2
+        MOVEQ     #2,D1
+        BSR.S     SendMessage ;]
+        MOVE.W    SECmdSize,D2 ;]
+        MOVE.W    D2,D0
+        BSR.W     SendWord ;]
+
+SendParameters ;]
+        SUBQ.W    #1,D2
+        BLT.S     ReceiveCommand ;]
+        MOVE.B    (A2)+,D0
+        BSR.W     SendByte
+        BRA.S     SendParameters ;]
+
+SendSystemError ;]
+        MOVEQ     #1,D1
+        BSR.S     SendMessage ;]
+
+MarkInitialized ;]
+        BSET      #6,MacJmp ;]
+
+*R The ROM reads a command byte and dispatches through six relative word offsets. It performs no command index bounds check.
+
+ReceiveCommand ;]
+        MOVEQ     #0,D1
+        BSR.W     ReceiveByte
+        LEA       COMMANDTABLE,A0 ;]
+        ADD.W     D0,D0
+        ADD.W     0(A0,D0.W),A0
+        JSR       (A0)
+        BRA.S     ReceiveCommand ;]
+
+CommandTable ;]
+        DC.W Acknowledge-CommandTable,ReadMemory-CommandTable ;]
+        DC.W WriteMemory-CommandTable,CallAddress-CommandTable ;]
+        DC.W InstallTrapHook-CommandTable,LeaveDebugger-CommandTable ;]
+
+Acknowledge ;]
+        MOVEQ     #0,D0
+        BRA.W     SendByte ;]
+
+ReadMemory ;]
+        BSR.W     ReceiveLong ;]
+        MOVE.L    D0,A2
+        BSR.W     ReceiveLong ;]
+        MOVE.L    D0,D2
+        MOVEQ     #3,D0
+        BSR.W     SendByte
+        MOVE.L    D2,D0
+        BSR.W     SendLong ;]
+
+ReadMemoryLoop ;]
+        SUBQ.L    #1,D2
+        BMI.S     ReadMemoryDone ;]
+        MOVE.B    (A2)+,D0
+        BSR.W     SendByte
+        BRA.S     ReadMemoryLoop ;]
+
+ReadMemoryDone ;]
+        RTS       
+
+WriteMemory ;]
+        BSR.W     ReceiveLong ;]
+        MOVE.L    D0,A2
+        BSR.W     ReceiveLong ;]
+        MOVE.L    D0,D2
+
+WriteMemoryLoop ;]
+        SUBQ.L    #1,D2
+        BMI.S     WriteMemoryDone ;]
+        BSR.W     ReceiveByte
+        MOVE.B    D0,(A2)+
+        BRA.S     WriteMemoryLoop ;]
+
+WriteMemoryDone ;]
+        RTS       
+
+CallAddress ;]
+        BSR.W     ReceiveLong ;]
+        MOVE.L    D0,A0
+        JMP       (A0)
+
+InstallTrapHook ;]
+        LEA       DEBUGTRAPHOOK,A0 ;]
+        MOVE.L    Line1010,rdAtrap ;]
+        MOVE.L    A0,Line1010
+        RTS       
+
+LeaveDebugger ;]
+        ADDQ.L    #4,SP
+        MOVEQ     #0,D0
+        RTS       
+
+*R These eight register-value pairs configure the selected SCC port.
+
+SerialConfig ;]
+        DC.B $04,$4C,$0E,$00,$0B,$50,$0C,$0A ;]
+        DC.B $0D,$00,$0E,$01,$03,$C1,$05,$6A ;]
+
+*R The ROM accepts a port whose parameter RAM use is free or asynchronous, then checks its current use, configures the SCC, and waits for a peer response.
+
+OpenDebugPort ;]
+        MOVE.W    D0,rdPort ;]
+        MOVE.B    SPConfig,D1
+        SUBQ.W    #1,D0
+        BNE.S     CheckPortConfig ;]
+        LSR.B     #4,D1
+
+CheckPortConfig ;]
+        ANDI.B    #15,D1
+        BEQ.S     CheckPortUse ;]
+        SUBQ.B    #useAsync,D1 ;]
+        BEQ.S     CheckPortUse ;]
+        MOVEQ     #-98,D0 ;]
+        BRA.S     OpenPortError ;]
+
+CheckPortUse ;]
+        LEA       PortAUse,A0 ;]
+        MOVE.B    0(A0,D0.W),D1
+        BCLR      #7,D1
+        BNE.S     ConfigurePort ;]
+        EORI.B    #useAsync,D1 ;]
+        BEQ.S     ConfigurePort ;]
+        MOVEQ     #-97,D0 ;]
+
+OpenPortError ;]
+        TST.W     D0
+        RTS       
+
+ConfigurePort ;]
+        BSR.S     SelectPort ;]
+        LEA       SERIALCONFIG,A2 ;]
+        MOVEQ     #16,D1
+        BSR.W     WriteSCC
+        MOVEQ     #0,D0
+        BSR.S     SendByte
+        MOVE.W    #-8192,D0 ;]
+
+WaitForPeer ;]
+        SUBQ.W    #1,D0
+        BNE.S     WaitForPeer ;]
+        MOVEQ     #-1,D1
+        BSR.S     ReceiveByte
+        BPL.W     MarkInitialized ;]
+        MOVEQ     #-8,D0
+        RTS       
+
+SendLong ;]
+        MOVE.L    D0,-(SP)
+        LSR.L     #8,D0
+        LSR.L     #8,D0
+        BSR.S     SendWord ;]
+        MOVE.L    (SP)+,D0
+
+SendWord ;]
+        MOVE.W    D0,-(SP)
+        LSR.W     #8,D0
+        BSR.S     SendByte
+        MOVE.W    (SP)+,D0
+
+*R The repeated MOVE.W (SP),(SP) instructions provide SCC access delays.
+
+SendByte
+        BSR.W     SelectPort ;]
+        MOVE.B    (A1),D1
+
+WaitToSend ;]
+        MOVE.W    (SP),(SP)
+        BTST      #2,(A1) ;]
+        BEQ.S     WaitToSend ;]
+        MOVE.B    D0,4(A0) ;]
+        RTS       
+
+SelectPort ;]
+        MOVE.L    SCCWr,A0
+        MOVE.L    SCCRd,A1
+        CMPI.W    #1,rdPort ;]
+        BNE.S     PortSelected ;]
+        ADDQ.L    #2,A0
+        ADDQ.L    #2,A1
+
+PortSelected ;]
+        RTS       
+
+ReceiveLong ;]
+        BSR.W     ReceiveWord ;]
+        LSL.L     #8,D0
+        LSL.L     #8,D0
+
+ReceiveWord ;]
+        BSR.W     ReceiveByte
+        LSL.W     #8,D0
+
+ReceiveByte
+        BSR.S     SelectPort ;]
+
+WaitToReceive ;]
+        BTST      #0,(A1)
+        BNE.S     ByteReady ;]
+        TST.B     D1
+        BEQ.S     WaitToReceive ;]
+        RTS       
+
+ByteReady ;]
+        MOVE.W    (SP),(SP)
+        MOVE.B    4(A1),D0 ;]
+        RTS       
+
+*R The hook compares the decoded trap number with rdLowTrap and rdHiTrap. Selected traps enter the Line-A exception stub at GenExcps+16. Other traps chain to rdAtrap.
+
+DebugTrapHook ;]
+        MOVEM.L   D0/A0,-(SP)
+        MOVE.L    10(SP),A0
+        MOVE.W    (A0),D0
+        BTST      #11,D0
+        BEQ.S     GetOSTrapNumber ;]
+        ANDI.W    #511,D0
+        BRA.S     CheckTrapRange ;]
+
+GetOSTrapNumber ;]
+        ANDI.W    #255,D0
+
+CheckTrapRange ;]
+        CMP.W     rdLowTrap,D0 ;]
+        BLT.S     ChainTrap ;]
+        CMP.W     rdHiTrap,D0 ;]
+        BGT.S     ChainTrap ;]
+        MOVEM.L   (SP)+,D0/A0
+        PEA       GenExcps ;]
+        ADDI.W    #16,(SP) ;]
+        RTS       
+
+ChainTrap ;]
+        MOVEM.L   (SP)+,D0/A0
+        MOVE.L    rdAtrap,-(SP) ;]
+        RTS       
+
+ROMDebuggerModuleEnd ;]
+        ENDPROC
+        END

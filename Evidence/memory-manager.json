@@ -1,0 +1,6616 @@
+{
+  "module": "OS/MemoryMgr/MemoryMgr.a",
+  "source_path": "Reconstruction/Source/OS/MemoryMgr/MemoryMgr.a",
+  "source_sha256": "778db93443dfc504cec839b6cbc3ae4a93f31e065284df7094040512150db2a9",
+  "upstream_sources": [
+    {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "sha256": "ca881c974b5f00cc9a0dac3b8ef7f520c6b1e3198343db9b3d6ce15a042db18f",
+      "retained_header_lines": [
+        1,
+        16
+      ],
+      "retained_history_lines": [
+        286,
+        400
+      ],
+      "retained_routine_comment_lines": {
+        "0x40fe76": [
+          700,
+          701,
+          702,
+          703,
+          704,
+          706,
+          707,
+          708,
+          709,
+          710,
+          711,
+          712,
+          713,
+          714,
+          715,
+          716
+        ],
+        "0x40fee4": [
+          813,
+          814,
+          815,
+          816,
+          824,
+          828,
+          829,
+          830,
+          831,
+          832,
+          833,
+          834,
+          835,
+          836,
+          837,
+          838,
+          839,
+          840,
+          841,
+          842,
+          843
+        ],
+        "0x40ff38": [
+          1138,
+          1139,
+          1140,
+          1141,
+          1142,
+          1143,
+          1144,
+          1145,
+          1146,
+          1147,
+          1148,
+          1149,
+          1150,
+          1151,
+          1152,
+          1153
+        ],
+        "0x40ffa4": [
+          1438,
+          1439,
+          1440,
+          1441,
+          1442,
+          1443,
+          1444
+        ],
+        "0x40ffaa": [
+          1459,
+          1460,
+          1461,
+          1462,
+          1463,
+          1464,
+          1465
+        ],
+        "0x40ffb0": [
+          1479,
+          1480,
+          1481,
+          1482,
+          1483,
+          1484,
+          1485,
+          1486,
+          1487
+        ],
+        "0x40ffbe": [
+          1479,
+          1480,
+          1481,
+          1482,
+          1483,
+          1484,
+          1485,
+          1486,
+          1487
+        ],
+        "0x40ffee": [
+          1591,
+          1592,
+          1593,
+          1594
+        ],
+        "0x41000a": [
+          1633,
+          1634,
+          1635,
+          1636,
+          1637,
+          1638,
+          1639,
+          1640,
+          1641
+        ],
+        "0x410014": [
+          1661,
+          1662,
+          1663,
+          1664,
+          1665
+        ],
+        "0x41001e": [
+          1680,
+          1681,
+          1682,
+          1683,
+          1684,
+          1685,
+          1686,
+          1687,
+          1688,
+          1689,
+          1690,
+          1691,
+          1692,
+          1693,
+          1694,
+          1697,
+          1698,
+          1699,
+          1700,
+          1701,
+          1702,
+          1703,
+          1704,
+          1705,
+          1706,
+          1707,
+          1708,
+          1709,
+          1710,
+          1711,
+          1712
+        ],
+        "0x41003c": [
+          1794,
+          1795,
+          1796,
+          1797,
+          1798,
+          1799,
+          1800,
+          1801,
+          1802,
+          1803,
+          1804
+        ],
+        "0x410070": [
+          1880,
+          1881,
+          1882,
+          1883,
+          1884,
+          1885,
+          1886,
+          1887,
+          1888
+        ],
+        "0x41007a": [
+          1902,
+          1903,
+          1904,
+          1905,
+          1906,
+          1907,
+          1908,
+          1909,
+          1912,
+          1913,
+          1914
+        ],
+        "0x41009e": [
+          1973,
+          1974,
+          1975,
+          1976
+        ],
+        "0x4100ae": [
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017
+        ],
+        "0x4100d6": [
+          2096,
+          2097,
+          2098,
+          2099,
+          2100,
+          2101,
+          2102,
+          2103
+        ],
+        "0x4100f2": [
+          2190,
+          2191,
+          2192,
+          2193,
+          2194,
+          2195,
+          2196,
+          2197
+        ],
+        "0x410108": [
+          2231,
+          2232,
+          2233,
+          2234,
+          2235,
+          2236,
+          2237
+        ],
+        "0x410112": [
+          2254,
+          2255,
+          2256,
+          2257,
+          2258,
+          2259,
+          2260,
+          2261,
+          2262,
+          2263,
+          2264,
+          2265,
+          2266,
+          2267,
+          2268,
+          2269,
+          2270,
+          2271,
+          2272,
+          2273,
+          2274,
+          2275,
+          2276
+        ],
+        "0x41011c": [
+          2292,
+          2293,
+          2294,
+          2295,
+          2296,
+          2297,
+          2298,
+          2299,
+          2300,
+          2301,
+          2302,
+          2303,
+          2304
+        ],
+        "0x41013a": [
+          2331,
+          2332,
+          2333,
+          2334,
+          2335,
+          2336,
+          2337,
+          2338,
+          2339,
+          2340
+        ],
+        "0x41014e": [
+          2362,
+          2363,
+          2364,
+          2365,
+          2366,
+          2367,
+          2368,
+          2369,
+          2370,
+          2371
+        ],
+        "0x410170": [
+          2428,
+          2429,
+          2430,
+          2431,
+          2432,
+          2433,
+          2434,
+          2435
+        ],
+        "0x410190": [
+          2470,
+          2471,
+          2472,
+          2473,
+          2474
+        ],
+        "0x41019c": [
+          2495,
+          2496,
+          2497,
+          2498,
+          2499,
+          2500,
+          2501,
+          2502,
+          2503,
+          2504,
+          2505,
+          2506,
+          2507,
+          2508,
+          2509,
+          2510,
+          2511,
+          2512,
+          2513,
+          2514
+        ],
+        "0x4101ae": [
+          2541,
+          2542,
+          2543,
+          2544,
+          2545,
+          2546,
+          2547,
+          2548,
+          2549,
+          2550,
+          2551,
+          2552,
+          2553
+        ],
+        "0x4101b6": [
+          2566,
+          2567,
+          2568,
+          2569,
+          2570,
+          2571,
+          2572,
+          2573
+        ],
+        "0x4101dc": [
+          2667,
+          2668,
+          2669,
+          2670,
+          2671,
+          2672,
+          2673
+        ],
+        "0x4101ec": [
+          2699,
+          2700,
+          2701,
+          2702,
+          2703,
+          2704,
+          2705,
+          2706,
+          2707,
+          2708,
+          2709,
+          2710,
+          2711,
+          2712,
+          2713,
+          2714,
+          2715,
+          2716,
+          2717,
+          2718,
+          2719,
+          2720
+        ],
+        "0x410230": [
+          2796,
+          2797,
+          2798,
+          2799,
+          2800,
+          2801,
+          2802,
+          2803,
+          2804,
+          2805
+        ],
+        "0x41023a": [
+          2820,
+          2821,
+          2822,
+          2823,
+          2824,
+          2825,
+          2826,
+          2827,
+          2828,
+          2829
+        ],
+        "0x410244": [
+          2851,
+          2852,
+          2853,
+          2854,
+          2855,
+          2856,
+          2857,
+          2858,
+          2859,
+          2860
+        ],
+        "0x41024e": [
+          2880,
+          2881,
+          2882,
+          2883,
+          2884,
+          2885,
+          2886,
+          2887,
+          2888,
+          2889,
+          2890
+        ],
+        "0x410274": [
+          3046,
+          3047,
+          3048,
+          3049,
+          3050,
+          3051,
+          3052,
+          3053,
+          3054
+        ],
+        "0x41028c": [
+          3103,
+          3104,
+          3105,
+          3106,
+          3107,
+          3108,
+          3109,
+          3110,
+          3111,
+          3112,
+          3113,
+          3114,
+          3115,
+          3116,
+          3117,
+          3118,
+          3119,
+          3120,
+          3121,
+          3122,
+          3123,
+          3124,
+          3125,
+          3126,
+          3127,
+          3128,
+          3129,
+          3130,
+          3131,
+          3132,
+          3133,
+          3134,
+          3135,
+          3136,
+          3137,
+          3138,
+          3139,
+          3140,
+          3141,
+          3142
+        ],
+        "0x4103dc": [
+          3662,
+          3663,
+          3664,
+          3665,
+          3666,
+          3667,
+          3668,
+          3669,
+          3670,
+          3671,
+          3672,
+          3673,
+          3674,
+          3675,
+          3676,
+          3677,
+          3678
+        ],
+        "0x410416": [
+          3742,
+          3743,
+          3744,
+          3745,
+          3746,
+          3747,
+          3748,
+          3749,
+          3750,
+          3751,
+          3752,
+          3753,
+          3754,
+          3755,
+          3756,
+          3757,
+          3758,
+          3759
+        ],
+        "0x410454": [
+          3836,
+          3837,
+          3838,
+          3839,
+          3840,
+          3841,
+          3842,
+          3843
+        ]
+      },
+      "retained_body_comment_lines": {
+        "0x40feb0": [
+          903
+        ],
+        "0x40fef4": [
+          957
+        ],
+        "0x40ff2e": [
+          1110,
+          1112,
+          1113,
+          1114,
+          1115
+        ],
+        "0x40ff50": [
+          1175,
+          1176
+        ],
+        "0x40ff76": [
+          1215
+        ],
+        "0x40ff94": [
+          1236
+        ],
+        "0x41005e": [
+          1837
+        ],
+        "0x410086": [
+          1933,
+          1934
+        ],
+        "0x410096": [
+          1942
+        ],
+        "0x4100f6": [
+          2210
+        ],
+        "0x4101c6": [
+          2604
+        ],
+        "0x410290": [
+          3194,
+          3195,
+          3196
+        ],
+        "0x4102a4": [
+          3217,
+          3218,
+          3219,
+          3220
+        ],
+        "0x4102ce": [
+          3242,
+          3243,
+          3244,
+          3245,
+          3246,
+          3247,
+          3248,
+          3249,
+          3250,
+          3251
+        ],
+        "0x410318": [
+          3289,
+          3290,
+          3291,
+          3292
+        ],
+        "0x41033a": [
+          3311,
+          3312,
+          3313,
+          3314,
+          3315,
+          3316
+        ],
+        "0x41034a": [
+          3325,
+          3326,
+          3327
+        ],
+        "0x410358": [
+          3335,
+          3336,
+          3337,
+          3338,
+          3339,
+          3340
+        ],
+        "0x410374": [
+          3356,
+          3357,
+          3358,
+          3359,
+          3360,
+          3361
+        ],
+        "0x41038a": [
+          3374
+        ],
+        "0x4103b0": [
+          3394,
+          3395,
+          3396,
+          3397,
+          3398,
+          3399,
+          3400,
+          3401,
+          3402
+        ],
+        "0x41043e": [
+          3782,
+          3783,
+          3784,
+          3785
+        ]
+      }
+    }
+  ],
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        524,
+        529,
+        593,
+        610,
+        611,
+        617,
+        618,
+        619,
+        620,
+        621,
+        622,
+        623,
+        794,
+        795,
+        1010,
+        1042,
+        1180,
+        1305,
+        1309,
+        1326,
+        1328,
+        1329,
+        1330,
+        1331,
+        1332,
+        1342,
+        1346,
+        1347,
+        1352,
+        1357,
+        1365
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "copied_lines": [
+        50,
+        298
+      ]
+    },
+    {
+      "path": "Internal/Asm/InternalOnlyEqu.a",
+      "sha256": "2eab90672f1b0e223760ffa0b2e724ebb2a2b4b514c3cbac9f62d166fb76e38a",
+      "copied_lines": [
+        168,
+        169,
+        170,
+        173,
+        181
+      ]
+    },
+    {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "sha256": "ca881c974b5f00cc9a0dac3b8ef7f520c6b1e3198343db9b3d6ce15a042db18f",
+      "copied_lines": [
+        3168,
+        3170,
+        3171,
+        3172,
+        3173,
+        3174
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "copied_lines": [
+        133,
+        321,
+        324,
+        325,
+        331,
+        333
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "copied_lines": [
+        224,
+        225,
+        352
+      ]
+    },
+    {
+      "path": "OS/MemoryMgr/MemoryMgrPriv.a",
+      "sha256": "b9bc47e89e9092273ba7dd71b07cf185c639b0741bfbbded69665975816ad0a9",
+      "copied_lines": [
+        90
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40fe76",
+      "end_address_exclusive": "0x41045e",
+      "rom_offset": "0xfe76",
+      "length": 1512,
+      "sha256": "a0828c302d14f5c0c78240522dea56f9055c7299c9249a3d176e6749037c47e4"
+    }
+  ],
+  "manifest_entry": {
+    "name": "memory-manager",
+    "source": "Reconstruction/Source/OS/MemoryMgr/MemoryMgr.a",
+    "start": "0x40fe76",
+    "end_exclusive": "0x41045e",
+    "entry_points": {
+      "SetApplBase": "0x40fe76",
+      "IAZ": "0x40fe92",
+      "InitApplZone": "0x40fee4",
+      "InitZone": "0x40ff38",
+      "GetZone": "0x40ffa4",
+      "SetZone": "0x40ffaa",
+      "MaxBlock": "0x40ffb0",
+      "CompactMem": "0x40ffbe",
+      "PurgeMem": "0x40ffee",
+      "PurgeSpace": "0x41000a",
+      "FreeMem": "0x410014",
+      "ResrvMem": "0x41001e",
+      "MaxMem": "0x41003c",
+      "SetGrowZone": "0x410070",
+      "SetApplLimit": "0x41007a",
+      "StackSpace": "0x41009e",
+      "MaxApplZone": "0x4100ae",
+      "NewPtr": "0x4100d6",
+      "DisposePtr": "0x4100f2",
+      "GetPtrSize": "0x410108",
+      "SetPtrSize": "0x410112",
+      "PtrZone": "0x41011c",
+      "CheckClear": "0x410124",
+      "NewEmptyHandle": "0x41013a",
+      "NwHandle": "0x41014e",
+      "DsposeHandle": "0x410170",
+      "GetHandleSize": "0x410190",
+      "SetHandleSize": "0x41019c",
+      "HandleZone": "0x4101ae",
+      "RecoverHandle": "0x4101b6",
+      "EmptyHandle": "0x4101dc",
+      "ReAllocHandle": "0x4101ec",
+      "HLock": "0x410230",
+      "HUnlock": "0x41023a",
+      "HPurge": "0x410244",
+      "HNoPurge": "0x41024e",
+      "HStdEntry": "0x410262",
+      "MoreMasters": "0x410274",
+      "MoveHHi": "0x41028c",
+      "FindRgnTop": "0x4103dc",
+      "FillStkBuf": "0x410416",
+      "DoCompact": "0x410454",
+      "IAZ_10": "0x40febc",
+      "InitApplZone_99": "0x40ff08",
+      "InitApplZone_2": "0x40ff14",
+      "InitApplZone_3": "0x40ff22",
+      "InitApplZone_4": "0x40ff26",
+      "InitZone_IZClr": "0x40ff4a",
+      "InitZone_0": "0x40ff6c",
+      "CMGuts": "0x40ffc4",
+      "MM_40FE8A": "0x40fe8a",
+      "MM_40FEEE": "0x40feee",
+      "MM_40FF9C": "0x40ff9c",
+      "MM_40FFD8": "0x40ffd8",
+      "MM_40FFDC": "0x40ffdc",
+      "MM_410006": "0x410006",
+      "MM_410004": "0x410004",
+      "MM_410002": "0x410002",
+      "MM_410034": "0x410034",
+      "MM_40FFFA": "0x40fffa",
+      "MM_410052": "0x410052",
+      "MM_41006C": "0x41006c",
+      "MM_410096": "0x410096",
+      "MM_410098": "0x410098",
+      "MM_4100D4": "0x4100d4",
+      "MM_4100EE": "0x4100ee",
+      "MM_4100EA": "0x4100ea",
+      "MM_410104": "0x410104",
+      "MM_4100E8": "0x4100e8",
+      "MM_410138": "0x410138",
+      "MM_410130": "0x410130",
+      "MM_410158": "0x410158",
+      "MM_41015C": "0x41015c",
+      "MM_410188": "0x410188",
+      "MM_41016C": "0x41016c",
+      "MM_410184": "0x410184",
+      "MM_4100F6": "0x4100f6",
+      "MM_41018C": "0x41018c",
+      "MM_410168": "0x410168",
+      "MM_410166": "0x410166",
+      "MM_4101A2": "0x4101a2",
+      "MM_4101AA": "0x4101aa",
+      "MM_4101A6": "0x4101a6",
+      "MM_4101D2": "0x4101d2",
+      "MM_4101E6": "0x4101e6",
+      "MM_4101EA": "0x4101ea",
+      "MM_410204": "0x410204",
+      "MM_41021E": "0x41021e",
+      "MM_410162": "0x410162",
+      "MM_41022A": "0x41022a",
+      "MM_41025A": "0x41025a",
+      "MM_410256": "0x410256",
+      "MM_41025C": "0x41025c",
+      "MM_41026E": "0x41026e",
+      "MM_410284": "0x410284",
+      "MM_410298": "0x410298",
+      "MM_4102A2": "0x4102a2",
+      "MM_410294": "0x410294",
+      "MM_4103D8": "0x4103d8",
+      "MM_4102CE": "0x4102ce",
+      "MM_4102E8": "0x4102e8",
+      "MM_41034A": "0x41034a",
+      "MM_410334": "0x410334",
+      "MM_4103B0": "0x4103b0",
+      "MM_410390": "0x410390",
+      "MM_41038E": "0x41038e",
+      "MM_41038A": "0x41038a",
+      "MM_41033A": "0x41033a",
+      "MM_410358": "0x410358",
+      "MM_4103BE": "0x4103be",
+      "MM_4103EA": "0x4103ea",
+      "MM_4103EE": "0x4103ee",
+      "MM_410404": "0x410404",
+      "MM_41040E": "0x41040e",
+      "MM_410414": "0x410414",
+      "MM_410420": "0x410420",
+      "MM_41043E": "0x41043e"
+    }
+  },
+  "boundary_evidence": {
+    "start": "SetApplBase starts at $40FE76. Its call to IAZ and direct call to ZoneAdjustEnd identify the first released routine.",
+    "end": "DoCompact ends with RTS at $41045C. DerefHandle begins the internal module at $41045E."
+  },
+  "edits": [
+    {
+      "kind": "scope",
+      "description": "Restored the complete contiguous 24-bit implementation. Retained the released header, applicable history, routine contracts, symbolic operands, and matching instruction comments. The historical header describes a later source file; it does not date this reconstruction."
+    },
+    {
+      "kind": "source_correspondence",
+      "description": "Matched instructions within corresponding released 24-bit routines using resolved equates and operand values. The ROM determines branch targets, widths, direct calls, and instruction encodings. A recorded source operation may have a different encoding in the later source. Omitted comments about removed patches and dispatch vectors."
+    },
+    {
+      "kind": "build",
+      "description": "Replaced build includes and address-mode dispatch with the required released equates and explicit external ROM addresses. Expanded GetZ and SetZ as their MOVE instructions. Declared A-line traps with OPWORD. Preserved PC addressing and the ROM instruction widths."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored SetApplBase and IAZ before later alignment and cache patches. IAZ takes ApplLimit and HiHeapMark from ToMaxLimit D2, places the application zone after the system zone, initializes resources, and calls InitZone."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored InitApplZone notification, window, menu, font, event, and volume-flush state. The routine calls IAZ and InitAllPacks and records noErr. Restored the 52-byte InitZone header and 12-byte trailer."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored direct public entry calls, shared error exits, RecoverHandle behavior, and the HStdEntry helper. StackSpace returns SP + 24 minus bkLim(ApplZone). Later memory-mode dispatch and system-heap growth patches are absent."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored MoveHHi and its FindRgnTop, FillStkBuf, and DoCompact helpers. The ROM permits the original heaps, reserves 1,024 bytes below SP, and uses an 18-byte local frame. It predates the saved-TheZone field added in January 1986."
+    },
+    {
+      "kind": "equates",
+      "description": "Restored StkSlop from 3,072 to 1,024 and MyStkBuf24 and LclVarSize24 from 22 to 18. Other emitted equates retain their released values. The source retains historical comments but marks the restored frame and stack reserve."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x40fe76": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 740,
+      "original_code": "MoveM.L D3/A2-A6,-(SP)",
+      "comment": " Save Registers.",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "D3/A2-A6,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40fe7a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 741,
+      "original_code": "Move.L\tSysZone,A6",
+      "comment": " Get sysZone pointer.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SysZone,A6",
+      "inline_comment_retained": true
+    },
+    "0x40fe7e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 754,
+      "original_code": "Sub.W\t#MinFree24,A0",
+      "comment": " Point to new end block.\t<v1.2>",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "#MinFree24,A0",
+      "inline_comment_retained": true
+    },
+    "0x40fe82": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 755,
+      "original_code": "Cmp.L\tBkLim(A6),A0",
+      "comment": " New sysZone end <= current?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "BkLim(A6),A0",
+      "inline_comment_retained": true
+    },
+    "0x40fe84": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 756,
+      "original_code": "BLS.S\t@SABInitAppl",
+      "comment": " Yes, just init applZone.",
+      "preceding_comments": [],
+      "op": "BLS.S",
+      "operand": "@SABInitAppl",
+      "inline_comment_retained": true
+    },
+    "0x40fe86": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 757,
+      "original_code": "BSR \ta24ZoneAdjustEnd",
+      "comment": " Adjust the sysZone end.\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24ZoneAdjustEnd",
+      "inline_comment_retained": true
+    },
+    "0x40fe8a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 759,
+      "original_code": "BSR\tIAZ",
+      "comment": " use historical IAZ call\t<C681>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "IAZ",
+      "inline_comment_retained": true
+    },
+    "0x40fe8c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 760,
+      "original_code": "MoveM.L (SP)+,D3/A2-A6",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D3/A2-A6"
+    },
+    "0x40fe90": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 761,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x40fe92": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 876,
+      "original_code": "IAZ \t\tMove.L\tA6,-(SP)",
+      "comment": "Save A6.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40fe94": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 878,
+      "original_code": "_RsrcZoneInit",
+      "comment": "initialize resources in appl heap",
+      "preceding_comments": [],
+      "op": "_RSRCZONEINIT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40fe96": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 879,
+      "original_code": "Clr.L\tapplZone",
+      "comment": "No applZone exists during init.",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "applZone",
+      "inline_comment_retained": true
+    },
+    "0x40fea6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 889,
+      "original_code": "Move.L\tsysZone,A6",
+      "comment": "SysZone pointer.",
+      "preceding_comments": [
+        [
+          887,
+          "\t\t\t\t\t\t\t\t\t\t\t;ApplLimit in case of glue MaxApplZone<C778>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "sysZone,A6",
+      "inline_comment_retained": true
+    },
+    "0x40feaa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 890,
+      "original_code": "Move.L\tBkLim(A6),A0",
+      "comment": "Current Last Block in sysZone.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "BkLim(A6),A0",
+      "inline_comment_retained": true
+    },
+    "0x40feac": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 897,
+      "original_code": "LEA \tMinFree24(A0),A0",
+      "comment": "Points to first of cur. applZone.\t\t\t\t<v1.2>",
+      "preceding_comments": [
+        [
+          895,
+          "\t\t\t; Ordinarily start ApplZone just after SysZone, but if GrowDown is true,\t\t<14Apr85>"
+        ],
+        [
+          896,
+          "\t\t\t; and there's room, start up offset by CacheSize.                               <27Apr85>"
+        ]
+      ],
+      "op": "LEA",
+      "operand": "MinFree24(A0),A0",
+      "inline_comment_retained": true
+    },
+    "0x40feb0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 904,
+      "original_code": "Move.L\tA0,A1",
+      "comment": "New Application zone base.",
+      "preceding_comments": [
+        [
+          903,
+          "\t\t\t; Now proceed building the zone...\t\t\t\t\t\t\t\t\t\t\t\t<14Apr85>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A0,A1",
+      "inline_comment_retained": true
+    },
+    "0x40feb2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 905,
+      "original_code": "Add.W\t#AppZoneSize,A1",
+      "comment": "Compute new end address.",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#AppZoneSize,A1",
+      "inline_comment_retained": true
+    },
+    "0x40feb6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 906,
+      "original_code": "Cmp.L\tD1,A1",
+      "comment": "New End Address < ApplLimit?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D1,A1",
+      "inline_comment_retained": true
+    },
+    "0x40feb8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 907,
+      "original_code": "BCS.S\t@10",
+      "comment": "Yes, use new end address.",
+      "preceding_comments": [],
+      "op": "BCS.S",
+      "operand": "@10",
+      "inline_comment_retained": true
+    },
+    "0x40feba": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 909,
+      "original_code": "Move.L\tD1,A1",
+      "comment": "use ApplLimit as end address.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,A1",
+      "inline_comment_retained": true
+    },
+    "0x40febe": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 918,
+      "original_code": "Move.W\t#(2*dfltMasters),-(SP)",
+      "comment": "Number of masters to alloc.",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#(2*dfltMasters),-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40fec2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 919,
+      "original_code": "Move.L\tA1,-(SP)",
+      "comment": "New Applic Zone End.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40fec4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 920,
+      "original_code": "Move.L\tA0,-(SP)",
+      "comment": "New Applic Zone Base.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40fec6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 922,
+      "original_code": "Move.L\tA0,applZone",
+      "comment": "Save as the application heap zone.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,applZone",
+      "inline_comment_retained": true
+    },
+    "0x40feca": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 924,
+      "original_code": "Move.L\tSP,A0",
+      "comment": "Point to argument block.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "inline_comment_retained": true
+    },
+    "0x40fecc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 925,
+      "original_code": "_InitZone",
+      "comment": "Ask OS to do request.",
+      "preceding_comments": [],
+      "op": "_INITZONE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40fece": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 927,
+      "original_code": "Add.W\t#14,SP",
+      "comment": "Restore stack pointer.",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#14,SP",
+      "inline_comment_retained": true
+    },
+    "0x40fed2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 929,
+      "original_code": "Move.L\ttheZone,A6",
+      "comment": "Application heap zone.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "theZone,A6",
+      "inline_comment_retained": true
+    },
+    "0x40fed6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 930,
+      "original_code": "Move.L\tBkLim(A6),HeapEnd",
+      "comment": "Set up HeapEnd.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "BkLim(A6),HeapEnd",
+      "inline_comment_retained": true
+    },
+    "0x40feda": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 932,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": "Success result code.",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x40fedc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 933,
+      "original_code": "Move.W\tD0,MemErr",
+      "comment": "Record it globally, too\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,MemErr",
+      "inline_comment_retained": true
+    },
+    "0x40fee0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 935,
+      "original_code": "Move.L\t(SP)+,A6",
+      "comment": "Restore A6.",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A6",
+      "inline_comment_retained": true
+    },
+    "0x40fee2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 936,
+      "original_code": "RTS",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<C681>",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40fee4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 950,
+      "original_code": "MOVE.L\tIAZNotify,D0",
+      "comment": " anyone to notify?",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "IAZNotify,D0",
+      "inline_comment_retained": true
+    },
+    "0x40fee8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 951,
+      "original_code": "BLE.S\t@0",
+      "comment": " br if not",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x40feea": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 952,
+      "original_code": "MOVE.L\tD0,A0",
+      "comment": " give them a call if so",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,A0",
+      "inline_comment_retained": true
+    },
+    "0x40feec": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 953,
+      "original_code": "JSR \t(A0)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "(A0)"
+    },
+    "0x40feee": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 955,
+      "original_code": "@0\t\t\tMOVE.W\t#-1,WWExist",
+      "comment": " $FF for non-existence (also sets QDExist)",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#-1,WWExist",
+      "inline_comment_retained": true
+    },
+    "0x40fef4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 958,
+      "original_code": "CLR.L\tMenuList",
+      "comment": "",
+      "preceding_comments": [
+        [
+          957,
+          ";\t\t\t BSET\t #7,DSWndUpdate \t ; cancel pending PaintBehind"
+        ]
+      ],
+      "op": "CLR.L",
+      "operand": "MenuList"
+    },
+    "0x40ff02": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 962,
+      "original_code": "ST\t\tSEvtEnb",
+      "comment": " re-enable system event",
+      "preceding_comments": [],
+      "op": "ST",
+      "operand": "SEvtEnb",
+      "inline_comment_retained": true
+    },
+    "0x40ff06": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 964,
+      "original_code": "MoveQ\t#(IOVQElSize/2)-1,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<10May85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#(IOVQElSize/2)-1,D0",
+      "inline_comment_retained": true
+    },
+    "0x40ff08": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 966,
+      "original_code": "Clr.W\t-(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(SP)"
+    },
+    "0x40ff0a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 967,
+      "original_code": "DBrA\tD0,@99",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D0,@99"
+    },
+    "0x40ff0e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 968,
+      "original_code": "MoveA.L SP,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "SP,A0"
+    },
+    "0x40ff10": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 970,
+      "original_code": "MOVE.L\tVCBQHdr+QHead,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "VCBQHdr+QHead,D0"
+    },
+    "0x40ff14": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 971,
+      "original_code": "@2\t\t\tBEQ.S\t@4",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@4"
+    },
+    "0x40ff16": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 972,
+      "original_code": "MOVE.L\tD0,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,A1"
+    },
+    "0x40ff18": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 973,
+      "original_code": "MOVE.W\tVCBDrvNum(A1),IOVDrvNum(A0)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "VCBDrvNum(A1),IOVDrvNum(A0)"
+    },
+    "0x40ff1e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 974,
+      "original_code": "BEQ.S\t@3",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@3"
+    },
+    "0x40ff20": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 975,
+      "original_code": "_FlushVol",
+      "comment": " flush all on-line volumes",
+      "preceding_comments": [],
+      "op": "_FLUSHVOL",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40ff22": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 976,
+      "original_code": "@3\t\t\tMOVE.L\tQLink(A1),D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "QLink(A1),D0"
+    },
+    "0x40ff24": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 977,
+      "original_code": "BRA.S\t@2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@2"
+    },
+    "0x40ff26": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 979,
+      "original_code": "ADD \t#IOVQElSize,SP",
+      "comment": " clean up stack",
+      "preceding_comments": [],
+      "op": "ADD",
+      "operand": "#IOVQElSize,SP",
+      "inline_comment_retained": true
+    },
+    "0x40ff2e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1117,
+      "original_code": "_InitAllPacks",
+      "comment": " reinstall the packages -- may trash MemErr <25Apr85>",
+      "preceding_comments": [
+        [
+          1110,
+          ";----------------------------------------------------------------------"
+        ],
+        [
+          1111,
+          "; vIAZPostInit\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tnew\t\t<C681>"
+        ],
+        [
+          1112,
+          "; - last-minute inits after ApplZone has been created."
+        ],
+        [
+          1113,
+          "; Registers: D0-D2/A0-A1"
+        ],
+        [
+          1114,
+          "; Called by InitApplZone via jIAZPostInit vector."
+        ],
+        [
+          1115,
+          ";----------------------------------------------------------------------"
+        ]
+      ],
+      "op": "_INITALLPACKS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40ff36": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1133,
+      "original_code": "RtS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x40ff38": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1162,
+      "original_code": "MoveM.L A2-A3/A6,-(SP)",
+      "comment": "Save registers",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "A2-A3/A6,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40ff3c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1164,
+      "original_code": "Move.L\tA0,A1",
+      "comment": "Argument vector pointer",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,A1",
+      "inline_comment_retained": true
+    },
+    "0x40ff3e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1165,
+      "original_code": "Move.L\t(A1)+,A6",
+      "comment": "StartPtr (zone obj.)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A1)+,A6",
+      "inline_comment_retained": true
+    },
+    "0x40ff40": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1166,
+      "original_code": "SetZ\tA6",
+      "comment": "set theZone",
+      "preceding_comments": [],
+      "op": "SETZ",
+      "operand": "A6",
+      "inline_comment_retained": true
+    },
+    "0x40ff44": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1168,
+      "original_code": "Move.L\tA6,A0",
+      "comment": "zone object ptr",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,A0",
+      "inline_comment_retained": true
+    },
+    "0x40ff46": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1169,
+      "original_code": "MOVE.L\tA6,A2",
+      "comment": "used for filling in fields",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,A2",
+      "inline_comment_retained": true
+    },
+    "0x40ff48": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1170,
+      "original_code": "MoveQ\t#(HeapData-4)/4,D1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#(HeapData-4)/4,D1"
+    },
+    "0x40ff4a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1172,
+      "original_code": "@IZClr24\t\tClr.L\t(A0)+",
+      "comment": "Zero heapzone header",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff4c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1173,
+      "original_code": "DBrA\tD1,@IZClr24",
+      "comment": "leave A0=HeapData(A6)",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D1,@IZClr24",
+      "inline_comment_retained": true
+    },
+    "0x40ff50": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1177,
+      "original_code": "Move.L\t(A1)+,D1",
+      "comment": "LimitPtr, to be stripped of high bits\t\t<01Nov85 JTC>",
+      "preceding_comments": [
+        [
+          1175,
+          "; note that AllocPtr is zeroed . . ."
+        ],
+        [
+          1176,
+          "; Set up hi heap mark according to LimitPtr.\t\t\t\t\t\t\t\t\t\t\t\t<01Nov85 JTC>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "(A1)+,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ff52": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1178,
+      "original_code": "And.L\tLo3Bytes,D1",
+      "comment": "24 bits only\t\t\t\t\t\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ff56": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1197,
+      "original_code": "MoveA.L D1,A3",
+      "comment": " LimitPtr",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "D1,A3",
+      "inline_comment_retained": true
+    },
+    "0x40ff58": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1200,
+      "original_code": "CmpA.L\tHiHeapMark,A3",
+      "comment": "24-bit subtract A3-HiHeapMark\t\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "CMPA.L",
+      "operand": "HiHeapMark,A3",
+      "inline_comment_retained": true
+    },
+    "0x40ff5c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1201,
+      "original_code": "BLT.S\t@1",
+      "comment": "Less Than (unsigned OK) ==> below HiHeap\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x40ff5e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1202,
+      "original_code": "Move.L\tSP,D1",
+      "comment": "Must strip to compare successfully!\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ff60": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1203,
+      "original_code": "And.L\tLo3Bytes,D1",
+      "comment": "24-bit sp\t\t\t\t\t\t\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ff64": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1204,
+      "original_code": "CmpA.L\tD1,A3",
+      "comment": "LimitPtr-SP\t\t\t\t\t\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "CMPA.L",
+      "operand": "D1,A3",
+      "inline_comment_retained": true
+    },
+    "0x40ff66": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1205,
+      "original_code": "BGT.S\t@1",
+      "comment": "Greater Than (signed OK) ==> in stack\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "BGT.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x40ff68": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1206,
+      "original_code": "Move.L\tA3,HiHeapMark",
+      "comment": "a new 24-bit limit!\t\t\t\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,HiHeapMark",
+      "inline_comment_retained": true
+    },
+    "0x40ff6c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1209,
+      "original_code": "MoveQ\t#MinFree24,D1",
+      "comment": "MinFree=16 bytes\t\t\t\t\t\t<v1.2>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#MinFree24,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ff6e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1210,
+      "original_code": "Sub.L\tD1,A3",
+      "comment": "LimitPtr-MinFree",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D1,A3",
+      "inline_comment_retained": true
+    },
+    "0x40ff70": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1211,
+      "original_code": "Move.L\tD1,TagBC24(A3)",
+      "comment": "make limit block\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,TagBC24(A3)",
+      "inline_comment_retained": true
+    },
+    "0x40ff72": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1213,
+      "original_code": "Move.L\tA3,(A2)+",
+      "comment": "BkLim(A6)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff74": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1214,
+      "original_code": "Move.L\tA0,(A2)+",
+      "comment": "PurgePtr(A6) - rover starts at",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff76": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1216,
+      "original_code": "AddQ\t#4,A2",
+      "comment": "skip HFstFree",
+      "preceding_comments": [
+        [
+          1215,
+          "\t\t\t\t\t\t\t\t\t\t\t\t; HeapData(A6)"
+        ]
+      ],
+      "op": "ADDQ",
+      "operand": "#4,A2",
+      "inline_comment_retained": true
+    },
+    "0x40ff78": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1218,
+      "original_code": "Sub.L\tA0,A3",
+      "comment": "BkLim(A6) - HeapData(A6)",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A0,A3",
+      "inline_comment_retained": true
+    },
+    "0x40ff7a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1219,
+      "original_code": "Move.L\tA3,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,D0"
+    },
+    "0x40ff7c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1220,
+      "original_code": "Move.L\tD0,(A2)+",
+      "comment": "ZCBFree(A6)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff7e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1222,
+      "original_code": "Move.W\t(A1)+,D1",
+      "comment": "CMoreMasters",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A1)+,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ff80": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1223,
+      "original_code": "Move.L\t(A1)+,(A2)+",
+      "comment": "PGrowZone -> GZProc(A6)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A1)+,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff8a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1229,
+      "original_code": "Move.W\tD1,(A2)+",
+      "comment": "CMoreMasters -> mAllocCnt(A6)",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D1,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff8c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1230,
+      "original_code": "Move.W\tmmDefFlags,(A2)+",
+      "comment": "Flags(A6)",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "mmDefFlags,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x40ff90": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1235,
+      "original_code": "BSR \ta24MakeBKF",
+      "comment": "start with 1 large free block\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24MakeBKF",
+      "inline_comment_retained": true
+    },
+    "0x40ff94": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1237,
+      "original_code": "BSR \ta24HMakeMoreMasters",
+      "comment": "HFstFree(A6)=0\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [
+        [
+          1236,
+          "\t\t\t\t\t\t\t\t\t\t\t\t;A0=blk ptr, D0=size"
+        ]
+      ],
+      "op": "BSR",
+      "operand": "a24HMakeMoreMasters",
+      "inline_comment_retained": true
+    },
+    "0x40ff98": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1298,
+      "original_code": "MoveM.L (SP)+,A2-A3/A6",
+      "comment": "Restore registers",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "(SP)+,A2-A3/A6",
+      "inline_comment_retained": true
+    },
+    "0x40ff9c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1299,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": "Success return \t\t\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x40ff9e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1300,
+      "original_code": "Move.W\tD0,MemErr",
+      "comment": "Record it globally, too\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,MemErr",
+      "inline_comment_retained": true
+    },
+    "0x40ffa2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1301,
+      "original_code": "RTS",
+      "comment": "and return to caller",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40ffa4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1453,
+      "original_code": "GetZ\tA0",
+      "comment": "Set up return value",
+      "preceding_comments": [],
+      "op": "GETZ",
+      "operand": "A0",
+      "inline_comment_retained": true
+    },
+    "0x40ffa8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1455,
+      "original_code": "BrA.S\tIZCleanExit",
+      "comment": "Use common routine above\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "IZCleanExit",
+      "inline_comment_retained": true
+    },
+    "0x40ffaa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1474,
+      "original_code": "SetZ\tA0",
+      "comment": "Set up return value",
+      "preceding_comments": [],
+      "op": "SETZ",
+      "operand": "A0",
+      "inline_comment_retained": true
+    },
+    "0x40ffae": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1476,
+      "original_code": "BrA.S\tIZCleanExit",
+      "comment": "Use common routine above\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "IZCleanExit",
+      "inline_comment_retained": true
+    },
+    "0x40ffba": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1515,
+      "original_code": "MOVEQ\t#1,D1",
+      "comment": " mark routine as MaxBlock\t\t\t\t<v1.9>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#1,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ffbc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1516,
+      "original_code": "BRA.S\tv24CMGuts",
+      "comment": " branch to common code\t\t\t\t\t<v1.9>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "v24CMGuts",
+      "inline_comment_retained": true
+    },
+    "0x40ffc2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1519,
+      "original_code": "MOVEQ\t#0,D1",
+      "comment": " mark as CompactMem \t\t\t\t\t<v1.9>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ffc4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1522,
+      "original_code": "BSR \ta24ActualS",
+      "comment": "adjust size\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24ActualS",
+      "inline_comment_retained": true
+    },
+    "0x40ffc8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1524,
+      "original_code": "LEA \tFlags(A6),A1",
+      "comment": "useful address",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "Flags(A6),A1",
+      "inline_comment_retained": true
+    },
+    "0x40ffcc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1525,
+      "original_code": "Move.B\t(A1),D2",
+      "comment": "preserve current flags in D2",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A1),D2",
+      "inline_comment_retained": true
+    },
+    "0x40ffce": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1527,
+      "original_code": "TST.B\tD1",
+      "comment": "nonzero means MaxBlock \t\t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "D1",
+      "inline_comment_retained": true
+    },
+    "0x40ffd0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1528,
+      "original_code": "BNE.S\t@1",
+      "comment": "don't do compaction                    <10Apr85>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x40ffd2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1529,
+      "original_code": "BSet\t#FNSelCompct,(A1)",
+      "comment": "compact always for CompactMem\t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "BSET",
+      "operand": "#FNSelCompct,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x40ffd6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1530,
+      "original_code": "BRA.S\t@3",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x40ffd8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1532,
+      "original_code": "BClr\t#FNSelCompct,(A1)",
+      "comment": "never compact for MaxBlock \t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#FNSelCompct,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x40ffdc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1535,
+      "original_code": "Bsr.l \ta24CompactHp",
+      "comment": "compact heap\t\t\t\t\t\t\t<2> kc.start",
+      "preceding_comments": [],
+      "op": "BSR.L",
+      "operand": "a24CompactHp",
+      "inline_comment_retained": true
+    },
+    "0x40ffe0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1536,
+      "original_code": "Move.B\tD2,(A1)",
+      "comment": "restore flags",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D2,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x40ffe2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1545,
+      "original_code": "@0\t\t\t\tMove.L\tD1,D0",
+      "comment": "Size of largest block found\t\t\t<2> kc.end",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,D0",
+      "inline_comment_retained": true
+    },
+    "0x40ffe4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1546,
+      "original_code": "BEq\t\tPMExit24",
+      "comment": "hasty exit through our epilogue\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BEQ",
+      "operand": "PMExit24",
+      "inline_comment_retained": true
+    },
+    "0x40ffe6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1547,
+      "original_code": "SubQ.L\t#BlkData24,D0",
+      "comment": "convert back to logical cb\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#BlkData24,D0",
+      "inline_comment_retained": true
+    },
+    "0x40ffe8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1549,
+      "original_code": "Move.L\tA0,D1",
+      "comment": "was a large enough blk found?",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,D1",
+      "inline_comment_retained": true
+    },
+    "0x40ffea": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1550,
+      "original_code": "BEq.S\tPMExit24",
+      "comment": "Eq => NIL, return that",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "PMExit24",
+      "inline_comment_retained": true
+    },
+    "0x40ffec": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1551,
+      "original_code": "BrA.S\tPMOK24",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "PMOK24"
+    },
+    "0x40fff2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1603,
+      "original_code": "BSR \ta24ActualS",
+      "comment": " adjust size\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24ActualS",
+      "inline_comment_retained": true
+    },
+    "0x40fff6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1604,
+      "original_code": "BSR \ta24PurgeHeap",
+      "comment": " Purge the Heap\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24PurgeHeap",
+      "inline_comment_retained": true
+    },
+    "0x40fffa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1605,
+      "original_code": "PMRMExit24\t\tMove.L\tA0,D0",
+      "comment": " was a large enough blk found?",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,D0",
+      "inline_comment_retained": true
+    },
+    "0x40fffc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1606,
+      "original_code": "BNE.S\tPMNNil24",
+      "comment": " Yes, return success\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "PMNNil24",
+      "inline_comment_retained": true
+    },
+    "0x40fffe": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1608,
+      "original_code": "MoveQ\t#memFullErr,D0",
+      "comment": " No, not enough room in mem.",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memFullErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x410000": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1609,
+      "original_code": "BrA.S\tPMExit24",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "PMExit24"
+    },
+    "0x410002": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1611,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": " and show success return",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x410004": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1613,
+      "original_code": "AddQ.L\t#BlkData24,A0",
+      "comment": " else, point to data field.",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#BlkData24,A0",
+      "inline_comment_retained": true
+    },
+    "0x41000e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1650,
+      "original_code": "BSR \ta24TotePurgeables",
+      "comment": " returns D0,A0 trashes others...\t\t<17Apr85>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24TotePurgeables",
+      "inline_comment_retained": true
+    },
+    "0x410012": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1651,
+      "original_code": "BRA.S\tPurgeSExit",
+      "comment": " go to common exit routine\t\t\t\t<v1.9>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "PurgeSExit",
+      "inline_comment_retained": true
+    },
+    "0x410018": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1674,
+      "original_code": "Move.L\tZCBFree(A6),D0",
+      "comment": " set result",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "ZCBFree(A6),D0",
+      "inline_comment_retained": true
+    },
+    "0x410022": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1766,
+      "original_code": "TST.L\tHFstFree(A6)",
+      "comment": "Any masters left?",
+      "preceding_comments": [],
+      "op": "TST.L",
+      "operand": "HFstFree(A6)",
+      "inline_comment_retained": true
+    },
+    "0x410026": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1767,
+      "original_code": "BNE.S\t@1",
+      "comment": "br if so",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x410028": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1768,
+      "original_code": "Move.W\tmAllocCnt(A6),D2",
+      "comment": "Number of masters to make.",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "mAllocCnt(A6),D2",
+      "inline_comment_retained": true
+    },
+    "0x41002c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1769,
+      "original_code": "Ext.L\tD2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "EXT.L",
+      "operand": "D2"
+    },
+    "0x41002e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1771,
+      "original_code": "ASL.L\t#2,D2",
+      "comment": "Convert MP count to byte count.",
+      "preceding_comments": [],
+      "op": "ASL.L",
+      "operand": "#2,D2",
+      "inline_comment_retained": true
+    },
+    "0x410030": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1772,
+      "original_code": "AddQ.L\t#BlkData24,D2",
+      "comment": "And block header\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#BlkData24,D2",
+      "inline_comment_retained": true
+    },
+    "0x410032": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1773,
+      "original_code": "Add.L\tD2,D0",
+      "comment": "Increase req count by ptr blk",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x410034": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1775,
+      "original_code": "@1\t\t\t\tBSR \ta24MakePtrSpc",
+      "comment": "Make room at the low end.\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24MakePtrSpc",
+      "inline_comment_retained": true
+    },
+    "0x410038": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1776,
+      "original_code": "Move.L\tA2,A0",
+      "comment": "Ptr to block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A2,A0",
+      "inline_comment_retained": true
+    },
+    "0x41003a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1777,
+      "original_code": "BrA.S\tPMRMExit24",
+      "comment": "Do the purge mem exit trip . . .\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "PMRMExit24",
+      "inline_comment_retained": true
+    },
+    "0x410046": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1816,
+      "original_code": "MoveQ\t#0,D2",
+      "comment": "\tFalse\t\t\t\t\t\t\t<2> kc.start",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D2",
+      "inline_comment_retained": true
+    },
+    "0x410048": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1817,
+      "original_code": "Bsr.l \ta24BkCompactS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.L",
+      "operand": "a24BkCompactS"
+    },
+    "0x41004c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1826,
+      "original_code": "@0\t\t\t\tMove.L\tD1,D0",
+      "comment": "return adjusted max\t\t\t\t<2> kc.end",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,D0",
+      "inline_comment_retained": true
+    },
+    "0x41004e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1827,
+      "original_code": "BEq.S\t@1",
+      "comment": "block size, unless 0",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x410050": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1829,
+      "original_code": "SubQ.L\t#BlkData24,D0",
+      "comment": "Allow for overhead",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#BlkData24,D0",
+      "inline_comment_retained": true
+    },
+    "0x410052": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1832,
+      "original_code": "Sub.L\tA0,A0",
+      "comment": "if not applZone => return 0 in A0",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A0,A0",
+      "inline_comment_retained": true
+    },
+    "0x410054": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1833,
+      "original_code": "Move.L\tapplZone,A1",
+      "comment": "If request not for",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "applZone,A1",
+      "inline_comment_retained": true
+    },
+    "0x410058": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1834,
+      "original_code": "Cmp.L\ttheZone,A1",
+      "comment": "applic heap...",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "theZone,A1",
+      "inline_comment_retained": true
+    },
+    "0x41005c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1835,
+      "original_code": "BNE.S\tMMExit24",
+      "comment": "then return\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "MMExit24",
+      "inline_comment_retained": true
+    },
+    "0x41005e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1839,
+      "original_code": "Move.L\tApplLimit,D2",
+      "comment": "static applLimit",
+      "preceding_comments": [
+        [
+          1837,
+          "; Now return the size of memory available for the application heap to grow"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "ApplLimit,D2",
+      "inline_comment_retained": true
+    },
+    "0x410062": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1840,
+      "original_code": "BSR \ta24MaxLimit",
+      "comment": "don't get closer than MinStack\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24MaxLimit",
+      "inline_comment_retained": true
+    },
+    "0x410066": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1841,
+      "original_code": "Sub.L\tHeapEnd,D1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "HeapEnd,D1"
+    },
+    "0x41006a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1842,
+      "original_code": "Move.L\tD1,A0",
+      "comment": "return in A0",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,A0",
+      "inline_comment_retained": true
+    },
+    "0x410070": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1896,
+      "original_code": "GetZ\tA1",
+      "comment": " A1 - theZone",
+      "preceding_comments": [],
+      "op": "GETZ",
+      "operand": "A1",
+      "inline_comment_retained": true
+    },
+    "0x410074": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1897,
+      "original_code": "Move.L\tA0,GZProc(A1)",
+      "comment": " set user's GrowZone procedure",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,GZProc(A1)",
+      "inline_comment_retained": true
+    },
+    "0x410078": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1898,
+      "original_code": "BrA.S\tSALOk",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SALOk"
+    },
+    "0x41007a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1922,
+      "original_code": "Move.L\tA0,D0",
+      "comment": " suggested new value\t\t\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,D0",
+      "inline_comment_retained": true
+    },
+    "0x41007c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1923,
+      "original_code": "And.L\tLo3Bytes,D0",
+      "comment": " 24-bit address candidate for new limit\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D0",
+      "inline_comment_retained": true
+    },
+    "0x410080": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1924,
+      "original_code": "MoveA.L D0,A0",
+      "comment": " presume this is lower value\t\t\t<01Nov85 JTC>",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "D0,A0",
+      "inline_comment_retained": true
+    },
+    "0x410082": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1932,
+      "original_code": "Move.L\tA0,ApplLimit",
+      "comment": " Set the application limit",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,ApplLimit",
+      "inline_comment_retained": true
+    },
+    "0x410086": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1935,
+      "original_code": "Move.L\tA0,HiHeapMark",
+      "comment": " New high!\t\t\t\t\t\t<01Nov85  JTC><C765><C778>",
+      "preceding_comments": [
+        [
+          1933,
+          "\t\t\t\t\t\t\t\t\t\t; (don't worry, GrowZone checks it dynamically)"
+        ],
+        [
+          1934,
+          "\t\t\t\t\t\t\t\t\t\t; the above claim is B.S.\t\t\t\t<29jan85>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A0,HiHeapMark",
+      "inline_comment_retained": true
+    },
+    "0x41008a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1937,
+      "original_code": "Move.L\tApplZone,A1",
+      "comment": " point to the app zone\t\t\t\t\t<29jan85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "ApplZone,A1",
+      "inline_comment_retained": true
+    },
+    "0x41008e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1938,
+      "original_code": "Move.L\tBKLim(A1),A1",
+      "comment": " point to limit block\t\t\t\t\t<29jan85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "BKLim(A1),A1",
+      "inline_comment_retained": true
+    },
+    "0x410090": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1939,
+      "original_code": "MoveQ\t#MemFullErr,D0",
+      "comment": " presume the worst\t\t\t\t\t\t<29jan85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#MemFullErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x410092": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1940,
+      "original_code": "Cmp.L\tA0,A1",
+      "comment": " BKLim - ApplZone\t\t\t\t\t\t<29jan85>",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "A0,A1",
+      "inline_comment_retained": true
+    },
+    "0x410094": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1941,
+      "original_code": "BHi.S\tSALNotOk",
+      "comment": " Hi ==> already beyond limit\t\t\t<29jan85>",
+      "preceding_comments": [],
+      "op": "BHI.S",
+      "operand": "SALNotOk",
+      "inline_comment_retained": true
+    },
+    "0x410096": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1944,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": " return success",
+      "preceding_comments": [
+        [
+          1942,
+          "\t\t\t\t\t\t\t\t\t\t; LowOrSame ==> fall through Ok\t\t\t<29jan85>"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x410098": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1946,
+      "original_code": "Move.W\tD0,MemErr",
+      "comment": " stuff error globally\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,MemErr",
+      "inline_comment_retained": true
+    },
+    "0x41009c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1947,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x4100a0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1994,
+      "original_code": "Add.L\tSP,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t<09May85>",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "SP,D0",
+      "inline_comment_retained": true
+    },
+    "0x4100a8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1997,
+      "original_code": "Clr.W\tMemErr",
+      "comment": "no problem here\t\t\t\t\t<09May85>",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "MemErr",
+      "inline_comment_retained": true
+    },
+    "0x4100ac": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 1998,
+      "original_code": "RtS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x4100ae": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2025,
+      "original_code": "Move.L\tApplLimit,D0",
+      "comment": " alleged end of the zone",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "ApplLimit,D0",
+      "inline_comment_retained": true
+    },
+    "0x4100b2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2036,
+      "original_code": "@1\t\t\t\tMove.L\tD0,D1",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<2> kc.end",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x4100b4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2037,
+      "original_code": "LEA \tHeapEnd,A1",
+      "comment": " we'll use and possibly set this value",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "HeapEnd,A1",
+      "inline_comment_retained": true
+    },
+    "0x4100b8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2038,
+      "original_code": "Sub.L\t(A1),D0",
+      "comment": " amount of heap growth, if any; (this value is NONNEGATIVE) NOT!",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "(A1),D0",
+      "inline_comment_retained": true
+    },
+    "0x4100ba": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2040,
+      "original_code": "MoveQ\t#minFree24,D2",
+      "comment": " beneath this epsilon we will not grow\t<v1.2>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#minFree24,D2",
+      "inline_comment_retained": true
+    },
+    "0x4100bc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2041,
+      "original_code": "Cmp.L\tD2,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D2,D0"
+    },
+    "0x4100be": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2042,
+      "original_code": "BCS.S\t@MAZFini",
+      "comment": " Carry Set => minFree > delta, no dice...",
+      "preceding_comments": [],
+      "op": "BCS.S",
+      "operand": "@MAZFini",
+      "inline_comment_retained": true
+    },
+    "0x4100c0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2044,
+      "original_code": "MoveA.L (A1),A0",
+      "comment": " current bkLim ptr is the new (large) free block",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "(A1),A0",
+      "inline_comment_retained": true
+    },
+    "0x4100c2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2045,
+      "original_code": "Move.L\tD0,(A0)",
+      "comment": " force large free block there, freeing A0",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4100c4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2046,
+      "original_code": "Move.L\tD1,(A1)",
+      "comment": " new heapEnd := bkLim, freeing A1",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x4100c6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2047,
+      "original_code": "MoveA.L D1,A0",
+      "comment": " we need it as a ptr, in an A-register",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "D1,A0",
+      "inline_comment_retained": true
+    },
+    "0x4100c8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2052,
+      "original_code": "MoveA.L ApplZone,A1",
+      "comment": " now adjust the zone header",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "ApplZone,A1",
+      "inline_comment_retained": true
+    },
+    "0x4100cc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2053,
+      "original_code": "Move.L\tA0,bkLim(A1)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,bkLim(A1)"
+    },
+    "0x4100ce": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2054,
+      "original_code": "Move.L\tD2,(A0)",
+      "comment": " make it a minFree block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D2,(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4100d0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2055,
+      "original_code": "Add.L\tD0,ZCBFree(A1)",
+      "comment": " adjust free block count",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D0,ZCBFree(A1)",
+      "inline_comment_retained": true
+    },
+    "0x4100d4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2057,
+      "original_code": "BrA.S\tSALOk",
+      "comment": " stuff the noErr code there\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SALOk",
+      "inline_comment_retained": true
+    },
+    "0x4100da": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2141,
+      "original_code": "SUB.L\tA1,A1",
+      "comment": " Handle Nil => fixed block",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A1,A1",
+      "inline_comment_retained": true
+    },
+    "0x4100dc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2142,
+      "original_code": "BSR \ta24MakePtrSpc",
+      "comment": " Make room at the low end.\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24MakePtrSpc",
+      "inline_comment_retained": true
+    },
+    "0x4100e0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2143,
+      "original_code": "BSR \ta24AllocBk",
+      "comment": " Allocate the block\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24AllocBk",
+      "inline_comment_retained": true
+    },
+    "0x4100e4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2144,
+      "original_code": "BEQ.S\tNPNoMem24",
+      "comment": " Br if out of mem",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "NPNoMem24",
+      "inline_comment_retained": true
+    },
+    "0x4100e6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2146,
+      "original_code": "BSR\t\tCheckClear",
+      "comment": " Clear block if requested",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "CheckClear",
+      "inline_comment_retained": true
+    },
+    "0x4100e8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2148,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0"
+    },
+    "0x4100ee": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2152,
+      "original_code": "MOVEQ\t#memFullErr,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memFullErr,D0"
+    },
+    "0x4100f0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2153,
+      "original_code": "BRA.S\tNPExit24",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NPExit24"
+    },
+    "0x4100f6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2212,
+      "original_code": "BTST\t#ROZ,flags(A6)",
+      "comment": " skip if read-only \t\t\t\t\t<04Mar85>",
+      "preceding_comments": [
+        [
+          2210,
+          ";\t\t\t\tMove.L\t(SP)+,A0\t\t\t\t; restore A0\t\t\t\t\t\t\t<v1.1>"
+        ]
+      ],
+      "op": "BTST",
+      "operand": "#ROZ,flags(A6)",
+      "inline_comment_retained": true
+    },
+    "0x4100fc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2213,
+      "original_code": "BNE.S\tDisposeSkip",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "DisposeSkip",
+      "inline_comment_retained": true
+    },
+    "0x4100fe": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2215,
+      "original_code": "BSR \ta24FreeBk",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24FreeBk",
+      "inline_comment_retained": true
+    },
+    "0x410102": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2216,
+      "original_code": "BrA.S\tNPOk",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NPOk"
+    },
+    "0x410104": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2227,
+      "original_code": "MOVEQ\t#memROZWarn,D0",
+      "comment": " deliver warning\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memROZWarn,D0",
+      "inline_comment_retained": true
+    },
+    "0x410106": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2228,
+      "original_code": "BRA.S\tNPExit",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NPExit",
+      "inline_comment_retained": true
+    },
+    "0x41010c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2246,
+      "original_code": "BSR \ta24GetSize",
+      "comment": " Get its size\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24GetSize",
+      "inline_comment_retained": true
+    },
+    "0x410110": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2247,
+      "original_code": "BrA.S\tNPExit",
+      "comment": " Check Zone, Restore, Return",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NPExit",
+      "inline_comment_retained": true
+    },
+    "0x410116": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2284,
+      "original_code": "BSR \ta24SetSize",
+      "comment": " set its size\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24SetSize",
+      "inline_comment_retained": true
+    },
+    "0x41011a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2285,
+      "original_code": "BrA.S\tNPExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NPExit"
+    },
+    "0x410120": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2312,
+      "original_code": "Move.L\tA6,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,A0"
+    },
+    "0x410122": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2313,
+      "original_code": "BrA.S\tNPOk",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NPOk"
+    },
+    "0x410124": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2316,
+      "original_code": "BTst\t#ClearBit,D1",
+      "comment": "clear the allocated memory?",
+      "preceding_comments": [],
+      "op": "BTST",
+      "operand": "#ClearBit,D1",
+      "inline_comment_retained": true
+    },
+    "0x410128": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2317,
+      "original_code": "BEq.S\t@2",
+      "comment": "br if not",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x41012a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2318,
+      "original_code": "Move.L\tA0,-(SP)",
+      "comment": "preserve A0",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x41012c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2319,
+      "original_code": "AddQ.L\t#1,D0",
+      "comment": "increment allocation size",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#1,D0",
+      "inline_comment_retained": true
+    },
+    "0x41012e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2320,
+      "original_code": "LSR.L\t#1,D0",
+      "comment": "get word size",
+      "preceding_comments": [],
+      "op": "LSR.L",
+      "operand": "#1,D0",
+      "inline_comment_retained": true
+    },
+    "0x410130": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2322,
+      "original_code": "@1\t\t\t\tClr.W\t(A0)+",
+      "comment": "clear it out",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x410132": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2323,
+      "original_code": "SubQ.L\t#1,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#1,D0"
+    },
+    "0x410134": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2324,
+      "original_code": "BGT.S\t@1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BGT.S",
+      "operand": "@1"
+    },
+    "0x410136": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2325,
+      "original_code": "Move.L\t(SP)+,A0",
+      "comment": "restore A0",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x410138": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2327,
+      "original_code": "@2\t\t\t\tRTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x41013e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2348,
+      "original_code": "BSR \ta24NextMaster",
+      "comment": " Get next master in A1\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24NextMaster",
+      "inline_comment_retained": true
+    },
+    "0x410142": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2349,
+      "original_code": "BEQ.S\tNHNoMaster",
+      "comment": " If NIL, exit as in NewHandle",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "NHNoMaster",
+      "inline_comment_retained": true
+    },
+    "0x410144": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2356,
+      "original_code": "Move.L\tA1,A0",
+      "comment": " Get it to A0 for return",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A0",
+      "inline_comment_retained": true
+    },
+    "0x410146": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2357,
+      "original_code": "CLR.L\t(A0)",
+      "comment": " Make it NIL",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A0)",
+      "inline_comment_retained": true
+    },
+    "0x410148": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2358,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": " Show success",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x410152": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2387,
+      "original_code": "BSR \ta24NextMaster",
+      "comment": " Get next master\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24NextMaster",
+      "inline_comment_retained": true
+    },
+    "0x410156": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2388,
+      "original_code": "BNE.S\t@NHMaster",
+      "comment": " If not NIL, go get block\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@NHMaster",
+      "inline_comment_retained": true
+    },
+    "0x410158": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2410,
+      "original_code": "MoveQ\t#memFullErr,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memFullErr,D0"
+    },
+    "0x41015a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2411,
+      "original_code": "BrA.S\tHNilResult",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "HNilResult"
+    },
+    "0x410160": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2414,
+      "original_code": "BEq.S\tNHNoMem",
+      "comment": " No luck, fail return",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "NHNoMem",
+      "inline_comment_retained": true
+    },
+    "0x410162": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2416,
+      "original_code": "HCheckHandle\tBSR.S\tCheckClear",
+      "comment": " Clear memory if requested",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "CheckClear",
+      "inline_comment_retained": true
+    },
+    "0x410164": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2417,
+      "original_code": "Move.L\tA1,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A0"
+    },
+    "0x410166": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2419,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0"
+    },
+    "0x41016c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2424,
+      "original_code": "MoveQ\t#memFullErr,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memFullErr,D0"
+    },
+    "0x41016e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2425,
+      "original_code": "BrA.S\tHReleaseMP",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "HReleaseMP"
+    },
+    "0x410174": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2443,
+      "original_code": "BNE.S\tDisposeTail24",
+      "comment": " Release block\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "DisposeTail24",
+      "inline_comment_retained": true
+    },
+    "0x410176": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2450,
+      "original_code": "Move.L\tA1,D0",
+      "comment": " Masked handle: EQ => Nil passed\t\t<21May85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,D0",
+      "inline_comment_retained": true
+    },
+    "0x410178": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2451,
+      "original_code": "BEq.S\tHNilResult",
+      "comment": " No master ptr to release\t\t\t\t<21May85>",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "HNilResult",
+      "inline_comment_retained": true
+    },
+    "0x41017a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2453,
+      "original_code": "BTST\t#ROZ,flags(A6)",
+      "comment": " skip if ROZ\t\t\t\t\t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "BTST",
+      "operand": "#ROZ,flags(A6)",
+      "inline_comment_retained": true
+    },
+    "0x410180": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2454,
+      "original_code": "BNE.S\tHROZResult",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "HROZResult",
+      "inline_comment_retained": true
+    },
+    "0x410182": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2459,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": " Success result",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x410184": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2461,
+      "original_code": "BSR \tReleaseMP",
+      "comment": " Return MP to list",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ReleaseMP",
+      "inline_comment_retained": true
+    },
+    "0x410188": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2463,
+      "original_code": "Sub.L\tA0,A0",
+      "comment": " Return NIL in A0 for NwHandle",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A0,A0",
+      "inline_comment_retained": true
+    },
+    "0x41018a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2464,
+      "original_code": "BrA.S\tNHExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NHExit"
+    },
+    "0x41018c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2466,
+      "original_code": "CLR.L\t(A1)",
+      "comment": " just clear the (bogus) MP \t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A1)",
+      "inline_comment_retained": true
+    },
+    "0x41018e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2467,
+      "original_code": "Nothing\t\t\tBRA.S\tNHOk",
+      "comment": " go to MMEpilogue, sans error\t\t\t<10Apr85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NHOk",
+      "inline_comment_retained": true
+    },
+    "0x410194": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2482,
+      "original_code": "BEq.S\tSHSNil",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "SHSNil"
+    },
+    "0x410196": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2483,
+      "original_code": "BSR \ta24GetSize",
+      "comment": " \t\t\t\t\t\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24GetSize",
+      "inline_comment_retained": true
+    },
+    "0x41019a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2485,
+      "original_code": "BrA.S\tSHSExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SHSExit"
+    },
+    "0x4101a2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2532,
+      "original_code": "MoveQ\t#nilHandleErr,D0",
+      "comment": "return error code",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#nilHandleErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x4101a4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2533,
+      "original_code": "BrA.S\tSHSExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SHSExit"
+    },
+    "0x4101aa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2537,
+      "original_code": "Move.L\tA1,A0",
+      "comment": "restore A0 for RecoverHandle",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A0",
+      "inline_comment_retained": true
+    },
+    "0x4101ac": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2538,
+      "original_code": "BrA.S\tNHExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NHExit"
+    },
+    "0x4101b2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2561,
+      "original_code": "Move.L\tA6,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,A0"
+    },
+    "0x4101b4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2562,
+      "original_code": "BrA.S\tNHOk",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "NHOk"
+    },
+    "0x4101ba": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2598,
+      "original_code": "Move.L\t-4(A0),A1",
+      "comment": " Handle, or ROMBase on bus error\t\t\t\t<C778>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "-4(A0),A1",
+      "inline_comment_retained": true
+    },
+    "0x4101be": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2602,
+      "original_code": "Add.L\tA6,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "A6,A1"
+    },
+    "0x4101c6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2606,
+      "original_code": "MOVE.L\tA0,D1",
+      "comment": " original pointer\t\t\t\t\t\t\t\t<2>",
+      "preceding_comments": [
+        [
+          2604,
+          "; The following code tests for bad mp, but can only set MemErr\t\t\t\t\t\t\t\t\t<25Apr85>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A0,D1",
+      "inline_comment_retained": true
+    },
+    "0x4101cc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2609,
+      "original_code": "Sub.L\tD1,D2",
+      "comment": " if equal, have required error code!",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D1,D2",
+      "inline_comment_retained": true
+    },
+    "0x4101ce": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2610,
+      "original_code": "Beq.S\tRecoverExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "RecoverExit"
+    },
+    "0x4101d0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2627,
+      "original_code": "MoveQ\t#memBCErr,D2",
+      "comment": " block check failure\t\t\t\t\t\t\t<13Apr85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memBCErr,D2",
+      "inline_comment_retained": true
+    },
+    "0x4101d2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2629,
+      "original_code": "Move.W\tD2,MemErr",
+      "comment": " stuff global error code (is anybody out there?)<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D2,MemErr",
+      "inline_comment_retained": true
+    },
+    "0x4101d6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2630,
+      "original_code": "MoveA.L A1,A0",
+      "comment": " restore A0=handle\t\t\t\t\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "A1,A0",
+      "inline_comment_retained": true
+    },
+    "0x4101e0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2681,
+      "original_code": "BNE.S\t@EHNotNIL",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@EHNotNIL"
+    },
+    "0x4101e2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2682,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0"
+    },
+    "0x4101e4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2683,
+      "original_code": "BrA.S\tEHExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "EHExit"
+    },
+    "0x4101e6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2685,
+      "original_code": "BSR \ta24EH",
+      "comment": " Common code with ReAllocHandle\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24EH",
+      "inline_comment_retained": true
+    },
+    "0x4101ea": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2686,
+      "original_code": "BrA.S\tEHExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "EHExit"
+    },
+    "0x4101f2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2728,
+      "original_code": "BEQ.S\t@RAHCont",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t<SM29> kc",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@RAHCont",
+      "inline_comment_retained": true
+    },
+    "0x4101f4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2737,
+      "original_code": "BTST\t#ROZ,flags(A6)",
+      "comment": " Bypass if ROZ\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BTST",
+      "operand": "#ROZ,flags(A6)",
+      "inline_comment_retained": true
+    },
+    "0x4101fa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2738,
+      "original_code": "BNE.S\t@RAHSkip",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@RAHSkip",
+      "inline_comment_retained": true
+    },
+    "0x4101fc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2740,
+      "original_code": "BSR \ta24EH",
+      "comment": " Empty the Handle for sure",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24EH",
+      "inline_comment_retained": true
+    },
+    "0x410200": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2741,
+      "original_code": "BNE.S\tSHSExit",
+      "comment": " EH failed, return error code",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "SHSExit",
+      "inline_comment_retained": true
+    },
+    "0x410202": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2742,
+      "original_code": "Move.L\tD2,D0",
+      "comment": " restore D0 (saved by MMHPrologue)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x410204": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2744,
+      "original_code": "Move.L\tA1,GZRootHnd",
+      "comment": " record handle being reallocated",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,GZRootHnd",
+      "inline_comment_retained": true
+    },
+    "0x410208": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2745,
+      "original_code": "Clr.L\tGZRootPtr",
+      "comment": " record lack of pointer",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "GZRootPtr",
+      "inline_comment_retained": true
+    },
+    "0x41020c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2746,
+      "original_code": "BSR \ta24AllocBk",
+      "comment": " try to allocate block\t\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24AllocBk",
+      "inline_comment_retained": true
+    },
+    "0x410210": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2747,
+      "original_code": "BSR \tClearGZStuff",
+      "comment": " clean up gz safety stuff",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ClearGZStuff",
+      "inline_comment_retained": true
+    },
+    "0x410214": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2748,
+      "original_code": "Move.L\tA0,D2",
+      "comment": " see if alloc bk worked",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,D2",
+      "inline_comment_retained": true
+    },
+    "0x410216": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2749,
+      "original_code": "BNE \tHCheckHandle",
+      "comment": " If ok, take the NewHandle exit route.",
+      "preceding_comments": [],
+      "op": "BNE",
+      "operand": "HCheckHandle",
+      "inline_comment_retained": true
+    },
+    "0x41021a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2750,
+      "original_code": "MoveQ\t#memFullErr,D0",
+      "comment": " If we can't find the space, just report",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memFullErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x41021c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2751,
+      "original_code": "Bra.S\tSHSExit",
+      "comment": " the error, leaving handle alone . . .",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SHSExit",
+      "inline_comment_retained": true
+    },
+    "0x41021e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2753,
+      "original_code": "BSR \ta24GetSize",
+      "comment": " D0 := current data size\t\t\t\t<v1.1>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24GetSize",
+      "inline_comment_retained": true
+    },
+    "0x410222": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2754,
+      "original_code": "CMP.L\tD0,D2",
+      "comment": " requested - current ... unsigned\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D0,D2",
+      "inline_comment_retained": true
+    },
+    "0x410224": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2755,
+      "original_code": "BHI.S\tRAHError",
+      "comment": " it's erroneous to grow\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BHI.S",
+      "operand": "RAHError",
+      "inline_comment_retained": true
+    },
+    "0x410226": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2756,
+      "original_code": "MOVEQ\t#memROZWarn,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memROZWarn,D0",
+      "inline_comment_retained": true
+    },
+    "0x410228": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2757,
+      "original_code": "BRA.S\tSHSExit",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SHSExit",
+      "inline_comment_retained": true
+    },
+    "0x41022a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2789,
+      "original_code": "MOVEQ\t#memROZWarn,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#memROZWarn,D0",
+      "inline_comment_retained": true
+    },
+    "0x41022c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2790,
+      "original_code": "BRA.S\tSHSExit",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<04Mar85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SHSExit",
+      "inline_comment_retained": true
+    },
+    "0x410232": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2811,
+      "original_code": "v24Hlock\t\tBEQ\t\tHFail",
+      "comment": " handle was NIL",
+      "preceding_comments": [],
+      "op": "BEQ",
+      "operand": "HFail",
+      "inline_comment_retained": true
+    },
+    "0x410234": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2812,
+      "original_code": "BSET\t#Lock,(A1)",
+      "comment": " set the lock bit",
+      "preceding_comments": [],
+      "op": "BSET",
+      "operand": "#Lock,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x410238": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2813,
+      "original_code": "BRA\t\tHGood",
+      "comment": " return success",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "HGood",
+      "inline_comment_retained": true
+    },
+    "0x41023c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2837,
+      "original_code": "BEq\t\tHFail",
+      "comment": " handle was NIL",
+      "preceding_comments": [],
+      "op": "BEQ",
+      "operand": "HFail",
+      "inline_comment_retained": true
+    },
+    "0x41023e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2839,
+      "original_code": "BClr\t#Lock,(A1)",
+      "comment": " reset the lock bit",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#Lock,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x410242": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2840,
+      "original_code": "BrA\t\tHGood",
+      "comment": " return success",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "HGood",
+      "inline_comment_retained": true
+    },
+    "0x410246": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2868,
+      "original_code": "BEq.S\tHFail",
+      "comment": " handle was NIL",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "HFail",
+      "inline_comment_retained": true
+    },
+    "0x410248": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2870,
+      "original_code": "BSet\t#Purge,(A1)",
+      "comment": " set the purge bit",
+      "preceding_comments": [],
+      "op": "BSET",
+      "operand": "#Purge,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x41024c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2871,
+      "original_code": "BrA.S\tHGood",
+      "comment": " return success",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "HGood",
+      "inline_comment_retained": true
+    },
+    "0x410250": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2898,
+      "original_code": "BEq.S\tHFail",
+      "comment": " handle was NIL",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "HFail",
+      "inline_comment_retained": true
+    },
+    "0x410252": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2900,
+      "original_code": "BClr\t#Purge,(A1)",
+      "comment": " reset the purge bit",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#Purge,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x410256": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2909,
+      "original_code": "MoveQ\t#0,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0"
+    },
+    "0x410258": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2910,
+      "original_code": "BrA.S\tHExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "HExit"
+    },
+    "0x41025a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2912,
+      "original_code": "MoveQ\t#nilHandleErr,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#nilHandleErr,D0"
+    },
+    "0x410260": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 2915,
+      "original_code": "RTS",
+      "comment": " jump to it\t\t\t\t\t\t\t<v1.9>",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x41027a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3062,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": " assume success",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x41027c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3063,
+      "original_code": "BSR \ta24HMakeMoreMasters",
+      "comment": " call ROM routine",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24HMakeMoreMasters",
+      "inline_comment_retained": true
+    },
+    "0x410280": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3064,
+      "original_code": "BNE.S\t@1",
+      "comment": " br for success",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x410282": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3065,
+      "original_code": "MOVEQ\t#MemFullErr,D0",
+      "comment": " change D0 from 0 to error code",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#MemFullErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x410284": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3066,
+      "original_code": "@1\t\t\t\tMOVE.L\t(SP)+,A6",
+      "comment": " restore A6",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A6",
+      "inline_comment_retained": true
+    },
+    "0x410286": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3067,
+      "original_code": "Move.W\tD0,MemErr",
+      "comment": " global error code \t\t\t\t\t<25Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,MemErr",
+      "inline_comment_retained": true
+    },
+    "0x41028a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3068,
+      "original_code": "RTS",
+      "comment": " that's all",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x410290": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3197,
+      "original_code": "BNE.S\t@goBubble",
+      "comment": " NotEqual => not purged \t\t\t\t\t\t\t<31mar86>",
+      "preceding_comments": [
+        [
+          3194,
+          ";-------------------------------------------------------------------------------"
+        ],
+        [
+          3195,
+          "; First check for the nasties: locked or purged."
+        ],
+        [
+          3196,
+          ";-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "BNE.S",
+      "operand": "@goBubble",
+      "inline_comment_retained": true
+    },
+    "0x410292": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3199,
+      "original_code": "MOVEQ\t#NilHandleErr,D0",
+      "comment": " nil handle error\t\t\t\t\t\t<SM29> kc",
+      "preceding_comments": [
+        [
+          3198,
+          "\t\t\t\t\t\t\t\t\t\t\t\t;\t\t\t\t\t\t\t\t\t\t<SM29> kc"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#NilHandleErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x410298": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3208,
+      "original_code": "MOVE.L\tA1,A4",
+      "comment": " save handle to block for the duration\t<SM29> kc",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A4",
+      "inline_comment_retained": true
+    },
+    "0x41029a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3209,
+      "original_code": "TST.B\t(A4)",
+      "comment": " make sure block is unlocked\t\t\t<SM29> kc",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "(A4)",
+      "inline_comment_retained": true
+    },
+    "0x41029c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3210,
+      "original_code": "BPL.S\t@goAhead",
+      "comment": " yup, all's cool\t\t\t\t\t\t<SM29> kc",
+      "preceding_comments": [],
+      "op": "BPL.S",
+      "operand": "@goAhead",
+      "inline_comment_retained": true
+    },
+    "0x41029e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3212,
+      "original_code": "MOVEQ\t#memLockedErr,D0",
+      "comment": " locked handle error\t\t\t\t\t<SM29> kc",
+      "preceding_comments": [
+        [
+          3211,
+          "\t\t\t\t\t\t\t\t\t\t\t\t;\t\t\t\t\t\t\t\t\t\t<SM29> kc"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#memLockedErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x4102a0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3213,
+      "original_code": "BRA\t\tMHHExit",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<SM29> kc",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "MHHExit",
+      "inline_comment_retained": true
+    },
+    "0x4102a2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3215,
+      "original_code": "MOVE.L\tBkLim(A6),A3",
+      "comment": " last memory block, for the duration\t\t\t\t<04May85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "BkLim(A6),A3",
+      "inline_comment_retained": true
+    },
+    "0x4102a4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3222,
+      "original_code": "SUBQ.L\t#BlkData24,A0",
+      "comment": " point to actual block",
+      "preceding_comments": [
+        [
+          3217,
+          "\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3218,
+          "\t\t\t; See if we aren't already packed at top, in which case a compact is avoided."
+        ],
+        [
+          3219,
+          "\t\t\t; Set up D7 for the duration."
+        ],
+        [
+          3220,
+          "\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "SUBQ.L",
+      "operand": "#BlkData24,A0",
+      "inline_comment_retained": true
+    },
+    "0x4102a6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3223,
+      "original_code": "MOVE.L\tTagBC24(A0),D1",
+      "comment": " block header",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "TagBC24(A0),D1",
+      "inline_comment_retained": true
+    },
+    "0x4102a8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3224,
+      "original_code": "AND.L\tLo3Bytes,D1",
+      "comment": " isolate the block size",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102ac": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3225,
+      "original_code": "MOVE.L\tD1,D7",
+      "comment": " save in D7 for the duration",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,D7",
+      "inline_comment_retained": true
+    },
+    "0x4102ae": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3226,
+      "original_code": "SUBQ.L\t#BlkData24,D7",
+      "comment": " adjust for data count only",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#BlkData24,D7",
+      "inline_comment_retained": true
+    },
+    "0x4102b0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3228,
+      "original_code": "MOVEQ\t#noErr,D0",
+      "comment": " assume no move necessary, ok exit",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#noErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x4102b2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3229,
+      "original_code": "ADD.L\tD1,A0",
+      "comment": " point to next block",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,A0",
+      "inline_comment_retained": true
+    },
+    "0x4102b4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3230,
+      "original_code": "CMP.L\tA3,A0",
+      "comment": " is it already at the limit?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "A3,A0",
+      "inline_comment_retained": true
+    },
+    "0x4102b6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3231,
+      "original_code": "BCC \tMHHExit",
+      "comment": " exit if so . . .",
+      "preceding_comments": [],
+      "op": "BCC",
+      "operand": "MHHExit",
+      "inline_comment_retained": true
+    },
+    "0x4102ba": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3233,
+      "original_code": "TST.B\tTagBC24(A0)",
+      "comment": " ck for Free, Rel, or NRel",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "TagBC24(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4102bc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3234,
+      "original_code": "BEQ.S\t@1",
+      "comment": " br if Free",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x4102be": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3235,
+      "original_code": "BPL \tMHHExit",
+      "comment": " exit if NRel (we're at region top)",
+      "preceding_comments": [],
+      "op": "BPL",
+      "operand": "MHHExit",
+      "inline_comment_retained": true
+    },
+    "0x4102c2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3237,
+      "original_code": "MOVE.L\tHandle24(A0),A0",
+      "comment": " handle offset",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "Handle24(A0),A0",
+      "inline_comment_retained": true
+    },
+    "0x4102c6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3238,
+      "original_code": "ADD.L\tA6,A0",
+      "comment": " master ptr",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "A6,A0",
+      "inline_comment_retained": true
+    },
+    "0x4102c8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3239,
+      "original_code": "TST.B\t(A0)",
+      "comment": " locked Rel?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4102ca": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3240,
+      "original_code": "BMI \tMHHExit",
+      "comment": " exit if so",
+      "preceding_comments": [],
+      "op": "BMI",
+      "operand": "MHHExit",
+      "inline_comment_retained": true
+    },
+    "0x4102ce": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3252,
+      "original_code": "@1\t\t\t\tMOVE.L\tSP,D1",
+      "comment": " figure out the size of our stack buffer",
+      "preceding_comments": [
+        [
+          3242,
+          "\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3243,
+          "\t\t\t; Set up stack buffer and local vars, with frame ptr in A5 (for the variety's sake)."
+        ],
+        [
+          3244,
+          "\t\t\t; Use as much stack as is available (knowing there will be no ApplZone growth),"
+        ],
+        [
+          3245,
+          "\t\t\t; but no less than 128 bytes, permitting 768 bytes for intermediate stack activity."
+        ],
+        [
+          3246,
+          "\t\t\t; New intelligence: \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<01Nov85  JTC>"
+        ],
+        [
+          3247,
+          "\t\t\t;\tThe basic buffer is bounded first by the new HiHeapMark (rather than the old"
+        ],
+        [
+          3248,
+          "\t\t\t;\tBKLim(ApplZone)).  Then it is bounded by the size of the block to be moved plus"
+        ],
+        [
+          3249,
+          "\t\t\t;\ta modicum of stack slop."
+        ],
+        [
+          3250,
+          "\t\t\t; Once the frame is set up, save theZone and stuff A6 there, for subsequent MM calls<13Jan86  JTC>"
+        ],
+        [
+          3251,
+          "\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "SP,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102d0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3253,
+      "original_code": "AND.L\tLo3Bytes,D1",
+      "comment": " why not be safe with our pointer arithmetic?\t\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102d4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3254,
+      "original_code": "SUB.L\tHiHeapMark,D1",
+      "comment": " distance between stack and highest nonstack zone\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "HiHeapMark,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102d8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3260,
+      "original_code": "MOVE.L\t#StkSlop,D2",
+      "comment": " we demand at least this much raw space",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#StkSlop,D2",
+      "inline_comment_retained": true
+    },
+    "0x4102de": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3261,
+      "original_code": "MOVE.L\tD2,D0",
+      "comment": " in case of much space, just take what is needed\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x4102e0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3262,
+      "original_code": "ADD.L\tD7,D0",
+      "comment": " block size + slop \t\t\t\t\t\t\t\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x4102e2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3263,
+      "original_code": "CMP.L\tD0,D1",
+      "comment": " available-(what's needed for this case)               <01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102e4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3264,
+      "original_code": "BLT.S\t@3",
+      "comment": " Less Than (signed OK) ==> no excess stack \t\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x4102e6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3265,
+      "original_code": "MOVE.L\tD0,D1",
+      "comment": " use more parsimonious stack block \t\t\t\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102e8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3267,
+      "original_code": "MOVEQ\t#StackErr,D0",
+      "comment": " assume error",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#StackErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x4102ea": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3268,
+      "original_code": "CMP.L\tD2,D1",
+      "comment": " make sure there's at least 1K",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D2,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102ec": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3269,
+      "original_code": "BLT \tMHHExit",
+      "comment": " just exit if not",
+      "preceding_comments": [],
+      "op": "BLT",
+      "operand": "MHHExit",
+      "inline_comment_retained": true
+    },
+    "0x4102f0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3270,
+      "original_code": "SUB.L\t#128,D2",
+      "comment": " just use a little of the slop (was SUB.W) \t\t\t<01Nov85  JTC>",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "#128,D2",
+      "inline_comment_retained": true
+    },
+    "0x4102f6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3271,
+      "original_code": "SUB.L\tD2,D1",
+      "comment": " buffer size is what's left",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D2,D1",
+      "inline_comment_retained": true
+    },
+    "0x4102f8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3273,
+      "original_code": "SUB.L\tD1,SP",
+      "comment": " buffer",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D1,SP",
+      "inline_comment_retained": true
+    },
+    "0x4102fa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3274,
+      "original_code": "SUB.W\t#LclVarSize24,SP",
+      "comment": " and space for locals",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "#LclVarSize24,SP",
+      "inline_comment_retained": true
+    },
+    "0x4102fe": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3275,
+      "original_code": "MOVE.L\tSP,A5",
+      "comment": " save pointer in A5",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,A5",
+      "inline_comment_retained": true
+    },
+    "0x410300": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3276,
+      "original_code": "MOVE.L\tD1,MyBufSize24(A5)",
+      "comment": " save buffer size",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,MyBufSize24(A5)",
+      "inline_comment_retained": true
+    },
+    "0x410304": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3280,
+      "original_code": "MOVE.L\t(A4),A0",
+      "comment": " also keep TagBC of block we are moving",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A4),A0",
+      "inline_comment_retained": true
+    },
+    "0x410306": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3281,
+      "original_code": "SUBQ\t#BlkData24,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#BlkData24,A0"
+    },
+    "0x410308": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3282,
+      "original_code": "MOVE.L\tTagBC24(A0),OldTagBC24(A5)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "TagBC24(A0),OldTagBC24(A5)"
+    },
+    "0x41030a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3284,
+      "original_code": "MOVE.L\t(A4),D0",
+      "comment": " deref handle",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A4),D0",
+      "inline_comment_retained": true
+    },
+    "0x41030c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3285,
+      "original_code": "AND.L\tLo3Bytes,D0",
+      "comment": " get rid of lock, purge, etc. bits",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D0",
+      "inline_comment_retained": true
+    },
+    "0x410310": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3286,
+      "original_code": "MOVE.L\tD0,InRgnPtr24(A5)",
+      "comment": " save blk as region hint",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,InRgnPtr24(A5)",
+      "inline_comment_retained": true
+    },
+    "0x410314": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3287,
+      "original_code": "Move.B\t(A4),SvTagByte24(A5)",
+      "comment": " Save tag byte.",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4),SvTagByte24(A5)",
+      "inline_comment_retained": true
+    },
+    "0x410318": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3293,
+      "original_code": "BSR \ta24FindRgnTop",
+      "comment": "get A2 pointing to the last block before end of region",
+      "preceding_comments": [
+        [
+          3289,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3290,
+          "\t\t\t\t; Don't do compact if there is a free block at the top of the region that"
+        ],
+        [
+          3291,
+          "\t\t\t\t; is large enough to hold the contents of the block to be moved up."
+        ],
+        [
+          3292,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "BSR",
+      "operand": "a24FindRgnTop",
+      "inline_comment_retained": true
+    },
+    "0x41031c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3294,
+      "original_code": "TST.B\t(A2)",
+      "comment": "is it free?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "(A2)",
+      "inline_comment_retained": true
+    },
+    "0x41031e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3295,
+      "original_code": "BNE.S\t@goCont",
+      "comment": "no, do the buffering stuff",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@goCont",
+      "inline_comment_retained": true
+    },
+    "0x410320": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3296,
+      "original_code": "MOVE.L\tTagBC24(A2),D1",
+      "comment": "get the size of the block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "TagBC24(A2),D1",
+      "inline_comment_retained": true
+    },
+    "0x410322": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3297,
+      "original_code": "MOVE.L\tD1,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,D0"
+    },
+    "0x410324": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3298,
+      "original_code": "SUBQ.L\t#BlkData24,D0",
+      "comment": "last block data space",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#BlkData24,D0",
+      "inline_comment_retained": true
+    },
+    "0x410326": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3299,
+      "original_code": "CMP.L\tD0,D7",
+      "comment": "is it enough space?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D0,D7",
+      "inline_comment_retained": true
+    },
+    "0x410328": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3300,
+      "original_code": "BHI.S\t@goCont",
+      "comment": "no, do the buffering stuff",
+      "preceding_comments": [],
+      "op": "BHI.S",
+      "operand": "@goCont",
+      "inline_comment_retained": true
+    },
+    "0x41032a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3301,
+      "original_code": "SUB.L\tD7,D0",
+      "comment": "must be nonnegative!\t\t\t\t\t\t<02May85>",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x41032c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3302,
+      "original_code": "BEQ.S\t@5",
+      "comment": "if just enough space, go do it!\t\t\t<02May85>",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@5",
+      "inline_comment_retained": true
+    },
+    "0x41032e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3303,
+      "original_code": "MOVEQ\t#minFree24,D2",
+      "comment": "need at least this much to have a free block <02May85><v1.2>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#minFree24,D2",
+      "inline_comment_retained": true
+    },
+    "0x410330": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3304,
+      "original_code": "CMP.L\tD2,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t<02May85>",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x410332": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3305,
+      "original_code": "BCS.S\t@goCont",
+      "comment": "Carry Set => not minFree left, do it the hard way <02May85>",
+      "preceding_comments": [],
+      "op": "BCS.S",
+      "operand": "@goCont",
+      "inline_comment_retained": true
+    },
+    "0x410334": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3307,
+      "original_code": "MOVE.L\t(A4),A0",
+      "comment": "ptr to the block we are moving from",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A4),A0",
+      "inline_comment_retained": true
+    },
+    "0x410336": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3308,
+      "original_code": "MOVE.L\tA2,A1",
+      "comment": "ptr to free block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A2,A1",
+      "inline_comment_retained": true
+    },
+    "0x410338": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3309,
+      "original_code": "ADD.L\tD1,A1",
+      "comment": "ptr to end of free block",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,A1",
+      "inline_comment_retained": true
+    },
+    "0x41033a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3317,
+      "original_code": "@moveRest\t\tMOVE.L\tD7,D0",
+      "comment": "number of bytes of data to move",
+      "preceding_comments": [
+        [
+          3311,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3312,
+          "\t\t\t\t; One-shot move:"
+        ],
+        [
+          3313,
+          "\t\t\t\t;\tD7 = amount of move"
+        ],
+        [
+          3314,
+          "\t\t\t\t;\tA0 = ptr to migrating block data"
+        ],
+        [
+          3315,
+          "\t\t\t\t;\tA1 = ptr to END of free block at top of region"
+        ],
+        [
+          3316,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x41033c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3318,
+      "original_code": "SUB.L\tD0,A1",
+      "comment": "grab what we need",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D0,A1",
+      "inline_comment_retained": true
+    },
+    "0x41033e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3319,
+      "original_code": "SUB.L\tD0,ZCBFree(A6)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D0,ZCBFree(A6)"
+    },
+    "0x410342": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3320,
+      "original_code": "_BlockMove",
+      "comment": "move the bits",
+      "preceding_comments": [],
+      "op": "_BLOCKMOVE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x410344": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3321,
+      "original_code": "MOVE.L\tA4,A0",
+      "comment": "get the handle",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A4,A0",
+      "inline_comment_retained": true
+    },
+    "0x410346": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3322,
+      "original_code": "_EmptyHandle",
+      "comment": "empty it out",
+      "preceding_comments": [],
+      "op": "_EMPTYHANDLE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x410348": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3323,
+      "original_code": "BRA.S\t@MNSFinish",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@MNSFinish"
+    },
+    "0x41034a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3330,
+      "original_code": "MOVEQ\t#0,D6",
+      "comment": " D6 holds number of bytes moved up . . .",
+      "preceding_comments": [
+        [
+          3325,
+          ";-------------------------------------------------------------------------------------------"
+        ],
+        [
+          3326,
+          "; Entry to fill/compact/stuff loop..."
+        ],
+        [
+          3327,
+          ";-------------------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#0,D6",
+      "inline_comment_retained": true
+    },
+    "0x41034c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3331,
+      "original_code": "BSR \ta24FillStkBuf",
+      "comment": " this does it and also adjusts handlesize",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24FillStkBuf",
+      "inline_comment_retained": true
+    },
+    "0x410350": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3332,
+      "original_code": "BSR \tDoCompact",
+      "comment": " then move everything down",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DoCompact",
+      "inline_comment_retained": true
+    },
+    "0x410354": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3333,
+      "original_code": "BSR \ta24FindRgnTop",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24FindRgnTop"
+    },
+    "0x410358": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3343,
+      "original_code": "MOVE.L\tTagBC24(A2),D1",
+      "comment": " size of free block we have at top now",
+      "preceding_comments": [
+        [
+          3335,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3336,
+          "\t\t\t\t; The top of the MoveNxtSeg loop:"
+        ],
+        [
+          3337,
+          "\t\t\t\t;\tThe stack buffer is full, the heap is compacted, A2 points to the free block"
+        ],
+        [
+          3338,
+          "\t\t\t\t;\t(at least as large as the buffer) at the region's top.  This sequence loads"
+        ],
+        [
+          3339,
+          "\t\t\t\t;\tthe buffer's contents up high in the region."
+        ],
+        [
+          3340,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "TagBC24(A2),D1",
+      "inline_comment_retained": true
+    },
+    "0x41035a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3344,
+      "original_code": "MOVE.L\tMyBufCnt24(A5),D0",
+      "comment": " stack buffer count",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "MyBufCnt24(A5),D0",
+      "inline_comment_retained": true
+    },
+    "0x41035e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3345,
+      "original_code": "LEA \tMyStkBuf24(A5),A0",
+      "comment": " source",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MyStkBuf24(A5),A0",
+      "inline_comment_retained": true
+    },
+    "0x410362": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3346,
+      "original_code": "MOVE.L\tA2,A1",
+      "comment": " compute destination",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A2,A1",
+      "inline_comment_retained": true
+    },
+    "0x410364": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3347,
+      "original_code": "ADD.L\tD1,A1",
+      "comment": " point to end of free block",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,A1",
+      "inline_comment_retained": true
+    },
+    "0x410366": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3348,
+      "original_code": "SUB.L\tD0,A1",
+      "comment": " grab what we need",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D0,A1",
+      "inline_comment_retained": true
+    },
+    "0x410368": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3349,
+      "original_code": "ADD.L\tD0,D6",
+      "comment": " update count moved",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D0,D6",
+      "inline_comment_retained": true
+    },
+    "0x41036a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3350,
+      "original_code": "SUB.L\tD0,ZCBFree(A6)",
+      "comment": " *** this is a fix ***",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D0,ZCBFree(A6)",
+      "inline_comment_retained": true
+    },
+    "0x41036e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3351,
+      "original_code": "_BlockMove",
+      "comment": " move it in",
+      "preceding_comments": [],
+      "op": "_BLOCKMOVE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x410370": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3353,
+      "original_code": "TST.L\tD7",
+      "comment": " are we done?",
+      "preceding_comments": [],
+      "op": "TST.L",
+      "operand": "D7",
+      "inline_comment_retained": true
+    },
+    "0x410372": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3354,
+      "original_code": "BEQ.S\t@MNSFinish",
+      "comment": " br if so\t\t\t\t\t\t\t\t\t\t\t<27oct85> BBM",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@MNSFinish",
+      "inline_comment_retained": true
+    },
+    "0x410374": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3362,
+      "original_code": "MOVE.L\tA1,D0",
+      "comment": " ptr to dest data",
+      "preceding_comments": [
+        [
+          3356,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3357,
+          "\t\t\t\t; There's more to move than the bufferfull we just did.  If there's just enough"
+        ],
+        [
+          3358,
+          "\t\t\t\t; free space, or enough to move the block and have at least a minFree block,"
+        ],
+        [
+          3359,
+          "\t\t\t\t; then exit via moveRest stub earlier.\tOtherwise, continue looping with the"
+        ],
+        [
+          3360,
+          "\t\t\t\t; stack buffer..."
+        ],
+        [
+          3361,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A1,D0",
+      "inline_comment_retained": true
+    },
+    "0x410376": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3363,
+      "original_code": "SUB.L\tA2,D0",
+      "comment": " free bytes remaining",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A2,D0",
+      "inline_comment_retained": true
+    },
+    "0x410378": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3364,
+      "original_code": "BEQ.S\t@MNSExact",
+      "comment": " br if none",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@MNSExact",
+      "inline_comment_retained": true
+    },
+    "0x41037a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3365,
+      "original_code": "MOVE.L\tD0,D1",
+      "comment": " get the #free bytes remaining",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x41037c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3366,
+      "original_code": "SUBQ.L\t#BlkData24,D1",
+      "comment": " #free for real data",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#BlkData24,D1",
+      "inline_comment_retained": true
+    },
+    "0x41037e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3367,
+      "original_code": "SUB.L\tD7,D1",
+      "comment": " enough for the remaining bytes?",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D7,D1",
+      "inline_comment_retained": true
+    },
+    "0x410380": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3368,
+      "original_code": "BCS.S\t@MNSAdj",
+      "comment": " Carry Set => not enough, keep buffering\t\t\t<02May85>",
+      "preceding_comments": [],
+      "op": "BCS.S",
+      "operand": "@MNSAdj",
+      "inline_comment_retained": true
+    },
+    "0x410382": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3369,
+      "original_code": "BEQ.S\t@MNSEscape",
+      "comment": " EQual => just enough, so do it \t\t\t\t\t<02May85>",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@MNSEscape",
+      "inline_comment_retained": true
+    },
+    "0x410384": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3371,
+      "original_code": "MOVEQ\t#minFree24,D2",
+      "comment": " if unequal, must be this much to be worthwhile \t<02May85><v1.2>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#minFree24,D2",
+      "inline_comment_retained": true
+    },
+    "0x410386": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3372,
+      "original_code": "CMP.L\tD1,D2",
+      "comment": " extra VERSUS minFree\t\t\t\t\t\t\t\t<02May85>",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D1,D2",
+      "inline_comment_retained": true
+    },
+    "0x41038a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3376,
+      "original_code": "MOVE.L\t(A4),A0",
+      "comment": " yes, move it.\tget source ptr",
+      "preceding_comments": [
+        [
+          3374,
+          "\t\t\t\t\t\t\t\t\t\t\t\t; CC => D1 < minFree => fiddle the slack space\t\t<02Jun87>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "(A4),A0",
+      "inline_comment_retained": true
+    },
+    "0x41038c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3377,
+      "original_code": "BRA.S\t@moveRest",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@moveRest"
+    },
+    "0x41038e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3379,
+      "original_code": "MOVE.L\tD0,TagBC24(A2)",
+      "comment": " adjust size of remaining free blk",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,TagBC24(A2)",
+      "inline_comment_retained": true
+    },
+    "0x410390": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3381,
+      "original_code": "MOVEM.L (A1),D4-D5",
+      "comment": " save 2 longs at front of blk",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "(A1),D4-D5",
+      "inline_comment_retained": true
+    },
+    "0x410394": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3382,
+      "original_code": "MOVE.L\tA6,Handle24(A1)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,Handle24(A1)"
+    },
+    "0x410398": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3383,
+      "original_code": "MOVE.L\tD6,TagBC24(A1)",
+      "comment": " data size is blk size in this case . . .",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D6,TagBC24(A1)",
+      "inline_comment_retained": true
+    },
+    "0x41039a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3384,
+      "original_code": "MOVE.B\t#$40,TagBC24(A1)",
+      "comment": " make it an nrel blk",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#$40,TagBC24(A1)",
+      "inline_comment_retained": true
+    },
+    "0x41039e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3386,
+      "original_code": "MOVE.L\tA1,-(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,-(SP)"
+    },
+    "0x4103a0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3387,
+      "original_code": "BSR\t\ta24FillStkBuf",
+      "comment": " this does it and also adjusts handlesize\t\t\t<27oct85> BBM",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24FillStkBuf",
+      "inline_comment_retained": true
+    },
+    "0x4103a2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3388,
+      "original_code": "BSR \tDoCompact",
+      "comment": " then move everything down",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DoCompact",
+      "inline_comment_retained": true
+    },
+    "0x4103a6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3389,
+      "original_code": "BSR\t\ta24FindRgnTop",
+      "comment": " point A2 to free bk at top . . .\t\t\t\t\t<27oct85> BBM",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "a24FindRgnTop",
+      "inline_comment_retained": true
+    },
+    "0x4103a8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3390,
+      "original_code": "MOVE.L\t(SP)+,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A1"
+    },
+    "0x4103aa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3391,
+      "original_code": "MOVEM.L D4-D5,(A1)",
+      "comment": " restore data at front of blk",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "D4-D5,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x4103ae": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3392,
+      "original_code": "BRA \t@MoveNxtSeg",
+      "comment": " then go again",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "@MoveNxtSeg",
+      "inline_comment_retained": true
+    },
+    "0x4103b0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3405,
+      "original_code": "SUBQ.L\t#8,A1",
+      "comment": " grab 8 more bytes for block header",
+      "preceding_comments": [
+        [
+          3394,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ],
+        [
+          3395,
+          "\t\t\t\t; Clean-up code: set up any free block left over; set up header of relocated block;"
+        ],
+        [
+          3396,
+          "\t\t\t\t; update master pointer; recover stack space and saved registers."
+        ],
+        [
+          3397,
+          "\t\t\t\t; Registers:\tA6\tZone"
+        ],
+        [
+          3398,
+          "\t\t\t\t;\t\t\t\tA5\tLocal variables and buffer on stack"
+        ],
+        [
+          3399,
+          "\t\t\t\t;\t\t\t\tA4\tHandle of migrating block"
+        ],
+        [
+          3400,
+          "\t\t\t\t;\t\t\t\tA2\tPtr to any free space"
+        ],
+        [
+          3401,
+          "\t\t\t\t;\t\t\t\tA1\tPtr to moved block"
+        ],
+        [
+          3402,
+          "\t\t\t\t;-------------------------------------------------------------------------------"
+        ]
+      ],
+      "op": "SUBQ.L",
+      "operand": "#8,A1",
+      "inline_comment_retained": true
+    },
+    "0x4103b2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3406,
+      "original_code": "SUBQ.L\t#8,ZCBFree(A6)",
+      "comment": " *** this is a fix ***",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#8,ZCBFree(A6)",
+      "inline_comment_retained": true
+    },
+    "0x4103b6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3407,
+      "original_code": "MOVE.L\tA1,D0",
+      "comment": " figure free space left",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,D0",
+      "inline_comment_retained": true
+    },
+    "0x4103b8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3408,
+      "original_code": "SUB.L\tA2,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A2,D0"
+    },
+    "0x4103ba": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3409,
+      "original_code": "BEQ.S\t@11",
+      "comment": " br if we used it all",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@11",
+      "inline_comment_retained": true
+    },
+    "0x4103bc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3410,
+      "original_code": "MOVE.L\tD0,TagBC24(A2)",
+      "comment": " create a free block of remaining size",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,TagBC24(A2)",
+      "inline_comment_retained": true
+    },
+    "0x4103be": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3412,
+      "original_code": "@11 \t\t\tMOVE.L\tA1,A2",
+      "comment": " point A2 to our new block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A2",
+      "inline_comment_retained": true
+    },
+    "0x4103c0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3413,
+      "original_code": "MOVE.L\tOldTagBC24(A5),(A2)+",
+      "comment": " TagBC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "OldTagBC24(A5),(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x4103c2": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3414,
+      "original_code": "MOVE.L\tA4,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A4,A0"
+    },
+    "0x4103c4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3415,
+      "original_code": "SUB.L\tA6,A0",
+      "comment": " form handle offset",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A6,A0",
+      "inline_comment_retained": true
+    },
+    "0x4103c6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3416,
+      "original_code": "MOVE.L\tA0,(A2)+",
+      "comment": " Handle",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x4103c8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3418,
+      "original_code": "MOVE.L\tA2,(A4)",
+      "comment": " update master pointer with ptr to text of block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A2,(A4)",
+      "inline_comment_retained": true
+    },
+    "0x4103ca": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3419,
+      "original_code": "MOVE.B\tSvTagByte24(A5),(A4)",
+      "comment": " and restore flags . . .",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "SvTagByte24(A5),(A4)",
+      "inline_comment_retained": true
+    },
+    "0x4103ce": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3421,
+      "original_code": "MOVEQ\t#noErr,D0",
+      "comment": " ok!",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#noErr,D0",
+      "inline_comment_retained": true
+    },
+    "0x4103d0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3423,
+      "original_code": "ADD.L\tMyBufSize24(A5),SP",
+      "comment": " recover buffer space",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "MyBufSize24(A5),SP",
+      "inline_comment_retained": true
+    },
+    "0x4103d4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3424,
+      "original_code": "ADD.W\t#LclVarSize24,SP",
+      "comment": " and locals space",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#LclVarSize24,SP",
+      "inline_comment_retained": true
+    },
+    "0x4103dc": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3680,
+      "original_code": "a24FindRgnTop\tMOVE.L\t(A4),D0",
+      "comment": " deref handle",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A4),D0",
+      "inline_comment_retained": true
+    },
+    "0x4103de": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3681,
+      "original_code": "BEQ.S\t@10",
+      "comment": " br if nil (disposed)",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@10",
+      "inline_comment_retained": true
+    },
+    "0x4103e0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3683,
+      "original_code": "AND.L\tLo3Bytes,D0",
+      "comment": " get rid of lock, purge, etc. bits",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D0",
+      "inline_comment_retained": true
+    },
+    "0x4103e4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3684,
+      "original_code": "MOVE.L\tD0,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,A0"
+    },
+    "0x4103e6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3685,
+      "original_code": "SUBQ\t#BlkData24,A0",
+      "comment": " start scan from here for speed",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#BlkData24,A0",
+      "inline_comment_retained": true
+    },
+    "0x4103e8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3686,
+      "original_code": "BRA.S\t@FRTLoop",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@FRTLoop"
+    },
+    "0x4103ea": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3688,
+      "original_code": "@10\t\t\t\tLEA \tHeapData(A6),A0",
+      "comment": " scan from start of zone",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "HeapData(A6),A0",
+      "inline_comment_retained": true
+    },
+    "0x4103ee": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3690,
+      "original_code": "@FRTLoop \t\tMOVE.L\tTagBC24(A0),D1",
+      "comment": " block header",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "TagBC24(A0),D1",
+      "inline_comment_retained": true
+    },
+    "0x4103f0": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3691,
+      "original_code": "AND.L\tLo3Bytes,D1",
+      "comment": " isolate the block size",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D1",
+      "inline_comment_retained": true
+    },
+    "0x4103f4": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3692,
+      "original_code": "TST.B\tTagBC24(A0)",
+      "comment": " ck for Free, Rel, or NRel",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "TagBC24(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4103f6": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3693,
+      "original_code": "BEQ.S\t@1",
+      "comment": " br if Free",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x4103f8": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3694,
+      "original_code": "BPL.S\t@2",
+      "comment": " br if NReloc (end of region)",
+      "preceding_comments": [],
+      "op": "BPL.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x4103fa": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3695,
+      "original_code": "MOVE.L\tHandle24(A0),A1",
+      "comment": " handle offset",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "Handle24(A0),A1",
+      "inline_comment_retained": true
+    },
+    "0x4103fe": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3696,
+      "original_code": "ADD.L\tA6,A1",
+      "comment": " master ptr",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "A6,A1",
+      "inline_comment_retained": true
+    },
+    "0x410400": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3697,
+      "original_code": "TST.B\t(A1)",
+      "comment": " locked Rel?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "(A1)",
+      "inline_comment_retained": true
+    },
+    "0x410402": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3698,
+      "original_code": "BMI.S\t@2",
+      "comment": " br if Locked (end of region)",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x410404": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3700,
+      "original_code": "@1\t\t\t\tMOVE.L\tA0,A2",
+      "comment": " remember this as the last block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,A2",
+      "inline_comment_retained": true
+    },
+    "0x410406": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3701,
+      "original_code": "ADD.L\tD1,A0",
+      "comment": " point to next block",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,A0",
+      "inline_comment_retained": true
+    },
+    "0x410408": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3702,
+      "original_code": "CMP.L\tA3,A0",
+      "comment": " reached the end of zone?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "A3,A0",
+      "inline_comment_retained": true
+    },
+    "0x41040a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3703,
+      "original_code": "BCS.S\t@FRTLoop",
+      "comment": " loop if not (fruitloops)",
+      "preceding_comments": [],
+      "op": "BCS.S",
+      "operand": "@FRTLoop",
+      "inline_comment_retained": true
+    },
+    "0x41040c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3704,
+      "original_code": "BRA.S\t@3",
+      "comment": " otherwise exit (must be in last rgn)",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x41040e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3706,
+      "original_code": "@2\t\t\t\tCMP.L\tInRgnPtr24(A5),A0",
+      "comment": " are we in the correct region?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "InRgnPtr24(A5),A0",
+      "inline_comment_retained": true
+    },
+    "0x410412": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3707,
+      "original_code": "BLS.S\t@1",
+      "comment": " keep looking, if not",
+      "preceding_comments": [],
+      "op": "BLS.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x410414": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3709,
+      "original_code": "@3\t\t\t\tRTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x410416": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3762,
+      "original_code": "MOVE.L\tMyBufSize24(A5),D0",
+      "comment": " figure MIN(MyBufSize,HandleSize)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "MyBufSize24(A5),D0",
+      "inline_comment_retained": true
+    },
+    "0x41041a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3763,
+      "original_code": "CMP.L\tD7,D0",
+      "comment": " D7 is current data size of blk we're moving",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x41041c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3764,
+      "original_code": "BLT.S\t@1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "@1"
+    },
+    "0x41041e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3765,
+      "original_code": "MOVE.L\tD7,D0",
+      "comment": " use current size if <= buffer size",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x410420": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3767,
+      "original_code": "LEA \tMyStkBuf24(A5),A1",
+      "comment": " destination",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MyStkBuf24(A5),A1",
+      "inline_comment_retained": true
+    },
+    "0x410424": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3768,
+      "original_code": "MOVE.L\t(A4),A0",
+      "comment": " BlkData pointer",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A4),A0",
+      "inline_comment_retained": true
+    },
+    "0x410426": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3769,
+      "original_code": "ADD.L\tD7,A0",
+      "comment": " end of block pointer",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D7,A0",
+      "inline_comment_retained": true
+    },
+    "0x410428": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3770,
+      "original_code": "SUB.L\tD0,A0",
+      "comment": " source (move last D0 bytes of blk)",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D0,A0",
+      "inline_comment_retained": true
+    },
+    "0x41042a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3771,
+      "original_code": "SUB.L\tD0,D7",
+      "comment": " adjust current size",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "D0,D7",
+      "inline_comment_retained": true
+    },
+    "0x41042c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3772,
+      "original_code": "MOVE.L\tD0,MyBufCnt24(A5)",
+      "comment": " set up buffer count",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,MyBufCnt24(A5)",
+      "inline_comment_retained": true
+    },
+    "0x410430": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3773,
+      "original_code": "MOVE.L\tD0,D1",
+      "comment": " and save in D1 (size of new free blk)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x410432": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3774,
+      "original_code": "_BlockMove",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_BLOCKMOVE",
+      "operand": ""
+    },
+    "0x410434": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3776,
+      "original_code": "MOVE.L\tA4,A0",
+      "comment": " HBlk",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A4,A0",
+      "inline_comment_retained": true
+    },
+    "0x410436": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3777,
+      "original_code": "MOVE.L\tD7,D0",
+      "comment": " remaining bytes in block",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x410438": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3778,
+      "original_code": "BNE.S\t@2",
+      "comment": " br if space left",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x41043a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3779,
+      "original_code": "_EmptyHandle",
+      "comment": " get rid of entire blk when 0 (updates freemem)",
+      "preceding_comments": [],
+      "op": "_EMPTYHANDLE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x41043c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3780,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x41043e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3787,
+      "original_code": "MOVE.L\t(A0),A0",
+      "comment": " ptr to data portion of what's left",
+      "preceding_comments": [
+        [
+          3782,
+          "\t\t\t; We still haven't emptied the block, so create a smaller block with data size"
+        ],
+        [
+          3783,
+          "\t\t\t; D0=D7 and a free block of size D1 (the amount we moved).\tNote that by virtue"
+        ],
+        [
+          3784,
+          "\t\t\t; of this style of block truncation, the physical/logical size fudge factor is"
+        ],
+        [
+          3785,
+          "\t\t\t; guaranteed to be zero."
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "(A0),A0",
+      "inline_comment_retained": true
+    },
+    "0x410440": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3788,
+      "original_code": "SUBQ\t#BlkData24,A0",
+      "comment": " ptr to block that's left",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#BlkData24,A0",
+      "inline_comment_retained": true
+    },
+    "0x410442": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3789,
+      "original_code": "MOVE.B\tTagBC24(A0),D2",
+      "comment": " save Tag",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "TagBC24(A0),D2",
+      "inline_comment_retained": true
+    },
+    "0x410444": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3790,
+      "original_code": "ADDQ.L\t#BlkData24,D0",
+      "comment": " new physical block size",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#BlkData24,D0",
+      "inline_comment_retained": true
+    },
+    "0x410446": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3791,
+      "original_code": "MOVE.L\tD0,TagBC24(A0)",
+      "comment": " set BC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,TagBC24(A0)",
+      "inline_comment_retained": true
+    },
+    "0x410448": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3792,
+      "original_code": "MOVE.B\tD2,TagBC24(A0)",
+      "comment": " and restore tag",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D2,TagBC24(A0)",
+      "inline_comment_retained": true
+    },
+    "0x41044a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3794,
+      "original_code": "ADD.L\tD0,A0",
+      "comment": " point to new free block",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D0,A0",
+      "inline_comment_retained": true
+    },
+    "0x41044c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3795,
+      "original_code": "MOVE.L\tD1,TagBC24(A0)",
+      "comment": " set Tag=free, BC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,TagBC24(A0)",
+      "inline_comment_retained": true
+    },
+    "0x41044e": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3796,
+      "original_code": "ADD.L\tD1, ZCBFree(A6)",
+      "comment": " update free count.",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1, ZCBFree(A6)",
+      "inline_comment_retained": true
+    },
+    "0x410452": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3797,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x41045a": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3847,
+      "original_code": "_CompactMem",
+      "comment": "  free space to the top . . .",
+      "preceding_comments": [],
+      "op": "_COMPACTMEM",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x41045c": {
+      "path": "OS/MemoryMgr/MemoryMgr.a",
+      "line": 3848,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4259482,
+      "op": "JSR",
+      "operand": "TOMAXLIMIT(PC)",
+      "bytes": "4eba09ac",
+      "rom_instruction": "jsr %pc@(0x410848)"
+    },
+    {
+      "address": 4259486,
+      "op": "MOVE.L",
+      "operand": "D2,ApplLimit",
+      "bytes": "21c20130",
+      "rom_instruction": "movel %d2,0x130"
+    },
+    {
+      "address": 4259490,
+      "op": "MOVE.L",
+      "operand": "D2,HiHeapMark",
+      "bytes": "21c20bae",
+      "rom_instruction": "movel %d2,0xbae"
+    },
+    {
+      "address": 4259516,
+      "op": "CLR.L",
+      "operand": "-(SP)",
+      "bytes": "42a7",
+      "rom_instruction": "clrl %sp@-"
+    },
+    {
+      "address": 4259576,
+      "op": "CLR.L",
+      "operand": "LastFOND",
+      "bytes": "42b80bc2",
+      "rom_instruction": "clrl 0xbc2"
+    },
+    {
+      "address": 4259580,
+      "op": "MOVE.W",
+      "operand": "#-1,FONDID",
+      "bytes": "31fcffff0bc6",
+      "rom_instruction": "movew #-1,0xbc6"
+    },
+    {
+      "address": 4259626,
+      "op": "BSR.W",
+      "operand": "IAZ",
+      "bytes": "6100ff66",
+      "rom_instruction": "bsrw 0x40fe92"
+    },
+    {
+      "address": 4259632,
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "bytes": "7000",
+      "rom_instruction": "moveq #0,%d0"
+    },
+    {
+      "address": 4259634,
+      "op": "MOVE.W",
+      "operand": "D0,MemErr",
+      "bytes": "31c00220",
+      "rom_instruction": "movew %d0,0x220"
+    },
+    {
+      "address": 4259714,
+      "op": "LEA",
+      "operand": "STDGZ(PC),A1",
+      "bytes": "43fa0ce8",
+      "rom_instruction": "lea %pc@(0x410c6c),%a1"
+    },
+    {
+      "address": 4259718,
+      "op": "MOVE.L",
+      "operand": "A1,24(A2)",
+      "bytes": "25490018",
+      "rom_instruction": "movel %a1,%a2@(24)"
+    },
+    {
+      "address": 4259760,
+      "op": "MOVE.L",
+      "operand": "#8388608,D0",
+      "bytes": "203c00800000",
+      "rom_instruction": "movel #8388608,%d0"
+    },
+    {
+      "address": 4259766,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba0532",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259774,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba052a",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259822,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba04fa",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259846,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa0502",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4259850,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba04de",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259860,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba04d4",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259868,
+      "op": "BRA.S",
+      "operand": "MM_410006",
+      "bytes": "60e8",
+      "rom_instruction": "bras 0x410006"
+    },
+    {
+      "address": 4259870,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba04ca",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259900,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba04ac",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4259904,
+      "op": "MOVE.L",
+      "operand": "#8388608,D0",
+      "bytes": "203c00800000",
+      "rom_instruction": "movel #8388608,%d0"
+    },
+    {
+      "address": 4259948,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa049c",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4259998,
+      "op": "MOVEQ",
+      "operand": "#24,D0",
+      "bytes": "7018",
+      "rom_instruction": "moveq #24,%d0"
+    },
+    {
+      "address": 4260002,
+      "op": "MOVE.L",
+      "operand": "ApplZone,A0",
+      "bytes": "207802aa",
+      "rom_instruction": "moveal 0x2aa,%a0"
+    },
+    {
+      "address": 4260006,
+      "op": "SUB.L",
+      "operand": "(A0),D0",
+      "bytes": "9090",
+      "rom_instruction": "subl %a0@,%d0"
+    },
+    {
+      "address": 4260054,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba0412",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4260074,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa041e",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4260082,
+      "op": "JSR",
+      "operand": "MMPPROLOGUE(PC)",
+      "bytes": "4eba03be",
+      "rom_instruction": "jsr %pc@(0x4104b2)"
+    },
+    {
+      "address": 4260104,
+      "op": "JSR",
+      "operand": "MMPPROLOGUE(PC)",
+      "bytes": "4eba03a8",
+      "rom_instruction": "jsr %pc@(0x4104b2)"
+    },
+    {
+      "address": 4260114,
+      "op": "JSR",
+      "operand": "MMPPROLOGUE(PC)",
+      "bytes": "4eba039e",
+      "rom_instruction": "jsr %pc@(0x4104b2)"
+    },
+    {
+      "address": 4260124,
+      "op": "JSR",
+      "operand": "MMPPROLOGUE(PC)",
+      "bytes": "4eba0394",
+      "rom_instruction": "jsr %pc@(0x4104b2)"
+    },
+    {
+      "address": 4260154,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba03ae",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4260170,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa03be",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4260174,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba039a",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4260188,
+      "op": "JSR",
+      "operand": "ALLOCBK(PC)",
+      "bytes": "4eba05a0",
+      "rom_instruction": "jsr %pc@(0x4106fe)"
+    },
+    {
+      "address": 4260200,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa03a0",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4260208,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba0354",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260240,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba0334",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260252,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba0328",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260256,
+      "op": "BNE.S",
+      "operand": "MM_4101A6",
+      "bytes": "6604",
+      "rom_instruction": "bnes 0x4101a6"
+    },
+    {
+      "address": 4260262,
+      "op": "JSR",
+      "operand": "SETSIZE(PC)",
+      "bytes": "4eba075a",
+      "rom_instruction": "jsr %pc@(0x410902)"
+    },
+    {
+      "address": 4260270,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba0316",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260278,
+      "op": "JSR",
+      "operand": "MMPROLOGUE(PC)",
+      "bytes": "4eba0332",
+      "rom_instruction": "jsr %pc@(0x4104ea)"
+    },
+    {
+      "address": 4260288,
+      "op": "MOVE.L",
+      "operand": "(A1),D2",
+      "bytes": "2411",
+      "rom_instruction": "movel %a1@,%d2"
+    },
+    {
+      "address": 4260290,
+      "op": "AND.L",
+      "operand": "MaskBC,D2",
+      "bytes": "c4b8031a",
+      "rom_instruction": "andl 0x31a,%d2"
+    },
+    {
+      "address": 4260296,
+      "op": "AND.L",
+      "operand": "MaskBC,D1",
+      "bytes": "c2b8031a",
+      "rom_instruction": "andl 0x31a,%d1"
+    },
+    {
+      "address": 4260312,
+      "op": "JMP",
+      "operand": "MMNOERREPILOGUE(PC)",
+      "bytes": "4efa033c",
+      "rom_instruction": "jmp %pc@(0x410516)"
+    },
+    {
+      "address": 4260316,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba02e8",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260332,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba02d8",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260336,
+      "op": "TST.L",
+      "operand": "(A1)",
+      "bytes": "4a91",
+      "rom_instruction": "tstl %a1@"
+    },
+    {
+      "address": 4260400,
+      "op": "BSR.S",
+      "operand": "HStdEntry",
+      "bytes": "6130",
+      "rom_instruction": "bsrs 0x410262"
+    },
+    {
+      "address": 4260410,
+      "op": "BSR.S",
+      "operand": "HStdEntry",
+      "bytes": "6126",
+      "rom_instruction": "bsrs 0x410262"
+    },
+    {
+      "address": 4260420,
+      "op": "BSR.S",
+      "operand": "HStdEntry",
+      "bytes": "611c",
+      "rom_instruction": "bsrs 0x410262"
+    },
+    {
+      "address": 4260430,
+      "op": "BSR.S",
+      "operand": "HStdEntry",
+      "bytes": "6112",
+      "rom_instruction": "bsrs 0x410262"
+    },
+    {
+      "address": 4260444,
+      "op": "MOVE.W",
+      "operand": "D0,MemErr",
+      "bytes": "31c00220",
+      "rom_instruction": "movew %d0,0x220"
+    },
+    {
+      "address": 4260450,
+      "op": "MOVE.L",
+      "operand": "A0,D0",
+      "bytes": "2008",
+      "rom_instruction": "movel %a0,%d0"
+    },
+    {
+      "address": 4260452,
+      "op": "AND.L",
+      "operand": "MaskBC,D0",
+      "bytes": "c0b8031a",
+      "rom_instruction": "andl 0x31a,%d0"
+    },
+    {
+      "address": 4260456,
+      "op": "BNE.S",
+      "operand": "MM_41026E",
+      "bytes": "6604",
+      "rom_instruction": "bnes 0x41026e"
+    },
+    {
+      "address": 4260458,
+      "op": "ADDQ.L",
+      "operand": "#4,SP",
+      "bytes": "588f",
+      "rom_instruction": "addql #4,%sp"
+    },
+    {
+      "address": 4260460,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4260462,
+      "op": "MOVE.L",
+      "operand": "D0,A1",
+      "bytes": "2240",
+      "rom_instruction": "moveal %d0,%a1"
+    },
+    {
+      "address": 4260464,
+      "op": "MOVE.L",
+      "operand": "(A1),D0",
+      "bytes": "2011",
+      "rom_instruction": "movel %a1@,%d0"
+    },
+    {
+      "address": 4260466,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4260468,
+      "op": "MOVE.L",
+      "operand": "A6,-(SP)",
+      "bytes": "2f0e",
+      "rom_instruction": "movel %fp,%sp@-"
+    },
+    {
+      "address": 4260470,
+      "op": "MOVE.L",
+      "operand": "TheZone,A6",
+      "bytes": "2c780118",
+      "rom_instruction": "moveal 0x118,%fp"
+    },
+    {
+      "address": 4260492,
+      "op": "JSR",
+      "operand": "MMHPROLOGUE(PC)",
+      "bytes": "4eba0238",
+      "rom_instruction": "jsr %pc@(0x4104c6)"
+    },
+    {
+      "address": 4260500,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa0274",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4260744,
+      "op": "BCS.S",
+      "operand": "MM_41038E",
+      "bytes": "6504",
+      "rom_instruction": "bcss 0x41038e"
+    },
+    {
+      "address": 4260824,
+      "op": "JMP",
+      "operand": "MMEPILOGUE(PC)",
+      "bytes": "4efa0130",
+      "rom_instruction": "jmp %pc@(0x41050a)"
+    },
+    {
+      "address": 4260948,
+      "op": "MOVE.L",
+      "operand": "#8388608,D0",
+      "bytes": "203c00800000",
+      "rom_instruction": "movel #8388608,%d0"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 1512,
+    "checked_entry_points": 117,
+    "instruction_count": 557,
+    "source_operation_matches": 486,
+    "rom_only_operation_count": 71,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-memory-manager-verify",
+    "source_sha256": "778db93443dfc504cec839b6cbc3ae4a93f31e065284df7094040512150db2a9",
+    "assembled_sha256": "a0828c302d14f5c0c78240522dea56f9055c7299c9249a3d176e6749037c47e4",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original source formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

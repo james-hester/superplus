@@ -1,0 +1,35 @@
+*R QuickDraw Source/GrafTypes.a supplies the stack query macro.
+*R HeapEnd names the original $114 operand.
+
+        MACRO
+        _StackAvail
+        MOVE.L SP,D0
+        SUB.L HeapEnd,D0
+        ENDM
+
+*R QuickDraw/Classic/GrafTypes.m.a supplies these trap macros.
+
+		MACRO			
+		_MLongMul
+		DC.W	($A867)
+		ENDM
+
+		MACRO		
+		_MFixMul
+		DC.W	($A868)
+		ENDM
+
+		MACRO			
+		_MFixRatio
+		DC.W	($A869)
+		ENDM
+
+		MACRO			
+		_MSysError
+		DC.W	($A9C9)
+		ENDM
+
+		MACRO				
+		_GetScrnBits
+		DC.W	($A833) 					;new trap number
+		ENDM

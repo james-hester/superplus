@@ -1,0 +1,702 @@
+;
+;	File:		SegmentLoader.a
+;
+;	Contains:	Segment Loader for Macintosh Operating System
+;
+;	Written by:	Andy Hertzfeld  09-May-83
+;
+;	Copyright:	© 1983-1992 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				 11/2/85	JTC		Check global SegHiEnable before MoveHHi in LoadSeg.
+;				10/28/85	JTC		Changed Launch and Chain to check for extended param block,
+;									calling OpenRFPerm with desired permissions. Also added vector
+;									for vSegStack.
+;				 9/10/85	BBM		fix bug - if ExitToShell with ResLoad false, then LoadCode
+;									wouldn't load the code.
+;				 8/18/85	LAK		Removed call to MakeStkPB and placed that code in-line (moved
+;									this file to TBLink so had to remove the .Ref). A file system
+;									call should be added to flush all volumes soon.
+;				 7/26/85	RDC		Added include statement for HWequ file (needed for DiagROM
+;									reference)
+;				  7/8/85	LAK		Zero D0-D7 and init A0-A2 to DiagROM addr at launch; fixed bug
+;									in InstallRDrivers to preserve DCtlStorage handle if it's in the
+;									system heap.
+;				 5/23/85	JTC		Do a MoveHHi on all segments that come in unlocked.
+;				 5/22/85	LAK		Set location 0 to DiagROM at launch (in case Finder doesn't FOBJ
+;									it).
+;				 5/21/85	JTC		Fix bug in check for "already loaded" seg in LoadSeg.
+;				 3/27/85	JTC		Add loop in Launch to remove appl zone vbl tasks from loop
+;									before trashing appl zone.
+;				 1/30/85	LAK		Added ram patch after ExitToShell to LodeScrap and prefix to
+;									BootDrive. Moved ExitToShell label (before ram patch).
+;									CloseResFile skipped here to avoid bug in driver goodbye kiss
+;									(where driver came from app file), esp. since it appears to be
+;									called in Launch anyways.
+;				 1/29/85	EHB		Made Launch and Chain give goodbye calls to drivers that want
+;									'em
+;				 1/29/85	EHB		Fix odd stack bug in Launch/Chain
+;				 9/10/83	AJH		Fixed bug -- it wasn't releasing segment 0!
+;				  9/6/83	AJH		BadOpen now deep shits
+;				 8/19/83	LAK		Now inits StkLowPt.
+;				 8/18/83	SC		Changed theScrap to scrapHandle and changed BEQ to BLE
+;				 8/16/83	AJH		Compute screen sound address relative to memTop (instead of
+;									ScreenBase)
+;				 8/13/83	SC		Dropped flushevents
+;				 8/12/83	AJH		moved globals to SysEqu; use deepShit alert in SysErr made
+;									ExitToShell use a low memory pBlock save parameters in lomem
+;									earlier
+;				 8/11/83	AJH		made it preserve scrap by moving it to stack
+;				 8/10/83	AJH		moved LoadTrap to LoadSeg; loader calls SetApplLimit
+;				  8/9/83	SC		Fixed bug in scrap stuff(D0 lost through NewHandle)
+;				  8/8/83	AJH		removed compact before locking (now rMgr does it!)
+;				  8/6/83	BLH		Added initialization of DragHook, DeskHook, CloseOrnHook,
+;									restProc, saveProc, saveSP, taskLock, fScaleDisable, resErrHook
+;									right after InitApplZone. These all used to be in InitWindows
+;									(except fScaleDisable).
+;				 6/17/83	AJH		fixed bug (no InitApplZone) introduced yesterday
+;				 6/16/83	AJH		made it compact before locking code segments
+;				 6/16/83	AJH		made it InitApplZone early so it only opens once
+;				 6/11/83	AJH		cleaned up BadOpen error exit stuff
+;				  6/8/83	AJH		increased size of appName; made it use AppParmHandle
+;				  6/4/83	AJH		made Launch clear D7 & 20(A5) for stupid Lisa Pascal
+;				  6/2/83	AJH		fixed bug in ExitToShell to push page 2 word
+;				  6/1/83	AJH		preserved theScrap; added page two options
+;				 5/29/83	AJH		Changed jumptable from 10 bytes/entry to 8 bytes/entry
+;				 1/23/83	LAK		Adapted for new equate files.
+;
+*R This file restores the Mac Plus segment loader.
+*R Later cache, FPU, palette, and system-code changes are omitted.
+*R It retains the older driver-storage check, including its documented bug.
+*R GetAppParms copies 32 bytes; its original comment below says 24.
+*R See Evidence/segmentloader.json for the source and ROM comparison.
+;
+		EXPORT Chain,ExitToShell,GetAppParms,InstallRDrivers,Launch,LoadSeg ;]
+		EXPORT UnloadSeg,vSegStack ;]
+
+        BLANKS ON
+        STRING ASIS
+        MACHINE MC68000
+
+		INCLUDE 'HardwarePrivateEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+*R original 40-byte DCE
+dCtlEntrySize EQU dCtlMenu+2 ;]
+
+Loader PROC EXPORT
+
+; segment header definitions
+
+SegJTOffset    EQU		 0					 ; offset of 1st jumpTable entry
+SegJTEntries   EQU		 2					 ; number of jumpTable entries
+SegHdrSize	   EQU		 4					 ; the header is four bytes long
+
+; misc definitions
+
+SegLoadTrap    EQU		 $A9F0				 ; LoadSeg trap ID
+
+			
+;------------------------------------------------------------------------------
+;
+; PROCEDURE LoadSeg(segID: INTEGER);
+;
+; LoadSeg is used to load a segment and patch all the jump table entries for
+; that segment.  It is usually called from the jump table entry and almost
+; never called directly by the application.  It then transfers control
+; to the newly loaded code.
+;
+;  All registers are preserved until the newly loaded code is launched.
+;  If the segment can't be found, a deep shit alert is posted.
+;
+;------------------------------------------------------------------------------
+
+LoadSeg
+			MOVEM.L	D0-D2/A0-A1,-(SP)		 ;all registers must be preserved
+
+			MOVE.W	24(SP),D0				; get the segment ID
+			BSR.S 	LoadCode				; A0=D0=segment handle
+			BEQ.S 	SegError				; if none, give up
+            BTST #Lock,(A0) ;]
+			BNE.S	NoMoveHHi				; NotEqual => don't move it   <23May85>
+			TST.B 	SegHiEnable				; = 0 to disable use of (dubious) MoveHHi	  <02Nov85>  JTC
+			BEQ.S 	@37						;											  <02Nov85>  JTC
+			
+			_MoveHHi						;Move it to highest possible point 		  <23May85>
+@37											;Aren't we slick and tight?                  <02Nov85>  JTC
+			BSET #Lock,(A0)                    ;]lock the segment
+NoMoveHHi
+            MOVE.L (A0),-(SP)
+            CLR.B (SP)
+            MOVE.L (SP)+,A0
+
+			
+			MOVE.L	A5,A1					 ;copy world base address
+			ADD.W 	CurJTOffset,A1			 ;offset by the current offset
+			ADD.W 	SegJTOffset(A0),A1		 ;compute address of 1st entry
+			
+			CMP.W 	#$4EF9,2(A1)			 ;is it already loaded? (was 4(A1)) 		<21May85>
+			BEQ.S 	GoLaunch				 ;if so, don't bother to load
+			
+; we must patch the jump table to point to the newly loaded segment.  At this
+; point A1 points to the first jump table entry.
+
+		  MOVE.W	SegJTEntries(A0),D0 	 ;get the number of entries
+		  BEQ.S 	GoLaunch				 ;if none, just go launch it
+		  MOVE.W	24(SP),D1				 ;get the segment ID
+		  MOVEQ 	#0,D2					 ;clear out high part of D2
+
+PatchJTLoop
+			MOVE.W	(A1)+,D2				 	;pick up the offset
+			MOVE.W	D1,-2(A1)				 	;remember the segment ID in entry
+			MOVE.W	#$4EF9,(A1)+			 	;patch in the "JMP.L" opcode
+			PEA		SegHdrSize(A0,D2.L) 	 	;compute the entry point address
+			MOVE.L	(SP)+,(A1)+ 			 	;move in the entry point address
+
+			SUBQ	#1,D0					 	;more entries to do?
+			BNE.S 	PatchJTLoop 				;loop till done
+
+; now we can transfer control to the newly loaded code at the proper entry point
+
+GoLaunch
+		  MOVE.L	20(SP),A1				 ;get the return address from the trap
+		  SUBQ.L	#6,A1					 ;back up to the JMP.L opcode
+		  MOVE.L	A1,22(SP)				 ;patch the return address
+
+		  MOVEM.L	(SP)+,D0-D2/A0-A1		 ;restore the registers
+		  ADDQ		#2,SP					 ;strip parameter
+
+		  TST.B 	LoadTrap				 ;debugging on?
+		  BEQ.S 	@1						 ;go launch if its not
+		  DC.W		$A9FF					 ;invoke debugger
+@1
+		  RTS								;launch the code!
+
+; here is the error handler for when we couldnt load a segment we need.  Its
+; a deep shit alert.
+
+SegError
+		  MOVEQ 	#DSLoadErr,D0			 ;get deep shit ID
+		  _SysError 						 ;invoke deep shit - dont come back
+		  DC.W		$A9FF					 ;trap to debugger, just in case
+
+; LoadCode is a code saving utility that loads the segment with the resource ID
+; specified in D0.	It returns the segment handle in A0
+
+LoadCode
+
+											
+			SUBQ	#4,SP					; make room for function result
+
+			MOVE.L	#'CODE',-(SP)			; load a regular CODE resource
+			MOVE.W	D0,-(SP)				; push the segment ID
+			ST ResLoad                         ; force a load of code segment
+			_GetResource					; load it
+			MOVE.L	(SP)+,A0				; get result in A0
+			
+			MOVE.L	A0,D0					; better set Z-flag based on result
+			RTS								; return to caller
+
+;------------------------------------------------------------------------------
+;
+; PROCEDURE UnloadSeg(routineAddr: Ptr);
+;
+; UnLoadSeg is used to unload a segment when the application feels its no
+; longer needed for a while.  It patches all of the segment's jump table
+; entries back to the "load me" state.	The parameter is the address of any
+; routine within the segment.
+;
+;------------------------------------------------------------------------------
+
+UnloadSeg	MOVE.L	4(SP),A0					;get the address of the routine
+			CMP.W 	#$4EF9,(A0) 				;is it already unloaded?
+			BNE.S 	DoneUnload					;if so, we're done
+
+; the first thing we must do is figure out the handle of the segment
+
+			MOVE.W	-2(A0),D0				 ;get the segment ID
+			BSR.S 	LoadCode				 ;get the segment handle
+			BCLR #Lock,(A0) ;]
+			MOVE.L	(A0),A0 					;handle -> pointer
+			MOVE.L	A5,A1						;copy world base address
+			ADD.W 	CurJTOffset,A1				;offset by current offset
+			ADD.W 	SegJTOffset(A0),A1			;compute address of 1st entry
+			MOVE.W	SegJTEntries(A0),D0 		;get the number of entries
+			BEQ.S 	DoneUnload					;if zero, we're all done
+
+; loop through each jump table entry, patching it back to the "load me" state
+
+UnpatchLoop
+			MOVE.W	(A1),D1 					;remember the segment ID
+			MOVE.L	4(A1),D2					;get the current address
+			SUB.L 	A0,D2						;subtract the segment base address
+			SUBQ.L	#SegHdrSize,D2				;subtract the header size
+
+			MOVE.W	D2,(A1)+					;move in the offset
+			MOVE.W	#$3F3C,(A1)+				;move in the "push immediate" opcode
+			MOVE.W	D1,(A1)+					;move in the segment ID
+			MOVE.W	#SegLoadTrap,(A1)+			;move in the "SegLoad" trap
+
+			SUBQ	#1,D0						;more to do?
+			BNE.S 	UnpatchLoop 				;loop until done
+
+; we're all done with unloading the segment so strip the parameter and
+; return to the caller
+DoneUnload
+			MOVE.L	(SP)+,(SP)					;strip the parameter
+			RTS									;return to caller
+
+;------------------------------------------------------------------------------
+; PROCEDURE FlushApplVbls
+;
+; Purpose:	   Remove from VBL queue any tasks based in applzone.
+; Aguments:    None.
+; Registers:   D0,A0-A1
+; Called by: Launch
+;------------------------------------------------------------------------------
+
+FlushApplVbls
+			MOVEA.L	VBLQueue+qHead,A1		; point to queue header 			<27Mar85>
+fAVLoop 									;									<27Mar85>
+			MOVE.L	A1,D0					; is there a next element?			<27Mar85>
+			BEQ.S 	fAVDone 				; if not, just quit 				<27Mar85>
+			
+			MOVEA.L	A1,A0					; line up element pointer for possible remove <27Mar85>
+			MOVEA.L	vbLink(A0),A1			; get next element for looping		<27Mar85>
+			MOVE.L	vblAddr(A0),D0			; task pointer						<27Mar85>
+            AND.L Lo3Bytes,D0
+            CMP.L ApplZone,D0
+            BCS.S fAVLoop ;]
+            CMP.L ROMBase,D0
+            BCC.S fAVLoop ;]
+											
+			_VRemove						;									<27Mar85>
+			BRA.S 	fAVLoop 				;									<27Mar85>
+fAVDone 									;									<27Mar85>
+			RTS								;									<27Mar85>
+
+
+
+;------------------------------------------------------------------------------
+;
+;  PROCEDUREs Launch, Chain, ExitToShell:
+;
+;  Here is the main part of the segment loader that actually launches
+;  an application.	It opens the resource file specified by the input name,
+;  loads segment 0 to get the jumptable and global size information, optionally
+;  cuts back the application heap and kicks off the application by invoking
+;  its first jump table entry.
+;
+;  Warning -- LAUNCH obliterates the application heap so if an error occurs
+;  (like the file isn't executable) the code that called us is no longer
+;  "in the zone".  Callers of LAUNCH should be very careful...(they probably
+;  should use a deep shit alert to put up a message and then re-launch themselves)
+;
+; New format parameter block to Launch and Chain has form:
+;	 (a0) =    (long) file name ptr
+;			   (word) sounc and screen page option flag
+;			   (word) 'LC' -- Charles Dodgeson's initials mark extended block
+;			   (long) length of param block extension in bytes, past this long
+;			   (word) finder file flags, bit #6 of low byte is 1 for read-only access
+;
+;------------------------------------------------------------------------------
+
+
+; This part of the code is here so it can be accessible by short branches.
+; Compute the address of sound page 2 and go modify the stackBase if
+; neccessary.
+
+SoundPage2
+		  MOVE.L	MemTop,D0				 ;get address of top of RAM
+		  SUB.L 	#$00005F00,D0			 ;compute address of sound page 2
+		  BRA		SetNewStack 			 ;modify stackBase if necessary
+
+
+; First we have some an alternate entry point "Chain" which is just like
+; launch except it doesn't cut back the heap.
+
+Chain
+		  CLR.W 	LaunchFlag				 ;flag not to cut back heap
+		  BRA.S 	LaunchCom				 ;fall into common code
+
+; Here is the main entry point for launch
+
+Launch
+		  ST		LaunchFlag				 ;flag that we should cut back the heap
+
+; first, send a doGoodBye call to all drivers that want one
+
+		  MOVEM.L	D0-D1/A0-A1,-(SP)			; save registers				<EHB 29-Jan-85>
+		  SUB		#IOQElSize,SP				; allocate pBlock				<EHB 29-Jan-85>
+		  MOVE		#-1,CSCode(SP)				; set up control code			<EHB 29-Jan-85>
+		  MOVE.L	UTableBase,A1				; point to unit table			<EHB 29-Jan-85>
+		  MOVE.W	UnitNtryCnt,D1				; get # entries in unit table	<EHB 29-Jan-85>
+GoodByeLoop
+		  MOVE.L	(A1)+,D0					; get the DCE handle			<EHB 29-Jan-85>
+		  BEQ.S 	NextGoodBye 				; if NIL, try next one			<EHB 29-Jan-85>
+
+		  MOVE.L	D0,A0						; get the DCE handle			<EHB 29-Jan-85>
+		  MOVE.L	(A0),A0 					; get the DCE pointer			<EHB 29-Jan-85>
+		  BTST		#DNeedGoodbye,DCtlFlags(A0) ; need a goodbye kiss?			<EHB 29-Jan-85>
+		  BEQ.S 	NextGoodbye 				; not tonight dear				<EHB 29-Jan-85>
+
+; we found one that needs a goodbye call so issue the control call
+
+		  MOVE.W	DCtlRefNum(A0),IORefNum(SP) ; set up the refNum 			<EHB 29-Jan-85>
+		  MOVE.L	SP,A0						; point to the DCE				<EHB 29-Jan-85>
+		  _Control								; kiss it goodbye...			<EHB 29-Jan-85>
+NextGoodBye
+		  SUBQ		#1,D1						; check next entry				<EHB 29-Jan-85>
+		  BNE.S 	GoodByeLoop 				; if so, loop					<EHB 29-Jan-85>
+
+		  ADD		#IOQElSize,SP				; deallocate pBlock 			<EHB 29-Jan-85>
+		  MOVEM.L	(SP)+,D0-D1/A0-A1			; restore registers 			<EHB 29-Jan-85>
+
+LaunchCom
+
+; preserve application name, and which sound and screen pages to use
+			
+			movea.l	a0,a3					; save pblock ptr in a3 until actual launch	<28Oct85>
+			movea.l	(a3)+,a0				; file name ptr							  	<28Oct85>
+			move.w	(a3)+,CurPageOption 	;											<28Oct85>
+			LEA		CurApName,A1			;get address to stuff the name
+			MOVEQ 	#32,D0					;move 32 bytes worth
+			_BlockMove						;move it in
+
+; close any previously open application, if any
+			
+		  
+			MOVE	CurApRefNum,D0			 ;get refnum of current application
+			BLE.S 	SkipClose				 ;if none, skip the close
+			MOVE.W	D0,-(SP)				 ;push the refNum
+			_CloseResFile 					 ;close it
+			CLR.W 	CurApRefNum 			 ;flag that no application is open
+			
+; now initialize the application heapZone, if we're launching
+
+SkipClose
+		  MOVE.L	BufPtr,SP				 ;start stack under screen/debugger
+		  CLR.L 	StkLowPt				 ;keep VBL task out
+
+		  TST.W 	LaunchFlag				 ;is it a launch?
+		  BEQ.S 	OpenApp 				 ;if not, skip
+
+; before obliterating the heap, save the scrap on the stack
+
+		  MOVE.L	scrapHandle,D0			 ;get the scrap handle
+		  BLE.S 	GoInitAZone 			 ;if none, skip
+
+		  MOVE.L	D0,A0					 ;get the handle
+		  _GetHandleSize					 ;get its size
+
+		  ADDQ.L	#1,D0					 ; make sure it's even              <EHB 29-Jan-85>
+		  BCLR		#0,D0					 ; because that's how SP likes it!  <EHB 29-Jan-85>
+		  SUB.L 	D0,SP					 ;allocate space for it
+		  MOVE.L	SP,A1					 ;set up destination for move
+		  MOVE.L	(A0),A0 				 ;set up source for move
+		  MOVE.L	D0,-(SP)				 ;remember the size
+		  _BlockMove						 ;move it!
+
+; re-init the application heap zone, destroying the world...
+; ...but just before, flush any vbl tasks executing out of that doomed land!		 <27Mar85>
+
+GoInitAZone
+			; Moved here from LaunchCom -- only reinitialize if heap will be trashed.  <24Apr85>
+			CLR.L 	DragHook				 ;No drag hook yet
+			CLR.L 	DeskHook				 ;No desk hook for hit-testing desk.
+			LEA		CloseOrnHook, A0		 ; Point to closeOrnHook
+			CLR.L 	(A0)+					 ;clear closeOrnHook
+			CLR.L 	(A0)+					 ;clear RestProc
+			CLR.L 	(A0)+					 ;clear saveProc
+			CLR.W 	TaskLock				 ;clear taskLock, fScaleDisable.
+			CLR.L 	ResErrProc				 ;and resource error proc.
+			CLR.L 	EjectNotify 			 ;moved here from InitApplZone (from patches) <24Apr85>
+			BSR.W 	FlushApplVbls	;]kill off doomed vbl tasks 			 <27Mar85>
+			_InitApplZone 					 ;cut back the heap
+			CLR.W 	CurApRefNum 			 ;InitApplZone closes resource files
+			
+;allocate a new handle for the scrap to be copied into, if necessary.
+
+		  TST.L 	scrapHandle 			 ;did we have a scrap?
+		  BLE.S 	SkipScrap				 ;if none, skip
+
+; we had a scrap so better allocate a new handle for it and rescue its contents
+; from the stack
+
+		  MOVE.L	(SP)+,D1				 ;get the size of the scrap
+		  MOVE.L	D1,D0					 ;set up size for NewHandle
+		  _NewHandle						 ;allocate a handle for it
+		  MOVE.L	A0,scrapHandle			 ;remember the handle
+
+		  MOVE.L	D1,D0					 ;get size for blockMove
+		  MOVE.L	(A0),A1 				 ;get destination pointer
+		  MOVE.L	SP,A0					 ;get source pointer
+		  _BlockMove						 ;move it in!
+
+		  ADD.L 	D1,SP					 ;deallocate scrap save buffer
+
+SkipScrap
+		  _RDrvrInstall 					 ;fix up ram based drivers
+
+; now that the heap's in good shape, open the new application file after reiniting
+; some important hooks and globals
+
+; Open the app res file (preloading the most desirable resources).	Use the call			   <28Oct85>
+; FUNCTION _OpenResFile(f : Str255) : integer;	with RMGRPerm set for read-only access. 	   <30Oct85>
+; This ugly implicit param to RMGR supports Finder's need to trap out OpenResFile.             <30Oct85>
+
+OpenApp
+            SUBQ.L #2,SP
+            PEA CurApName
+            CMP.W #'LC',(A3)+
+            BNE.S @1
+            ADDQ.L #5,A3 ;]
+            BTST #6,(A3)+ ;]
+            BEQ.S @1
+            MOVE.B #1,RMGRPerm ;]
+@1          _OpenResFile
+            MOVE.W (SP)+,CurApRefNum
+            BLE.W BadOpen
+
+; now load in segment 0, which has the A5 world information as well as the
+; jump table
+
+		  MOVEQ 	#0,D0					 ;get ID for segment 0
+		  BSR		LoadCode				 ;load it in =>seg handle in A0
+		  BEQ		BadOpen 				 ;if we failed, report error
+		  MOVE.L	A0,SaveSegHandle		 ;remember code 0 handle in loMem
+
+; set up A5 and A7 for this application
+
+		  MOVE.L	(A0),A0 				 ;point to seg 0 info
+
+; adjust the stack base according to the page 2 options word
+
+		  TST.W 	CurPageOption			 ;are any page 2 options requested?
+		  BEQ.S 	SetA5					 ;if not, go build A5 world
+		  BPL.W 	SoundPage2				 ;if so, go handle sound page 2
+
+		  MOVE.L	MemTop,D0				 ;start at memTop
+		  SUB.L 	#$0000D900,D0			 ;compute video page 2 address
+
+SetNewStack
+		  CMP.L 	SP,D0					 ;should we move down the stack
+		  BGE.S 	SetA5					 ;if not, skip
+		  MOVE.L	D0,SP					 ;move it down
+
+SetA5
+
+; Give the world a chance to mess with the stack before committing to an a5 world.		  <28Oct85>
+		  movea.l	jSegStack,a3			 ; get vector to continue stack computation   <28Oct85>
+		  jmp		(a3)					 ;											  <28Oct85>
+vSegStack									 ;											  <28Oct85>
+		  SUB.L 	(A0)+,SP				 ;allocate "above A5" space
+
+		  MOVE.L	SP,A5					 ;set up A5
+
+		  SUB.L 	(A0)+,SP				 ;allocate "below A5" space
+		  MOVE.L	A5,CurrentA5			 ;remember A5 for this application
+		  MOVE.L	SP,CurStackBase 		 ;remember stack for this one, too
+		  MOVE.L	SP,StkLowPt 			 ;for heap-stack crashes
+
+; move in the jump table to where it belongs
+
+		  MOVE.L	(A0)+,D0				 ;get the jump table size
+		  MOVE.L	(A0)+,A1				 ;get the load offset
+		  MOVE.W	A1,CurJTOffset			 ;remember the offset
+		  ADD.L 	A5,A1					 ;add in the base address
+		  LEA		2(A1),A3				 ;remember the launch address
+		  _BlockMove						 ;move it in
+
+; now that things are set up, we can release segment 0
+
+		  MOVE.L	SaveSegHandle,-(SP) 	 ;push the segment 0 handle
+		  _ReleaseResource					 ;de-allocate it
+
+; set up the parameters to the application
+
+		  LEA		8(A5),A0				 ;point to parameter area
+		  CLR.L 	(A0)+					 ;standard input
+		  CLR.L 	(A0)+					 ;standard output
+		  MOVE.L	AppParmHandle,(A0)+ 	 ;parameter pointer
+		  CLR.W 	(A0)+					 ;physExec flag for stupid Lisa Pascal
+
+; set the default application heap zone limit based on the current stack
+
+			MOVE.L	SP,A0					 ;get the stack
+			SUB.L 	DefltStack,A0			 ;subtract buffer zone
+			_SetApplLimit 					 ;set the new limit
+		  MOVEQ 	#0,D7					 ;clear D7 for stupid Pascal
+		  MOVEQ 	#0,D6					 ;set up a fairly constant world	<08Jul85>
+		  MOVEQ 	#0,D5					 ;									<08Jul85>
+		  MOVEQ 	#0,D4					 ;									<08Jul85>
+		  MOVEQ 	#0,D3					 ;									<08Jul85>
+		  MOVEQ 	#0,D2					 ;									<08Jul85>
+		  MOVEQ 	#0,D1					 ;									<08Jul85>
+		  MOVEQ 	#0,D0					 ;									<08Jul85>
+
+
+            MOVE.L #DiagROM,A2 ;]
+
+
+		  MOVE.L	A2,A1					 ;									<08Jul85>
+		  MOVE.L	A2,A0					 ;									<08Jul85>
+
+		  MOVE.L	A2,0					 ;keep everything constant			<08Jul85>
+
+
+
+
+			JSR		(A3)					 ;launch the application:
+											 ;		   A4,A6 unchanged			<08Jul85>
+											 ;		   A5,A7 initialized		<08Jul85>
+											 ;		   D0-D7 zeroed 			<08Jul85>
+											 ;		   A0-A2 set to DiagROM 	<08Jul85>
+
+; If we reached this point, the application must have successfully terminated.
+; Close its resource file and chain back to the finder.
+
+ExitToShell 								 ;									<30Jan85>
+
+;			 MOVE.W  CurApRefNum,-(SP)	 ; push the app's refnum         (THIS IS DONE IN LAUNCH!)
+;			 _CloseResFile
+;			 CLR.W	 CurApRefNum
+			SUB.L	A0,A0				; clear out A0								<30Jan85>
+			_SetGrowZone				; disable application's growZone handler    <30Jan85>
+
+			SUBQ	#4,SP				; load the scrap into memory				<30Jan85>
+			_LodeScrap					;											<30Jan85>
+			ADDQ	#4,SP				; trashes pascal regs						<30Jan85>
+
+			MOVEQ	#(IOVQElSize/2)-1,D0 ;											 <18Aug85>
+@1			CLR.W	-(SP)				; get IO param block off stack				 <18Aug85>
+			DBRA	D0,@1				; (with IOFileName zeroed)					 <18Aug85>
+			MOVE.L	SP,A0				;											 <18Aug85>
+
+			MOVE.W	BootDrive,IOVRefNum(A0) ; prefix to 'boot' drive				<30Jan85>
+			_SetVol 					;											<30Jan85>
+			ADD 	#IOVQElSize,SP		; clean up stack							<30Jan85>
+
+		  LEA		LoaderPBlock,A0 		 ;point to lomem param block
+		  MOVE.L	A0,A1					 ;copy to A1
+		  PEA		FinderName				 ;get finder name pointer
+		  MOVE.L	(SP)+,(A1)+ 			 ;put finder name ptr in pBlock
+		  CLR.L 	(A1)+					 ;no page 2 usage
+		  BRA.W Launch	;]launch it!
+
+; here is the error handler for when we can't open the file.  We've already
+; obliterated the world (possibly) so just deep shit
+
+BadOpen
+		  MOVEQ 	#DSBadLaunch,D0
+		  _SysError 						 ;post the error
+		  DC.W		$A9FF					 ;invoke debugger
+
+
+
+;------------------------------------------------------------------------------
+;
+;	PROCEDURE GetAppParms(VAR apName:	Str255;
+;						  VAR apRefNum: INTEGER;
+;						  VAR apParam:	Ptr)
+;
+;	GetAppParms is a utility routine that returns some information about the
+;	currently executing application.  It returns its name (the first 24
+;	characters, anyway), its resource refNum and a pointer to the parameter
+;	block passed by the finder.
+;
+;------------------------------------------------------------------------------
+
+GetAppParms
+			   MOVE.L	 (SP)+,A0		;pull off the return address
+			   MOVE.L	 (SP)+,A1		;get pointer to apParam
+			   MOVE.L	 16(A5),(A1)	;return a pointer to finder pBlock
+
+			   MOVE.L	 (SP)+,A1		  ;get pointer to apRefNum
+			   MOVE.W	 CurApRefNum,(A1) ;pass back the refNum
+
+			   MOVE.L	 (SP)+,A1		;point to place to stuff name string
+			   MOVE.L	 A0,-(SP)		;replace return address
+
+			   LEA		 CurApName,A0	;point to name in low memory
+			   MOVEQ	 #32,D0 		;move 32 bytes
+			   _BlockMove				;move it!
+
+			   RTS						;return to caller (params already stripped)
+
+;------------------------------------------------------------------------------
+;
+; InstallRDrivers fixes up the unit table after the application heap
+; is obliterated between applications.
+;
+;------------------------------------------------------------------------------
+
+InstallRDrivers
+
+			MOVEM.L D0-D4/A0-A3,-(SP)
+
+; loop through the unit table, checking for drivers in the application heap
+
+			MOVE.L	UTableBase,A3		; get pointer to unit table
+			MOVE.W	UnitNtryCnt,D3		; get # of entries in unit table
+			MOVEQ	#-1,D4				; the first unit is refNum -1
+IRDLoop
+			MOVE.L	(A3)+,D0			; get the DCE handle
+			BEQ.S	NextIRD 			; if NIL, skip
+
+			MOVE.L	D0,A1				; get handle in A-reg
+			MOVE.L	(A1),D0 			;										<08Jul85>
+			BEQ.S	NextIRD 			; br if DCE purged (shouldn't be)       <08Jul85>
+
+			MOVE.L	D0,A1				; get DCE ptr
+			BTST	#DRamBased,DCtlFlags+1(A1) ;is it ROM-based?
+			BEQ.S	NextIRD 			; if so, skip
+
+			MOVE.L	DCtlDriver(A1),D0	; get driver handle in D0			
+			BEQ.S	NextIRD 			; if none, skip
+
+			MOVE.L	DCtlStorage(A1),D1	; preserve its storage handle			<08Jul85>
+            CMP.L ApplZone,D0
+            BLT.S DoSysZDriver ;]
+
+; we got a driver in the application heap, so re-init its DCE
+
+			MOVEQ	#DCtlEntrySize-1,D0 ; get size in bytes
+			MOVE.L	A1,A0				; point to DCE start
+
+@1			CLR.B	(A0)+				; clear a byte
+			DBRA	D0,@1				; loop till cleared
+
+; flag it as RAM-based, set up the refNum, restore DCtlStorage
+
+			BSET	#DRamBased,DCtlFlags+1(A1)
+			MOVE.W	D4,DCtlRefNum(A1)	; set up the refNum (queue inited to 0s)
+
+DoSysZDriver							;										<08Jul85>
+			CLR.L	DCtlWindow(A1)		; zero its window						<08Jul85>
+            MOVE.L DCtlStorage(A1),D0 ;]
+            CMP.L ApplZone,D0
+            BLT.S @1
+			MOVEQ	#0,D1				; otherwise, zero it before killing app heap
+@1
+			MOVE.L	D1,DCtlStorage(A1)	; restore or zero DCtlStorage			<08Jul85>
+
+; inspect the next table entry
+
+NextIRD
+			SUBQ	#1,D4				;decrement refNum
+			SUBQ	#1,D3				;more to do?
+			BNE.S	IRDLoop 			;loop until done
+
+			MOVEM.L (SP)+,D0-D4/A0-A3
+			RTS 						; all done!
+
+SgLdrEnd
+			END 
+
+

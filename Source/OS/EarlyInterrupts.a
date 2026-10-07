@@ -1,0 +1,269 @@
+;
+;	File:		InterruptHandlers.a
+;
+;	Contains:	This module contains the receivers for all 68000-family auto-vectored
+;				interrupts. It decodes the interrupt source and calls the associated
+;				interrupt handler. A PowerPC Macintosh may run this code in emulation.
+;
+;	Written by:	Bud Tribble
+;	Re-written by: Gary G. Davidian 5-Mar-89
+;
+;	Copyright:	© 1981-1994 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;	File:		Clock.a
+;
+;	Contains:	This file contains routines to directly access the clock.
+;
+;	Copyright:	© 1985-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+
+*R This file restores the Mac Plus level 1 and level 2
+*R dispatchers, SCC external-status handlers, and one-second clock handler.
+*R It retains matching released instructions and applicable comments.
+*R Evidence/early-interrupts.json records provenance and exact checks.
+
+		EXPORT Level2Return,OneSecDone ;]
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+
+SccDT		equ		Lvl2DT							; dispatch table for SCC interrupts
+
+EarlyInterrupts PROC ;]
+        EXPORT Level1Int
+        EXPORT SccDecode
+        EXPORT ExtBInt ;]
+        EXPORT ExtAInt ;]
+        EXPORT OneSecInt
+
+*R The ROM preserves D0-D3/A0-A3, selects the first pending enabled VIA interrupt, and returns with RTE. Its unconditional branch at $401A4A skips the retained SCSI test body.
+
+Level1Int
+        MOVEM.L   D0-D3/A0-A3,-(SP)
+        TST.B     SCSIFlag
+        BRA.S     DispatchVIA ;]
+
+CheckSCSIInterrupt ;]
+        MOVE.L    #5767168,A0 ;]
+        BTST      #4,80(A0) ;]
+        BEQ.S     DispatchVIA ;]
+        TST.B     112(A0) ;]
+        BRA.S     Level1Exit ;]
+
+DispatchVIA ;]
+        LEA       Lvl1DT-4,A0 ;]
+        MOVE.L    VIA,a1	; get VIA1 base address
+        MOVE.B    vIFR(A1),D0 ;]
+        AND.B     vIER(A1),D0	; only process enabled interrupts
+        BSET      #7,D0
+
+FindVIAInterrupt ;]
+        ADDQ.L    #4,A0
+        LSR.B     #1,D0
+        BCC.S     FindVIAInterrupt ;]
+        MOVE.L    (a0),a0	; get routine address from table
+        JSR       (A0)
+
+Level1Exit ;]
+        MOVEM.L   (SP)+,D0-D3/A0-A3
+        RTE       
+
+;_______________________________________________________________________
+;
+;  Routine:		SccDecode   8530 SCC Interrupt Dispatcher
+;
+; All SCC interrupts: This interrupt dispatcher determines the actual
+; interrupt source and dispatches through a table of secondary vectors
+; maintained in low memory.  The table looks like this:
+;
+;		 SccDT -> (00) channel B: transmit buffer empty
+;				  (04) channel B: external/status
+;				  (08) channel B: receive character available
+;				  (0C) channel B: special receive condition
+;				  (10) channel A: transmit buffer empty
+;				  (14) channel A: external/status
+;				  (18) channel A: receive character available
+;				  (1C) channel A: special receive condition
+;
+; SccDT contains a long entry-point address for each of the eight primary
+; interrupt routines corresponding to the eight primary interrupting sources.
+;
+; The two external status interrupts may be broken down into the following
+; sources by the primary receiver:
+;
+;		zero count (when the SCC baud rate generator is used as a timer)
+;		DCD transition
+;		sync/hunt (for synchronous serial modes only)
+;		CTS transition (external handshake in signal)
+;		Tx Underrun/EOM (for synchronous serial modes only)
+;		Break/abort (interrupts when break(async)/abort(sync) begins and ends)
+;
+
+; When dispatching the external/status handler, D0 contains the current
+; status (read reg 0) and D1 the changed bits from the previous time
+; an extenal/status interrupt was received. A reset ext/sts command is issued.
+;
+; The two special receive condition interrupts may also be further subdivided.
+;
+;		end of frame (synchronous modes)
+;		CRC/framing error
+;		receiver overrun
+;		parity error
+;		all sent (asynchronous mode only)
+;
+; Each primary routine is entered with the processor priority masked, and with
+; registers D0-D3 and A0-A3 available for use; A0 will point to SCC channel A/B
+; control read address and A1 to SCC channel A/B control write address,
+; depending upon which channel is interrupting:
+;
+;							 (READ ADDRESS) (WRITE ADDRESS)
+;
+;		CHANNEL A/B DATA		  4(A0) 		  4(A1)
+;
+;		CHANNEL A/B CONTROL 	   (A0) 		   (A1)
+;
+; Each routine (except for external/status secondary routines) is responsible
+; for clearing the source of the interrupt in the SCC, and for saving and
+; restoring any additional registers used.
+;
+; SCC interrupt service routines should return by RTS to this dispatcher.
+;
+; The interrupt routine is selected by reading the SCC modified interrupt vector.
+; The SCC selects the particular vector to supply according to a fixed priority:
+;
+;		Receiver   channel A   (highest)
+;		Transmit   channel A
+;		Ext/Status channel A
+;		Receiver   channel B
+;		Transmit   channel B
+;		Ext/Status channel B   (lowest)
+;
+; The highest priority interrupt which is also enabled is selected by the SCC.
+; Only processing one request at a time allows SccDecode to be re-entrant and
+; service routines may lower the processor priority as soon as possible in
+; order to process other pending interrupts.
+
+*R The ROM selects one SCC vector and calls it once. Both channels return directly through the saved registers and RTE.
+
+SccDecode
+        MOVEM.L   D0-D3/A0-A3,-(SP)
+        MOVE.L    SCCRd,A0	; get SCC read address
+        MOVE.B    (A0),D0	; read to sync up SCC (just to be safe)
+        MOVE.L    SCCWr,A1	; get SCC channel B write control address
+        MOVE.B    #2,(A1)	; point to SCC register 2, B channel
+        LEA       SccDT,A2	; point to dispatch table
+        MOVEQ     #$0E,D0	; AND mask
+        AND.B     (A0),D0	; read the modified interrupt vector
+        CMPI.B    #8,D0	; channel A interrupt?
+        BLT.S     GoLvl2 ;]
+        ADDQ.W    #2,A0	; adjust SCC addresses for port A
+        ADDQ.W    #2,A1
+
+GoLvl2 ;]
+        ADD.W     D0,D0
+        MOVE.L    0(A2,D0.W),A2
+        JSR       (A2)	; call service routine
+
+Level2Exit ;]
+        MOVEM.L   (SP)+,D0-D3/A0-A3
+Level2Return ;]
+        RTE       
+
+;_______________________________________________________________
+;
+; Secondary Dispatch routines for SCC external status interrupts
+;
+; On Entry: 	A0.L = SCC read address (appropriate channel)
+;				A1.L = SCC write address (appropriate channel)
+;				D0-D3/A0-A3 have been saved.
+;
+; On Exit:		A0.L, A1.L are still SCC ptrs
+;				D0.B = SCC RR0 status
+;				D1.B = SCC RR0 bits which changed since last interrupt
+;				SCCASts/SCCBSts = updated with new RR0 value
+;				A2/A3/D2/D3 are undefined.
+;_______________________________________________________________
+
+*R The ROM retains mouse dispatch entries at ExtStsDT+4 and ExtStsDT+12. It selects them when the only changed enabled status bit is bit 3.
+
+ExtBInt
+        MOVE.B    (A0),D0	; * read SCC RR0 status for channel B
+        LEA       SCCBSts,A3	; old register value
+        LEA       ExtStsDT,A2	; point to channel B dispatch vectors
+        BRA.S     ExtABInt	; share some code
+
+ExtAInt
+        MOVE.B    (A0),D0	; * read SCC RR0 status for channel A
+        LEA       SCCASts,A3	; old register value
+        LEA       ExtStsDT+8,A2	; point to channel A dispatch vectors
+
+ExtABInt
+        MOVE.B    #15,(A1)	; * point to SCC register 15,
+													;	appropriate channel
+        MOVE.B    (A3),D1	; get old status
+        MOVE.B    D0,(A3)	; update the old
+        EOR.B     D0,D1	; get changed bits
+        AND.B     (A0),D1	; * only look at enabled ext/sts bits
+        CMPI.B    #8,D1
+        BNE.S     ClearExtStatus ;]
+        ADDQ.W    #4,A2
+
+ClearExtStatus ;]
+        MOVE.B    #$10,(A1)	; * clear the ext/status interrupt
+        MOVE.L    (A2),A2	; get the vector
+        JMP       (A2)	; go to it
+
+;
+; Routine:		OneSecInt
+;
+; Arguments:	A1 (input)  -- Address of VIA1
+;
+; Function: 	Services 1-second interrupt from clock . . .
+;
+; NOTE:	This handler expects that the interrupt is still pending, and clears
+;		it by clearing the CA2 interrupt flag on VIA 1 (base address passed
+;		in register A1).  This is correct for all current hardware implementations
+;		but may not be in the future.
+; 		we support alarm clock flash here in the system code: other functions may
+;		start the flash simply by clearing bit 1 of AlarmState
+;
+; AlarmState	bit 7 = flash parity
+;				bit 6 = 1 to enable initial beep
+;				bit 5 = set to 0 every second by this code (flag to GNEFilter)
+;				bit 1 = 0 to start flashing
+;				bit 0 = 0 for global flash enable
+;
+;_______________________________________________________________________
+
+*R The ROM increments Time before clearing the VIA interrupt.
+
+OneSecInt
+        ADDQ.L    #1,Time	; count the second
+        MOVE.B    #1<<ifCA2,vIFR(A1)
+        BCLR      #5,AlarmState	; flag GNEFilter to flash if enabled
+        TST.B     SPVolCtl	; bit 7 is alarm enable
+; exit if not enabled
+        BPL.S     OneSecDone ;]
+        MOVE.L    SPAlarm,D0
+; exit if no alarm
+        BEQ.S     OneSecDone ;]
+        CMP.L     Time,D0	; is it past time?
+; exit if not
+        BHI.S     OneSecDone ;]
+; flash apple menu item if there's a window world
+        BCLR      #1,AlarmState	; flag GNEFilter to flash
+
+OneSecDone ;]
+        RTS       
+
+EarlyInterruptsEnd ;]
+        ENDPROC
+        END

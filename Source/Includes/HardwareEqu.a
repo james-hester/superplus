@@ -1,0 +1,118 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See      Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source:  Interfaces/AIncludes/HardwareEqu.a
+;
+;               File:    HardwareEqu.a
+;
+;               Assembler Interface           to the Macintosh Libraries
+;               Copyright Apple                 Computer, Inc. 1984-1990
+;               All      Rights                                 Reserved
+;
+;
+
+vBufB           EQU      0                                    ; BUFFER B
+vDIRB           EQU      $400                              ; DIRECTION B
+vDIRA           EQU      $600                              ; DIRECTION A
+vT1C            EQU      $800                   ; TIMER 1 COUNTER (L.O.)
+vT1CH           EQU      $A00             ; timer 1 counter (high order)
+vT2C            EQU      $1000                    ; TIMER 2 LATCH (L.O.)
+vT2CH           EQU      $1200            ; timer 2 counter (high order)
+vSR             EQU      $1400                          ; SHIFT REGISTER
+vACR            EQU      $1600                       ; AUX. CONTROL REG.
+vPCR            EQU      $1800                    ; PERIPH. CONTROL REG.
+vIFR            EQU      $1A00                          ; INT. FLAG REG.
+vIER            EQU      $1C00                        ; INT. ENABLE REG.
+vBufA           EQU      $1E00                                ; BUFFER A
+ifCA2           EQU      0                               ; CA2 interrupt
+ifCA1           EQU      1                               ; CA1 interrupt
+ifSR            EQU      2                      ; SR shift register done
+ph0L            EQU      0              ; disk address offsets from base
+ph0H            EQU      $200
+ph1L            EQU      $400
+ph1H            EQU      $600
+ph2L            EQU      $800
+ph2H            EQU      $A00
+Ph3L            EQU      $0C00
+Ph3H            EQU      $0E00
+mtrOff          EQU      $1000
+mtrOn           EQU      $1200
+intDrive        EQU      $1400           ; enable internal drive address
+extDrive        EQU      $1600           ; enable external drive address
+q6L             EQU      $1800
+q6H             EQU      $1A00
+q7L             EQU      $1C00
+q7H             EQU      $1E00
+ACtl            EQU      2
+MacConst        EQU      114709
+sCDR            EQU      $00                    ; Current SCSI Read Data
+sODR            EQU      $00                      ; Output data register
+sICR            EQU      $10   ; Initiator Command Register - READ/WRITE
+iRST            EQU      $80                             ; *RST asserted
+bAIP            EQU      6        ; bit test for arbitration in progress
+bLA             EQU      5               ; bit test for Lost Arbitration
+iACK            EQU      $10                          ; *ACK is asserted
+iBSY            EQU      $08                          ; *BSY is asserted
+iSEL            EQU      $04                          ; *SEL is asserted
+iDB             EQU      $01                      ; Data bus is asserted
+sMR             EQU      $20                ; Mode Register - READ/WRITE
+iDMA            EQU      $02                                  ; DMA Mode
+iARB            EQU      $01                               ; Arbitration
+sTCR            EQU      $30      ; Target Command Register - READ/WRITE
+iMSG            EQU      $04                               ; Assert *MSG
+iCD             EQU      $02                               ; Assert C/*D
+iIO             EQU      $01                               ; Assert I/*O
+sCSR            EQU      $40            ; Current SCSI Bus Status (READ)
+bBSY            EQU      6                           ; bit test for *BSY
+bREQ            EQU      5                           ; bit test for *REQ
+aCD             EQU      $08                                      ; C/*D
+aIO             EQU      $04                                      ; I/*O
+bIO             EQU      2                           ; bit test for I/*O
+sSER            EQU      $40            ; Select Enable Register (WRITE)
+sBSR            EQU      $50              ; Bus & Status Register (READ)
+bDMAR           EQU      6                        ; bit test for DMA Req
+bPM             EQU      3                    ; bit test for Phase Match
+sDMAtx          EQU      $50                ; DMA Transmit Start (WRITE)
+sIDMArx         EQU      $70       ; Start Initiator DMA receive (WRITE)
+Machine         EQU      0
+viaIntMask      EQU      $0100       ; mask for VIA (and VBL) interrupts
+loIntMask       EQU      $0100
+vHeadSel        EQU      5                   ; head select line for Sony
+vBufD           EQU      vBufA            ; disk head select is buffer A
+PhaseRead       EQU      $F00000                    ; Phase read address
+VBase           EQU      $EFE1FE                      ; VIA base address
+AVBufA          EQU      VBase+vBufA                      ; VIA buffer A
+AVBufB          EQU      VBase+vBufB                      ; VIA buffer B
+SCCRBase        EQU      $9FFFF8                 ; SCC base read address
+SCCWBase        EQU      $BFFFF9
+SCSIRd          EQU      $580000       ; base addr SCSI interface - READ
+SCSIWr          EQU      $580001      ; base addr SCSI interface - WRITE
+SoundLow        EQU      $3FFD00            ; sound buffer start address
+snd2MemTop      EQU      $300                       ; SoundLow to Memtop
+pwm2MemTop      EQU      $2FF                      ; PWMBuffer to MemTop
+ScreenLow       EQU      $3FA700          ; top of screen screen address
+scrn2MemTop     EQU      $5900                    ; ScreenBase to Memtop
+seRegs          EQU      $3FFC80            ; Sys Error Regs w/o Overlay
+dsRectTL        EQU      (64<<16)+32                  ; top left = 64,32
+dsRectBR        EQU      (190<<16)+480          ; bottom right = 190,480
+seVars          EQU      seRegs ; start of system error data space (wrap city)
+seVSize         EQU      128                       ; # of bytes in space
+seD0            EQU      seVars                    ; loc of saved reg D0
+seA0            EQU      seD0+32                   ; loc of saved reg A0
+seA7            EQU      seA0+28                   ; loc of saved reg A7
+sePC            EQU      seA7+4                        ; loc of saved PC
+seSR            EQU      sePC+4                        ; loc of saved SR
+seAccess        EQU      seSR+2    ; PC address during bus/address error
+seCmdSize       EQU      seAccess+4 ; # of bytes of parameters passed in _debugger call
+se000BE         EQU      seCmdSize+2 ; 8 bytes of bus error info for 68000
+seLastVar       EQU      se000BE+8 ; last var in System Error data space
+rdPort          EQU      seLastVar ; Number of port currently in use (0 => no link, 1 => A, 2 => B)
+rdCode          EQU      rdPort+2         ; Ptr to code download buffer.
+rdAtrap         EQU      rdCode+4              ; Saved Rom Atrap handler
+rdLowTrap       EQU      rdAtrap+4         ; low value for trap handling
+rdHiTrap        EQU      rdLowTrap+2      ; high value for trap handling
+mbBufSize       EQU      34
+mbBuffer        EQU      seLastVar                    ; buffer for input
+mbSign          EQU      mbBuffer+mbBufSize ; ST => negative sign during conversion
+mbDotAddr       EQU      mbSign+2                        ; saved address
+mBlocAddr       EQU      mbDotAddr+4                    ; saved location

@@ -1,0 +1,228 @@
+*R This file restores the Mac Plus serial keyboard
+*R manager at $402568 through $4026EB. The released tree lacks the original
+*R Kbd.a. The related ADBMgr.a preserves the key-map reset loop and comments
+*R about keyboard initialization, events, and translation hooks.
+*R Most instructions below come from the ROM. The source header below belongs
+*R to that later ADB implementation and records its relationship to Kbd.a.
+*R See Evidence/keyboard.json for the retained source and restored ROM spans.
+;
+;
+;	File:		ADBMgr.a
+;
+;	Contains:	This file holds the ADB implementation as used on the Mac SE and later machines.
+;				It is separated out from the original Mac keyboard implementation to reduce
+;				conditional assembly confusion.  Some of the original file’s modification 
+;				history has been preserved here for your amusement.
+;
+;	Written by: ADB manager re-written 15-May-89 by Gary G. Davidian
+;
+;	Copyright:	© 1981-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;	   <1.0>	 10/6/88	rwh		New Today - split off from Kbd.a for programmer sanity. Uses
+;									feature-based conditionals now.
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'Traps.a'
+
+
+*R These names describe byte fields and command values
+*R inferred from the ROM. The later source reuses KbdVars for other fields.
+KbdActive EQU KbdVars ;]
+KbdKeypad EQU KbdVars+1 ;]
+KbdIdentify EQU KbdVars+2 ;]
+KbdInquiryCmd EQU $10 ;]
+KbdInstantCmd EQU $14 ;]
+KbdModelCmd EQU $16 ;]
+KbdNoKey EQU $7B ;]
+KbdKeypadPrefix EQU $79 ;]
+
+Keyboard PROC ;]
+        EXPORT InitKeyboard ;]
+        EXPORT RSetKMap ;]
+
+*R Initialization and serial command handling come
+*R from ROM instructions. The matching initialization comments are retained
+*R from ADBMgr.a, whose hardware initialization uses ADB instead.
+
+InitKeyboard ;]
+			CLR.B	KbdType 			; assume we have no keyboard to start
+        clr.l KbdVars ;]
+        bsr.w RSetKMap                 ; reset the keyboard map, etc.
+        st KbdActive ;]
+        lea KeyboardInt,a0 ;]
+        move.l a0,Lvl1DT+4*ifSR ;]
+        clr.l Key1Trans ;]
+        clr.l Key2Trans ;]
+        lea KeyboardTask,a0 ;]
+			MOVE.L	A0,JKybdTask		; lomem vector
+
+InitKeyboardPort ;]
+        movea.l VIA,a1
+        clr.b vPCR(a1) ;]
+        move.b #$87,vIER(a1) ;]
+        moveq #KbdModelCmd,d0 ;]
+        st KbdIdentify ;]
+SendKeyboardCommand ;]
+        movea.l VIA,a1
+        move.w sr,-(sp)
+        ori.w #$0300,sr
+        move.b vACR(a1),d1 ;]
+        andi.b #$E3,d1 ;]
+        move.w d1,-(sp)
+        move.b d1,vACR(a1) ;]
+        clr.b vSR(a1) ;]
+        ori.b #$18,d1 ;]
+        move.b d1,vACR(a1) ;]
+        clr.b vSR(a1) ;]
+        nop
+        move.w (sp)+,d1
+        move.b d1,vACR(a1) ;]
+        ori.b #$1C,d1 ;]
+        move.b d1,vACR(a1) ;]
+        move.b d0,vSR(a1)
+        move.w (sp)+,sr
+        rts
+
+*R The interrupt body comes from the ROM. It changes
+*R shift direction after sending a command, then receives a model reply,
+*R keypad prefix, or key transition and starts the next inquiry.
+
+KeyboardInt ;]
+        btst #4,vACR(a1) ;]
+        beq.s @Receive ;]
+        move.b #1<<ifSR,vIFR(a1) ;]
+        move.w #200,d0 ;]
+        tst.b CPUFlag
+        beq.s @Delay ;]
+        lsl.w #3,d0
+@Delay
+        dbra d0,@Delay
+        bclr #4,vACR(a1)
+        move.b vSR(a1),d0
+        rts
+@Receive ;]
+        st KbdActive ;]
+        move.b vSR(a1),d0
+        move.b d0,d3
+        cmpi.b #KbdNoKey,d0 ;]
+        beq.s @Inquiry ;]
+        tst.b KbdIdentify ;]
+        beq.s @CheckPrefix ;]
+        move.b d0,KbdType
+        clr.b KbdIdentify ;]
+        bra.s @Inquiry ;]
+@CheckPrefix ;]
+        cmpi.b #KbdKeypadPrefix,d0 ;]
+        bne.s @KeyTransition ;]
+        st KbdKeypad ;]
+        moveq #KbdInstantCmd,d0 ;]
+        bra.s @SendCommand
+@Inquiry ;]
+        moveq #KbdInquiryCmd,d0 ;]
+@SendCommand
+        bra.w SendKeyboardCommand ;]
+@KeyTransition ;]
+        moveq #$7F,d2
+        and.b d0,d2
+        lsr.b #1,d2
+        tst.b KbdKeypad ;]
+        beq.s @CheckRepeat ;]
+        addi.w #$40,d2 ;]
+@CheckRepeat ;]
+        tst.b d3
+        bpl.s @Translate ;]
+        move.w KeyLast,d1 ;]
+        lsr.w #8,d1
+        cmp.b d1,d2
+        bne.s @Translate
+        clr.w KeyLast                  ; Stop repeating
+@Translate
+        move.l d2,-(sp)
+        bsr.s TranslateKey ;]
+        move.l (sp)+,d2
+        lsl.w #8,d2
+        move.b d0,d2
+        bne.s @PostKey ;]
+        move.b ScrDmpType,d0 ;]
+        bmi.s @Inquiry ;]
+        st ScrDmpType ;]
+        move.b d0,d2
+@PostKey ;]
+        moveq #keyUpEvt,d0 ;]
+        tst.b d3
+        bmi.s @PostEvent ;]
+        moveq #keyDwnEvt,d0 ;]
+; Mark the time for auto repeat
+        move.l Ticks,KeyTime ;]
+        move.l Ticks,KeyRepTime
+; Save event message
+        move.w d2,KeyLast ;]
+@PostEvent
+        movea.l d0,a0
+        move.l d2,d0
+        _PostEvent                    ; Post it
+        bra.s @Inquiry ;]
+
+*R This ROM wrapper updates KeyMap and calls Key1Trans
+*R or Key2Trans through the return stack. The following original comments
+*R document the inputs and result of the later hook.
+
+; -----------------------------------------------------------------------------
+; Routine:	KeyHook
+; Input:	d1.b	option, alpha, shift keys in 2,1,0.
+;			$17A.b	bit #7 1 iff feature key set.
+;			d2.w	keycode (0-127).
+;			d3.b	minus iff keyup, plus iff keydown.
+; Output:	d0.b	ASCII code.
+;
+
+TranslateKey ;]
+        lea KeyMap,a0
+        move.w d2,d1
+        lsr.w #3,d1
+        adda.w d1,a0
+        bset d2,(a0)
+        tst.b d3
+        bpl.s @SelectHook ;]
+        bclr d2,(a0) ;]
+@SelectHook ;]
+        move.l Key1Trans,-(sp) ;]
+        tst.b KbdKeypad ;]
+        beq.s @CallHook ;]
+        move.l Key2Trans,(sp) ;]
+        clr.b KbdKeypad ;]
+@CallHook ;]
+        move.w KeyMap+6,d1
+        tst.l (sp)
+        bne.s @Return
+        move.l (sp)+,d0
+@Return
+        rts
+
+*R The ROM task restarts an inactive keyboard and
+*R resets its key map. RSetKMap retains the released loop and its comments.
+
+KeyboardTask ;]
+        tst.b KbdActive ;]
+        bne.s KbdTaskDone ;]
+        clr.b KbdType
+        bsr.w InitKeyboardPort ;]
+
+; since we reset the keyboard, we better reset the map
+
+RSetKMap	LEA 	KeyMap,A0
+			MOVEQ	#8,D0
+@1			CLR.W	(A0)+				; zero key map, key pad map, and keylast
+			DBRA	D0,@1
+KbdTaskDone ;]
+        clr.b KbdActive ;]
+        rts
+
+        ENDPROC
+        END

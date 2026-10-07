@@ -1,0 +1,80 @@
+{
+  "module": "util-extra",
+  "source": "Reconstruction/Source/QuickDraw/UtilExtra.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/Util.m.a",
+      "sha256": "ece92be92c636ec3804050e72938bc2d37b74fccde7553768fb03386ca666d8f"
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+    }
+  ],
+  "scope": "ForeColor through FastSlabMode, including mask, pattern, and slab dispatch tables.",
+  "target": {
+    "program": "Mac Plus",
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "base_address": "0x400000",
+    "size": 131072,
+    "checksum": "0x4d1f8172",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "ghidra_import_path": "/home/james/Mac OS/Mac_ROMs/68k/128k/Macintosh Plus/1986-03 - 4D1F8172 - MacPlus v3.ROM"
+  },
+  "span": {
+    "start": "0x4083ee",
+    "end_exclusive": "0x408784",
+    "length": 918,
+    "sha256": "22eea1f57a9622295f5e28f1e8e5977f951892b3f5f4d8bcef5c0935fbca20b5",
+    "boundary_evidence": "ForeColor begins at 0x4083ee after Random. The final slab table ends at 0x408784, where the QuickDraw NewHandle wrapper begins."
+  },
+  "integration_manifest": {
+    "name": "util-extra",
+    "source": "Reconstruction/Source/QuickDraw/UtilExtra.a",
+    "start": "0x4083ee",
+    "end_exclusive": "0x408784",
+    "entry_points": {
+      "ForeColor": "0x4083ee",
+      "PortWord": "0x408402",
+      "GetMaskTab": "0x40840e",
+      "MaskTab": "0x408438",
+      "PatExpand": "0x408498",
+      "ColorMap": "0x408560",
+      "GetPixel": "0x4085d4",
+      "StuffHex": "0x408608",
+      "XorSlab": "0x408642",
+      "DrawSlab": "0x408686",
+      "SlabMode": "0x408716",
+      "FastSlabMode": "0x408770"
+    }
+  },
+  "changes": [
+    "Extracted ForeColor through the final table from the monochrome Util source. Preserved the instructions, routine comments, parameter equates, and table definitions in their original order.",
+    "Copied the required field and global equates, including their dependencies, from GrafTypes.m.a. Added the two cursor glue addresses from the ROM call targets.",
+    "Made PC-relative table addressing and cursor calls explicit. Selected short branches and quick immediate arithmetic where the ROM uses those encodings. Unsized index registers use the MPW word default.",
+    "Restored the zero-parameter UNLINK expansion as UNLK A6 followed by RTS. The retained macro has a general return case, but this excerpt invokes only the zero-parameter case.",
+    "Retained the original filename, copyright, UTIL.TEXT heading, and routine comments. Omitted placeholder header fields and later history for routines outside this excerpt. Added marked reconstruction notes."
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "source_sha256": "06e0a8b725f739addfc742f0128f58ef9be3d7c921a0169b72ec3e99774a0442",
+    "checked_bytes": 918,
+    "entry_points_checked": 12,
+    "assembled_sha256": "22eea1f57a9622295f5e28f1e8e5977f951892b3f5f4d8bcef5c0935fbca20b5",
+    "assembler": "GNU assembler 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "The exact historical macro text and file organization remain inferred. Byte comparison verifies only the invoked macro case.",
+      "HideCursor and ShowCursor use their QuickDraw glue addresses at 0x4082f2 and 0x4082f8. This module does not verify their bodies."
+    ],
+    "original_body_comments_preserved": 519
+  }
+}

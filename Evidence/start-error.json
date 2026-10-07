@@ -1,0 +1,1411 @@
+{
+  "module": "OS/StartMgr/StartErr.a",
+  "source_path": "Reconstruction/Source/OS/StartMgr/StartErr.a",
+  "source_sha256": "272b2fb67f6a1e330feaf32653b7b820a9d424cc770c1e6848b036b2d18af927",
+  "upstream_sources": [
+    {
+      "path": "OS/StartMgr/StartErr.a",
+      "sha256": "dc3b8f13e6ea82e582732a33e0b71d5b4dc8e7dafcc4875848478d05e3df88ef"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "OS/StartMgr/StartErr.a",
+      1,
+      13
+    ],
+    [
+      "OS/StartMgr/StartErr.a",
+      40,
+      43
+    ],
+    [
+      "OS/StartMgr/StartErr.a",
+      119,
+      132
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x401036": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155
+      ]
+    },
+    "0x401082": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        238,
+        239,
+        240,
+        241,
+        242,
+        243
+      ]
+    },
+    "0x4010ca": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        277,
+        278
+      ]
+    },
+    "0x4010dc": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        289,
+        290,
+        291,
+        292,
+        293,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299,
+        300
+      ]
+    },
+    "0x401128": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        345,
+        346
+      ]
+    },
+    "0x401142": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        376,
+        377,
+        378,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384
+      ]
+    }
+  },
+  "retained_body_comments": {
+    "0x4010a4": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        259,
+        260
+      ]
+    },
+    "0x4010ee": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        313
+      ]
+    },
+    "0x4010f8": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        320,
+        321
+      ]
+    },
+    "0x401174": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        485,
+        486
+      ]
+    },
+    "0x40117c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        492,
+        493
+      ]
+    },
+    "0x40119e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        512
+      ]
+    }
+  },
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        1042,
+        1185,
+        1368
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "copied_lines": [
+        242
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        660,
+        1271,
+        1272,
+        1273,
+        1274,
+        1275,
+        1276,
+        1277,
+        1278,
+        1279,
+        1280
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "copied_lines": [
+        151
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401036",
+      "end_address_exclusive": "0x4011ac",
+      "rom_offset": "0x1036",
+      "length": 374,
+      "sha256": "dd06af358ea097d48b71a4f511b79e5742f0692fa24d495c5787d2b8bd3aef8b"
+    }
+  ],
+  "manifest_entry": {
+    "name": "start-error",
+    "source": "Reconstruction/Source/OS/StartMgr/StartErr.a",
+    "start": "0x401036",
+    "end_exclusive": "0x4011ac",
+    "entry_points": {
+      "SysErrInit": "0x401036",
+      "Debugger": "0x401082",
+      "DebugErr": "0x4010ac",
+      "DebugAdios": "0x4010ae",
+      "DebugProlog": "0x4010ca",
+      "ToDeepShit": "0x4010dc",
+      "GenExcps": "0x401128",
+      "IRQException": "0x401140",
+      "SystemError": "0x401142",
+      "SysErr1": "0x40114a",
+      "SysErr2": "0x40115e",
+      "Call2DS": "0x40117c",
+      "CallDS": "0x401186",
+      "CallDB": "0x40118a",
+      "SysErrExit": "0x401190",
+      "InstallErrorVector": "0x401040",
+      "InstallUnusedVector": "0x40104a",
+      "InstallIRQVector": "0x401056",
+      "InstallTrapVector": "0x40105e",
+      "ClearSEVars": "0x40106c",
+      "ExceptionIndex": "0x4010ee",
+      "SaveFrame": "0x401110",
+      "DiscardFrame": "0x401124",
+      "EnterSysErr2": "0x401126",
+      "MarkDebuggerActive": "0x40116a"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "start-error",
+      "source": "Reconstruction/Source/OS/StartMgr/StartErr.a",
+      "start": "0x401036",
+      "end_exclusive": "0x4011ac",
+      "entry_points": {
+        "SysErrInit": "0x401036",
+        "Debugger": "0x401082",
+        "DebugErr": "0x4010ac",
+        "DebugAdios": "0x4010ae",
+        "DebugProlog": "0x4010ca",
+        "ToDeepShit": "0x4010dc",
+        "GenExcps": "0x401128",
+        "IRQException": "0x401140",
+        "SystemError": "0x401142",
+        "SysErr1": "0x40114a",
+        "SysErr2": "0x40115e",
+        "Call2DS": "0x40117c",
+        "CallDS": "0x401186",
+        "CallDB": "0x40118a",
+        "SysErrExit": "0x401190",
+        "InstallErrorVector": "0x401040",
+        "InstallUnusedVector": "0x40104a",
+        "InstallIRQVector": "0x401056",
+        "InstallTrapVector": "0x40105e",
+        "ClearSEVars": "0x40106c",
+        "ExceptionIndex": "0x4010ee",
+        "SaveFrame": "0x401110",
+        "DiscardFrame": "0x401124",
+        "EnterSysErr2": "0x401126",
+        "MarkDebuggerActive": "0x40116a"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "SysErrInit begins at $401036 after the startup icon data.",
+    "end": "The final exception return is RTE at $4011AA. AllocFakeRgns begins at $4011AC."
+  },
+  "edits": [
+    {
+      "kind": "scope",
+      "description": "Restored the complete SysErrInit, Debugger, hardware exception receivers, and SystemError sequence. Retained the original header, history through November 1985, applicable contracts, equates, and matching body comments."
+    },
+    {
+      "kind": "restoration",
+      "description": "Selected the released Mac Plus seRegs definition at $3FFC80. Restored all seven interrupt vectors to IRQException and installed the ROM serial debugger through MacJmp. Later source clears the debugger vector and adds a separate NMI handler."
+    },
+    {
+      "kind": "restoration",
+      "description": "Restored debugger state bits in the high byte of MacJmp and masked those bits before jumping through it. Later source moves the flags into MacJmpFlag for 32-bit addressing. Retained the original register save area and exception-frame restoration."
+    },
+    {
+      "kind": "restoration",
+      "description": "Removed later parity checks, patch-error remapping, and nil-debugger guards. The ROM passes debugger errors to DSErrorHandler and returns through RTE using SEPC and SESR."
+    },
+    {
+      "kind": "build",
+      "description": "The ROM controls instruction widths, branch destinations, and procedure boundaries. Each source correspondence records an operation from the same routine, which may have changed encoding or target in the later source. Every instruction is assembled without data placeholders."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x401036": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 163,
+      "original_code": "SUB.L\tA0,A0",
+      "comment": " point A0 at start of RAM",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A0,A0",
+      "inline_comment_retained": true
+    },
+    "0x40103a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 171,
+      "original_code": "LEA \tGenExcps,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "GenExcps,A1"
+    },
+    "0x40103e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 173,
+      "original_code": "MOVEQ\t#10-1,D0",
+      "comment": " setup exception handlers for\t\t\t\t\t<1.4>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#10-1,D0"
+    },
+    "0x401040": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 174,
+      "original_code": "@0\t\t\tMOVE.L\tA1,(A0)+",
+      "comment": "  bus error thru line 1111 emulator vectors",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401044": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 176,
+      "original_code": "DBRA\tD0,@0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D0,@0"
+    },
+    "0x401048": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 178,
+      "original_code": "MOVEQ\t#13-1,D0",
+      "comment": " point unassigned (vector 12) thru spurious\t<1.4>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#13-1,D0"
+    },
+    "0x40104a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 179,
+      "original_code": "@1\t\t\tMOVE.L\tA1,(A0)+",
+      "comment": "  interrupt vectors to the \"undefined\" handler",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x40104c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 180,
+      "original_code": "DBRA\tD0,@1",
+      "comment": "  (System Error #11)",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D0,@1",
+      "inline_comment_retained": true
+    },
+    "0x401050": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 182,
+      "original_code": "LEA \tIRQException,A2",
+      "comment": " point to the IRQ exception handler",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "IRQException,A2",
+      "inline_comment_retained": true
+    },
+    "0x401056": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 184,
+      "original_code": "@2\t\t\tMOVE.L\tA2,(A0)+",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A2,(A0)+"
+    },
+    "0x401058": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 185,
+      "original_code": "DBRA\tD0,@2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D0,@2"
+    },
+    "0x40105c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 189,
+      "original_code": "MOVEQ\t#32-1,D0",
+      "comment": " point TRAP #0 vector thru unassigned (63)\t\t<1.4>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#32-1,D0"
+    },
+    "0x40105e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 190,
+      "original_code": "@3\t\t\tMOVE.L\tA1,(A0)+",
+      "comment": "  to the \"undefined\" handler (System Error #11)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401060": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 191,
+      "original_code": "DBRA\tD0,@3",
+      "comment": "  since they aren't user-definable",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D0,@3",
+      "inline_comment_retained": true
+    },
+    "0x401064": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 223,
+      "original_code": "LEA \tSEVars,A0",
+      "comment": " pt to start of nub memory",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SEVars,A0",
+      "inline_comment_retained": true
+    },
+    "0x40106a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 224,
+      "original_code": "MOVEQ\t#(SEVSize/4)-1,D0",
+      "comment": " data size",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#(SEVSize/4)-1,D0",
+      "inline_comment_retained": true
+    },
+    "0x40106c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 225,
+      "original_code": "@4\t\t\tCLR.L\t(A0)+",
+      "comment": " clear it",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x40106e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 226,
+      "original_code": "DBRA\tD0,@4",
+      "comment": " loop",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D0,@4",
+      "inline_comment_retained": true
+    },
+    "0x401082": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 248,
+      "original_code": "MOVEM.L A0-A7/D0-D7,SEVars",
+      "comment": " save all regs",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "A0-A7/D0-D7,SEVars",
+      "inline_comment_retained": true
+    },
+    "0x401090": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 252,
+      "original_code": "LINK\tA6,#0",
+      "comment": " no locals",
+      "preceding_comments": [],
+      "op": "LINK",
+      "operand": "A6,#0",
+      "inline_comment_retained": true
+    },
+    "0x401094": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 253,
+      "original_code": "LEA \t8(A6),A0",
+      "comment": " pt A0 at args",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "8(A6),A0",
+      "inline_comment_retained": true
+    },
+    "0x401098": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 254,
+      "original_code": "MOVE.W\t(A0)+,D0",
+      "comment": " get command word",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x40109a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 255,
+      "original_code": "MOVE.W\t(A0)+,SECmdSize",
+      "comment": " stash size of param list",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,SECmdSize",
+      "inline_comment_retained": true
+    },
+    "0x4010a0": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 256,
+      "original_code": "BSR.S\tDebugProlog",
+      "comment": " set up call for debuggers, set CC=existence",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "DebugProlog",
+      "inline_comment_retained": true
+    },
+    "0x4010a2": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 257,
+      "original_code": "BLE.S\tDebugErr",
+      "comment": " V true, so either Z or (NOT N) means no inited debugger",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "DebugErr",
+      "inline_comment_retained": true
+    },
+    "0x4010a4": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 262,
+      "original_code": "BSET\t#15,D0",
+      "comment": " set high bit of word to flag trap call",
+      "preceding_comments": [
+        [
+          259,
+          "; Now we know there's a debugger, so call it."
+        ],
+        [
+          260,
+          "; A0 = ptr to last command parameter, A1 = ptr to debugger entry pt."
+        ]
+      ],
+      "op": "BSET",
+      "operand": "#15,D0",
+      "inline_comment_retained": true
+    },
+    "0x4010a8": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 263,
+      "original_code": "JSR \t(A1)",
+      "comment": " call debugger!!!!",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "(A1)",
+      "inline_comment_retained": true
+    },
+    "0x4010ac": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 274,
+      "original_code": "DebugErr\tMOVEQ\t#SENoDB,D0",
+      "comment": " return \"no debugger\" error",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#SENoDB,D0",
+      "inline_comment_retained": true
+    },
+    "0x4010ae": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 265,
+      "original_code": "DebugAdios\tUNLK\tA6",
+      "comment": " restore A6",
+      "preceding_comments": [],
+      "op": "UNLK",
+      "operand": "A6",
+      "inline_comment_retained": true
+    },
+    "0x4010b0": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 266,
+      "original_code": "MOVEM.L SEVars,A0-A7/D0-D7",
+      "comment": " restore all regs",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "SEVars,A0-A7/D0-D7",
+      "inline_comment_retained": true
+    },
+    "0x4010b8": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 267,
+      "original_code": "MOVE.L\t(SP)+,A0",
+      "comment": " get return address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x4010ba": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 268,
+      "original_code": "ADD.W\tSECmdSize,SP",
+      "comment": " pop params",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "SECmdSize,SP",
+      "inline_comment_retained": true
+    },
+    "0x4010c0": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 269,
+      "original_code": "ADDQ.L\t#4,SP",
+      "comment": " pop command word & size word",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#4,SP",
+      "inline_comment_retained": true
+    },
+    "0x4010c8": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 271,
+      "original_code": "JMP \t(A0)",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4010d8": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 283,
+      "original_code": "ADD.B\tD3,D3",
+      "comment": " init flag now high bit, set CC's",
+      "preceding_comments": [],
+      "op": "ADD.B",
+      "operand": "D3,D3",
+      "inline_comment_retained": true
+    },
+    "0x4010da": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 284,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4010dc": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 307,
+      "original_code": "MOVE.W\t#$2700,SR",
+      "comment": " turn off interrupts",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#$2700,SR",
+      "inline_comment_retained": true
+    },
+    "0x4010e4": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 309,
+      "original_code": "BMI.S\t@0",
+      "comment": " yes, don't bother saving regs",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x4010e6": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 311,
+      "original_code": "MOVEM.L A0-A7/D0-D7,SEVars",
+      "comment": " save all regs for debug",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "A0-A7/D0-D7,SEVars",
+      "inline_comment_retained": true
+    },
+    "0x4010ee": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 315,
+      "original_code": "@0\t\t\tLEA \tGenExcps,A0",
+      "comment": " get address of receiver table",
+      "preceding_comments": [
+        [
+          313,
+          "; Compute small integer exception index 1,2,... into D0, based on address atop the stack.\t<13Jul85>"
+        ]
+      ],
+      "op": "LEA",
+      "operand": "GenExcps,A0",
+      "inline_comment_retained": true
+    },
+    "0x4010f2": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 316,
+      "original_code": "MOVE.L\t(SP)+,D0",
+      "comment": " get return address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4010f4": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 317,
+      "original_code": "SUB.L\tA0,D0",
+      "comment": " compute delta",
+      "preceding_comments": [],
+      "op": "SUB.L",
+      "operand": "A0,D0",
+      "inline_comment_retained": true
+    },
+    "0x4010f6": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 318,
+      "original_code": "LSR \t#1,D0",
+      "comment": " divide by 2",
+      "preceding_comments": [],
+      "op": "LSR",
+      "operand": "#1,D0",
+      "inline_comment_retained": true
+    },
+    "0x4010f8": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 323,
+      "original_code": "TST.B\tCPUFlag",
+      "comment": " 0-000, 1-010, 2-020, etc. \t\t\t\t\t<13Jul85>",
+      "preceding_comments": [
+        [
+          320,
+          "; Now clear stack of exception info, saving SR and PC unless re-entered.  A special case\t<13Jul85>"
+        ],
+        [
+          321,
+          "; is class 0 exception on the 68000, which has 4 words of info on top of the usual SR/PC.\t<13Jul85>"
+        ]
+      ],
+      "op": "TST.B",
+      "operand": "CPUFlag",
+      "inline_comment_retained": true
+    },
+    "0x4010fc": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 324,
+      "original_code": "BNE.S\t@1",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x4010fe": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 326,
+      "original_code": "CMPI.W\t#2,D0",
+      "comment": " 1 or 2 means nasty bus error frame\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "CMPI.W",
+      "operand": "#2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401102": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 327,
+      "original_code": "BGT.S\t@1",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "BGT.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x401104": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 328,
+      "original_code": "MOVE.L\t(SP)+,SE000BE",
+      "comment": " save fcn code, access address, and instruction word\t<04Nov85> JTC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,SE000BE",
+      "inline_comment_retained": true
+    },
+    "0x40110a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 329,
+      "original_code": "MOVE.L\t(SP)+,SE000BE+4",
+      "comment": " ...the other 4 bytes of the eight \t\t\t\t\t<04Nov85> JTC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,SE000BE+4",
+      "inline_comment_retained": true
+    },
+    "0x401114": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 332,
+      "original_code": "BMI.S\t@3",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x401116": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 334,
+      "original_code": "MOVE\t(SP)+,SESR",
+      "comment": " SR on top for all CPUs\t\t\t\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "(SP)+,SESR",
+      "inline_comment_retained": true
+    },
+    "0x40111c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 335,
+      "original_code": "MOVE.L\t(SP)+,SEPC",
+      "comment": " next is the saved PC\t\t\t\t\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,SEPC",
+      "inline_comment_retained": true
+    },
+    "0x401122": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 336,
+      "original_code": "BRA.S\tSysErr2",
+      "comment": " bypass nonsaving pop\t\t\t\t\t\t\t<13Jul85><1.4>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SysErr2"
+    },
+    "0x401126": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 339,
+      "original_code": "BRA.S\tSysErr2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SysErr2"
+    },
+    "0x401128": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 353,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (1) bus error",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x40112a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 354,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (2) address error",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x40112c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 355,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (3) illegal instruction",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x40112e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 356,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (4) zero divide",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401130": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 357,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (5) check instruction",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401132": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 358,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (6) trapv instruction",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401134": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 359,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (7) privilege violation",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401136": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 360,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (8) trace",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401138": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 361,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (9) line 1010 (temporarily)",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x40113a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 362,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (10) line 1111",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x40113c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 363,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (11) other exceptions (TRAP calls, spurious int, etc)",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x40113e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 364,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (12) Place holder for no trap number exception",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401140": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 366,
+      "original_code": "BSR.S\tToDeepShit",
+      "comment": " (13) interrupt exceptions",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ToDeepShit",
+      "inline_comment_retained": true
+    },
+    "0x401142": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 393,
+      "original_code": "MOVEM.L D0-D7/A0-A7,SEVars",
+      "comment": " save regs up high in nub space",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "D0-D7/A0-A7,SEVars",
+      "inline_comment_retained": true
+    },
+    "0x40114a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 397,
+      "original_code": "SysErr1\t\tMOVE.W\tSR,SESR",
+      "comment": " save SR\t\t\t\t\t\t\t\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "SR,SESR",
+      "inline_comment_retained": true
+    },
+    "0x401150": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 398,
+      "original_code": "MOVE.L\t(SP)+,SEPC",
+      "comment": " clean PC for fall-through to SysErr2\t\t\t<13Jul85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,SEPC",
+      "inline_comment_retained": true
+    },
+    "0x401156": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 399,
+      "original_code": "TST.B\tCPUFlag",
+      "comment": " zero for 68000\t\t\t\t\t\t\t\t<02Nov85>  JTC",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "CPUFlag",
+      "inline_comment_retained": true
+    },
+    "0x40115a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 400,
+      "original_code": "BEQ.S\tSysErr2",
+      "comment": " no need for dummy frame on old cpu\t\t\t<02Nov85>  JTC",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "SysErr2",
+      "inline_comment_retained": true
+    },
+    "0x40115c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 401,
+      "original_code": "CLR.W\t-(SP)",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t<02Nov85>  JTC",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401162": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 407,
+      "original_code": "BMI.S\t@0",
+      "comment": " yes, skip reg saving",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x401164": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 408,
+      "original_code": "MOVE.L\tSP,SEA7",
+      "comment": " save true PC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,SEA7",
+      "inline_comment_retained": true
+    },
+    "0x401170": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 483,
+      "original_code": "MOVE.W\tD0,DSErrCode",
+      "comment": " Save the possibly modified ErrCode\t\t\t<SM7>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,DSErrCode"
+    },
+    "0x401174": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 488,
+      "original_code": "BSR \tDebugProlog",
+      "comment": " any debuggers?",
+      "preceding_comments": [
+        [
+          485,
+          "; now we've set up all regs, etc.  Time to decide whether to call the debuggers"
+        ],
+        [
+          486,
+          "; or just call the Deepshit code"
+        ]
+      ],
+      "op": "BSR",
+      "operand": "DebugProlog",
+      "inline_comment_retained": true
+    },
+    "0x401178": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 489,
+      "original_code": "BPL.S\tCall2DS",
+      "comment": " yes, but not initialized (init bit not set)",
+      "preceding_comments": [],
+      "op": "BPL.S",
+      "operand": "Call2DS",
+      "inline_comment_retained": true
+    },
+    "0x40117a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 490,
+      "original_code": "BNE.S\tCallDB",
+      "comment": " yes, initialized, call 'em",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "CallDB",
+      "inline_comment_retained": true
+    },
+    "0x40117c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 495,
+      "original_code": "Call2DS\t\tCMP.W\t#13,D0",
+      "comment": " Exception?",
+      "preceding_comments": [
+        [
+          492,
+          "; We got a system error w/un-initialized debuggers, if NMI then assume that user wants to try"
+        ],
+        [
+          493,
+          "; to get the debugger up and running."
+        ]
+      ],
+      "op": "CMP.W",
+      "operand": "#13,D0",
+      "inline_comment_retained": true
+    },
+    "0x401180": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 496,
+      "original_code": "BNE.S\tCallDS",
+      "comment": " no, call the deepshit handler",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "CallDS",
+      "inline_comment_retained": true
+    },
+    "0x401182": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 498,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": " set special system error (0) for initialization",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x401184": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 499,
+      "original_code": "BRA.S\tCallDB",
+      "comment": " and call the debugger",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "CallDB",
+      "inline_comment_retained": true
+    },
+    "0x401186": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 501,
+      "original_code": "CallDS\t\tLEA \tDSErrorHandler,A1",
+      "comment": " point at system alert handler",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "DSErrorHandler,A1",
+      "inline_comment_retained": true
+    },
+    "0x40118a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 504,
+      "original_code": "JSR \t(A1)",
+      "comment": " call the debugger/system error handler",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "(A1)",
+      "inline_comment_retained": true
+    },
+    "0x40118c": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 505,
+      "original_code": "TST.W\tD0",
+      "comment": " any error?",
+      "preceding_comments": [],
+      "op": "TST.W",
+      "operand": "D0",
+      "inline_comment_retained": true
+    },
+    "0x40118e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 506,
+      "original_code": "BNE.S\tCallDS",
+      "comment": " yes, call deepshit",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "CallDS",
+      "inline_comment_retained": true
+    },
+    "0x401196": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 510,
+      "original_code": "MOVEM.L SEVars,D0-D7/A0-A7",
+      "comment": " restore regs",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "SEVars,D0-D7/A0-A7",
+      "inline_comment_retained": true
+    },
+    "0x40119e": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 514,
+      "original_code": "MOVE.L\tSEPC,-(SP)",
+      "comment": " push user's PC",
+      "preceding_comments": [
+        [
+          512,
+          "; In order to return with RTE, must set up vanilla 000 or 4-word 010/020 frame. \t\t\t<13Jul85>"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "SEPC,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4011a4": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 515,
+      "original_code": "MOVE.W\tSESR,-(SP)",
+      "comment": " restore status reg",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "SESR,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4011aa": {
+      "path": "OS/StartMgr/StartErr.a",
+      "line": 516,
+      "original_code": "RTE",
+      "comment": " and return to caller",
+      "preceding_comments": [],
+      "op": "RTE",
+      "operand": "",
+      "inline_comment_retained": true
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4198456,
+      "op": "ADDQ.L",
+      "operand": "#8,A0",
+      "bytes": "5088",
+      "rom_instruction": "addql #8,%a0"
+    },
+    {
+      "address": 4198466,
+      "op": "ADDQ.L",
+      "operand": "#2,A1",
+      "bytes": "5489",
+      "rom_instruction": "addql #2,%a1"
+    },
+    {
+      "address": 4198484,
+      "op": "MOVEQ",
+      "operand": "#6,D0",
+      "bytes": "7006",
+      "rom_instruction": "moveq #6,%d0"
+    },
+    {
+      "address": 4198514,
+      "op": "LEA",
+      "operand": "ROMDEBUGGER(PC),A0",
+      "bytes": "41fa076c",
+      "rom_instruction": "lea %pc@(0x4017e0),%a0"
+    },
+    {
+      "address": 4198518,
+      "op": "MOVE.L",
+      "operand": "A0,MacJmp",
+      "bytes": "21c80120",
+      "rom_instruction": "movel %a0,0x120"
+    },
+    {
+      "address": 4198522,
+      "op": "BSET",
+      "operand": "#5,MacJmp",
+      "bytes": "08f800050120",
+      "rom_instruction": "bset #5,0x120"
+    },
+    {
+      "address": 4198528,
+      "op": "JMP",
+      "operand": "(A6)",
+      "bytes": "4ed6",
+      "rom_instruction": "jmp %fp@"
+    },
+    {
+      "address": 4198538,
+      "op": "BSET",
+      "operand": "#7,MacJmp",
+      "bytes": "08f800070120",
+      "rom_instruction": "bset #7,0x120"
+    },
+    {
+      "address": 4198570,
+      "op": "BRA.S",
+      "operand": "DebugAdios",
+      "bytes": "6002",
+      "rom_instruction": "bras 0x4010ae"
+    },
+    {
+      "address": 4198594,
+      "op": "BCLR",
+      "operand": "#7,MacJmp",
+      "bytes": "08b800070120",
+      "rom_instruction": "bclr #7,0x120"
+    },
+    {
+      "address": 4198602,
+      "op": "MOVE.L",
+      "operand": "MacJmp,D2",
+      "bytes": "24380120",
+      "rom_instruction": "movel 0x120,%d2"
+    },
+    {
+      "address": 4198606,
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D2",
+      "bytes": "c4b8031a",
+      "rom_instruction": "andl 0x31a,%d2"
+    },
+    {
+      "address": 4198610,
+      "op": "MOVE.L",
+      "operand": "D2,A1",
+      "bytes": "2242",
+      "rom_instruction": "moveal %d2,%a1"
+    },
+    {
+      "address": 4198612,
+      "op": "MOVE.B",
+      "operand": "MacJmp,D3",
+      "bytes": "16380120",
+      "rom_instruction": "moveb 0x120,%d3"
+    },
+    {
+      "address": 4198624,
+      "op": "TST.B",
+      "operand": "MacJmp",
+      "bytes": "4a380120",
+      "rom_instruction": "tstb 0x120"
+    },
+    {
+      "address": 4198672,
+      "op": "TST.B",
+      "operand": "MacJmp",
+      "bytes": "4a380120",
+      "rom_instruction": "tstb 0x120"
+    },
+    {
+      "address": 4198692,
+      "op": "ADDQ.L",
+      "operand": "#6,SP",
+      "bytes": "5c8f",
+      "rom_instruction": "addql #6,%sp"
+    },
+    {
+      "address": 4198750,
+      "op": "TST.B",
+      "operand": "MacJmp",
+      "bytes": "4a380120",
+      "rom_instruction": "tstb 0x120"
+    },
+    {
+      "address": 4198762,
+      "op": "BSET",
+      "operand": "#7,MacJmp",
+      "bytes": "08f800070120",
+      "rom_instruction": "bset #7,0x120"
+    },
+    {
+      "address": 4198800,
+      "op": "BCLR",
+      "operand": "#7,MacJmp",
+      "bytes": "08b800070120",
+      "rom_instruction": "bclr #7,0x120"
+    }
+  ],
+  "restored_equates": {
+    "seRegs": [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      660
+    ]
+  },
+  "restored_symbolic_operands": {
+    "4198666": "(SP)+,SE000BE+4",
+    "4198572": "#SENoDB,D0"
+  },
+  "retained_data": {},
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 374,
+    "checked_entry_points": 25,
+    "instruction_count": 111,
+    "source_operation_matches": 91,
+    "rom_only_operation_count": 20,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-start-error-verify",
+    "source_sha256": "272b2fb67f6a1e330feaf32653b7b820a9d424cc770c1e6848b036b2d18af927",
+    "assembled_sha256": "dd06af358ea097d48b71a4f511b79e5742f0692fa24d495c5787d2b8bd3aef8b",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

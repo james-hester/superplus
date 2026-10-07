@@ -1,0 +1,274 @@
+{
+  "module": "Clock",
+  "source": "Reconstruction/Source/OS/Clock.a",
+  "originals": [
+    {
+      "path": "OS/SysUtil.a",
+      "sha256": "a15fc9ba95239f3361e06b2db8d7bfbca433aa6813e795ac4616a2b33c176e8f",
+      "line_ranges": [
+        [
+          1,
+          14
+        ],
+        [
+          86,
+          93
+        ],
+        [
+          136,
+          146
+        ],
+        [
+          951,
+          1252
+        ]
+      ],
+      "role": "InitUtil, the PRAM default field definitions, and API comments for legacy parameter RAM and clock access."
+    },
+    {
+      "path": "OS/Clock.a",
+      "sha256": "30bd4dc45eef2b5b89183d79b3cea41082063c168cb06a8b3f27e5e40e84a040",
+      "line_ranges": [
+        [
+          1,
+          105
+        ],
+        [
+          239,
+          276
+        ]
+      ],
+      "role": "Clock module header and history, and the extended-PRAM API comments. Later dispatch code establishes the interface changes."
+    },
+    {
+      "path": "OS/IoPrimitives/ClockPRAMPrimitives.a",
+      "sha256": "b4f65080d1e641d35bc7360fb779c1f7be4461adeb863a100af2802ec7be9050",
+      "line_ranges": [
+        [
+          281,
+          357
+        ],
+        [
+          400,
+          417
+        ],
+        [
+          521,
+          568
+        ]
+      ],
+      "role": "Later hardware-specific read and write algorithms, clock command construction, and applicable instruction comments."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          499,
+          499
+        ],
+        [
+          1222,
+          1223
+        ]
+      ],
+      "role": "Time, GetParam, and SysParam addresses."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          306,
+          306
+        ],
+        [
+          377,
+          377
+        ]
+      ],
+      "role": "The HWCfgFlags name and the JClkNoMem vector address expression."
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "line_ranges": [
+        [
+          192,
+          192
+        ]
+      ],
+      "role": "The Geneva font number used in the default application-font expression."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          291,
+          294
+        ]
+      ],
+      "role": "Clock and parameter-RAM error values."
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "line_ranges": [
+        [
+          334,
+          342
+        ]
+      ],
+      "role": "The hardware configuration bit identifying the extended clock chip."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40fc8a",
+      "end_exclusive": "0x40fe76",
+      "rom_offset": "0xfc8a",
+      "length": 492,
+      "sha256": "0229e3df7bfb270703b86d633848582528015cabcebe7c3e913233e919fd4abd",
+      "start_label": "ReadPram",
+      "end_label": "ClockEnd",
+      "boundary_evidence": "ReadPram begins at its Ghidra-exported address 0x40fc8a. The final extended-PRAM error branch ends at 0x40fe76, where the next exported routine SetAppBase begins. The span contains 472 instruction bytes and the 20-byte PRAMInit table."
+    }
+  ],
+  "entry_points": {
+    "ReadPram": "0x40fc8a",
+    "ReadPramLoop": "0x40fca0",
+    "PRAMInit": "0x40fcae",
+    "InitUtil": "0x40fcc2",
+    "ReadTime": "0x40fd46",
+    "WriteTime": "0x40fd7c",
+    "WrProtOn": "0x40fdb2",
+    "WrProtOff": "0x40fdba",
+    "WritePram": "0x40fdc2",
+    "WritePramLoop": "0x40fde4",
+    "ClkRW": "0x40fdf2",
+    "ClkReturn": "0x40fe02",
+    "SetupXPram": "0x40fe0a",
+    "ReadXPRam": "0x40fe18",
+    "WriteXPRam": "0x40fe22",
+    "ClockEnd": "0x40fe76"
+  },
+  "integration_manifest": {
+    "name": "clock",
+    "source": "Reconstruction/Source/OS/Clock.a",
+    "start": "0x40fc8a",
+    "end_exclusive": "0x40fe76",
+    "entry_points": {
+      "ReadPram": "0x40fc8a",
+      "ReadPramLoop": "0x40fca0",
+      "PRAMInit": "0x40fcae",
+      "InitUtil": "0x40fcc2",
+      "ReadTime": "0x40fd46",
+      "WriteTime": "0x40fd7c",
+      "WrProtOn": "0x40fdb2",
+      "WrProtOff": "0x40fdba",
+      "WritePram": "0x40fdc2",
+      "WritePramLoop": "0x40fde4",
+      "ClkRW": "0x40fdf2",
+      "ClkReturn": "0x40fe02",
+      "SetupXPram": "0x40fe0a",
+      "ReadXPRam": "0x40fe18",
+      "WriteXPRam": "0x40fe22",
+      "ClockEnd": "0x40fe76"
+    }
+  },
+  "changes": [
+    {
+      "location": "ReadPram and WritePram",
+      "change": "Restored the two legacy register ranges and their byte loops. Replaced later extended-PRAM trap calls with direct ClkRW calls.",
+      "evidence": "ReadPram reads 16 bytes with command 0xc1 and four bytes with command 0xa1. WritePram uses commands 0x41 and 0x21. Their saved registers and loop counts match the ROM.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "PRAMInit",
+      "change": "Moved the 20-byte defaults before InitUtil and restored the older mouse, cache, and desktop fields. Expressed packed values through shifts and field arithmetic.",
+      "evidence": "The ROM data at 0x40fcae is a8000000cc0acc0a00000000000263000388004c. Serial defaults remain 9600 baud, eight data bits, no parity, and two stop bits. Mouse tracking and cache size are zero; volume is three. OS/SysUtil.a history dates the later mouse tracking change to June 20, 1989.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "InitUtil",
+      "change": "Restored the test-register initialization, the Bugs extended-PRAM signature, and the original zero-fill loop. Removed the later hardware dispatcher and extended-default tables.",
+      "evidence": "InitUtil disables write protection, writes zero with command 0x31, and restores protection. It reads the legacy data and clock, compares 0xa8, then checks the four-byte Bugs signature at extended address 0x0c. Invalid extended data causes four-byte writes from address 32 through byte wraparound to address 4. The source history dates replacement of Bugs with NuMc to December 12, 1986.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "ReadTime",
+      "change": "Restored the eight-byte clock read, comparison of two successive longwords, retry, and Time update.",
+      "evidence": "ReadTime at 0x40fd46 reads twice from the clock, compares the values with CMPM.L (A3)+,(A3)+, and retries once if they differ. It returns ClkRdErr after a second mismatch and copies GetParam to Time even on failure.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "WriteTime and protection",
+      "change": "Restored the low-byte-first four-byte write, verification through ReadTime, and one full retry after a mismatch. Restored the protection helpers with their original 0x35 command and 0x55 or 0xd5 data.",
+      "evidence": "The ROM at 0x40fd7c saves D1-D5, copies Time into D3, writes through D2, and verifies against Time. It restores protection before returning. Error constants are -85 for clock reading and -86 for failed verification.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "ClkRW",
+      "change": "Restored the low-memory vector call and A5 return convention.",
+      "evidence": "At 0x40fdf2 the ROM saves SR and D1/D3-D6/A0-A1/A5-A6, loads 0x40fe02 into A5, reads JClkNoMem at 0x054c, and jumps through A0. It restores the saved registers and SR on return.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "ReadXPRam and WriteXPRam",
+      "change": "Restored the shared packed-command construction, transfer loop, byte-address increment, and old error path. Removed later product-table dispatch.",
+      "evidence": "The helper at 0x40fe0a splits D0 into the starting address and count minus one. The entries use commands 0x17 and 0x07, test bit 6 of HWCfgFlags, shift the address into the command, and transfer bytes through ClkRW. WriteXPRam disables protection before checking for an extended clock. The absent-clock path returns -87 without calling the protection helper again.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Source provenance and comments",
+      "change": "Combined applicable headers, history, and API comments from the surviving modules. Marked the restored bodies and helper names as reconstruction work. Corrected InitUtil and WriteTime comments where they no longer describe the ROM.",
+      "evidence": "Most InitUtil instructions and their comments survive in OS/SysUtil.a. The remaining bodies follow ROM instructions because the later files replaced their original interfaces. The ROM proves the bytes but does not recover every historical label or comment.",
+      "confidence": "source provenance recorded"
+    }
+  ],
+  "external_references": [
+    {
+      "name": "JClkNoMem",
+      "address": "0x0000054c",
+      "evidence": "The ROM reads this low-memory clock vector at 0x40fdfc. The target routine is outside this module."
+    },
+    {
+      "name": "_ReadXPRam",
+      "opcode": "0xa051",
+      "evidence": "InitUtil uses this trap at 0x40fd0a. Its entry is included at 0x40fe18, but runtime trap dispatch is outside this module."
+    },
+    {
+      "name": "_WriteXPRam",
+      "opcode": "0xa052",
+      "evidence": "InitUtil uses this trap at 0x40fd22 and 0x40fd2e. Its entry is included at 0x40fe22, but runtime trap dispatch is outside this module."
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x40fc8a, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "b4da27d4e80e562698c06834a49fb595ee7fdd8167154c367f74810a45b2441a",
+    "assembled_length": 492,
+    "matched_bytes": 492,
+    "entry_points_checked": 16,
+    "result": "exact",
+    "limits": [
+      "The original Mac Plus source and historical assembler output remain unavailable. The restored bodies reproduce ROM instructions; several helper names and source expressions are inferred.",
+      "The comparison does not execute clock-chip communication, verify interrupt timing, or test hardware read/write behavior. The original comments about interrupt duration remain historical source claims.",
+      "The actual JClkNoMem target and runtime trap-table entries remain outside this span. Their implementation and dispatch are not verified here.",
+      "WrProtOn, WrProtOff, ReadPramLoop, WritePramLoop, ClkReturn, SetupXPram, and the extended-command loop labels are reconstruction names. Their boundaries follow ROM instructions."
+    ]
+  }
+}

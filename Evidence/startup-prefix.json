@@ -1,0 +1,158 @@
+{
+  "module": "startup-prefix",
+  "source": "Reconstruction/Source/OS/StartMgr/StartInitPrefix.a",
+  "source_sha256": "1727c5a91b3eb1ce2682cd517a7d1a676206b0ef75dd4ab615b501447f4d7d80",
+  "originals": [
+    {
+      "path": "OS/StartMgr/StartInit.a",
+      "sha256": "15a435c41f67bf4e517627c53333d520461594c80036fcd825b517c22c8e30b0",
+      "line_ranges": [
+        [
+          1,
+          23
+        ],
+        [
+          1164,
+          1186
+        ]
+      ],
+      "role": "Released header, authorship, fixed header fields, and vector comments."
+    },
+    {
+      "path": "OS/StartMgr/STEqu.a",
+      "sha256": "a1e901d9bc15fdd9b37b85fd53331cf39752a6d118581e0e77935a658f6c0400",
+      "line_ranges": [
+        [
+          81,
+          82
+        ]
+      ],
+      "role": "The diagnostic-ROM signature for the original Macintosh processor family."
+    },
+    {
+      "path": "Internal/Asm/HardwarePrivateEqu.a",
+      "sha256": "71312a5e2578d72aa979d38ff83e3c0f8b1ec49b5b048a248252ca7dbbc60a59",
+      "line_ranges": [
+        [
+          2824,
+          2826
+        ]
+      ],
+      "role": "The alternate diagnostic-ROM address."
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "line_ranges": [
+        [
+          631,
+          631
+        ]
+      ],
+      "role": "The phase-read hardware address."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "spans": [
+    {
+      "start": "0x400000",
+      "end_exclusive": "0x400062",
+      "length": 98,
+      "sha256": "51e1ab9c54ba839b4c42f00d2c50bb511ce37b860f12aa119363c27a82031520"
+    }
+  ],
+  "integration_manifest": {
+    "name": "startup-prefix",
+    "source": "Reconstruction/Source/OS/StartMgr/StartInitPrefix.a",
+    "start": "0x400000",
+    "end_exclusive": "0x400062",
+    "entry_points": {
+      "CheckSum": "0x400000",
+      "StartPC": "0x400004",
+      "ROMVersion": "0x400008",
+      "StBoot": "0x40000a",
+      "BadDisk": "0x40000e",
+      "PhaseReadEntry": "0x400012",
+      "TestEntry": "0x400016",
+      "RomRsrc": "0x40001a",
+      "Eject": "0x40001e",
+      "ReservedHeader": "0x400022",
+      "ResetEntry": "0x40002a",
+      "StoreByteThenTest": "0x40002e",
+      "RepeatTest": "0x400030",
+      "TestReturn": "0x400038",
+      "CheckDiagROM": "0x400042",
+      "DoPhaseRead": "0x400058",
+      "StartInitPrefixEnd": "0x400062"
+    }
+  },
+  "changes": [
+    {
+      "change": "Restored the Mac Plus header values and the earlier branch vectors. Retained the released source header and comments that describe the same fixed fields.",
+      "evidence": "The ROM stores an absolute reset pointer at offset four, version bytes $00 and $75, and word-displacement branches at offsets $0A, $0E, $12, $16, and $2A. The released source uses several of those positions for later ROM fields."
+    },
+    {
+      "change": "Used the recorded postlink checksum for this partial build.",
+      "evidence": "The sum of all ROM words after the stored checksum is $4D1F8172. StartInit.a states that HiRam replaces its initial trap-count value with the checksum. A complete image build must compute this value from the assembled image."
+    },
+    {
+      "change": "Restored the test loop, diagnostic-ROM check, and phase-read helper from the ROM instructions. The older bodies were not found in the released source.",
+      "evidence": "The reset branch enters the diagnostic-ROM check at $400042. The helper loads a signature and entry address from DiagROM, compares the signature with TROMCode, and supplies StartBoot in A1 before jumping through A0. DoPhaseRead reads three words from PhaseRead and returns through A5."
+    },
+    {
+      "change": "Retained the resource-map offset $176F8 and the two zero longwords at offsets $22 and $26.",
+      "evidence": "The map module independently reconstructs the resource data header at $4176F8. The later source uses the two zero fields for dispatch-table and critical-error entries; this ROM does not."
+    }
+  ],
+  "inferred_labels": [
+    "StartInitPrefix",
+    "PhaseReadEntry",
+    "TestEntry",
+    "StoreByteThenTest",
+    "RepeatTest",
+    "TestReturn",
+    "TestExit",
+    "ReservedHeader",
+    "StartInitPrefixEnd"
+  ],
+  "external_references": [
+    {
+      "name": "StartBoot",
+      "address": "0x400062",
+      "basis": "Ghidra symbol and the branch destinations."
+    },
+    {
+      "name": "BadDiskEntry",
+      "address": "0x400760",
+      "basis": "The BadDisk branch destination. The local name is inferred."
+    },
+    {
+      "name": "StartUpROMTest",
+      "address": "0x400d76",
+      "basis": "Ghidra symbol; its body remains outside this span."
+    },
+    {
+      "name": "TestExit",
+      "address": "0x400136",
+      "basis": "Conditional branch destination. Ghidra calls it TestManager??; its purpose remains uncertain."
+    },
+    {
+      "name": "GoofyDoEject",
+      "address": "0x402c1c",
+      "basis": "The Eject jump destination, named DoEject in Ghidra. The source uses GoofyDoEject for the same header role."
+    }
+  ],
+  "verification": {
+    "method": "The shared verifier assembled and linked the prefix, then compared every emitted byte and all 17 labels.",
+    "matched_bytes": 98,
+    "result": "exact",
+    "limits": [
+      "The prefix ends at StartBoot. The startup body and referenced test routines remain outside this module.",
+      "The comparison does not execute startup or establish the missing historical source text.",
+      "The checksum is recorded metadata until the complete ROM can be assembled and postlinked."
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/HardwarePrivateEqu.a
+;__________________________________________________________________________________________________
+;
+;	File:		HardwarePrivateEqu.a
+;
+;	Contains:	Macintosh assembly equates THAT ARE NOT TO BE RELEASED TO THE WORLD.
+;
+;	Copyright:	© 1990-1993 by Apple Computer, Inc.  All rights reserved.
+;
+
+numOsTrap 		EQU 		256   					; number of os traps
+numTrapMask EQU $1FF ;]
+DiagROM   		EQU 		$F80000   				; Alternate ROM - initial vector
+ROMStart EQU 4194304
+DBase EQU $DFE1FF
+ToolTable 		EQU 		$0C00 					; start of toolbox trap table
+numTbTrap 		EQU 		512   					; number of toolbox traps
+HeapStart 		EQU 		$1400 					; Mac Plus starting point

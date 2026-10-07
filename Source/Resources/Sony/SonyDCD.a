@@ -1,0 +1,972 @@
+*R SonyDCD.a restores the Mac Plus direct-connect disk code.
+*R The surviving SonyHdr.a history says SonyDCD.a became obsolete when DCD
+*R support was removed. No SonyDCD.a body survives in this source tree.
+*R This file therefore uses instructions recovered from the target ROM.
+*R SonyEqu.a supplies the original field names and protocol constants.
+*R Routine names from jump vectors remain; other labels and comments are new.
+*R The resource ends after the status callback jump at $419D96.
+
+		IMPORT CheckRead,DiskCtlErr,DiskDone,DiskSelect,GetDrive,Sense ;]
+		IMPORT WakeUp ;]
+		EXPORT DCDPrime ;]
+
+	INCLUDE 'SonyEqu.a'
+	INCLUDE 'SonyDCDEqu.a' ;]
+
+
+;_______________________________________________________________________
+
+
+*R DCDPrime selects the interface and reads drive status before the first transfer.
+DCDPrime ;]
+	ANDI #$F8FF,SR
+	MOVE.W LastDrive(A1),D0 ;]
+	CMP.W Drive(A1),D0
+	BEQ.S DCDSelectInterface ;]
+	MOVEQ #10,D0
+	BSR.W WakeUp
+DCDSelectInterface ;]
+	MOVE.L IWM,A0
+	TST.B (A0)
+	TST.B Ph2L(A0)
+	CMPI.B #2,DiskInPlace(A1,D1.W) ;]
+	BGE.S DCDSetBuffers ;]
+	LEA DCDDriveStatusReady,A0 ;]
+	MOVE.L A0,stsRtnAddr(A1) ;]
+	BRA.W DCDGetStatus ;]
+DCDDriveStatusReady ;]
+	BNE.W DCDDone ;]
+	BSR.W GetDrive
+	MOVE.B #8,DiskInPlace(A1,D1.W) ;]
+	MOVE.L devType(A1),driveType(A1,D1.W) ;]
+	MOVE.L devChar(A1),D0 ;]
+	SWAP D0
+	MOVE.L D0,driveSize(A1,D1.W) ;]
+	CLR.B driveS1(A1,D1.W) ;]
+	LSR.W #8,D0
+	MOVE.B D0,driveChar(A1,D1.W) ;]
+	BTST #devChWP,D0 ;]
+	SNE WriteProt(A1,D1.W) ;]
+	BTST #devChEject,D0 ;]
+	BEQ.S DCDSetBuffers ;]
+	MOVE.B #2,DiskInPlace(A1,D1.W) ;]
+
+*R The read/write path transfers whole blocks and updates the caller's byte count.
+DCDSetBuffers ;]
+	MOVE.L diskUnitPtr(A1),A2
+	MOVE.L dCtlPosition(A2),D5 ;]
+	MOVEQ #9,D1
+	LSR.L D1,D5
+	MOVE.L dCtlQHead(A2),A0
+	MOVE.L TagBufPtr(A1),A5 ;]
+	MOVE.L ioBuffer(A0),A4 ;]
+	MOVE.L ioReqCount(A0),D3 ;]
+	MOVEQ #ParamErr,D0
+	ANDI #511,D3
+	BNE.W DCDDone ;]
+	MOVE.L ioReqCount(A0),D3 ;]
+	TST.B DskVerify
+	BEQ.S DCDSetCommand ;]
+	BSR.W CheckRead
+	BNE.S DCDSetCommand ;]
+	MOVE.L D3,ioActCount(A0) ;]
+	ADD.L D3,dCtlPosition(A2)
+	MOVEQ #0,D0
+	BRA.W DCDDone ;]
+DCDSetCommand ;]
+	MOVE.B Command+1(A1),dcdCmd(A1) ;]
+	SUBQ.B #2,dcdCmd(A1) ;]
+DCDSetBlockCount ;]
+	MOVEQ #9,D1
+	LSR.L D1,D3
+	MOVEQ #0,D0
+	SUBQ.B #1,D0
+	CMP.L D0,D3
+	BLT.S DCDStartBlocks ;]
+	MOVE.L D0,D3
+DCDStartBlocks ;]
+	MOVE.W D3,D2
+	SWAP D3
+	MOVE.W D2,D3
+	MOVE.B #maxTries-1,RecalCnt(A1) ;]
+DCDClearReset ;]
+	CLR.B dcdFlags(A1) ;]
+DCDSendBlocks ;]
+	BSR.W DCDSetBlockCommand ;]
+	BSR.W SendCmd
+	BNE.S DCDRetryBlocks ;]
+DCDWaitResponse ;]
+	BSR.W DCDWaitReady ;]
+	BPL.S DCDReadResponse ;]
+	MOVE.B #comErr,lastResult(A1) ;]
+	CLR.L lastStatus(A1) ;]
+	MOVE.B #noResp,lastStatus(A1) ;]
+	BRA.S DCDRetryBlocks ;]
+DCDReadResponse ;]
+	BSR.W DCDReceiveCmd ;]
+	BEQ.S DCDWaitResponse ;]
+	ADD.L D4,D5
+	TST.W D0
+	BEQ.S DCDBlocksDone ;]
+DCDRetryBlocks ;]
+	SUBQ.B #1,RecalCnt(A1)
+	BLT.S DCDBlockError ;]
+	BEQ.S DCDResetForRetry ;]
+	CMPI.B #comErr,lastResult(A1) ;]
+	BNE.S DCDRetryCommand ;]
+	BTST #bChksum,lastStatus(A1) ;]
+	BNE.S DCDRetryCommand ;]
+	TST.B dcdFlags(A1) ;]
+	BEQ.S DCDResetForRetry ;]
+	CLR.B RecalCnt(A1)
+DCDResetForRetry ;]
+	BSR.W DCDReset ;]
+	BNE.S DCDBlockError ;]
+	ST dcdFlags(A1) ;]
+DCDRetryCommand ;]
+	BRA.S DCDSendBlocks ;]
+DCDBlockError ;]
+	MOVEQ #ReadErr,D0
+	CMPI.B #2,Command+1(A1) ;]
+	BEQ.S DCDReturnBlockError ;]
+	MOVEQ #WritErr,D0
+DCDReturnBlockError ;]
+	BRA.S DCDDone ;]
+DCDBlocksDone ;]
+	MOVEQ #9,D1
+	CLR.W D3
+	SWAP D3
+	CMPI.B #2,Command+1(A1) ;]
+	BEQ.S DCDUpdateCount ;]
+	ADD.L D3,BufTgFFlg ;]
+DCDUpdateCount ;]
+	LSL.L D1,D3 ;]
+	MOVE.L diskUnitPtr(A1),A3 ;]
+	ADD.L D3,dCtlPosition(A3) ;]
+	MOVE.L dCtlQHead(A3),A0
+	ADD.L D3,ioActCount(A0) ;]
+	MOVE.L ioReqCount(A0),D3 ;]
+	SUB.L ioActCount(A0),D3 ;]
+	BGT.W DCDSetBlockCount ;]
+	MOVEQ #0,D0
+DCDDone ;]
+	MOVE.L IWM,A0
+	TST.B MtrOff(A0)
+	ANDI #$F8FF,SR
+	BRA.W DiskDone
+
+*R DCDWaitReady polls the handshake and yields through WakeUp between checks.
+DCDWaitReady ;]
+	MOVE.L (SP)+,A3
+DCDPollReady ;]
+	MOVEQ #tQuickTime,D0 ;]
+DCDQuickPoll ;]
+	TST.B Q6H(A0)
+	TST.B Q7L(A0)
+	DBPL D0,DCDQuickPoll ;]
+	BPL.S DCDReadyReturn ;]
+	SUBQ.W #1,maxTime(A1) ;]
+	BMI.S DCDReadyReturn ;]
+	MOVE.W chkTime(A1),D0 ;]
+	BSR.W WakeUp
+	BRA.S DCDPollReady ;]
+DCDReadyReturn ;]
+	JMP (A3)
+
+*R DCDSetBlockCommand supplies the block number, sequence byte, and transfer sizes.
+DCDSetBlockCommand ;]
+	MOVE.L D5,D0
+	LSL.L #8,D0
+	MOVE.L D0,startBlock(A1) ;]
+	MOVE.B D3,seqNum(A1)
+	MOVE.W #tSeekChk,chkTime(A1) ;]
+	MOVE.W #tSeekMax,maxTime(A1) ;]
+	MOVE.L #blkSize,D6 ;]
+	MOVEQ #0,D7
+	TST.B dcdCmd(A1) ;]
+	BNE.S DCDMaskCommand ;]
+	EXG D6,D7
+DCDMaskCommand ;]
+	ANDI.B #63,dcdCmd(A1) ;]
+	RTS
+
+*R SendCmd and DCDReset retain the patchable vectors installed by DiskOpen.
+SendCmd
+	MOVE.L jSendCmd,-(SP) ;]
+	RTS
+
+*R The sender supplies tag bytes and converts byte counts to seven-byte groups.
+jtSendCmd ;]
+	MOVE.L IWM,A0
+	LEA Q6L(A0),A3 ;]
+	MOVE.L D6,bufSize(A1) ;]
+	ADD.L D7,bufSize(A1) ;]
+	MOVE.B dcdCmd(A1),D1 ;]
+	CMPI.B #3,D1
+	BGE.S DCDSetGroupCounts ;]
+	TST.B D1
+	BNE.S DCDPrepareWriteTags ;]
+	ADDI.W #tagSize,D7 ;]
+	BRA.S DCDSetGroupCounts ;]
+DCDPrepareWriteTags ;]
+	ADDI.W #tagSize,D6 ;]
+	MOVE.L A5,D0
+	BNE.S DCDSetGroupCounts ;]
+	ADD.W #tagBytes,A1 ;]
+	MOVE.L BufTgFNum,(A1)+ ;]
+	MOVE.L BufTgFFlg,(A1)+ ;]
+	MOVE.L BufTgDate,(A1)+ ;]
+	MOVE.L HFSTagData,(A1)+ ;]
+	MOVE.L HFSTagData+4,(A1)+ ;]
+	MOVE.L SonyVars,A1
+DCDSetGroupCounts ;]
+	ADDQ.W #6,D6 ;]
+	DIVU #7,D6 ;]
+	ANDI #127,D6
+	ADDQ.W #6,D7 ;]
+	DIVU #7,D7 ;]
+	ANDI #127,D7 ;]
+	MOVEQ #0,D4
+	BRA.S DCDSendNextBlock ;]
+DCDNextBlock ;]
+	TST.B D1
+	BEQ.S DCDSendReturn ;]
+	ORI.B #64,dcdCmd(A1) ;]
+	MOVE.B D3,seqNum(A1)
+	ADDQ.L #1,tagBytes+4(A1) ;]
+	MOVE.W #tNextChk,chkTime(A1) ;]
+	MOVE.W #tNextMax,maxTime(A1) ;]
+DCDSendNextBlock ;]
+	CMPI.B #3,D1
+	BGE.S DCDSendPacket ;]
+	TST.B D1
+	BEQ.S DCDSendPacket ;]
+	MOVE.L A5,D0
+	BEQ.S DCDSendPacket ;]
+	ADD.W #tagBytes,A1 ;]
+	MOVE.L (A5)+,(A1)+ ;]
+	MOVE.L (A5)+,(A1)+ ;]
+	MOVE.L (A5)+,(A1)+ ;]
+	MOVE.L SonyVars,A1
+DCDSendPacket ;]
+	BSR.W DCDWritePacket ;]
+	BNE.W DCDCommunicationError ;]
+DCDSendReturn ;]
+	RTS
+
+*R The response path validates the command, sequence, and status, then advances buffers.
+DCDReceiveCmd ;]
+	MOVE.L IWM,A0
+	LEA Q6L(A0),A3 ;]
+	MOVE.B dcdCmd(A1),D1 ;]
+	ANDI.B #63,D1
+	BSR.W DCDReadPacket ;]
+	BNE.W DCDCommunicationError ;]
+	MOVE.L dcdCmd(A1),D0 ;]
+	MOVE.B #invalidResp,D0 ;]
+	SUBI.B #$80,dcdCmd(A1) ;]
+	CMP.B dcdCmd(A1),D1 ;]
+	BNE.S DCDCommunicationError ;]
+	CMPI.B #3,D1
+	BGE.S DCDCheckStatus ;]
+	MOVE.B #sqncNumErr,D0 ;]
+	CMP.B seqNum(A1),D3 ;]
+	BEQ.S DCDCheckReadTags ;]
+	SWAP D0
+	MOVE.B D3,D0
+	SWAP D0
+	ROR.L #8,D0
+	MOVE.B seqNum(A1),D0 ;]
+	ROL.L #8,D0
+	BRA.S DCDCommunicationError ;]
+DCDCheckReadTags ;]
+	TST.B D1
+	BNE.S DCDCheckStatus ;]
+	MOVE.L A5,D0
+	BEQ.S DCDCopySystemTags ;]
+	ADD.W #tagBytes,A1 ;]
+	MOVE.L (A1)+,(A5)+ ;]
+	MOVE.L (A1)+,(A5)+ ;]
+	MOVE.L (A1)+,(A5)+ ;]
+	MOVE.L SonyVars,A1
+DCDCopySystemTags ;]
+	ADD.W #tagBytes,A1 ;]
+	MOVE.L (A1)+,BufTgFNum ;]
+	MOVE.L (A1)+,BufTgFFlg ;]
+	MOVE.L (A1)+,BufTgDate ;]
+	MOVE.L (A1)+,HFSTagData ;]
+	MOVE.L (A1)+,HFSTagData+4 ;]
+	MOVE.L SonyVars,A1
+DCDCheckStatus ;]
+	MOVEQ #nonZerStat,D2 ;]
+	MOVE.L status(A1),D0 ;]
+	BTST #opFailed,D0 ;]
+	BNE.S DCDRecordStatus ;]
+	CMPI.B #10,status(A1) ;]
+	BEQ.S DCDRecordStatus ;]
+	ADD.L bufSize(A1),A4 ;]
+	ADDQ.L #1,D4
+	SUBQ.B #1,D3
+	BNE.W DCDNextBlock ;]
+	MOVEQ #0,D0
+DCDResponseReturn ;]
+	ADDQ.W #1,D3
+	ANDI #$FFFB,SR
+	RTS
+DCDCommunicationError ;]
+	MOVEQ #comErr,D2 ;]
+	ROR.L #8,D0
+DCDRecordStatus ;]
+	MOVE.L D0,lastStatus(A1) ;]
+	MOVE.B D2,lastResult(A1) ;]
+	MOVEQ #1,D0
+	BRA.S DCDResponseReturn ;]
+
+*R The packet reader decodes seven bytes from each eight-byte wire group.
+*R It checks the byte sum and permits SCC holdoff between groups.
+DCDReadPacket ;]
+	MOVE.W SR,-(SP)
+	MOVEM.L D1-D7/A1/A4-A6,-(SP) ;]
+	ADD.W #dcdCmd,A1 ;]
+	MOVEQ #0,D5
+	TST.B Q6H(A0)
+	MOVEQ #rdHsHi,D0 ;]
+	TST.B Q7L(A0)
+	BMI.W DCDReadPacketExit ;]
+	MOVEM.L SCCRd,A5-A6 ;]
+	ADDQ.W #2,A5
+	ADDQ.W #2,A6 ;]
+	ORI #$0700,SR
+	TST.B Ph0H(A0)
+	TST.B Ph1L(A0)
+	TST.B (A3)
+	MOVEQ #rdSyncTO,D0 ;]
+	MOVEQ #1,D6
+	SWAP D6
+DCDReadSync ;]
+	SUBQ.L #1,D6
+	BEQ.W DCDReadPacketExit ;]
+	CMPI.B #syncByte,(A3) ;]
+	BNE.S DCDReadSync ;]
+	MOVE.W #80,D6 ;]
+DCD_419856 ;]
+	MOVE.B (A3),D1
+	DBMI D6,DCD_419856 ;]
+	BPL.S DCDReadGroupTimeout ;]
+	CMPI.B #$BF,D1 ;]
+	BNE.S DCD_419868 ;]
+	MOVEQ #6,D7 ;]
+	SWAP D7
+DCD_419868 ;]
+	SWAP D1
+DCD_41986A ;]
+	MOVE.B (A3),D1
+	DBMI D6,DCD_41986A ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D1
+DCD_419874 ;]
+	MOVE.B (A3),D2
+	DBMI D6,DCD_419874 ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D2
+DCD_41987E ;]
+	MOVE.B (A3),D2
+	DBMI D6,DCD_41987E ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D2
+DCD_419888 ;]
+	MOVE.B (A3),D3
+	DBMI D6,DCD_419888 ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D3
+DCD_419892 ;]
+	MOVE.B (A3),D3
+	DBMI D6,DCD_419892 ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D3
+DCD_41989C ;]
+	MOVE.B (A3),D4
+	DBMI D6,DCD_41989C ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D4
+DCD_4198A6 ;]
+	MOVE.B (A3),D4
+	DBMI D6,DCD_4198A6 ;]
+	BPL.S DCDReadGroupTimeout ;]
+	DBRA D7,DCDReadGroups ;]
+	BRA.W DCDReadLastGroup ;]
+DCDReadGroupTimeout ;]
+	MOVEQ #rdGroupTO,D0 ;]
+	BRA.W DCDReadPacketExit ;]
+DCDReadGroups ;]
+	MOVEQ #3,D6
+	SWAP D6
+	MOVE.W #80,D6 ;]
+DCDReadGroupLoop ;]
+	LSR.B #1,D4 ;]
+	ADDX.B D1,D1
+	ADD.B D1,D5 ;]
+	MOVE.B D1,(A1)+
+DCD_4198CC ;]
+	MOVE.B (A3),D1
+	DBMI D6,DCD_4198CC ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D1
+	MOVE.B #3,(A6) ;]
+	LSR.B #1,D4 ;]
+	ADDX.B D1,D1
+	ADD.B D1,D5 ;]
+	MOVE.B D1,(A1)+
+DCD_4198E2 ;]
+	MOVE.B (A3),D1
+	DBMI D6,DCD_4198E2 ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D1
+	TST.W D7
+	BEQ.S DCD_4198F2 ;]
+	TST.B (A5)
+DCD_4198F2 ;]
+	SNE D0
+	LSR.B #1,D4 ;]
+	ADDX.B D2,D2 ;]
+	ADD.B D2,D5 ;]
+	MOVE.B D2,(A1)+
+DCD_4198FC ;]
+	MOVE.B (A3),D2
+	DBMI D6,DCD_4198FC ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D2
+	LSR.B #1,D4 ;]
+	ADDX.B D2,D2 ;]
+	ADD.B D2,D5 ;]
+	MOVE.B D2,(A1)+
+DCD_41990E ;]
+	MOVE.B (A3),D2
+	DBMI D6,DCD_41990E ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D2
+	TST.B D0
+	BEQ.S DCD_41991E ;]
+	TST.B (A0)
+DCD_41991E ;]
+	LSR.B #1,D4 ;]
+	ADDX.B D3,D3 ;]
+	ADD.B D3,D5
+	MOVE.B D3,(A1)+
+DCD_419926 ;]
+	MOVE.B (A3),D3
+	DBMI D6,DCD_419926 ;]
+DCD_41992C ;]
+	BPL.S DCDReadGroupTimeout ;]
+	SWAP D3
+	SWAP D6
+	DBRA D6,DCD_419938 ;]
+	MOVE.L A4,A1
+DCD_419938 ;]
+	SWAP D6
+	LSR.B #1,D4 ;]
+	ADDX.B D3,D3 ;]
+	ADD.B D3,D5
+	MOVE.B D3,(A1)+
+DCD_419942 ;]
+	MOVE.B (A3),D3
+	DBMI D6,DCD_419942 ;]
+	BPL.S DCD_41992C ;]
+	SWAP D3
+	LSR.B #1,D4 ;]
+	SWAP D4
+	ADDX.B D4,D4 ;]
+	ADD.B D4,D5 ;]
+	MOVE.B D4,(A1)+
+DCD_419956 ;]
+	MOVE.B (A3),D4
+	DBMI D6,DCD_419956 ;]
+	BPL.S DCD_41992C ;]
+	SWAP D4
+	MOVE.W #80,D6 ;]
+DCD_419964 ;]
+	MOVE.B (A3),D4
+	DBMI D6,DCD_419964 ;]
+	BPL.S DCD_41992C ;]
+	TST.B D0
+	DBNE D7,DCDReadGroupLoop ;]
+	BEQ.S DCDReadLastGroup ;]
+DCDReadHoldoff ;]
+	TST.B (A5)
+	ANDI #$F8FF,SR
+	SUBQ.W #1,D7
+	MOVEQ #16,D0
+DCD_41997E ;]
+	DBRA D0,DCD_41997E ;]
+	ORI #$0700,SR
+	TST.B Ph0H(A0)
+	TST.B (A3)
+	CLR.W D0
+DCD_41998E ;]
+	SUBQ.W #1,D0
+	BEQ.S DCDReadHoldoffTimeout ;]
+	CMPI.B #syncByte,(A3) ;]
+	BNE.S DCD_41998E ;]
+	BRA.W DCDReadGroupLoop ;]
+DCDReadHoldoffTimeout ;]
+	MOVEQ #rdHoffSyncTO,D0 ;]
+	BRA.S DCDReadPacketExit ;]
+DCDReadLastGroup ;]
+	SWAP D7
+	LSR.B #1,D4 ;]
+	ADDX.B D1,D1
+	ADD.B D1,D5 ;]
+	SUBQ.W #1,D7
+	BMI.S DCD_4199AE ;]
+	MOVE.B D1,(A1)+
+DCD_4199AE ;]
+	SWAP D1
+	LSR.B #1,D4 ;]
+	ADDX.B D1,D1
+	ADD.B D1,D5 ;]
+	SUBQ.W #1,D7
+	BMI.S DCD_4199BC ;]
+	MOVE.B D1,(A1)+
+DCD_4199BC ;]
+	LSR.B #1,D4 ;]
+	ADDX.B D2,D2 ;]
+	ADD.B D2,D5 ;]
+	SUBQ.W #1,D7
+	BMI.S DCD_4199C8 ;]
+	MOVE.B D2,(A1)+
+DCD_4199C8 ;]
+	SWAP D2
+	LSR.B #1,D4 ;]
+	ADDX.B D2,D2 ;]
+	ADD.B D2,D5 ;]
+	SUBQ.W #1,D7
+	BMI.S DCD_4199D6 ;]
+	MOVE.B D2,(A1)+
+DCD_4199D6 ;]
+	LSR.B #1,D4 ;]
+	ADDX.B D3,D3 ;]
+	ADD.B D3,D5
+	SUBQ.W #1,D7
+	BMI.S DCD_4199E2 ;]
+	MOVE.B D3,(A1)+
+DCD_4199E2 ;]
+	SWAP D3
+	LSR.B #1,D4 ;]
+	ADDX.B D3,D3 ;]
+	ADD.B D3,D5
+	SUBQ.W #1,D7
+	BMI.S DCD_4199F0 ;]
+	MOVE.B D3,(A1)+
+DCD_4199F0 ;]
+	LSR.B #1,D4 ;]
+	SWAP D4
+	ADDX.B D4,D4 ;]
+	ADD.B D4,D5 ;]
+	TST.B Ph1H(A0)
+	TST.B Q6H(A0)
+	MOVEQ #rdHsHiTO,D0 ;]
+	TST.B Q7L(A0)
+	BPL.S DCDReadPacketExit ;]
+	MOVE.B D5,D0
+	BEQ.S DCDReadPacketExit ;]
+	MOVEQ #rdChksumErr,D0 ;]
+DCDReadPacketExit ;]
+	TST.B (A5)
+	TST.B Ph1H(A0)
+	TST.B (A0)
+	MOVEM.L (SP)+,D1-D7/A1/A4-A6 ;]
+	MOVE.W (SP)+,SR
+	TST.B D0
+	RTS
+
+*R The packet writer encodes seven bytes per group and appends the byte checksum.
+DCDWritePacket ;]
+	MOVE.W SR,-(SP)
+	MOVEM.L D1-D7/A1/A4-A6,-(SP) ;]
+	ADD.W #dcdCmd,A1 ;]
+	MOVEM.L SCCRd,A5-A6 ;]
+	ADDQ.W #2,A5
+	ADDQ.W #2,A6 ;]
+	MOVE.B D1,D4
+	SWAP D4
+	SWAP D6
+	MOVE.W D7,D6
+	SWAP D6
+	MOVEQ #0,D5
+DCDEncodeCommand ;]
+	ST D4
+	MOVE.B (A1)+,D1
+	ADD.B D1,D5 ;]
+	ROXR.B #1,D1 ;]
+	ORI.B #$80,D1 ;]
+	ROXR.B #1,D4
+	SWAP D1
+	MOVE.B (A1)+,D1
+	ADD.B D1,D5 ;]
+	ROXR.B #1,D1 ;]
+	ORI.B #$80,D1 ;]
+	ROXR.B #1,D4
+	SWAP D1
+	MOVE.B (A1)+,D2
+	ADD.B D2,D5 ;]
+	ROXR.B #1,D2 ;]
+	ORI.B #$80,D2 ;]
+	ROXR.B #1,D4
+	SWAP D2
+	MOVE.B (A1)+,D2
+	ADD.B D2,D5 ;]
+	ROXR.B #1,D2 ;]
+	ORI.B #$80,D2 ;]
+	ROXR.B #1,D4
+	SWAP D2
+	MOVE.B (A1)+,D3
+	ADD.B D3,D5
+	ROXR.B #1,D3
+	ORI.B #$80,D3 ;]
+	ROXR.B #1,D4
+	SWAP D3
+	MOVE.B (A1)+,D3
+	ADD.B D3,D5
+	ROXR.B #1,D3
+	ORI.B #$80,D3 ;]
+	ROXR.B #1,D4
+	SWAP D3
+	SWAP D4
+	TST.B Q6H(A0)
+	MOVEQ #wrtHsLw,D0 ;]
+	TST.B Q7L(A0)
+	BPL.W DCDWritePacketExit ;]
+	TST.B Ph0H(A0)
+	MOVEQ #wrtHSLwTO,D0 ;]
+	MOVEQ #20,D7 ;]
+	SWAP D7
+DCDWriteWaitLow ;]
+	SUBQ.L #1,D7
+	BEQ.W DCDWritePacketExit ;]
+	TST.B Q7L(A0)
+	BMI.S DCDWriteWaitLow ;]
+	TST.B Ph1L(A0)
+	LEA Q6H(A0),A0 ;]
+	ORI #$0700,SR
+	MOVEQ #2,D7
+	CMPI.B #4,D4
+	BLT.S DCDWriteDelay ;]
+	MOVEQ #-1,D7
+	MOVE.L A4,A1
+DCDWriteDelay ;]
+	MOVEQ #4,D0
+DCD_419AD6 ;]
+	DBRA D0,DCD_419AD6 ;]
+	MOVE.L D6,D0
+	ADDI.L #$00810081,D0 ;]
+	MOVE.B #syncByte,Q7H-Q6H(A0) ;]
+DCD_419AE8 ;]
+	TST.B (A3)
+	BPL.S DCD_419AE8 ;]
+	MOVE.B D0,(A0)
+	SWAP D0
+DCD_419AF0 ;]
+	TST.B (A3)
+	BPL.S DCD_419AF0 ;]
+	MOVE.B D0,(A0)
+	MOVEQ #-128,D0
+	BRA.W DCDWriteGroupCount ;]
+DCDWriteGroups ;]
+	MOVE.B (A1)+,D4
+	ADD.B D4,D5 ;]
+	ROXR.B #1,D4
+	OR.B D0,D4 ;]
+	SWAP D4
+	ROXR.B #2,D4
+DCD_419B08 ;]
+	TST.B (A3)
+	BPL.S DCD_419B08 ;]
+	MOVE.B D4,(A0)
+	ST D4
+	MOVE.B #3,(A6) ;]
+DCD_419B14 ;]
+	TST.B (A3)
+	BPL.S DCD_419B14 ;]
+	MOVE.B D1,(A0)
+	MOVE.B (A1)+,D1
+	ADD.B D1,D5 ;]
+	ROXR.B #1,D1 ;]
+	OR.B D0,D1
+	ROXR.B #1,D4
+	SWAP D1
+	TST.B (A5)
+	BEQ.S DCD_419B2E ;]
+	BSET #31,D6
+DCD_419B2E ;]
+	TST.B (A3)
+	BPL.S DCD_419B2E ;]
+	MOVE.B D1,(A0)
+	MOVE.B (A1)+,D1
+	ADD.B D1,D5 ;]
+	ROXR.B #1,D1 ;]
+	OR.B D0,D1
+	ROXR.B #1,D4
+	SWAP D1
+	TST.W D6
+	BNE.S DCD_419B48 ;]
+	BCLR #31,D6 ;]
+DCD_419B48 ;]
+	TST.B (A3)
+	BPL.S DCD_419B48 ;]
+	MOVE.B D2,(A0)
+	MOVE.B (A1)+,D2
+	ADD.B D2,D5 ;]
+	ROXR.B #1,D2 ;]
+	OR.B D0,D2 ;]
+	ROXR.B #1,D4
+	SWAP D2
+	BTST #31,D6 ;]
+	BEQ.S DCD_419B64 ;]
+	TST.B Ph0L-Q6H(A0) ;]
+DCD_419B64 ;]
+	TST.B (A3)
+	BPL.S DCD_419B64 ;]
+	MOVE.B D2,(A0)
+	MOVE.B (A1)+,D2
+	ADD.B D2,D5 ;]
+	ROXR.B #1,D2 ;]
+	OR.B D0,D2 ;]
+	ROXR.B #1,D4
+	SWAP D2
+DCD_419B76 ;]
+	TST.B (A3)
+	BPL.S DCD_419B76 ;]
+	MOVE.B D3,(A0)
+	MOVE.B (A1)+,D3
+	ADD.B D3,D5
+	ROXR.B #1,D3
+	OR.B D0,D3
+	ROXR.B #1,D4
+	SWAP D3
+	DBRA D7,DCD_419B8E ;]
+	MOVE.L A4,A1
+DCD_419B8E ;]
+	TST.B (A3)
+	BPL.S DCD_419B8E ;]
+	MOVE.B D3,(A0)
+	MOVE.B (A1)+,D3
+	ADD.B D3,D5
+	ROXR.B #1,D3
+	OR.B D0,D3
+	ROXR.B #1,D4
+	SWAP D3
+	SWAP D4
+DCD_419BA2 ;]
+	TST.B (A3)
+	BPL.S DCD_419BA2 ;]
+	MOVE.B D4,(A0)
+	BCLR #31,D6 ;]
+	BNE.S DCDWriteHoldoff ;]
+DCDWriteGroupCount ;]
+	DBRA D6,DCDWriteGroups ;]
+	BRA.S DCDWriteLastGroup ;]
+DCDWriteHoldoff ;]
+	CLR.B D0
+DCD_419BB6 ;]
+	TST.B (A3)
+	BPL.S DCD_419BB6 ;]
+	MOVE.B D0,(A0)
+	ANDI #$F8FF,SR
+	MOVE.W #16,D0
+DCD_419BC4 ;]
+	DBRA D0,DCD_419BC4 ;]
+	SUBQ.W #1,D6
+	TST.B Q7L-Q6H(A0) ;]
+	TST.B Q6L-Q6H(A0) ;]
+	TST.B (A0)
+	TST.B Ph0H-Q6H(A0) ;]
+	MOVE.W #16,D0
+DCD_419BDC ;]
+	DBRA D0,DCD_419BDC ;]
+	MOVEQ #-128,D0
+	ORI #$0700,SR
+	MOVE.B #syncByte,Q7H-Q6H(A0) ;]
+	BRA.W DCDWriteGroups ;]
+DCDWriteLastGroup ;]
+	NEG.B D5
+	ROXR.B #1,D5 ;]
+	OR.B D0,D5 ;]
+	SWAP D4
+	ROXR.B #2,D4
+DCD_419BFA ;]
+	TST.B (A3)
+	BPL.S DCD_419BFA ;]
+	MOVE.B D4,(A0)
+DCD_419C00 ;]
+	TST.B (A3)
+	BPL.S DCD_419C00 ;]
+	MOVE.B D1,(A0)
+	SWAP D1
+DCD_419C08 ;]
+	TST.B (A3)
+	BPL.S DCD_419C08 ;]
+	MOVE.B D1,(A0)
+DCD_419C0E ;]
+	TST.B (A3)
+	BPL.S DCD_419C0E ;]
+	MOVE.B D2,(A0)
+	SWAP D2
+DCD_419C16 ;]
+	TST.B (A3)
+	BPL.S DCD_419C16 ;]
+	MOVE.B D2,(A0)
+DCD_419C1C ;]
+	TST.B (A3)
+	BPL.S DCD_419C1C ;]
+	MOVE.B D3,(A0)
+	SWAP D3
+DCD_419C24 ;]
+	TST.B (A3)
+	BPL.S DCD_419C24 ;]
+	MOVE.B D3,(A0)
+DCD_419C2A ;]
+	TST.B (A3)
+	BPL.S DCD_419C2A ;]
+	MOVE.B D5,(A0)
+DCD_419C30 ;]
+	TST.B (A3)
+	BPL.S DCD_419C30 ;]
+	MOVEQ #0,D0
+	MOVE.B D0,(A0)
+DCD_419C38 ;]
+	TST.B (A3)
+	BPL.S DCD_419C38 ;]
+	MOVE.B D0,(A0)
+	MOVE.L IWM,A0
+	TST.B Ph1H(A0)
+	MOVEQ #wrtHSHighTO,D0 ;]
+	MOVEQ #-1,D7
+DCDWriteWaitHigh ;]
+	SUBQ.W #1,D7
+	BEQ.S DCDWritePacketExit ;]
+	TST.B Q7L(A0)
+	BPL.S DCDWriteWaitHigh ;]
+	MOVEQ #0,D0
+DCDWritePacketExit ;]
+	TST.B Ph1H(A0)
+	TST.B (A0)
+	MOVEM.L (SP)+,D1-D7/A1/A4-A6 ;]
+	MOVE.W (SP)+,SR
+	TST.B D0
+	RTS
+DCDReset
+	MOVE.L jDCDReset,-(SP) ;]
+	RTS
+
+*R The reset path asserts the interface signal, waits, and polls for completion.
+jtDCDReset ;]
+	MOVE.L (SP)+,A3
+	BSR.W DiskSelect
+	TST.B Ph2H(A0)
+	TST.B Ph1L(A0)
+	TST.B (A0)
+	MOVE.W #tRstAssert,D0 ;]
+	BSR.W WakeUp
+	TST.B Ph1H(A0)
+	TST.B Ph2L(A0)
+	MOVE.W #tRstSettle,D0 ;]
+	BSR.W WakeUp
+	MOVE.W #tRstChk,chkTime(A1) ;]
+	MOVE.W #tRstMax,maxTime(A1) ;]
+DCDResetPoll ;]
+	BSR.W Sense ;]
+	BMI.S DCDResetOK ;]
+	SUBQ.W #1,maxTime(A1) ;]
+	BMI.S DCDResetTimeout ;]
+	MOVE.W chkTime(A1),D0 ;]
+	BSR.W WakeUp
+	BRA.S DCDResetPoll ;]
+DCDResetOK ;]
+	MOVEQ #0,D0
+	JMP (A3)
+DCDResetTimeout ;]
+	TST.B Q6L(A0)
+	MOVEQ #-1,D0
+	JMP (A3)
+
+*R The control paths return the drive icon, verify media, or format media.
+DCDIconReady ;]
+	BNE.S DCDIconDone ;]
+	LEA devIcon(A1),A2 ;]
+	MOVE.L diskUnitPtr(A1),A0 ;]
+	MOVE.L dCtlQHead(A0),A0
+	MOVE.L A2,CSParam(A0)
+DCDIconDone ;]
+	BRA.W DCDDone ;]
+ctlDCDIcon ;]
+	BTST #devChIcon,driveChar(A1,D1.W) ;]
+	BEQ.W DiskCtlErr ;]
+	LEA DCDIconReady,A0 ;]
+	MOVE.L A0,stsRtnAddr(A1) ;]
+DCDGetStatus ;]
+	MOVEQ #3,D3
+	BRA.S DCDControl ;]
+ctlDCDVerify ;]
+	MOVEQ #26,D3 ;]
+	BRA.S DCDControl ;]
+ctlDCDFormat ;]
+	MOVEQ #25,D3 ;]
+DCDControl ;]
+	BSR.W DiskSelect
+	TST.B (A0)
+	TST.B Ph2L(A0)
+	CLR.B dcdFlags(A1) ;]
+	MOVE.B D3,dcdCmd(A1) ;]
+DCDControlRetry ;]
+	MOVE.L SonyVars,A1
+	ANDI.B #63,dcdCmd(A1) ;]
+	SUB.L A4,A4
+	SUB.L A5,A5
+	MOVEQ #1,D3
+	MOVEQ #0,D6
+	MOVEQ #0,D7
+	MOVE.W #tFVChk,chkTime(A1) ;]
+	MOVE.W #tFVMax,maxTime(A1) ;]
+	CMPI.B #3,dcdCmd(A1) ;]
+	BNE.S DCDControlSend ;]
+	MOVE.L #stsBufSize,D7 ;]
+	MOVE.W #tStsChk,chkTime(A1) ;]
+	MOVE.W #tStsMax,maxTime(A1) ;]
+	LEA stsBuffer(A1),A4 ;]
+DCDControlSend ;]
+	BSR.W SendCmd
+	BEQ.S DCDControlReceive ;]
+DCDControlError ;]
+	CMPI.B #2,lastStatus(A1) ;]
+	BEQ.S DCDControlReset ;]
+	BTST #bChksum,lastStatus(A1) ;]
+	BEQ.S DCDControlReset ;]
+	BSET #retryonce,dcdFlags(A1) ;]
+	BNE.S DCDControlRetry ;]
+DCDControlReset ;]
+	BSET #resetonce,dcdFlags(A1) ;]
+	BNE.S DCDControlFailed ;]
+	BSR.W DCDReset ;]
+	BNE.S DCDControlFailed ;]
+	BRA.S DCDControlRetry ;]
+DCDControlReceive ;]
+	BSR.W DCDWaitReady ;]
+	BMI.S DCDControlError ;]
+	BSR.W DCDReceiveCmd ;]
+	TST.W D0
+	BNE.S DCDControlError ;]
+	MOVEQ #0,D0
+	BRA.S DCDControlReturn ;]
+DCDControlFailed ;]
+	MOVEQ #ControlErr,D0
+DCDControlReturn ;]
+	CMPI.B #3,dcdCmd(A1) ;]
+	BEQ.S DCDStatusReturn ;]
+	BRA.W DCDDone ;]
+DCDStatusReturn ;]
+	MOVE.L stsRtnAddr(A1),A0 ;]
+	TST.W D0
+	JMP (A0)
+
+SonyDCDEnd ;]
+	END

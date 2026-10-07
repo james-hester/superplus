@@ -1,0 +1,392 @@
+*R Mac Plus resource-loading Toolbox helpers.
+*R The original routines create windows, controls, and menus from their templates.
+*R Later color, palette, and automatic-positioning additions are omitted.
+*R See Evidence/getmgr.json for provenance and the byte comparison.
+
+;
+;	File:		GetMgr.a
+;
+;	Contains:	This file contains a collection of simple resource interface routines for the Mac
+;  				toolBox to provide a simple way to use common system resources.  These include:
+;				GetPattern, GetCursor, GetString, GetIcon, GetPicture, GetNewWindow
+;				GetNewControl, GetMenu, and GetNewMBar.
+;
+;	Written by:	Andy Hertzfeld	29-Dec-82
+;
+;	Copyright:	© 1981-1992 by Apple Computer, Inc.  All rights reserved.
+;
+*R Original histories through 1985:
+;				 7/10/85	EHB		Load MDEF from ROM map in GetMenu
+;				 4/22/85	EHB		Restored CalcMenuSize to make Draw work (lisa strikes again!)
+;				 4/15/85	EHB		Made GetMenu check for existing resource.
+;				 4/11/85	EHB		Eliminated CalcMenuSize by dirtying the size instead.
+;				 1/23/85	LAK		Adapted for new equate files.
+;				  2/2/83	AJH		Made GetMenu measure the menu
+;				  1/2/83	AJH		Added icons and pictures, GetMenuBar
+;
+
+MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+
+
+GMGR			PROC	  EXPORT
+
+;
+; routines defined in the "Get" manager
+;
+			   EXPORT	 GetPattern
+			   EXPORT	 GetCursor
+			   EXPORT	 GetString
+			   EXPORT	 GetIcon
+			   EXPORT	 GetPicture
+			   EXPORT	 GetNewWindow
+			   EXPORT	 GetNewControl
+			   EXPORT	 GetMenu
+			   EXPORT	 GetNewMBar
+			   EXPORT	 GetMgrEnd
+
+
+;
+; FUNCTION GetPattern(patID: INTEGER): PatHandle;
+;
+;	 GetPattern returns a pattern handle when given a pattern ID
+;
+GetPattern
+			   MOVE.L	 #'PAT ',D0 		 ;remember the resource type
+GetCommon
+			   SUBQ 	 #4,SP				 ;make room for function result
+			   MOVE.L	 D0,-(SP)			 ;push the resource type
+			   MOVE.W	 12(SP),-(SP)		 ;push the ID
+			   _GetResource 				 ;get the handle
+			   MOVE.L	 (SP)+,D0			 ;keep it in D0
+
+			   MOVE.L	 (SP)+,A0			 ;get the return address
+			   ADDQ 	 #2,SP				 ;strip the parameter
+			   MOVE.L	 D0,(SP)			 ;move in the result
+			   JMP		 (A0)				 ;return to the caller
+
+;
+; FUNCTION GetCursor(cursorID: INTEGER): CursorHandle;
+;
+;	GetCursor returns a cursor handle given a cursor ID.  It shares a lot
+;  of code with GetPattern.
+;
+GetCursor
+			   MOVE.L	 #'CURS',D0 		 ;get the resource type
+			   BRA.S	 GetCommon			 ;let common code do the rest
+
+;
+; FUNCTION GetString(StringID: INTEGER): StringHandle;
+;
+;	GetString returns a string handle given a string ID.  It shares a lot
+;  of code with GetPattern.
+;
+GetString
+			   MOVE.L	 #'STR ',D0 		 ;get the resource type
+			   BRA.S	 GetCommon			 ;let common code do the rest
+
+;
+; FUNCTION GetIcon(IconID: INTEGER): IconHandle;
+;
+;	GetIcon returns a iconHandle given an icon ID.	It shares a lot
+;  of code with GetPattern.
+;
+GetIcon
+			   MOVE.L	 #'ICON',D0 		 ;get the resource type
+			   BRA.S	 GetCommon			 ;let common code do the rest
+
+;
+; FUNCTION GetPicture(PictureID: INTEGER): PicHandle;
+;
+;	GetPicture returns a picture handle given a picture ID.  It shares a lot
+;  of code with GetPattern.
+;
+GetPicture
+			   MOVE.L	 #'PICT',D0 		;get the resource type
+			   BRA.S	 GetCommon			 ;let common code do the rest
+
+
+;
+; FUNCTION GetNewWindow(windowID: INTEGER; wStorage: Ptr; behind: windowPtr):windowPtr;
+;
+;  GetNewWindow allocates a new window using the parameters contained
+;  in the "WIND" resource specified by the windowID
+;
+	
+result			EQU		18					; parameter equates
+winID			EQU		16
+wStor			EQU		12
+behind			EQU		8
+
+GetNewWindow    LINK    A6,#0                   ;build stack frame
+
+                MOVE.L	A3,-(SP)			; preserve a work register
+				CLR.L	result(A6)			; set result to NIL
+	
+				SUBQ	#4,SP				; make space for result
+				MOVE.L	#'WIND',-(SP)		; push resource class "WIND"
+				MOVE.W	winID(A6),-(SP)		; push window ID
+
+                _GetResource                    ;get the resource
+
+	
+				MOVE.L	(SP)+,A3			; keep handle in A3
+				MOVE.L	A3,D0			 	; did we get one?
+				BEQ.S		NoGetNew1			; if not, don't allocate one
+
+				MOVE.L	(A3),A0				; keep pointer in A0
+;
+; OK, we got the parameter block so call NewWindow to allocate the window
+;
+				SUBQ	#4,SP				; make space for result
+				MOVE.L	wStor(A6),-(SP)		; push wStorage
+				MOVE.L	A0,-(SP)			; push pointer to boundsRect
+				PEA		18(A0) 			 	; push pointer to title
+			
+                MOVE.L  8(A0),-(SP)              ;]push visible and definition ID
+				MOVE.L	behind(A6),-(SP)	; push "behind"
+				MOVE.W	12(A0),-(SP)		; push GoAway flag
+				MOVE.L	14(A0),-(SP)		; push the refCon
+			
+                BSET    #7,(A3)                 ;]lock the template handle
+                _NewWindow                      ;allocate a regular window
+
+GetWDone	 	MOVE.L	 (SP)+,result(A6)	; update function result
+			   
+                MOVE.L  A3,-(SP)                ;]push the template handle
+                _ReleaseResource                ;]release the window template
+
+NoGetNew1	  
+			  MOVE.L	(SP)+,A3			; restore work register
+			  UNLK 	 	A6					; unbuild stack frame
+			  MOVE.L	(SP)+,A0			; get return address
+			  ADD		 #10,SP				; strip parameters
+			  JMP		 (A0)				; return to caller
+
+;
+; FUNCTION GetNewControl(controlID: INTEGER; owner: windowPtr): ControlHandle;
+;
+;  GetNewcontrol allocates a new control using the parameters contained
+;]  in the "CNTL" resource specified by the controlID.  It associates
+;  the control with the owning window that is specified as a parameter.
+;
+GetNewControl
+
+                LINK    A6,#0                   ;build stack frame
+			MOVE.L	A3,-(SP)			;preserve a work register
+			CLR.L	14(A6)				;return NIL
+
+			SUBQ	#4,SP				;make space for result
+			MOVE.L	#'CNTL',-(SP)		;push resource class "CNTL"
+			MOVE.W	12(A6),-(SP)		;push control ID
+			_GetResource				;get the resource
+
+			MOVE.L	(SP)+,A3			;keep handle in A3
+			MOVE.L	A3,D0				;did we get one?
+			BEQ.S	NoNew2				;if not, don't allocate
+
+			MOVE.L	(A3),A0				;keep pointer in A0
+;
+; OK, we got the parameter block so call NewControl to allocate the control
+;
+			SUBQ	#4,SP				;make space for result
+			MOVE.L	8(A6),-(SP)			;push owning window
+			MOVE.L	A0,-(SP)			;push pointer to boundsRect
+			PEA		22(A0)				;push ptr to title
+			
+			LEA		8(A0),A1			;get pointer to params
+
+                MOVE.L  (A1)+,-(SP)              ;]push visible and control value
+			MOVE.L	(A1)+,-(SP)			;push min,max
+			MOVE.W	(A1)+,-(SP)			;push procID
+			MOVE.L	(A1)+,-(SP)			;push refCon
+			
+                BSET    #7,(A3)                 ;]lock the template handle
+			
+			_NewControl					;allocate the control
+			
+			MOVE.L	(SP)+,14(A6)		;update function result
+
+                MOVE.L  A3,-(SP)                ;]push the template handle
+                _ReleaseResource                ;]release the control template
+
+NoNew2
+				
+			MOVE.L	(SP)+,A3			;restore work register
+			UNLK 	A6 					;unbuild stack frame
+			MOVE.L	(SP)+,A0			;get return address
+			ADDQ 	#6,SP				;strip parameters
+			JMP		(A0)				;return to caller
+
+
+;
+; FUNCTION GetMenu(menuID): menuHandle
+;
+;	GetMenu returns a menuHandle given a menuID.  If the menu cannot be loaded,
+;	it returns a NIL handle.
+
+;	Unlike GetNewWindow and
+;	GetNewControl, which allocate things, GetMenu is a "pure" resource
+;	in that it only allocates the handle the first time its called; subsequent
+;	calls will return the same handle.
+
+;	At great expense, this routine now check to see if it being called for a menu that
+;	has already been loaded.
+
+;	If the MENU is not found, return a NIL handle
+;
+
+GetMenu
+			   LINK 	 A6,#0				 ; build stack frame
+			   MOVE.L	 A3,-(SP)			 ; preserve work registers
+
+			   MOVE.W	 ResLoad,-(SP)		 ; save resLoad on stack		<EHB 15-Apr-85>
+
+			   MOVEQ	 #0,D0				 ; set resLoad False			<EHB 15-Apr-85>
+			   BSR.S		 DoTheGet			 ; is the resource loaded yet?	<EHB 15-Apr-85>
+			   BEQ.S		 GetMDone			 ; => couldn't find it, punt    <EHB 15-Apr-85>
+
+			   MOVE.L	 (A3),D0			 ; is handle currently loaded?	<EHB 18-Apr-85>
+			   BEQ.S	 LoadMenu			 ; => no, load it in			<EHB 18-Apr-85>
+
+; now check for menu that was preloaded, but hasn't been initialized yet    <EHB 29-Apr-85>
+
+			   CLR.L	-(SP)					; make room for VAR theType
+			   MOVE.L	(A3),A0 				; get menu pointer
+			   MOVE.L	MenuDefHandle(A0),-(SP) ; assume it has a handle to an 'MDEF'
+			   CLR.L	-(SP)					; pass it a wildcard ID
+			   PEA		8(SP)					; point to VAR theType
+			   CLR.L	-(SP)					; pass it a wildcard name
+			   _GetResInfo
+			   MOVE.L	(SP)+,D0				; get the returned type
+			   CMP.L	#'MDEF',D0				; was it 'MDEF'?
+			   BEQ.S	GetMDone				; => yes, menuDef already loaded
+			   BRA.S	LoadMDEF				; => else go load 'MDEF'
+
+; load the menu for the first (and final) time
+
+LoadMenu
+			   MOVEQ	 #1,D0				 ; set resLoad True 			<EHB 15-Apr-85>
+			   BSR.S	 DoTheGet			 ; load resource (handle in A3) <EHB 15-Apr-85>
+			   BEQ.S	 GetMDone			 ; => couldn't load it, punt    <EHB 15-Apr-85>
+
+; all right, we have a virgin menu.  Now we have to install a menuDefHandle 	<EHB 29-Apr-85>
+
+LoadMDEF
+			   SUBQ 	 #4,SP				 ; make room for function result
+			   MOVE.L	 #'MDEF',-(SP)		 ; push the resource class "MDEF"
+			   MOVE.L	 (A3),A0			 ; get ptr to menu
+			   MOVE.W	 MenuDefHandle(A0),-(SP) ; push definition proc ID
+			   MOVE.W	 #MapTRUE,ROMMapInsert	 ; get the MDEF from the ROM map	<EHB 10 Jul 85>
+			   _GetResource 				 ; get it!
+
+			   MOVE.L	 (A3),A0			 ; get pointer to menu
+			   MOVE.L	 (SP)+,MenuDefHandle(A0) ; install the defProc handle (which may be NIL)
+
+			   MOVE.L	 A3,-(SP)			 ; push the menu handle
+			   _CalcMenuSize				 ; calculate the size of the menu
+
+;
+
+GetMDone
+			   _SetResLoad					 ; old state on stack			<EHB 15-Apr-85>
+
+			   MOVE.L	 (SP)+,A3			 ; restore work register
+			   UNLK 	 A6 				 ; unbuild stack frame
+			   MOVE.L	 (SP)+,A0			 ; get return address
+			   ADDQ 	 #2,SP				 ; strip parameters
+			   JMP		 (A0)				 ; return to caller
+;
+;	 Utility DoTheGet
+;
+;	 DoTheGet loads the specified menu ID if ResLoad is TRUE.
+;	 The desired state of ResLoad is in D0.
+
+DoTheGet									 ; <EHB 15-Apr-85>
+			   MOVE.B	 D0,-(SP)			 ; push resLoad state
+			   _SetResLoad
+
+			   SUBQ 	 #4,SP				 ; make space for result
+			   MOVE.L	 #'MENU',-(SP)		 ; push resource type "MENU"
+			   MOVE.W	 8(A6),-(SP)		 ; push menu ID
+			   _GetResource 				 ; get the resource
+			   MOVE.L	 (SP)+,A3			 ; keep it in a register
+			   MOVE.L	 A3,10(A6)			 ; also return it as the result
+			   RTS							 ; EQ if resource not found
+
+;
+; FUNCTION GetNewMBar(menuBarID: INTEGER): MBarHandle;
+;
+;	GetNewMBar returns a menuBarHandle given a menuBarID.
+;
+GetNewMBar
+			   LINK 	 A6,#0				 ;set up a stack frame
+			   MOVEM.L	 D3/A3,-(SP)		 ;save some work registers
+			   CLR.L	 10(A6) 			 ;return NIL as default
+
+			   SUBQ 	 #4,SP				 ;make room for result
+			   _GetMenuBar					 ;remember the current menuBar
+			   _ClearMenuBar				 ;NIL out the current menuBar
+
+			   SUBQ 	 #4,SP				 ;make room for result
+			   MOVE.L	 #'MBAR',-(SP)		 ;push the resource type
+			   MOVE.W	 8(A6),-(SP)		 ;push the parameter
+			   _GetResource 				 ;get the mBar definition
+			   MOVE.L	 (SP)+,A3			 ;keep it in A3
+
+			   MOVE.L	 A3,D0				 ;got it?
+			   BEQ.S	 DoneGetMBar		 ;if not, skip
+
+			   MOVEQ	 #0,D3				 ;start with menu index 0
+
+; loop, getting and inserting one menu at a time
+
+GetMBLoop
+			   SUBQ 	 #4,SP				 ;make room for result
+			   MOVE.L	 (A3),A0			 ;get pointer to mBarDef
+			   MOVE 	 D3,D0				 ;copy current index
+			   ADD		 D0,D0				 ;double for word index
+			   MOVE.W	 2(A0,D0),-(SP) 	 ;push menu ID
+			   BSR.W     GetMenu	;]get the menu
+
+			   CLR.W	 -(SP)				 ;insert at end of menuBar
+			   _InsertMenu
+
+			   MOVE.L	 (A3),A0			 ;get ptr to mBarDef
+			   ADDQ 	 #1,D3				 ;bump to next menu
+			   CMP		 (A0),D3			 ;done yet
+			   BLT.S	 GetMBLoop			 ;loop until done
+
+; we successfully read in the whole menuBar so return the current menuBar as
+; the result
+
+			   SUBQ 	 #4,SP				 ;make room
+			   _GetMenuBar					 ;get new menuBar
+			   MOVE.L	 (SP)+,10(A6)		 ;return it as the result
+
+                MOVE.L  A3,-(SP)                ;]push the menu-bar template
+                _ReleaseResource                ;]release the template
+
+; all done so restore the original menu bar
+
+DoneGetMBar
+			   MOVE.L	 (SP),-(SP) 		 ;copy the menuBar handle
+			   _SetMenuBar					 ;restore original menu bar
+
+			   MOVE.L	 (SP)+,A0			 ;get handle
+			   _DisposHandle				 ;de-allocate it
+
+; restore registers and return
+
+			   MOVEM.L	 (SP)+,D3/A3		 ;restore registers
+			   UNLK 	 A6 				 ;unbuild stack frame
+			   MOVE.L	 (SP)+,A0			 ;get return address
+			   ADDQ 	 #2,SP				 ;strip parameter
+			   JMP		 (A0)				 ;return to caller
+
+GetMgrEnd
+			   END
+
+

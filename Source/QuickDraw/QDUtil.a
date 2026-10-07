@@ -1,0 +1,197 @@
+;
+;	File:		QDUtil.a
+;
+;	Copyright:	© 1981-1990, 1992-1993 by Apple Computer, Inc., all rights reserved.
+;
+*R This excerpt covers the Mac Plus bit utilities and Random.
+*R ROM addresses: $408334 through $4083ED. The next routine starts at $4083EE.
+*R The instructions retain the SuperMario source. See Evidence/qdutil.json.
+*R QuickDraw Source/Util.a also preserves these routines and their comments.
+;
+		BLANKS	ON
+		STRING	ASIS
+
+			MACHINE	MC68000
+
+		INCLUDE 'GrafTypes.a' ;]
+
+;-------------------------------------------------------------
+;
+;  --> UTIL.TEXT
+;
+;  SMALL UTILITY ROUTINES USED BY QuickDraw.
+;
+
+
+BitNot	FUNC  EXPORT
+;-----------------------------------------------------------
+;
+;  Function BitNot(long: LongInt): LongInt;
+;
+		MOVE.L	(SP)+,A0					;POP RETURN ADDR
+		NOT.L	(SP)						;INVERT LONG
+		MOVE.L	(SP)+,(SP)					;STORE INTO RESULT
+		JMP 	(A0)						;AND RETURN
+
+
+BitAnd	FUNC  EXPORT
+		EXPORT BitXor,BitOr,BitShift
+;-----------------------------------------------------------
+;
+;  Function BitAnd(long1,long2: LongInt): LongInt;
+;
+		MOVE.L	(SP)+,A0					;POP RETURN ADDR
+		MOVE.L	(SP)+,D0					;GET ONE LONG
+		AND.L	(SP)+,D0					;AND IT WITH THE OTHER
+		BRA.S	DONE						;AND STORE RESULT
+
+
+;-----------------------------------------------------------
+;
+;  Function BitXor(long1,long2: LongInt): LongInt;
+;
+BitXor	MOVE.L	(SP)+,A0					;POP RETURN ADDR
+		MOVE.L	(SP)+,D0					;GET ONE LONG
+		MOVE.L	(SP)+,D1					;GET THE SECOND
+		EOR.L	D1,D0						;XOR BOTH
+		BRA.S	DONE						;AND STORE RESULT
+
+
+;-----------------------------------------------------------
+;
+;  Function BitOr(long1,long2: LongInt): LongInt;
+;
+BitOr	MOVE.L	(SP)+,A0					;POP RETURN ADDR
+		MOVE.L	(SP)+,D0					;GET ONE LONG
+		OR.L	(SP)+,D0					;OR IT WITH THE OTHER
+		BRA.S	DONE						;AND STORE RESULT
+
+
+;-----------------------------------------------------------
+;
+;  Function BitShift(long: LongInt; count: INTEGER): LongInt;
+;
+;  positive count --> shift left.
+;  negative count --> shift right.
+;
+BitShift MOVE.L (SP)+,A0					;POP RETURN ADDR
+		MOVE	(SP)+,D1					;GET COUNT
+		BPL.S	SHLEFT						;SHIFT LEFT IF POSITIVE
+		NEG 	D1							;MAKE COUNT POSITIVE
+		MOVE.L	(SP)+,D0					;GET LONG
+		LSR.L	D1,D0						;SHIFT IT RIGHT
+		BRA.S	DONE						;AND STORE RESULT
+SHLEFT	MOVE.L	(SP)+,D0					;GET LONG
+		LSL.L	D1,D0						;SHIFT IT LEFT
+DONE	MOVE.L	D0,(SP) 					;STORE THE RESULT
+		JMP 	(A0)						;AND RETURN
+
+
+BitTst	FUNC  EXPORT
+		EXPORT BitSet,BitClr
+;---------------------------------------------------------
+;
+;	FUNCTION BitTst(bytePtr: Ptr; bitNum: LongInt): BOOLEAN;
+;
+		BSR.S	SHARE
+		MOVE.L	(SP)+,A1					;GET PTR
+		BTST	D0,0(A1,D1.L)				;TEST THE BIT
+		SNE 	(SP)						;SET OR CLEAR RESULT
+		NEG.B	(SP)						;CONVERT -1 TO 1
+		JMP 	(A0)						;RETURN
+
+
+;---------------------------------------------------------
+;
+;	PROCEDURE BitSet(bytePtr: Ptr; bitNum: LongInt);
+;
+BitSet	BSR.S	SHARE
+		MOVE.L	(SP)+,A1					;GET PTR
+		BSET	D0,0(A1,D1.L)				;SET THE BIT
+		JMP 	(A0)
+
+
+;---------------------------------------------------------
+;
+;	PROCEDURE BitClr(bytePtr: Ptr; bitNum: LongInt);
+;
+BitClr	BSR.S	SHARE
+		MOVE.L	(SP)+,A1					;GET PTR
+		BCLR	D0,0(A1,D1.L)				;SET THE BIT
+		JMP 	(A0)
+;
+;
+;
+SHARE	MOVE.L	(A7)+,A1
+		MOVE.L	(SP)+,A0					;POP RETURN ADDR
+		MOVE.L	(SP)+,D1					;GET BITNUM
+		MOVE	D1,D0						;COPY IT
+		ASR.L	#3,D1						;CONVERT BITS TO BYTES
+		NOT 	D0							;REVERSE BIT SENSE
+		JMP 	(A1)
+
+
+
+Random	FUNC  EXPORT
+;--------------------------------------------------------------
+;
+;  FUNCTION Random: INTEGER;
+;
+;  returns a signed 16 bit number, and updates unsigned 32 bit randSeed.
+;
+;  recursion is randSeed := (randSeed * 16807) MOD 2147483647.
+;
+;  See paper by Linus Schrage, A More Portable Fortran Random Number Generator
+;  ACM Trans Math Software Vol 5, No. 2, June 1979, Pages 132-138.
+;
+;  Clobbers D0-D2, A0
+;
+;
+;  GET LO 16 BITS OF SEED AND FORM LO PRODUCT
+;  xalo := A * LoWord(seed)
+;
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QuickDraw GLOBALS
+		MOVE	#16807,D0					;GET A = 7^5
+		MOVE	D0,D2						;GET A = 7^5
+		MULU	RANDSEED+2(A0),D0			;CALC LO PRODUCT = XALO
+;
+;  FORM 31 HIGHEST BITS OF LO PRODUCT
+;  fhi:=HiWord(seed) * ORD4(a) + HiWord(xalo);
+;
+		MOVE.L	D0,D1						;COPY xalo
+		CLR.W	D1
+		SWAP	D1							;GET HiWord(xalo) as a long
+		MULU	RANDSEED(A0),D2 			;MULT BY HiWord(seed)
+		ADD.L	D1,D2						;ADD LEFTLO = FHI
+;
+;  GET OVERFLOW PAST 31ST BIT OF FULL PRODUCT
+;  k:=fhi DIV 32768;
+;
+		MOVE.L	D2,D1						;COPY FHI
+		ADD.L	D1,D1						;CALC 2 TIMES FHI
+		CLR.W	D1
+		SWAP	D1							;CALC FHI SHIFTED RIGHT 15 FOR K
+;
+;  ASSEMBLE ALL THE PARTS AND PRE-SUBTRACT P
+;  seed:=((BitAnd(XALO,$0000FFFF) - P) + BitAnd(fhi,$00007FFF) * b16) + K;
+;
+		AND.L	#$0000FFFF,D0				;GET LO WORD XALO
+		SUB.L	#$7FFFFFFF,D0				;SUBTRACT P = 2^31-1
+		AND.L	#$00007FFF,D2				;BitAnd(fhi,$00007FFF)
+		SWAP	D2							;TIMES 64K
+		ADD.L	D1,D2						;PLUS K
+		ADD.L	D2,D0						;CALC TOTAL
+;
+;  IF seed < 0 THEN seed:=seed+p;
+;
+		BPL.S	UPDATE
+		ADD.L	#$7FFFFFFF,D0
+UPDATE	MOVE.L	D0,RANDSEED(A0) 			;UPDATE SEED
+		CMP.W	#$8000,D0					;IS NUMBER -32768 ?
+		BNE.S	NUMOK						;NO, CONTINUE
+		CLR 	D0							;YES, RETURN ZERO INSTEAD
+NUMOK	MOVE.W	D0,4(SP)					;RETURN LO WORD AS RESULT
+		RTS
+
+			ENDPROC
+			END

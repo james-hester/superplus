@@ -1,0 +1,1400 @@
+{
+  "module": "OS/StartMgr/ROMDebugger.a",
+  "source_path": "Reconstruction/Source/OS/StartMgr/ROMDebugger.a",
+  "source_sha256": "86524989b8c1cce24461aafee8cfd300f13fcf216e73d507319621fb863db745",
+  "upstream_sources": [
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba"
+    },
+    {
+      "path": "OS/StartMgr/StartErr.a",
+      "sha256": "dc3b8f13e6ea82e582732a33e0b71d5b4dc8e7dafcc4875848478d05e3df88ef"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      7,
+      8
+    ],
+    [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      1267,
+      1269
+    ],
+    [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      1284,
+      1286
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x40180a": {
+      "path": "OS/StartMgr/StartErr.a",
+      "lines": [
+        20,
+        21,
+        22,
+        23,
+        24
+      ]
+    }
+  },
+  "retained_body_comments": {},
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        374,
+        471,
+        477,
+        478,
+        484,
+        1246,
+        1380
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "copied_lines": [
+        242
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        660,
+        1271,
+        1273,
+        1274,
+        1275,
+        1276,
+        1277,
+        1278,
+        1279,
+        1280,
+        1281,
+        1288,
+        1289,
+        1290,
+        1291,
+        1292
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x4017e0",
+      "end_address_exclusive": "0x4019ca",
+      "rom_offset": "0x17e0",
+      "length": 490,
+      "sha256": "b7bdff86928e63919b17334f9d473d90bcce02e1c352ba7dc175c73fc7decd89"
+    }
+  ],
+  "manifest_entry": {
+    "name": "rom-debugger",
+    "source": "Reconstruction/Source/OS/StartMgr/ROMDebugger.a",
+    "start": "0x4017e0",
+    "end_exclusive": "0x4019ca",
+    "entry_points": {
+      "ROMDebugger": "0x4017e0",
+      "SendMessage": "0x4017fc",
+      "SendDebugCommand": "0x40180a",
+      "SendSystemError": "0x401828",
+      "ReceiveCommand": "0x401832",
+      "CommandTable": "0x401846",
+      "Acknowledge": "0x401852",
+      "ReadMemory": "0x401858",
+      "WriteMemory": "0x40187e",
+      "CallAddress": "0x401898",
+      "InstallTrapHook": "0x4018a0",
+      "LeaveDebugger": "0x4018b2",
+      "SerialConfig": "0x4018b8",
+      "OpenDebugPort": "0x4018c8",
+      "SendLong": "0x401924",
+      "SendWord": "0x40192e",
+      "SendByte": "0x401936",
+      "SelectPort": "0x40194a",
+      "ReceiveLong": "0x401962",
+      "ReceiveWord": "0x40196a",
+      "ReceiveByte": "0x401970",
+      "DebugTrapHook": "0x401986",
+      "OpenSelectedPort": "0x4017f8",
+      "SendParameters": "0x40181c",
+      "MarkInitialized": "0x40182c",
+      "ReadMemoryLoop": "0x401870",
+      "ReadMemoryDone": "0x40187c",
+      "WriteMemoryLoop": "0x40188a",
+      "WriteMemoryDone": "0x401896",
+      "CheckPortConfig": "0x4018d8",
+      "CheckPortUse": "0x4018e6",
+      "OpenPortError": "0x4018fc",
+      "ConfigurePort": "0x401900",
+      "WaitForPeer": "0x401914",
+      "WaitToSend": "0x40193c",
+      "PortSelected": "0x401960",
+      "WaitToReceive": "0x401972",
+      "ByteReady": "0x40197e",
+      "GetOSTrapNumber": "0x40199c",
+      "CheckTrapRange": "0x4019a0",
+      "ChainTrap": "0x4019be"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "rom-debugger",
+      "source": "Reconstruction/Source/OS/StartMgr/ROMDebugger.a",
+      "start": "0x4017e0",
+      "end_exclusive": "0x4019ca",
+      "entry_points": {
+        "ROMDebugger": "0x4017e0",
+        "SendMessage": "0x4017fc",
+        "SendDebugCommand": "0x40180a",
+        "SendSystemError": "0x401828",
+        "ReceiveCommand": "0x401832",
+        "CommandTable": "0x401846",
+        "Acknowledge": "0x401852",
+        "ReadMemory": "0x401858",
+        "WriteMemory": "0x40187e",
+        "CallAddress": "0x401898",
+        "InstallTrapHook": "0x4018a0",
+        "LeaveDebugger": "0x4018b2",
+        "SerialConfig": "0x4018b8",
+        "OpenDebugPort": "0x4018c8",
+        "SendLong": "0x401924",
+        "SendWord": "0x40192e",
+        "SendByte": "0x401936",
+        "SelectPort": "0x40194a",
+        "ReceiveLong": "0x401962",
+        "ReceiveWord": "0x40196a",
+        "ReceiveByte": "0x401970",
+        "DebugTrapHook": "0x401986",
+        "OpenSelectedPort": "0x4017f8",
+        "SendParameters": "0x40181c",
+        "MarkInitialized": "0x40182c",
+        "ReadMemoryLoop": "0x401870",
+        "ReadMemoryDone": "0x40187c",
+        "WriteMemoryLoop": "0x40188a",
+        "WriteMemoryDone": "0x401896",
+        "CheckPortConfig": "0x4018d8",
+        "CheckPortUse": "0x4018e6",
+        "OpenPortError": "0x4018fc",
+        "ConfigurePort": "0x401900",
+        "WaitForPeer": "0x401914",
+        "WaitToSend": "0x40193c",
+        "PortSelected": "0x401960",
+        "WaitToReceive": "0x401972",
+        "ByteReady": "0x40197e",
+        "GetOSTrapNumber": "0x40199c",
+        "CheckTrapRange": "0x4019a0",
+        "ChainTrap": "0x4019be"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "The entry at $4017E0 is the ROMDebugger address installed by SysErrInit. It follows the final MicroBug branch.",
+    "end": "The final RTS at $4019C8 chains to the saved Line-A handler. The NMI handler starts at $4019CA."
+  },
+  "edits": [
+    {
+      "kind": "missing_body_restoration",
+      "description": "Restored the complete serial ROM debugger from 161 decoded instructions. No implementation using the surviving rdPort and rdAtrap variables was found in the released tree. HardwareEqu.a supplies the original variable layout, and StartErr.a supplies the caller interface."
+    },
+    {
+      "kind": "data_restoration",
+      "description": "Restored the six-entry command table as label differences and the eight SCC register-value pairs as byte data. These 28 bytes are data reached through explicit ROM references; instruction bytes are assembled from mnemonics."
+    },
+    {
+      "kind": "symbol_restoration",
+      "description": "Named routines and local branches according to their decoded behavior. These names are reconstructed, except for surviving variable names and the external WriteSCC and GenExcps names. Restored the Mac Plus seRegs value $3FFC80."
+    },
+    {
+      "kind": "behavior_preservation",
+      "description": "Preserved the original serial port checks, byte ordering, SCC delays, unchecked command dispatch, and optional Line-A trap range hook. No later debugger implementation was substituted."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained the interface copyright, debugger variable section headings, original equate comments, and Debugger trap argument description. New notes identify inferred implementation details."
+    }
+  ],
+  "source_instruction_pairs": {},
+  "rom_only_instructions": [
+    {
+      "address": 4200416,
+      "op": "BCLR",
+      "operand": "#15,D0",
+      "bytes": "0880000f",
+      "rom_instruction": "bclr #15,%d0"
+    },
+    {
+      "address": 4200420,
+      "op": "BNE.S",
+      "operand": "SendDebugCommand",
+      "bytes": "6624",
+      "rom_instruction": "bnes 0x40180a"
+    },
+    {
+      "address": 4200422,
+      "op": "TST.W",
+      "operand": "D0",
+      "bytes": "4a40",
+      "rom_instruction": "tstw %d0"
+    },
+    {
+      "address": 4200424,
+      "op": "BNE.W",
+      "operand": "SendSystemError",
+      "bytes": "6600003e",
+      "rom_instruction": "bnew 0x401828"
+    },
+    {
+      "address": 4200428,
+      "op": "MOVEQ",
+      "operand": "#1,D0",
+      "bytes": "7001",
+      "rom_instruction": "moveq #1,%d0"
+    },
+    {
+      "address": 4200430,
+      "op": "BTST",
+      "operand": "#0,KeyMap+7",
+      "bytes": "08380000017b",
+      "rom_instruction": "btst #0,0x17b"
+    },
+    {
+      "address": 4200436,
+      "op": "BEQ.S",
+      "operand": "OpenSelectedPort",
+      "bytes": "6702",
+      "rom_instruction": "beqs 0x4017f8"
+    },
+    {
+      "address": 4200438,
+      "op": "MOVEQ",
+      "operand": "#2,D0",
+      "bytes": "7002",
+      "rom_instruction": "moveq #2,%d0"
+    },
+    {
+      "address": 4200440,
+      "op": "BRA.W",
+      "operand": "OpenDebugPort",
+      "bytes": "600000ce",
+      "rom_instruction": "braw 0x4018c8"
+    },
+    {
+      "address": 4200444,
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)",
+      "bytes": "3f00",
+      "rom_instruction": "movew %d0,%sp@-"
+    },
+    {
+      "address": 4200446,
+      "op": "MOVE.B",
+      "operand": "D1,D0",
+      "bytes": "1001",
+      "rom_instruction": "moveb %d1,%d0"
+    },
+    {
+      "address": 4200448,
+      "op": "BSR.W",
+      "operand": "SendByte",
+      "bytes": "61000134",
+      "rom_instruction": "bsrw 0x401936"
+    },
+    {
+      "address": 4200452,
+      "op": "MOVE.W",
+      "operand": "(SP)+,D0",
+      "bytes": "301f",
+      "rom_instruction": "movew %sp@+,%d0"
+    },
+    {
+      "address": 4200454,
+      "op": "BRA.W",
+      "operand": "SendWord",
+      "bytes": "60000126",
+      "rom_instruction": "braw 0x40192e"
+    },
+    {
+      "address": 4200458,
+      "op": "MOVE.L",
+      "operand": "A0,A2",
+      "bytes": "2448",
+      "rom_instruction": "moveal %a0,%a2"
+    },
+    {
+      "address": 4200460,
+      "op": "MOVEQ",
+      "operand": "#2,D1",
+      "bytes": "7202",
+      "rom_instruction": "moveq #2,%d1"
+    },
+    {
+      "address": 4200462,
+      "op": "BSR.S",
+      "operand": "SendMessage",
+      "bytes": "61ec",
+      "rom_instruction": "bsrs 0x4017fc"
+    },
+    {
+      "address": 4200464,
+      "op": "MOVE.W",
+      "operand": "SECmdSize,D2",
+      "bytes": "3439003ffcca",
+      "rom_instruction": "movew 0x3ffcca,%d2"
+    },
+    {
+      "address": 4200470,
+      "op": "MOVE.W",
+      "operand": "D2,D0",
+      "bytes": "3002",
+      "rom_instruction": "movew %d2,%d0"
+    },
+    {
+      "address": 4200472,
+      "op": "BSR.W",
+      "operand": "SendWord",
+      "bytes": "61000114",
+      "rom_instruction": "bsrw 0x40192e"
+    },
+    {
+      "address": 4200476,
+      "op": "SUBQ.W",
+      "operand": "#1,D2",
+      "bytes": "5342",
+      "rom_instruction": "subqw #1,%d2"
+    },
+    {
+      "address": 4200478,
+      "op": "BLT.S",
+      "operand": "ReceiveCommand",
+      "bytes": "6d12",
+      "rom_instruction": "blts 0x401832"
+    },
+    {
+      "address": 4200480,
+      "op": "MOVE.B",
+      "operand": "(A2)+,D0",
+      "bytes": "101a",
+      "rom_instruction": "moveb %a2@+,%d0"
+    },
+    {
+      "address": 4200482,
+      "op": "BSR.W",
+      "operand": "SendByte",
+      "bytes": "61000112",
+      "rom_instruction": "bsrw 0x401936"
+    },
+    {
+      "address": 4200486,
+      "op": "BRA.S",
+      "operand": "SendParameters",
+      "bytes": "60f4",
+      "rom_instruction": "bras 0x40181c"
+    },
+    {
+      "address": 4200488,
+      "op": "MOVEQ",
+      "operand": "#1,D1",
+      "bytes": "7201",
+      "rom_instruction": "moveq #1,%d1"
+    },
+    {
+      "address": 4200490,
+      "op": "BSR.S",
+      "operand": "SendMessage",
+      "bytes": "61d0",
+      "rom_instruction": "bsrs 0x4017fc"
+    },
+    {
+      "address": 4200492,
+      "op": "BSET",
+      "operand": "#6,MacJmp",
+      "bytes": "08f800060120",
+      "rom_instruction": "bset #6,0x120"
+    },
+    {
+      "address": 4200498,
+      "op": "MOVEQ",
+      "operand": "#0,D1",
+      "bytes": "7200",
+      "rom_instruction": "moveq #0,%d1"
+    },
+    {
+      "address": 4200500,
+      "op": "BSR.W",
+      "operand": "ReceiveByte",
+      "bytes": "6100013a",
+      "rom_instruction": "bsrw 0x401970"
+    },
+    {
+      "address": 4200504,
+      "op": "LEA",
+      "operand": "COMMANDTABLE(PC),A0",
+      "bytes": "41fa000c",
+      "rom_instruction": "lea %pc@(0x401846),%a0"
+    },
+    {
+      "address": 4200508,
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "bytes": "d040",
+      "rom_instruction": "addw %d0,%d0"
+    },
+    {
+      "address": 4200510,
+      "op": "ADD.W",
+      "operand": "0(A0,D0.W),A0",
+      "bytes": "d0f00000",
+      "rom_instruction": "addaw %a0@(0000000000000000,%d0:w),%a0"
+    },
+    {
+      "address": 4200514,
+      "op": "JSR",
+      "operand": "(A0)",
+      "bytes": "4e90",
+      "rom_instruction": "jsr %a0@"
+    },
+    {
+      "address": 4200516,
+      "op": "BRA.S",
+      "operand": "ReceiveCommand",
+      "bytes": "60ec",
+      "rom_instruction": "bras 0x401832"
+    },
+    {
+      "address": 4200530,
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "bytes": "7000",
+      "rom_instruction": "moveq #0,%d0"
+    },
+    {
+      "address": 4200532,
+      "op": "BRA.W",
+      "operand": "SendByte",
+      "bytes": "600000e0",
+      "rom_instruction": "braw 0x401936"
+    },
+    {
+      "address": 4200536,
+      "op": "BSR.W",
+      "operand": "ReceiveLong",
+      "bytes": "61000108",
+      "rom_instruction": "bsrw 0x401962"
+    },
+    {
+      "address": 4200540,
+      "op": "MOVE.L",
+      "operand": "D0,A2",
+      "bytes": "2440",
+      "rom_instruction": "moveal %d0,%a2"
+    },
+    {
+      "address": 4200542,
+      "op": "BSR.W",
+      "operand": "ReceiveLong",
+      "bytes": "61000102",
+      "rom_instruction": "bsrw 0x401962"
+    },
+    {
+      "address": 4200546,
+      "op": "MOVE.L",
+      "operand": "D0,D2",
+      "bytes": "2400",
+      "rom_instruction": "movel %d0,%d2"
+    },
+    {
+      "address": 4200548,
+      "op": "MOVEQ",
+      "operand": "#3,D0",
+      "bytes": "7003",
+      "rom_instruction": "moveq #3,%d0"
+    },
+    {
+      "address": 4200550,
+      "op": "BSR.W",
+      "operand": "SendByte",
+      "bytes": "610000ce",
+      "rom_instruction": "bsrw 0x401936"
+    },
+    {
+      "address": 4200554,
+      "op": "MOVE.L",
+      "operand": "D2,D0",
+      "bytes": "2002",
+      "rom_instruction": "movel %d2,%d0"
+    },
+    {
+      "address": 4200556,
+      "op": "BSR.W",
+      "operand": "SendLong",
+      "bytes": "610000b6",
+      "rom_instruction": "bsrw 0x401924"
+    },
+    {
+      "address": 4200560,
+      "op": "SUBQ.L",
+      "operand": "#1,D2",
+      "bytes": "5382",
+      "rom_instruction": "subql #1,%d2"
+    },
+    {
+      "address": 4200562,
+      "op": "BMI.S",
+      "operand": "ReadMemoryDone",
+      "bytes": "6b08",
+      "rom_instruction": "bmis 0x40187c"
+    },
+    {
+      "address": 4200564,
+      "op": "MOVE.B",
+      "operand": "(A2)+,D0",
+      "bytes": "101a",
+      "rom_instruction": "moveb %a2@+,%d0"
+    },
+    {
+      "address": 4200566,
+      "op": "BSR.W",
+      "operand": "SendByte",
+      "bytes": "610000be",
+      "rom_instruction": "bsrw 0x401936"
+    },
+    {
+      "address": 4200570,
+      "op": "BRA.S",
+      "operand": "ReadMemoryLoop",
+      "bytes": "60f4",
+      "rom_instruction": "bras 0x401870"
+    },
+    {
+      "address": 4200572,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200574,
+      "op": "BSR.W",
+      "operand": "ReceiveLong",
+      "bytes": "610000e2",
+      "rom_instruction": "bsrw 0x401962"
+    },
+    {
+      "address": 4200578,
+      "op": "MOVE.L",
+      "operand": "D0,A2",
+      "bytes": "2440",
+      "rom_instruction": "moveal %d0,%a2"
+    },
+    {
+      "address": 4200580,
+      "op": "BSR.W",
+      "operand": "ReceiveLong",
+      "bytes": "610000dc",
+      "rom_instruction": "bsrw 0x401962"
+    },
+    {
+      "address": 4200584,
+      "op": "MOVE.L",
+      "operand": "D0,D2",
+      "bytes": "2400",
+      "rom_instruction": "movel %d0,%d2"
+    },
+    {
+      "address": 4200586,
+      "op": "SUBQ.L",
+      "operand": "#1,D2",
+      "bytes": "5382",
+      "rom_instruction": "subql #1,%d2"
+    },
+    {
+      "address": 4200588,
+      "op": "BMI.S",
+      "operand": "WriteMemoryDone",
+      "bytes": "6b08",
+      "rom_instruction": "bmis 0x401896"
+    },
+    {
+      "address": 4200590,
+      "op": "BSR.W",
+      "operand": "ReceiveByte",
+      "bytes": "610000e0",
+      "rom_instruction": "bsrw 0x401970"
+    },
+    {
+      "address": 4200594,
+      "op": "MOVE.B",
+      "operand": "D0,(A2)+",
+      "bytes": "14c0",
+      "rom_instruction": "moveb %d0,%a2@+"
+    },
+    {
+      "address": 4200596,
+      "op": "BRA.S",
+      "operand": "WriteMemoryLoop",
+      "bytes": "60f4",
+      "rom_instruction": "bras 0x40188a"
+    },
+    {
+      "address": 4200598,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200600,
+      "op": "BSR.W",
+      "operand": "ReceiveLong",
+      "bytes": "610000c8",
+      "rom_instruction": "bsrw 0x401962"
+    },
+    {
+      "address": 4200604,
+      "op": "MOVE.L",
+      "operand": "D0,A0",
+      "bytes": "2040",
+      "rom_instruction": "moveal %d0,%a0"
+    },
+    {
+      "address": 4200606,
+      "op": "JMP",
+      "operand": "(A0)",
+      "bytes": "4ed0",
+      "rom_instruction": "jmp %a0@"
+    },
+    {
+      "address": 4200608,
+      "op": "LEA",
+      "operand": "DEBUGTRAPHOOK(PC),A0",
+      "bytes": "41fa00e4",
+      "rom_instruction": "lea %pc@(0x401986),%a0"
+    },
+    {
+      "address": 4200612,
+      "op": "MOVE.L",
+      "operand": "Line1010,rdAtrap",
+      "bytes": "23f80028003f",
+      "rom_instruction": "movel 0x28,0x3ffcda"
+    },
+    {
+      "address": 4200620,
+      "op": "MOVE.L",
+      "operand": "A0,Line1010",
+      "bytes": "21c80028",
+      "rom_instruction": "movel %a0,0x28"
+    },
+    {
+      "address": 4200624,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200626,
+      "op": "ADDQ.L",
+      "operand": "#4,SP",
+      "bytes": "588f",
+      "rom_instruction": "addql #4,%sp"
+    },
+    {
+      "address": 4200628,
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "bytes": "7000",
+      "rom_instruction": "moveq #0,%d0"
+    },
+    {
+      "address": 4200630,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200648,
+      "op": "MOVE.W",
+      "operand": "D0,rdPort",
+      "bytes": "33c0003ffcd4",
+      "rom_instruction": "movew %d0,0x3ffcd4"
+    },
+    {
+      "address": 4200654,
+      "op": "MOVE.B",
+      "operand": "SPConfig,D1",
+      "bytes": "123801fb",
+      "rom_instruction": "moveb 0x1fb,%d1"
+    },
+    {
+      "address": 4200658,
+      "op": "SUBQ.W",
+      "operand": "#1,D0",
+      "bytes": "5340",
+      "rom_instruction": "subqw #1,%d0"
+    },
+    {
+      "address": 4200660,
+      "op": "BNE.S",
+      "operand": "CheckPortConfig",
+      "bytes": "6602",
+      "rom_instruction": "bnes 0x4018d8"
+    },
+    {
+      "address": 4200662,
+      "op": "LSR.B",
+      "operand": "#4,D1",
+      "bytes": "e809",
+      "rom_instruction": "lsrb #4,%d1"
+    },
+    {
+      "address": 4200664,
+      "op": "ANDI.B",
+      "operand": "#15,D1",
+      "bytes": "0201000f",
+      "rom_instruction": "andib #15,%d1"
+    },
+    {
+      "address": 4200668,
+      "op": "BEQ.S",
+      "operand": "CheckPortUse",
+      "bytes": "6708",
+      "rom_instruction": "beqs 0x4018e6"
+    },
+    {
+      "address": 4200670,
+      "op": "SUBQ.B",
+      "operand": "#useAsync,D1",
+      "bytes": "5501",
+      "rom_instruction": "subqb #2,%d1"
+    },
+    {
+      "address": 4200672,
+      "op": "BEQ.S",
+      "operand": "CheckPortUse",
+      "bytes": "6704",
+      "rom_instruction": "beqs 0x4018e6"
+    },
+    {
+      "address": 4200674,
+      "op": "MOVEQ",
+      "operand": "#-98,D0",
+      "bytes": "709e",
+      "rom_instruction": "moveq #-98,%d0"
+    },
+    {
+      "address": 4200676,
+      "op": "BRA.S",
+      "operand": "OpenPortError",
+      "bytes": "6016",
+      "rom_instruction": "bras 0x4018fc"
+    },
+    {
+      "address": 4200678,
+      "op": "LEA",
+      "operand": "PortAUse,A0",
+      "bytes": "41f80290",
+      "rom_instruction": "lea 0x290,%a0"
+    },
+    {
+      "address": 4200682,
+      "op": "MOVE.B",
+      "operand": "0(A0,D0.W),D1",
+      "bytes": "12300000",
+      "rom_instruction": "moveb %a0@(0000000000000000,%d0:w),%d1"
+    },
+    {
+      "address": 4200686,
+      "op": "BCLR",
+      "operand": "#7,D1",
+      "bytes": "08810007",
+      "rom_instruction": "bclr #7,%d1"
+    },
+    {
+      "address": 4200690,
+      "op": "BNE.S",
+      "operand": "ConfigurePort",
+      "bytes": "660c",
+      "rom_instruction": "bnes 0x401900"
+    },
+    {
+      "address": 4200692,
+      "op": "EORI.B",
+      "operand": "#useAsync,D1",
+      "bytes": "0a010002",
+      "rom_instruction": "eorib #2,%d1"
+    },
+    {
+      "address": 4200696,
+      "op": "BEQ.S",
+      "operand": "ConfigurePort",
+      "bytes": "6706",
+      "rom_instruction": "beqs 0x401900"
+    },
+    {
+      "address": 4200698,
+      "op": "MOVEQ",
+      "operand": "#-97,D0",
+      "bytes": "709f",
+      "rom_instruction": "moveq #-97,%d0"
+    },
+    {
+      "address": 4200700,
+      "op": "TST.W",
+      "operand": "D0",
+      "bytes": "4a40",
+      "rom_instruction": "tstw %d0"
+    },
+    {
+      "address": 4200702,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200704,
+      "op": "BSR.S",
+      "operand": "SelectPort",
+      "bytes": "6148",
+      "rom_instruction": "bsrs 0x40194a"
+    },
+    {
+      "address": 4200706,
+      "op": "LEA",
+      "operand": "SERIALCONFIG(PC),A2",
+      "bytes": "45faffb4",
+      "rom_instruction": "lea %pc@(0x4018b8),%a2"
+    },
+    {
+      "address": 4200710,
+      "op": "MOVEQ",
+      "operand": "#16,D1",
+      "bytes": "7210",
+      "rom_instruction": "moveq #16,%d1"
+    },
+    {
+      "address": 4200712,
+      "op": "BSR.W",
+      "operand": "WriteSCC",
+      "bytes": "6100ef44",
+      "rom_instruction": "bsrw 0x40084e"
+    },
+    {
+      "address": 4200716,
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "bytes": "7000",
+      "rom_instruction": "moveq #0,%d0"
+    },
+    {
+      "address": 4200718,
+      "op": "BSR.S",
+      "operand": "SendByte",
+      "bytes": "6126",
+      "rom_instruction": "bsrs 0x401936"
+    },
+    {
+      "address": 4200720,
+      "op": "MOVE.W",
+      "operand": "#-8192,D0",
+      "bytes": "303ce000",
+      "rom_instruction": "movew #-8192,%d0"
+    },
+    {
+      "address": 4200724,
+      "op": "SUBQ.W",
+      "operand": "#1,D0",
+      "bytes": "5340",
+      "rom_instruction": "subqw #1,%d0"
+    },
+    {
+      "address": 4200726,
+      "op": "BNE.S",
+      "operand": "WaitForPeer",
+      "bytes": "66fc",
+      "rom_instruction": "bnes 0x401914"
+    },
+    {
+      "address": 4200728,
+      "op": "MOVEQ",
+      "operand": "#-1,D1",
+      "bytes": "72ff",
+      "rom_instruction": "moveq #-1,%d1"
+    },
+    {
+      "address": 4200730,
+      "op": "BSR.S",
+      "operand": "ReceiveByte",
+      "bytes": "6154",
+      "rom_instruction": "bsrs 0x401970"
+    },
+    {
+      "address": 4200732,
+      "op": "BPL.W",
+      "operand": "MarkInitialized",
+      "bytes": "6a00ff0e",
+      "rom_instruction": "bplw 0x40182c"
+    },
+    {
+      "address": 4200736,
+      "op": "MOVEQ",
+      "operand": "#-8,D0",
+      "bytes": "70f8",
+      "rom_instruction": "moveq #-8,%d0"
+    },
+    {
+      "address": 4200738,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200740,
+      "op": "MOVE.L",
+      "operand": "D0,-(SP)",
+      "bytes": "2f00",
+      "rom_instruction": "movel %d0,%sp@-"
+    },
+    {
+      "address": 4200742,
+      "op": "LSR.L",
+      "operand": "#8,D0",
+      "bytes": "e088",
+      "rom_instruction": "lsrl #8,%d0"
+    },
+    {
+      "address": 4200744,
+      "op": "LSR.L",
+      "operand": "#8,D0",
+      "bytes": "e088",
+      "rom_instruction": "lsrl #8,%d0"
+    },
+    {
+      "address": 4200746,
+      "op": "BSR.S",
+      "operand": "SendWord",
+      "bytes": "6102",
+      "rom_instruction": "bsrs 0x40192e"
+    },
+    {
+      "address": 4200748,
+      "op": "MOVE.L",
+      "operand": "(SP)+,D0",
+      "bytes": "201f",
+      "rom_instruction": "movel %sp@+,%d0"
+    },
+    {
+      "address": 4200750,
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)",
+      "bytes": "3f00",
+      "rom_instruction": "movew %d0,%sp@-"
+    },
+    {
+      "address": 4200752,
+      "op": "LSR.W",
+      "operand": "#8,D0",
+      "bytes": "e048",
+      "rom_instruction": "lsrw #8,%d0"
+    },
+    {
+      "address": 4200754,
+      "op": "BSR.S",
+      "operand": "SendByte",
+      "bytes": "6102",
+      "rom_instruction": "bsrs 0x401936"
+    },
+    {
+      "address": 4200756,
+      "op": "MOVE.W",
+      "operand": "(SP)+,D0",
+      "bytes": "301f",
+      "rom_instruction": "movew %sp@+,%d0"
+    },
+    {
+      "address": 4200758,
+      "op": "BSR.W",
+      "operand": "SelectPort",
+      "bytes": "61000012",
+      "rom_instruction": "bsrw 0x40194a"
+    },
+    {
+      "address": 4200762,
+      "op": "MOVE.B",
+      "operand": "(A1),D1",
+      "bytes": "1211",
+      "rom_instruction": "moveb %a1@,%d1"
+    },
+    {
+      "address": 4200764,
+      "op": "MOVE.W",
+      "operand": "(SP),(SP)",
+      "bytes": "3e97",
+      "rom_instruction": "movew %sp@,%sp@"
+    },
+    {
+      "address": 4200766,
+      "op": "BTST",
+      "operand": "#2,(A1)",
+      "bytes": "08110002",
+      "rom_instruction": "btst #2,%a1@"
+    },
+    {
+      "address": 4200770,
+      "op": "BEQ.S",
+      "operand": "WaitToSend",
+      "bytes": "67f8",
+      "rom_instruction": "beqs 0x40193c"
+    },
+    {
+      "address": 4200772,
+      "op": "MOVE.B",
+      "operand": "D0,4(A0)",
+      "bytes": "11400004",
+      "rom_instruction": "moveb %d0,%a0@(4)"
+    },
+    {
+      "address": 4200776,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200778,
+      "op": "MOVE.L",
+      "operand": "SCCWr,A0",
+      "bytes": "207801dc",
+      "rom_instruction": "moveal 0x1dc,%a0"
+    },
+    {
+      "address": 4200782,
+      "op": "MOVE.L",
+      "operand": "SCCRd,A1",
+      "bytes": "227801d8",
+      "rom_instruction": "moveal 0x1d8,%a1"
+    },
+    {
+      "address": 4200786,
+      "op": "CMPI.W",
+      "operand": "#1,rdPort",
+      "bytes": "0c790001003f",
+      "rom_instruction": "cmpiw #1,0x3ffcd4"
+    },
+    {
+      "address": 4200794,
+      "op": "BNE.S",
+      "operand": "PortSelected",
+      "bytes": "6604",
+      "rom_instruction": "bnes 0x401960"
+    },
+    {
+      "address": 4200796,
+      "op": "ADDQ.L",
+      "operand": "#2,A0",
+      "bytes": "5488",
+      "rom_instruction": "addql #2,%a0"
+    },
+    {
+      "address": 4200798,
+      "op": "ADDQ.L",
+      "operand": "#2,A1",
+      "bytes": "5489",
+      "rom_instruction": "addql #2,%a1"
+    },
+    {
+      "address": 4200800,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200802,
+      "op": "BSR.W",
+      "operand": "ReceiveWord",
+      "bytes": "61000006",
+      "rom_instruction": "bsrw 0x40196a"
+    },
+    {
+      "address": 4200806,
+      "op": "LSL.L",
+      "operand": "#8,D0",
+      "bytes": "e188",
+      "rom_instruction": "lsll #8,%d0"
+    },
+    {
+      "address": 4200808,
+      "op": "LSL.L",
+      "operand": "#8,D0",
+      "bytes": "e188",
+      "rom_instruction": "lsll #8,%d0"
+    },
+    {
+      "address": 4200810,
+      "op": "BSR.W",
+      "operand": "ReceiveByte",
+      "bytes": "61000004",
+      "rom_instruction": "bsrw 0x401970"
+    },
+    {
+      "address": 4200814,
+      "op": "LSL.W",
+      "operand": "#8,D0",
+      "bytes": "e148",
+      "rom_instruction": "lslw #8,%d0"
+    },
+    {
+      "address": 4200816,
+      "op": "BSR.S",
+      "operand": "SelectPort",
+      "bytes": "61d8",
+      "rom_instruction": "bsrs 0x40194a"
+    },
+    {
+      "address": 4200818,
+      "op": "BTST",
+      "operand": "#0,(A1)",
+      "bytes": "08110000",
+      "rom_instruction": "btst #0,%a1@"
+    },
+    {
+      "address": 4200822,
+      "op": "BNE.S",
+      "operand": "ByteReady",
+      "bytes": "6606",
+      "rom_instruction": "bnes 0x40197e"
+    },
+    {
+      "address": 4200824,
+      "op": "TST.B",
+      "operand": "D1",
+      "bytes": "4a01",
+      "rom_instruction": "tstb %d1"
+    },
+    {
+      "address": 4200826,
+      "op": "BEQ.S",
+      "operand": "WaitToReceive",
+      "bytes": "67f6",
+      "rom_instruction": "beqs 0x401972"
+    },
+    {
+      "address": 4200828,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200830,
+      "op": "MOVE.W",
+      "operand": "(SP),(SP)",
+      "bytes": "3e97",
+      "rom_instruction": "movew %sp@,%sp@"
+    },
+    {
+      "address": 4200832,
+      "op": "MOVE.B",
+      "operand": "4(A1),D0",
+      "bytes": "10290004",
+      "rom_instruction": "moveb %a1@(4),%d0"
+    },
+    {
+      "address": 4200836,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200838,
+      "op": "MOVEM.L",
+      "operand": "D0/A0,-(SP)",
+      "bytes": "48e78080",
+      "rom_instruction": "moveml %d0/%a0,%sp@-"
+    },
+    {
+      "address": 4200842,
+      "op": "MOVE.L",
+      "operand": "10(SP),A0",
+      "bytes": "206f000a",
+      "rom_instruction": "moveal %sp@(10),%a0"
+    },
+    {
+      "address": 4200846,
+      "op": "MOVE.W",
+      "operand": "(A0),D0",
+      "bytes": "3010",
+      "rom_instruction": "movew %a0@,%d0"
+    },
+    {
+      "address": 4200848,
+      "op": "BTST",
+      "operand": "#11,D0",
+      "bytes": "0800000b",
+      "rom_instruction": "btst #11,%d0"
+    },
+    {
+      "address": 4200852,
+      "op": "BEQ.S",
+      "operand": "GetOSTrapNumber",
+      "bytes": "6706",
+      "rom_instruction": "beqs 0x40199c"
+    },
+    {
+      "address": 4200854,
+      "op": "ANDI.W",
+      "operand": "#511,D0",
+      "bytes": "024001ff",
+      "rom_instruction": "andiw #511,%d0"
+    },
+    {
+      "address": 4200858,
+      "op": "BRA.S",
+      "operand": "CheckTrapRange",
+      "bytes": "6004",
+      "rom_instruction": "bras 0x4019a0"
+    },
+    {
+      "address": 4200860,
+      "op": "ANDI.W",
+      "operand": "#255,D0",
+      "bytes": "024000ff",
+      "rom_instruction": "andiw #255,%d0"
+    },
+    {
+      "address": 4200864,
+      "op": "CMP.W",
+      "operand": "rdLowTrap,D0",
+      "bytes": "b079003ffcde",
+      "rom_instruction": "cmpw 0x3ffcde,%d0"
+    },
+    {
+      "address": 4200870,
+      "op": "BLT.S",
+      "operand": "ChainTrap",
+      "bytes": "6d16",
+      "rom_instruction": "blts 0x4019be"
+    },
+    {
+      "address": 4200872,
+      "op": "CMP.W",
+      "operand": "rdHiTrap,D0",
+      "bytes": "b079003ffce0",
+      "rom_instruction": "cmpw 0x3ffce0,%d0"
+    },
+    {
+      "address": 4200878,
+      "op": "BGT.S",
+      "operand": "ChainTrap",
+      "bytes": "6e0e",
+      "rom_instruction": "bgts 0x4019be"
+    },
+    {
+      "address": 4200880,
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0/A0",
+      "bytes": "4cdf0101",
+      "rom_instruction": "moveml %sp@+,%d0/%a0"
+    },
+    {
+      "address": 4200884,
+      "op": "PEA",
+      "operand": "GENEXCPS(PC)",
+      "bytes": "487af772",
+      "rom_instruction": "pea %pc@(0x401128)"
+    },
+    {
+      "address": 4200888,
+      "op": "ADDI.W",
+      "operand": "#16,(SP)",
+      "bytes": "06570010",
+      "rom_instruction": "addiw #16,%sp@"
+    },
+    {
+      "address": 4200892,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4200894,
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0/A0",
+      "bytes": "4cdf0101",
+      "rom_instruction": "moveml %sp@+,%d0/%a0"
+    },
+    {
+      "address": 4200898,
+      "op": "MOVE.L",
+      "operand": "rdAtrap,-(SP)",
+      "bytes": "2f39003ffcda",
+      "rom_instruction": "movel 0x3ffcda,%sp@-"
+    },
+    {
+      "address": 4200904,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    }
+  ],
+  "restored_equates": {
+    "seRegs": [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      660
+    ]
+  },
+  "restored_symbolic_operands": {
+    "4200430": "#0,KeyMap+7",
+    "4200670": "#useAsync,D1",
+    "4200692": "#useAsync,D1"
+  },
+  "retained_data": {
+    "4200518": {
+      "length": 12,
+      "text": "        DC.W Acknowledge-CommandTable,ReadMemory-CommandTable\n        DC.W WriteMemory-CommandTable,CallAddress-CommandTable\n        DC.W InstallTrapHook-CommandTable,LeaveDebugger-CommandTable"
+    },
+    "4200632": {
+      "length": 16,
+      "text": "        DC.B $04,$4C,$0E,$00,$0B,$50,$0C,$0A\n        DC.B $0D,$00,$0E,$01,$03,$C1,$05,$6A"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 490,
+    "checked_entry_points": 41,
+    "instruction_count": 161,
+    "source_operation_matches": 0,
+    "rom_only_operation_count": 161,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-rom-debugger-verify",
+    "source_sha256": "86524989b8c1cce24461aafee8cfd300f13fcf216e73d507319621fb863db745",
+    "assembled_sha256": "b7bdff86928e63919b17334f9d473d90bcce02e1c352ba7dc175c73fc7decd89",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

@@ -1,0 +1,6038 @@
+{
+  "module": "OS/StartMgr/StartAlert.a",
+  "source_path": "Reconstruction/Source/OS/StartMgr/StartAlert.a",
+  "source_sha256": "d9d2d110f32e9f7b49221d3bb98abb564e843d06d8512c431987d41fa497088f",
+  "upstream_sources": [
+    {
+      "path": "OS/StartMgr/StartAlert.a",
+      "sha256": "643a98911259c2028a3accd81fd783a84c32e4bbf1f088ae26f43f7fde35c5a3"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "OS/StartMgr/StartAlert.a",
+      1,
+      23
+    ],
+    [
+      "OS/StartMgr/StartAlert.a",
+      67,
+      95
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x4011ac": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        115,
+        116,
+        117,
+        118,
+        119
+      ]
+    },
+    "0x401216": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        144,
+        145,
+        146,
+        147
+      ]
+    },
+    "0x401234": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176
+      ]
+    },
+    "0x4012e4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        321,
+        322,
+        323,
+        324,
+        325,
+        326
+      ]
+    },
+    "0x401300": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        346,
+        347,
+        348
+      ]
+    },
+    "0x40133a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        389,
+        390,
+        391
+      ]
+    },
+    "0x4013a4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        468,
+        469,
+        470,
+        471,
+        472,
+        473
+      ]
+    },
+    "0x401438": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        562,
+        563
+      ]
+    },
+    "0x401446": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        574
+      ]
+    },
+    "0x401452": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        584,
+        585,
+        586,
+        587,
+        588,
+        589,
+        590,
+        591,
+        592,
+        593,
+        594,
+        595,
+        596,
+        597,
+        598,
+        599
+      ]
+    },
+    "0x40156e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        737
+      ]
+    },
+    "0x401588": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        749,
+        750
+      ]
+    },
+    "0x401592": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": []
+    },
+    "0x401612": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        819,
+        820
+      ]
+    },
+    "0x40163e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        840
+      ]
+    },
+    "0x40164c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        845
+      ]
+    },
+    "0x4016bc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        893,
+        894,
+        895,
+        896
+      ]
+    }
+  },
+  "retained_body_comments": {
+    "0x401234": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        190
+      ]
+    },
+    "0x40125a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        204
+      ]
+    },
+    "0x401290": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        232,
+        233,
+        234,
+        235,
+        236
+      ]
+    },
+    "0x401294": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        241
+      ]
+    },
+    "0x40129a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        247,
+        248
+      ]
+    },
+    "0x4012b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        283
+      ]
+    },
+    "0x4012ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        292
+      ]
+    },
+    "0x4012be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        297
+      ]
+    },
+    "0x401316": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        365
+      ]
+    },
+    "0x4013b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        482
+      ]
+    },
+    "0x4013dc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        502
+      ]
+    },
+    "0x4013fc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        518,
+        519
+      ]
+    },
+    "0x401406": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        528,
+        529
+      ]
+    },
+    "0x401414": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        536,
+        537
+      ]
+    },
+    "0x40142a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        553,
+        554
+      ]
+    },
+    "0x401480": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        617
+      ]
+    },
+    "0x4014c4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        654
+      ]
+    },
+    "0x4016e8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        919
+      ]
+    },
+    "0x40171a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        945
+      ]
+    },
+    "0x401744": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "lines": [
+        971
+      ]
+    }
+  },
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "copied_lines": [
+        244,
+        246,
+        268,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280,
+        281
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        407,
+        543,
+        591,
+        1222,
+        1252,
+        1254,
+        1275,
+        1361,
+        1362,
+        1363,
+        1364,
+        1365,
+        1366,
+        1368,
+        1464
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        660,
+        1259,
+        1260,
+        1271,
+        1273,
+        1274,
+        1275,
+        1276,
+        1277,
+        1278,
+        1279,
+        1280,
+        1281,
+        1303,
+        1304,
+        1305,
+        1306,
+        1307
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "opcode_reference_lines": {
+        "0xa851": 376,
+        "0xa853": 378,
+        "0xa86d": 401,
+        "0xa86e": 402,
+        "0xa877": 411,
+        "0xa883": 423,
+        "0xa884": 424,
+        "0xa885": 425,
+        "0xa88d": 433,
+        "0xa893": 438,
+        "0xa894": 439,
+        "0xa89a": 445,
+        "0xa89b": 446,
+        "0xa89e": 449,
+        "0xa8a1": 452,
+        "0xa8a3": 457,
+        "0xa8a8": 501,
+        "0xa8a9": 502,
+        "0xa8ad": 506,
+        "0xa8b0": 509,
+        "0xa8b3": 512,
+        "0xa94b": 735,
+        "0xa94c": 736,
+        "0xa02e": 1765,
+        "0xa031": 1808,
+        "0xa03b": 1844
+      }
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x4011ac",
+      "end_address_exclusive": "0x4017e0",
+      "rom_offset": "0x11ac",
+      "length": 1588,
+      "sha256": "8e8efc1246091c7e209741bd83282466cb3598c2bf9795ce066203e1e9bd00fe"
+    }
+  ],
+  "manifest_entry": {
+    "name": "start-alert",
+    "source": "Reconstruction/Source/OS/StartMgr/StartAlert.a",
+    "start": "0x4011ac",
+    "end_exclusive": "0x4017e0",
+    "entry_points": {
+      "AllocFakeRgns": "0x4011ac",
+      "OpenClip": "0x4011c4",
+      "FakeRgn": "0x4011d2",
+      "SysBeep": "0x4011dc",
+      "ClipBox": "0x401216",
+      "DSErrorHandler": "0x401234",
+      "RTS2SysErr": "0x4012cc",
+      "InvokeSemantic": "0x4012dc",
+      "FindObject": "0x4012e4",
+      "DrawText": "0x401300",
+      "DrawBox": "0x40133a",
+      "DrawSysErr": "0x401356",
+      "DrawSysAlert": "0x40136e",
+      "DrawBox2": "0x401378",
+      "DoButtons": "0x4013a4",
+      "myPtInRect": "0x401438",
+      "InvertBut": "0x401446",
+      "MicroBug": "0x401452",
+      "CmdReset": "0x40147a",
+      "CmdLoop": "0x4014aa",
+      "RegChar": "0x401508",
+      "GotCommand": "0x401516",
+      "MBcmds": "0x40154c",
+      "GCmd": "0x40156e",
+      "GotResume": "0x40157c",
+      "MBDoErase": "0x401588",
+      "DMCmd": "0x401592",
+      "Print6Hx": "0x4015e2",
+      "Print4Hx": "0x4015e8",
+      "Print2Hx": "0x4015f0",
+      "PUTHEX": "0x4015f8",
+      "SMCmd": "0x401612",
+      "TDCmd": "0x40163e",
+      "DCmd": "0x40164c",
+      "ACmd": "0x401654",
+      "PCCmd": "0x40165c",
+      "SRCmd": "0x401664",
+      "SetR": "0x401672",
+      "SetR0": "0x401678",
+      "SetR2": "0x401680",
+      "SetR1": "0x401682",
+      "GetHex": "0x4016a8",
+      "ReadXToken": "0x4016bc",
+      "ReadToken": "0x4016c8",
+      "ReadMore": "0x4016cc",
+      "blanks": "0x4016da",
+      "leadSP": "0x4016e0",
+      "getBase": "0x401706",
+      "getNumber": "0x401712",
+      "ReadExit": "0x401726",
+      "getLabel": "0x40176e",
+      "goLabel": "0x40177c",
+      "cleanExit": "0x40177e",
+      "notDot": "0x401786",
+      "notPC": "0x40179c",
+      "doReg": "0x4017b0",
+      "notAs": "0x4017d0",
+      "SysBeepFlash": "0x4011ec",
+      "SysBeepMakeSound": "0x401200",
+      "SysBeepDone": "0x40120c",
+      "AlertInstalled": "0x401278",
+      "SkipDBox": "0x401288",
+      "GotAlert": "0x401294",
+      "NoIcon": "0x4012b0",
+      "NoProc": "0x4012ba",
+      "NoRestart": "0x4012c6",
+      "NextObject": "0x4012ea",
+      "GoFindIt": "0x4012f0",
+      "FoundObj": "0x4012fa",
+      "ScanForEOL": "0x40130c",
+      "DrawTxLine": "0x401316",
+      "NoText": "0x401338",
+      "StdProc": "0x40134a",
+      "NoButtons": "0x4013a2",
+      "DrawBtnLp": "0x4013b0",
+      "Wait4Click": "0x4013f2",
+      "FindBtnHit": "0x401402",
+      "TrackBtn": "0x401410",
+      "TrackLoop": "0x401414",
+      "NoChange": "0x401420",
+      "go2Label": "0x401798",
+      "SA_40148E": "0x40148e",
+      "SA_4014C4": "0x4014c4",
+      "SA_40151C": "0x40151c",
+      "SA_401548": "0x401548",
+      "SA_40153C": "0x40153c",
+      "SA_401522": "0x401522",
+      "SA_4015C4": "0x4015c4",
+      "SA_4015B0": "0x4015b0",
+      "SA_401608": "0x401608",
+      "SA_401630": "0x401630",
+      "SA_401626": "0x401626",
+      "SA_4016A2": "0x4016a2",
+      "SA_4016B6": "0x4016b6",
+      "SA_4016C6": "0x4016c6",
+      "SA_4016F2": "0x4016f2",
+      "SA_401738": "0x401738",
+      "SA_40172C": "0x40172c",
+      "SA_401742": "0x401742",
+      "SA_401750": "0x401750",
+      "SA_401756": "0x401756",
+      "SA_401762": "0x401762",
+      "SA_401768": "0x401768"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "start-alert",
+      "source": "Reconstruction/Source/OS/StartMgr/StartAlert.a",
+      "start": "0x4011ac",
+      "end_exclusive": "0x4017e0",
+      "entry_points": {
+        "AllocFakeRgns": "0x4011ac",
+        "OpenClip": "0x4011c4",
+        "FakeRgn": "0x4011d2",
+        "SysBeep": "0x4011dc",
+        "ClipBox": "0x401216",
+        "DSErrorHandler": "0x401234",
+        "RTS2SysErr": "0x4012cc",
+        "InvokeSemantic": "0x4012dc",
+        "FindObject": "0x4012e4",
+        "DrawText": "0x401300",
+        "DrawBox": "0x40133a",
+        "DrawSysErr": "0x401356",
+        "DrawSysAlert": "0x40136e",
+        "DrawBox2": "0x401378",
+        "DoButtons": "0x4013a4",
+        "myPtInRect": "0x401438",
+        "InvertBut": "0x401446",
+        "MicroBug": "0x401452",
+        "CmdReset": "0x40147a",
+        "CmdLoop": "0x4014aa",
+        "RegChar": "0x401508",
+        "GotCommand": "0x401516",
+        "MBcmds": "0x40154c",
+        "GCmd": "0x40156e",
+        "GotResume": "0x40157c",
+        "MBDoErase": "0x401588",
+        "DMCmd": "0x401592",
+        "Print6Hx": "0x4015e2",
+        "Print4Hx": "0x4015e8",
+        "Print2Hx": "0x4015f0",
+        "PUTHEX": "0x4015f8",
+        "SMCmd": "0x401612",
+        "TDCmd": "0x40163e",
+        "DCmd": "0x40164c",
+        "ACmd": "0x401654",
+        "PCCmd": "0x40165c",
+        "SRCmd": "0x401664",
+        "SetR": "0x401672",
+        "SetR0": "0x401678",
+        "SetR2": "0x401680",
+        "SetR1": "0x401682",
+        "GetHex": "0x4016a8",
+        "ReadXToken": "0x4016bc",
+        "ReadToken": "0x4016c8",
+        "ReadMore": "0x4016cc",
+        "blanks": "0x4016da",
+        "leadSP": "0x4016e0",
+        "getBase": "0x401706",
+        "getNumber": "0x401712",
+        "ReadExit": "0x401726",
+        "getLabel": "0x40176e",
+        "goLabel": "0x40177c",
+        "cleanExit": "0x40177e",
+        "notDot": "0x401786",
+        "notPC": "0x40179c",
+        "doReg": "0x4017b0",
+        "notAs": "0x4017d0",
+        "SysBeepFlash": "0x4011ec",
+        "SysBeepMakeSound": "0x401200",
+        "SysBeepDone": "0x40120c",
+        "AlertInstalled": "0x401278",
+        "SkipDBox": "0x401288",
+        "GotAlert": "0x401294",
+        "NoIcon": "0x4012b0",
+        "NoProc": "0x4012ba",
+        "NoRestart": "0x4012c6",
+        "NextObject": "0x4012ea",
+        "GoFindIt": "0x4012f0",
+        "FoundObj": "0x4012fa",
+        "ScanForEOL": "0x40130c",
+        "DrawTxLine": "0x401316",
+        "NoText": "0x401338",
+        "StdProc": "0x40134a",
+        "NoButtons": "0x4013a2",
+        "DrawBtnLp": "0x4013b0",
+        "Wait4Click": "0x4013f2",
+        "FindBtnHit": "0x401402",
+        "TrackBtn": "0x401410",
+        "TrackLoop": "0x401414",
+        "NoChange": "0x401420",
+        "go2Label": "0x401798",
+        "SA_40148E": "0x40148e",
+        "SA_4014C4": "0x4014c4",
+        "SA_40151C": "0x40151c",
+        "SA_401548": "0x401548",
+        "SA_40153C": "0x40153c",
+        "SA_401522": "0x401522",
+        "SA_4015C4": "0x4015c4",
+        "SA_4015B0": "0x4015b0",
+        "SA_401608": "0x401608",
+        "SA_401630": "0x401630",
+        "SA_401626": "0x401626",
+        "SA_4016A2": "0x4016a2",
+        "SA_4016B6": "0x4016b6",
+        "SA_4016C6": "0x4016c6",
+        "SA_4016F2": "0x4016f2",
+        "SA_401738": "0x401738",
+        "SA_40172C": "0x40172c",
+        "SA_401742": "0x401742",
+        "SA_401750": "0x401750",
+        "SA_401756": "0x401756",
+        "SA_401762": "0x401762",
+        "SA_401768": "0x401768"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "The first instruction at $4011AC is AllocFakeRgns. It follows the startup exception module ending at the RTE at $4011AA.",
+    "end": "The final branch at $4017DE returns to MicroBug doReg. The serial ROM debugger begins at $4017E0."
+  },
+  "edits": [
+    {
+      "kind": "source_restoration",
+      "description": "Restored the Mac Plus alert manager and MicroBug from StartAlert.a. The evidence records 469 matching released operations and 83 ROM-only operations. Later color icon, variable screen size, NMI flag, and code cleanup changes do not apply to this ROM."
+    },
+    {
+      "kind": "sysbeep_restoration",
+      "description": "Restored the 58-byte SysBeep body from ROM instructions. The released StartAlert history records its move to OS/Beep.a in June 1986, but that file is absent from the source tree. The routine flashes the menu when sound is active or its volume is zero, otherwise calls BootBeep."
+    },
+    {
+      "kind": "layout_restoration",
+      "description": "Restored the original BlockMove copies for fake regions, fixed DSAlertRect bounds, stacked error code, VIA mouse polling, and MicroBug port origin. Copied the Mac Plus seRegs definition at $3FFC80 from HardwareEqu.a."
+    },
+    {
+      "kind": "retained_data",
+      "description": "Retained the 10-byte FakeRgn definition and the 34-byte MicroBug command table. The table uses character constants and label differences from the released source."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained the released file header, applicable early history, routine descriptions, matching inline comments, and matching body comments. Omitted comments attached to later changes and the reversed FoundObj branch comment."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x4011ac": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 122,
+      "original_code": "LEA \tVisRgn(A6),A1",
+      "comment": " get pointer to visRgn handle",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "VisRgn(A6),A1",
+      "inline_comment_retained": true
+    },
+    "0x4011b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 123,
+      "original_code": "LEA \tPortRec(A6),A0",
+      "comment": " point to fake master pointer",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "PortRec(A6),A0",
+      "inline_comment_retained": true
+    },
+    "0x4011b4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 125,
+      "original_code": "MOVE.L\tA0,(A1)+",
+      "comment": " set up visRgn's master pointer on the stack",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x4011b6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 126,
+      "original_code": "ADDQ\t#4,A0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#4,A0"
+    },
+    "0x4011b8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 127,
+      "original_code": "MOVE.L\tA0,(A1)+",
+      "comment": " ditto with the clipRgn's",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x4011ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 129,
+      "original_code": "LEA \tGetParam,A1",
+      "comment": " point the \"master pointers\" to a region",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "GetParam,A1",
+      "inline_comment_retained": true
+    },
+    "0x4011be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 130,
+      "original_code": "MOVE.L\tA1,(A0)",
+      "comment": "  at GetParam to prevent a ROM write",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4011d0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 138,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401222": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 153,
+      "original_code": "MOVE.L\tA1,-(SP)",
+      "comment": " offset the clip's rect\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401224": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 154,
+      "original_code": "BCLR\t#7,(A1)",
+      "comment": " clear flag bit\t\t\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#7,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401228": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 155,
+      "original_code": "MOVE.L\t(A5),A0",
+      "comment": " get the port\t\t\t\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A5),A0",
+      "inline_comment_retained": true
+    },
+    "0x40122a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 156,
+      "original_code": "MOVE.L\t(A0),A0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A0),A0",
+      "inline_comment_retained": true
+    },
+    "0x40122c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 157,
+      "original_code": "MOVE.L\tPortBounds(A0),-(SP)",
+      "comment": " push dh,dv\t\t\t\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "PortBounds(A0),-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401230": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 158,
+      "original_code": "_OffsetRect",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "_OFFSETRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401232": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 159,
+      "original_code": "RTS",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t<16-Oct-85>",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401234": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 192,
+      "original_code": "@GoAlert\tMOVE.W\t#$2000,SR",
+      "comment": " turn on interrupts",
+      "preceding_comments": [
+        [
+          190,
+          "; setup the world for QuickDraw"
+        ]
+      ],
+      "op": "MOVE.W",
+      "operand": "#$2000,SR",
+      "inline_comment_retained": true
+    },
+    "0x401242": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 195,
+      "original_code": "LEA \t-4(SP),A5",
+      "comment": " start A5 here",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "-4(SP),A5",
+      "inline_comment_retained": true
+    },
+    "0x401246": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 196,
+      "original_code": "SUB.W\t#GrafSize+140,SP",
+      "comment": " allocate global, port space",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "#GrafSize+140,SP",
+      "inline_comment_retained": true
+    },
+    "0x40124a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 197,
+      "original_code": "MOVE.L\tSP,A6",
+      "comment": " remember start of port",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,A6",
+      "inline_comment_retained": true
+    },
+    "0x40124c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 199,
+      "original_code": "PEA \t-4(A5)",
+      "comment": " point to QD global space",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "-4(A5)",
+      "inline_comment_retained": true
+    },
+    "0x401250": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 200,
+      "original_code": "MOVE.B\tQDExist,D3",
+      "comment": " preserve state of QDExist flag (don't let us affect it)",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "QDExist,D3",
+      "inline_comment_retained": true
+    },
+    "0x401254": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 201,
+      "original_code": "_InitGraf",
+      "comment": " initialize QuickDraw",
+      "preceding_comments": [],
+      "op": "_INITGRAF",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401256": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 202,
+      "original_code": "MOVE.B\tD3,QDExist",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D3,QDExist"
+    },
+    "0x40125a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 206,
+      "original_code": "BSR.S\tAllocFakeRgns",
+      "comment": " init dummy vis and clip",
+      "preceding_comments": [
+        [
+          204,
+          "; allocate a grafPort using the space above the screen and initialize it"
+        ]
+      ],
+      "op": "BSR.S",
+      "operand": "AllocFakeRgns",
+      "inline_comment_retained": true
+    },
+    "0x40125e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 207,
+      "original_code": "MOVE.L\tA6,-(SP)",
+      "comment": " push address of grafPort",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401260": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 208,
+      "original_code": "_InitPort",
+      "comment": " initialize the port",
+      "preceding_comments": [],
+      "op": "_INITPORT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40127a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 213,
+      "original_code": "BMI.S\t@SkipDBox",
+      "comment": " neg => don't redraw alert box",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@SkipDBox",
+      "inline_comment_retained": true
+    },
+    "0x40127c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 215,
+      "original_code": "CMP.W\t#13,D0",
+      "comment": " programmer's switch hit with no MacsBug?",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "#13,D0",
+      "inline_comment_retained": true
+    },
+    "0x401280": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 216,
+      "original_code": "BEQ \tMicroBug",
+      "comment": " -> yes, use the ROM-based version",
+      "preceding_comments": [],
+      "op": "BEQ",
+      "operand": "MicroBug",
+      "inline_comment_retained": true
+    },
+    "0x401284": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 217,
+      "original_code": "BSR \tDrawBox",
+      "comment": " draw and clear the alert box",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DrawBox",
+      "inline_comment_retained": true
+    },
+    "0x401288": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 226,
+      "original_code": "@IsSysAlert\tBSR.S\tClipBox",
+      "comment": " set the clip to the alert rect\t\t\t<EHB 16-Oct-85>",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ClipBox",
+      "inline_comment_retained": true
+    },
+    "0x40128c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 229,
+      "original_code": "BSR\t\tFindObject",
+      "comment": " look it up, set A0 to pt to it",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "FindObject",
+      "inline_comment_retained": true
+    },
+    "0x40128e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 230,
+      "original_code": "BNE.S\t@GotAlert",
+      "comment": " found it, now draw everything associated with it",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@GotAlert",
+      "inline_comment_retained": true
+    },
+    "0x401290": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 238,
+      "original_code": "MOVE.L\tD7,A0",
+      "comment": " get start of table",
+      "preceding_comments": [
+        [
+          232,
+          "; tricky stuff...didn't find the specific alert id, so default to the first one.  Note, this"
+        ],
+        [
+          233,
+          "; is required for the normal user alerts to work, as the 'Sorry, as system error has occured..'"
+        ],
+        [
+          234,
+          "; has an id of -1, thus will never be found, but it is the first alert in the table, thus it"
+        ],
+        [
+          235,
+          "; gets called for any system error (1..13), and its proc gets the exact error number from the"
+        ],
+        [
+          236,
+          "; DSErrCode location and draws the 'ID = <N>' string."
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "D7,A0",
+      "inline_comment_retained": true
+    },
+    "0x401294": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 243,
+      "original_code": "@GotAlert\tMOVE.L\tA0,A3",
+      "comment": " keep record pointer in A3",
+      "preceding_comments": [
+        [
+          241,
+          "; we found the alert definition record so draw any appropriate fields"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A0,A3",
+      "inline_comment_retained": true
+    },
+    "0x401296": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 244,
+      "original_code": "BSR\t\tDrawText",
+      "comment": " draw the message\t\t\t\t\t\t\t<C682>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DrawText"
+    },
+    "0x401298": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 245,
+      "original_code": "BSR\t\tDrawText",
+      "comment": " draw it\t\t\t\t\t\t\t\t\t<C682>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DrawText"
+    },
+    "0x40129a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 250,
+      "original_code": "MOVE.W\t(A3)+,D0",
+      "comment": " get the icon ID",
+      "preceding_comments": [
+        [
+          247,
+          "; Draw the icon, if any.  It gets the icon structure (the bits"
+        ],
+        [
+          248,
+          "; and where to plot them) from the logical ID passed in D0..."
+        ]
+      ],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x40129c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 251,
+      "original_code": "BEQ.S\t@NoIcon",
+      "comment": " skip if there isn't one",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoIcon",
+      "inline_comment_retained": true
+    },
+    "0x40129e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 253,
+      "original_code": "BSR.S\tFindObject",
+      "comment": " get the icon data structure",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "FindObject",
+      "inline_comment_retained": true
+    },
+    "0x4012a0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 254,
+      "original_code": "BEQ.S\t@NoIcon",
+      "comment": " if none, skip",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoIcon",
+      "inline_comment_retained": true
+    },
+    "0x4012a2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 277,
+      "original_code": "PEA \t8(A0)",
+      "comment": " push a pointer to the icon bits",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "8(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4012a6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 278,
+      "original_code": "MOVE.L\tA0,-(SP)",
+      "comment": " push a pointer to the rectangle",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4012a8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 279,
+      "original_code": "PEA \t4(SP)",
+      "comment": " push handle to the icon bits",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "4(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4012ac": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 280,
+      "original_code": "_PlotIcon",
+      "comment": " plot the icon",
+      "preceding_comments": [],
+      "op": "_PLOTICON",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4012ae": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 281,
+      "original_code": "ADDQ.W\t#4,SP",
+      "comment": " pop off the icon pointer",
+      "preceding_comments": [],
+      "op": "ADDQ.W",
+      "operand": "#4,SP",
+      "inline_comment_retained": true
+    },
+    "0x4012b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 285,
+      "original_code": "@NoIcon\t\tMOVE.W\t(A3)+,D0",
+      "comment": " get the proc ID",
+      "preceding_comments": [
+        [
+          283,
+          "; call the alert's procedure, if any..."
+        ]
+      ],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012b2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 286,
+      "original_code": "BEQ.S\t@NoProc",
+      "comment": " if none, skip",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoProc",
+      "inline_comment_retained": true
+    },
+    "0x4012b4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 288,
+      "original_code": "BSR.S\tFindObject",
+      "comment": "look up the proc",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "FindObject",
+      "inline_comment_retained": true
+    },
+    "0x4012b6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 289,
+      "original_code": "BEQ.S\t@NoProc",
+      "comment": "if not found, skip",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoProc",
+      "inline_comment_retained": true
+    },
+    "0x4012b8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 290,
+      "original_code": "JSR\t\t(A0)",
+      "comment": "invoke it",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4012ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 294,
+      "original_code": "@NoProc\t\tMOVE.W\t (A3)+,D0",
+      "comment": "get the buttonList",
+      "preceding_comments": [
+        [
+          292,
+          "; draw any buttons..."
+        ]
+      ],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012bc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 295,
+      "original_code": "BEQ.S\t @NoSemantics",
+      "comment": "if none, we're done",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoSemantics",
+      "inline_comment_retained": true
+    },
+    "0x4012be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 299,
+      "original_code": "TST.L\tRestProc",
+      "comment": "is a restart procedure installed?",
+      "preceding_comments": [
+        [
+          297,
+          "; if there's a restart proc installed, increment buttonID number"
+        ]
+      ],
+      "op": "TST.L",
+      "operand": "RestProc",
+      "inline_comment_retained": true
+    },
+    "0x4012c2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 300,
+      "original_code": "BEQ.S\t@NoRestart",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoRestart"
+    },
+    "0x4012c4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 301,
+      "original_code": "ADDQ.W \t#1,D0",
+      "comment": "yes, increment the buttonID number",
+      "preceding_comments": [],
+      "op": "ADDQ.W",
+      "operand": "#1,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012c6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 302,
+      "original_code": "@NoRestart\tBSR\t\tDoButtons",
+      "comment": "draw the button list and hit test it",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DoButtons",
+      "inline_comment_retained": true
+    },
+    "0x4012cc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 314,
+      "original_code": "RTS2SysErr\tBSR \tOpenClip",
+      "comment": " set clip back to full size\t\t\t\t<EHB 16-Oct85>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "OpenClip",
+      "inline_comment_retained": true
+    },
+    "0x4012d0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 315,
+      "original_code": "ADD.W\t#GrafSize+140,SP",
+      "comment": " cut back the stack",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#GrafSize+140,SP",
+      "inline_comment_retained": true
+    },
+    "0x4012d8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 317,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": " return no error",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012da": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 318,
+      "original_code": "RTS",
+      "comment": " exit back to SystemError code",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4012e4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 328,
+      "original_code": "FindObject  MOVE.L\tD7,A0",
+      "comment": "point to DS data structure",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D7,A0",
+      "inline_comment_retained": true
+    },
+    "0x4012e6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 329,
+      "original_code": "MOVE.W\t(A0)+,D1",
+      "comment": "get the number of entries",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,D1",
+      "inline_comment_retained": true
+    },
+    "0x4012e8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 330,
+      "original_code": "BRA.S\t@GoFindIt",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@GoFindIt"
+    },
+    "0x4012ea": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 332,
+      "original_code": "@NextObject\tCMP.W\t(A0)+,D0",
+      "comment": "is this the one we're looking for?",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012ec": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 333,
+      "original_code": "BEQ.S\t@FoundObj",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@FoundObj"
+    },
+    "0x4012ee": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 334,
+      "original_code": "ADDA.W\t(A0)+,A0",
+      "comment": "bump to the next object",
+      "preceding_comments": [],
+      "op": "ADDA.W",
+      "operand": "(A0)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x4012f0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 335,
+      "original_code": "@GoFindIt\tDBRA \tD1,@NextObject",
+      "comment": "-> keep looping if not",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D1,@NextObject",
+      "inline_comment_retained": true
+    },
+    "0x4012f4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 338,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": " and exit with BEQ",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012f8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 339,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x4012fa": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 342,
+      "original_code": "MOVEQ\t#-1,D0",
+      "comment": " and exit with BNE",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#-1,D0",
+      "inline_comment_retained": true
+    },
+    "0x4012fe": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 343,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401300": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 350,
+      "original_code": "DrawText\tMOVE.W\t(A3)+,D0",
+      "comment": "get the text ID",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401302": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 351,
+      "original_code": "BEQ.S\t@NoText",
+      "comment": "if zero, nothing to do",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoText",
+      "inline_comment_retained": true
+    },
+    "0x401304": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 353,
+      "original_code": "BSR.S\tFindObject",
+      "comment": "find the text structure",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "FindObject",
+      "inline_comment_retained": true
+    },
+    "0x401306": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 354,
+      "original_code": "BEQ.S\t@NoText",
+      "comment": "if not found, we're done",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoText",
+      "inline_comment_retained": true
+    },
+    "0x401308": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 355,
+      "original_code": "MOVE.L\t(A0)+,D3",
+      "comment": "get the start point",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A0)+,D3",
+      "inline_comment_retained": true
+    },
+    "0x40130a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 356,
+      "original_code": "MOVEA.L\tA0,A2",
+      "comment": "remember start of the first line",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "A0,A2",
+      "inline_comment_retained": true
+    },
+    "0x40130e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 361,
+      "original_code": "BEQ.S\t@DrawTxLine",
+      "comment": "if null, go draw the last line",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@DrawTxLine",
+      "inline_comment_retained": true
+    },
+    "0x401310": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 362,
+      "original_code": "CMP.B\t#'/',D0",
+      "comment": "is it the line separator?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'/',D0",
+      "inline_comment_retained": true
+    },
+    "0x401314": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 363,
+      "original_code": "BNE.S\t@ScanForEOL",
+      "comment": "if not, continue scanning",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@ScanForEOL",
+      "inline_comment_retained": true
+    },
+    "0x401316": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 367,
+      "original_code": "@DrawTxLine\tMOVE.B\tD0,-(SP)",
+      "comment": "preserve the delimiting character",
+      "preceding_comments": [
+        [
+          365,
+          "; we got a null or a line separator so draw the text line"
+        ]
+      ],
+      "op": "MOVE.B",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40131a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 373,
+      "original_code": "CLR.W\t-(SP)",
+      "comment": "start at the beginning of the text",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401324": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 374,
+      "original_code": "MOVE.W\tD0,-(SP)",
+      "comment": "how many characters to draw",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401326": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 376,
+      "original_code": "MOVE.L\tD3,-(SP)",
+      "comment": "move to the starting text position",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D3,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401328": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 377,
+      "original_code": "_MoveTo",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_MOVETO",
+      "operand": ""
+    },
+    "0x40132a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 379,
+      "original_code": "_DrawText",
+      "comment": " and draw a line of text",
+      "preceding_comments": [],
+      "op": "_DRAWTEXT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40132c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 381,
+      "original_code": "ADDI.L\t#$000E0000,D3",
+      "comment": "move the position to the start of the next line",
+      "preceding_comments": [],
+      "op": "ADDI.L",
+      "operand": "#$000E0000,D3",
+      "inline_comment_retained": true
+    },
+    "0x401332": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 383,
+      "original_code": "MOVEA.L\tA2,A0",
+      "comment": "point A0 at the beginning of the next line",
+      "preceding_comments": [],
+      "op": "MOVEA.L",
+      "operand": "A2,A0",
+      "inline_comment_retained": true
+    },
+    "0x401334": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 384,
+      "original_code": "MOVE.B\t(SP)+,D0",
+      "comment": "was the delimiter a null?",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(SP)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x40133a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 393,
+      "original_code": "DrawBox \tMOVE.L\tDSDrawProc,D0",
+      "comment": " is a custom dialog draw procedure specified?",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "DSDrawProc,D0",
+      "inline_comment_retained": true
+    },
+    "0x40133e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 394,
+      "original_code": "BLE.S\t@StdProc",
+      "comment": " -> nope",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@StdProc",
+      "inline_comment_retained": true
+    },
+    "0x401340": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 395,
+      "original_code": "MOVE.L\tD0,-(SP)",
+      "comment": " push its address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401342": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 396,
+      "original_code": "BSET\t#7,DSDrawProc",
+      "comment": " make it a one-shot",
+      "preceding_comments": [],
+      "op": "BSET",
+      "operand": "#7,DSDrawProc",
+      "inline_comment_retained": true
+    },
+    "0x401348": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 397,
+      "original_code": "RTS",
+      "comment": " go to it",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40134a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 399,
+      "original_code": "@StdProc\tLEA \tDSAlertRect,A0",
+      "comment": " pt A0 at rect",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "DSAlertRect,A0",
+      "inline_comment_retained": true
+    },
+    "0x401364": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 435,
+      "original_code": "BSR.S\tDrawBox2",
+      "comment": " draw it",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "DrawBox2",
+      "inline_comment_retained": true
+    },
+    "0x401366": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 437,
+      "original_code": "BSET\t#7,DSAlertRect",
+      "comment": " reset flag for system error",
+      "preceding_comments": [],
+      "op": "BSET",
+      "operand": "#7,DSAlertRect",
+      "inline_comment_retained": true
+    },
+    "0x40136c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 440,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40136e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 443,
+      "original_code": "BSR.S\tDrawBox2",
+      "comment": " draw it",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "DrawBox2",
+      "inline_comment_retained": true
+    },
+    "0x401370": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 444,
+      "original_code": "MOVE.L\tDSAlertRect,-(SP)",
+      "comment": " push TL of rect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "DSAlertRect,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401374": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 445,
+      "original_code": "_MovePortTo",
+      "comment": " move there",
+      "preceding_comments": [],
+      "op": "_MOVEPORTTO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401376": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 446,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401378": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 450,
+      "original_code": "DrawBox2\tMOVE.L\tA0, -(SP)",
+      "comment": " rect for EraseRect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0, -(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40137a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 451,
+      "original_code": "MOVE.L\tA0, -(SP)",
+      "comment": " rect for FrameRect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0, -(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40137c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 452,
+      "original_code": "MOVE.L\tA0, -(SP)",
+      "comment": " rect for InsetRect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0, -(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40137e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 453,
+      "original_code": "MOVE.L\tA0, -(SP)",
+      "comment": " rect for FrameRect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0, -(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401380": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 454,
+      "original_code": "MOVE.L\tA0, -(SP)",
+      "comment": " rect for InsetRect\t\t\t\t\t\t<19Mar85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0, -(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401382": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 455,
+      "original_code": "_EraseRect",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_ERASERECT",
+      "operand": ""
+    },
+    "0x401384": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 456,
+      "original_code": "_FrameRect",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_FRAMERECT",
+      "operand": ""
+    },
+    "0x401386": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 457,
+      "original_code": "MOVE.L\t#$00020002, -(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$00020002, -(SP)"
+    },
+    "0x40138c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 458,
+      "original_code": "_PenSize",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_PENSIZE",
+      "operand": ""
+    },
+    "0x40138e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 459,
+      "original_code": "MOVE.L\t#$00030003, -(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$00030003, -(SP)"
+    },
+    "0x401394": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 460,
+      "original_code": "_InsetRect",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_INSETRECT",
+      "operand": ""
+    },
+    "0x401396": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 461,
+      "original_code": "_FrameRect",
+      "comment": " draw the border",
+      "preceding_comments": [],
+      "op": "_FRAMERECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401398": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 462,
+      "original_code": "MOVE.L\t#$FFFDFFFD,-(SP)",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t<19Mar85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$FFFDFFFD,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40139e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 463,
+      "original_code": "_InsetRect",
+      "comment": " put the rect back to normal\t\t\t\t<19Mar85>",
+      "preceding_comments": [],
+      "op": "_INSETRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013a0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 464,
+      "original_code": "_PenNormal",
+      "comment": " put the pen back to normal",
+      "preceding_comments": [],
+      "op": "_PENNORMAL",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013a2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 465,
+      "original_code": "NoButtons \tRTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x4013a4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 475,
+      "original_code": "DoButtons\tBSR\t\tFindObject",
+      "comment": "find the buttonList data structure",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "FindObject",
+      "inline_comment_retained": true
+    },
+    "0x4013a8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 476,
+      "original_code": "BEQ.S\tNoButtons",
+      "comment": "if none, we're done",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "NoButtons",
+      "inline_comment_retained": true
+    },
+    "0x4013aa": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 478,
+      "original_code": "MOVE.L\tA0,A2",
+      "comment": "remember the button base",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,A2",
+      "inline_comment_retained": true
+    },
+    "0x4013ac": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 479,
+      "original_code": "MOVE.W\t(A0)+,D3",
+      "comment": "get the number of buttons",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,D3",
+      "inline_comment_retained": true
+    },
+    "0x4013ae": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 480,
+      "original_code": "MOVE.L\tA0,A3",
+      "comment": "point A3 at the first button",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,A3",
+      "inline_comment_retained": true
+    },
+    "0x4013b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 484,
+      "original_code": "@DrawBtnLp\tMOVE.L\t2(A3),-(SP)",
+      "comment": "push topLeft",
+      "preceding_comments": [
+        [
+          482,
+          "; loop through the button list, drawing each button"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "2(A3),-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4013b4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 485,
+      "original_code": "ADD.L\t#$000E0004,(SP)",
+      "comment": "offset it for pen position",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "#$000E0004,(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4013ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 486,
+      "original_code": "_MoveTo",
+      "comment": "position the pen",
+      "preceding_comments": [],
+      "op": "_MOVETO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 489,
+      "original_code": "BSR\t\tFindObject",
+      "comment": "find the string",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "FindObject",
+      "inline_comment_retained": true
+    },
+    "0x4013c2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 490,
+      "original_code": "SUBQ.W \t#1,A0",
+      "comment": "point to low byte of length",
+      "preceding_comments": [],
+      "op": "SUBQ.W",
+      "operand": "#1,A0",
+      "inline_comment_retained": true
+    },
+    "0x4013c4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 491,
+      "original_code": "MOVE.L\tA0,-(SP)",
+      "comment": "push the string pointer",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4013c6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 492,
+      "original_code": "_DrawString",
+      "comment": "draw the string",
+      "preceding_comments": [],
+      "op": "_DRAWSTRING",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013cc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 495,
+      "original_code": "MOVE.L\t#$00100010,-(SP)",
+      "comment": "push the roundness factor",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$00100010,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4013d2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 496,
+      "original_code": "_FrameRoundRect",
+      "comment": "frame it",
+      "preceding_comments": [],
+      "op": "_FRAMEROUNDRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013d8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 499,
+      "original_code": "SUBQ.W\t#1,D3",
+      "comment": "any more buttons to do?",
+      "preceding_comments": [],
+      "op": "SUBQ.W",
+      "operand": "#1,D3",
+      "inline_comment_retained": true
+    },
+    "0x4013da": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 500,
+      "original_code": "BNE.S\t@DrawBtnLp",
+      "comment": "-> yes",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@DrawBtnLp",
+      "inline_comment_retained": true
+    },
+    "0x4013dc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 504,
+      "original_code": "MOVE.L\t(A5),A0",
+      "comment": "get global base",
+      "preceding_comments": [
+        [
+          502,
+          "; set the cursor to the arrow and show it"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "(A5),A0",
+      "inline_comment_retained": true
+    },
+    "0x4013de": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 505,
+      "original_code": "PEA\t\tArrow(A0)",
+      "comment": "push ptr to arrow image",
+      "preceding_comments": [],
+      "op": "PEA",
+      "operand": "Arrow(A0)",
+      "inline_comment_retained": true
+    },
+    "0x4013e2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 506,
+      "original_code": "_SetCursor",
+      "comment": "make that the cursor",
+      "preceding_comments": [],
+      "op": "_SETCURSOR",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013e4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 508,
+      "original_code": "_ShowCursor",
+      "comment": "make sure the cursor is visible",
+      "preceding_comments": [],
+      "op": "_SHOWCURSOR",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4013e6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 509,
+      "original_code": "MOVE \t#$2000,SR",
+      "comment": "make sure interrupts are on",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "#$2000,SR",
+      "inline_comment_retained": true
+    },
+    "0x4013ea": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 510,
+      "original_code": "ST\t\tCrsrCouple",
+      "comment": "force the cursor to be coupled",
+      "preceding_comments": [],
+      "op": "ST",
+      "operand": "CrsrCouple",
+      "inline_comment_retained": true
+    },
+    "0x4013ee": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 511,
+      "original_code": "CLR.B\tVBLQueue",
+      "comment": "make sure VBL manager is cool",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "VBLQueue",
+      "inline_comment_retained": true
+    },
+    "0x4013fa": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 516,
+      "original_code": "BNE.S\t@Wait4Click",
+      "comment": "-> nope, wait until it is",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@Wait4Click",
+      "inline_comment_retained": true
+    },
+    "0x4013fc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 521,
+      "original_code": "MOVE.L\tA2,A3",
+      "comment": "get start of button list",
+      "preceding_comments": [
+        [
+          518,
+          "; the mouse button went down, so loop through the button data structure to"
+        ],
+        [
+          519,
+          "; determine which button, if any, it went down in"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A2,A3",
+      "inline_comment_retained": true
+    },
+    "0x4013fe": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 522,
+      "original_code": "MOVE.W\t(A3)+,D3",
+      "comment": "get the number of buttons",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D3",
+      "inline_comment_retained": true
+    },
+    "0x401400": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 523,
+      "original_code": "ADDQ \t#2,A3",
+      "comment": "skip past the string ID",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#2,A3",
+      "inline_comment_retained": true
+    },
+    "0x401402": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 525,
+      "original_code": "@FindBtnHit\tBSR.S\tmyPtInRect",
+      "comment": "test if we're in the button",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "myPtInRect",
+      "inline_comment_retained": true
+    },
+    "0x401404": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 526,
+      "original_code": "BNE.S\t@TrackBtn",
+      "comment": "if so, go track the button",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@TrackBtn",
+      "inline_comment_retained": true
+    },
+    "0x401406": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 531,
+      "original_code": "ADD.W\t#8+2+2,A3",
+      "comment": "bump to the next button",
+      "preceding_comments": [
+        [
+          528,
+          "; we're not in this button, so go test the next button.  If we tested them"
+        ],
+        [
+          529,
+          "; all, go try again"
+        ]
+      ],
+      "op": "ADD.W",
+      "operand": "#8+2+2,A3",
+      "inline_comment_retained": true
+    },
+    "0x40140a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 532,
+      "original_code": "SUBQ.W \t#1,D3",
+      "comment": "decrement button count",
+      "preceding_comments": [],
+      "op": "SUBQ.W",
+      "operand": "#1,D3",
+      "inline_comment_retained": true
+    },
+    "0x40140c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 533,
+      "original_code": "BNE.S\t@FindBtnHit",
+      "comment": "if more to test, loop",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@FindBtnHit",
+      "inline_comment_retained": true
+    },
+    "0x40140e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 534,
+      "original_code": "BRA.S\t@Wait4Click",
+      "comment": "go poll the mouse button",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@Wait4Click",
+      "inline_comment_retained": true
+    },
+    "0x401414": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 539,
+      "original_code": "@TrackLoop\tBSR.S\tmyPtInRect",
+      "comment": "are we in the rectangle?",
+      "preceding_comments": [
+        [
+          536,
+          "; at this point, we know the mouse has gone down in the rectangle pointed to"
+        ],
+        [
+          537,
+          "; by A3.  Track the mouse until the button goes up"
+        ]
+      ],
+      "op": "BSR.S",
+      "operand": "myPtInRect",
+      "inline_comment_retained": true
+    },
+    "0x401416": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 540,
+      "original_code": "CMP.B\tD0,D3",
+      "comment": "did it change?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "D0,D3",
+      "inline_comment_retained": true
+    },
+    "0x401418": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 541,
+      "original_code": "BEQ.S\t@NoChange",
+      "comment": "skip if it didn't",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@NoChange",
+      "inline_comment_retained": true
+    },
+    "0x40141e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 546,
+      "original_code": "BSR.S\tInvertBut",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "InvertBut"
+    },
+    "0x401428": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 551,
+      "original_code": "BEQ.S\t@TrackLoop",
+      "comment": "-> nope, keep looping until it's not",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@TrackLoop",
+      "inline_comment_retained": true
+    },
+    "0x40142a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 556,
+      "original_code": "TST.B\tD3",
+      "comment": "were we in the button?",
+      "preceding_comments": [
+        [
+          553,
+          "; the mouse went up -- if it wasn't in a button, continue polling the mouse"
+        ],
+        [
+          554,
+          "; button.  If it was, return the address of the appropriate semantic routine"
+        ]
+      ],
+      "op": "TST.B",
+      "operand": "D3",
+      "inline_comment_retained": true
+    },
+    "0x40142c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 557,
+      "original_code": "BEQ.S\t@Wait4Click",
+      "comment": "if not, go try again",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@Wait4Click",
+      "inline_comment_retained": true
+    },
+    "0x40142e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 559,
+      "original_code": "MOVE.W\t8(A3),D0",
+      "comment": "get ID of proc object",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "8(A3),D0",
+      "inline_comment_retained": true
+    },
+    "0x401438": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 565,
+      "original_code": "myPtInRect\tSUBQ \t#2,SP",
+      "comment": "make room for the function result",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#2,SP",
+      "inline_comment_retained": true
+    },
+    "0x40143a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 566,
+      "original_code": "MOVE.L\tMouse,-(SP)",
+      "comment": "push the current mouse point",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "Mouse,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40143e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 569,
+      "original_code": "MOVE.L\tA3,-(SP)",
+      "comment": "push the rectangle ptr",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401440": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 570,
+      "original_code": "_PtInRect",
+      "comment": "test if the point is in the button",
+      "preceding_comments": [],
+      "op": "_PTINRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401442": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 571,
+      "original_code": "MOVE.B\t(SP)+,D0",
+      "comment": "get the result in D0",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(SP)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401444": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 572,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401446": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 576,
+      "original_code": "InvertBut\tMOVE.L\tA3,-(SP)",
+      "comment": "push the rectangle pointer",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401448": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 577,
+      "original_code": "MOVE.L\t#$00100010,-(SP)",
+      "comment": "push the rounding factor",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$00100010,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40144e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 578,
+      "original_code": "_InverRoundRect",
+      "comment": "invert it",
+      "preceding_comments": [],
+      "op": "_INVERROUNDRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401450": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 579,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401454": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 603,
+      "original_code": "LEA \tDSAlertRect,A0",
+      "comment": " pt A0 at rect",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "DSAlertRect,A0",
+      "inline_comment_retained": true
+    },
+    "0x401458": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 604,
+      "original_code": "BSR \tDrawSysErr",
+      "comment": " erase/draw the deepshit error box",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "DrawSysErr",
+      "inline_comment_retained": true
+    },
+    "0x401462": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 608,
+      "original_code": "_MovePortTo",
+      "comment": "  and move the port\t\t\t\t\t\t<C584>",
+      "preceding_comments": [],
+      "op": "_MOVEPORTTO",
+      "operand": ""
+    },
+    "0x401464": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 610,
+      "original_code": "BSR \tClipBox",
+      "comment": " set the clipping to DSAlertRect\t\t\t<EHB 16-Oct-85>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ClipBox",
+      "inline_comment_retained": true
+    },
+    "0x401468": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 611,
+      "original_code": "SUB.W\t#evtBlkSize,SP",
+      "comment": " room for event record\t\t\t\t\t\t<1.3>",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "#evtBlkSize,SP"
+    },
+    "0x40146c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 612,
+      "original_code": "CLR.W\tD7",
+      "comment": " clear previous cmd value",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "D7",
+      "inline_comment_retained": true
+    },
+    "0x40146e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 613,
+      "original_code": "CLR.L\tMBdotAddr",
+      "comment": " clear dot address",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "MBdotAddr",
+      "inline_comment_retained": true
+    },
+    "0x401474": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 614,
+      "original_code": "CLR.L\tMBlocAddr",
+      "comment": " clear location",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "MBlocAddr",
+      "inline_comment_retained": true
+    },
+    "0x40147a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 616,
+      "original_code": "CmdReset\tMOVE.L\t#$001101B0,-(SP)",
+      "comment": " BR = 120, 440 so we use 15, 440 (minus some)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$001101B0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401480": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 618,
+      "original_code": "CLR.L\t-(SP)",
+      "comment": " set TL = 0",
+      "preceding_comments": [
+        [
+          617,
+          "\t\t\t\t\t\t\t\t\t\t\t; upped descender to 17 to catch ',' ';' etc.\t<03Nov85  JTC>"
+        ]
+      ],
+      "op": "CLR.L",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401482": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 619,
+      "original_code": "BSR \tMBDoErase",
+      "comment": " erase it",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "MBDoErase",
+      "inline_comment_retained": true
+    },
+    "0x401486": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 621,
+      "original_code": "LEA \tMBbuffer+MBbufSize,A6",
+      "comment": " point to end of buffer",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MBbuffer+MBbufSize,A6",
+      "inline_comment_retained": true
+    },
+    "0x40148c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 622,
+      "original_code": "MOVEQ\t#0,D6",
+      "comment": " init counter",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D6",
+      "inline_comment_retained": true
+    },
+    "0x40148e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 624,
+      "original_code": "@0\t\t\tMOVE.W\t#' ',-(A6)",
+      "comment": " clear it",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#' ',-(A6)",
+      "inline_comment_retained": true
+    },
+    "0x401492": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 625,
+      "original_code": "ADDQ.W\t#2,D6",
+      "comment": " bump counter",
+      "preceding_comments": [],
+      "op": "ADDQ.W",
+      "operand": "#2,D6",
+      "inline_comment_retained": true
+    },
+    "0x401494": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 626,
+      "original_code": "CMP.W\t#MBbufSize,D6",
+      "comment": " all done?",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "#MBbufSize,D6",
+      "inline_comment_retained": true
+    },
+    "0x401498": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 627,
+      "original_code": "BNE.S\t@0",
+      "comment": " nope",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x40149a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 628,
+      "original_code": "MOVE.L\tA6,A4",
+      "comment": " set start/end ptr",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A6,A4",
+      "inline_comment_retained": true
+    },
+    "0x40149c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 630,
+      "original_code": "MOVE.L\t#$000F000A,-(SP)",
+      "comment": " push h,v = 10,15",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$000F000A,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014a2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 631,
+      "original_code": "_MoveTo",
+      "comment": " move there",
+      "preceding_comments": [],
+      "op": "_MOVETO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4014a4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 632,
+      "original_code": "MOVEQ\t#'>',D0",
+      "comment": " get prompt char",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#'>',D0",
+      "inline_comment_retained": true
+    },
+    "0x4014a6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 633,
+      "original_code": "MOVE.W\tD0,-(SP)",
+      "comment": " push on stack",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014a8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 634,
+      "original_code": "_DrawChar",
+      "comment": " and draw it",
+      "preceding_comments": [],
+      "op": "_DRAWCHAR",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4014aa": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 639,
+      "original_code": "CmdLoop\t\tMOVE.L\tSP,A0",
+      "comment": " Point to event record on stack",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "inline_comment_retained": true
+    },
+    "0x4014ac": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 640,
+      "original_code": "MOVEQ\t#1<<keyDwnEvt,D0",
+      "comment": " keydown only\t\t\t\t\t\t\t\t<1.3>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#1<<keyDwnEvt,D0"
+    },
+    "0x4014ae": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 641,
+      "original_code": "_GetOSEvent",
+      "comment": " any keyDown events in the queue?",
+      "preceding_comments": [],
+      "op": "_GETOSEVENT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4014b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 642,
+      "original_code": "BNE.S\tCmdLoop",
+      "comment": " -> no, wait for one",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "CmdLoop",
+      "inline_comment_retained": true
+    },
+    "0x4014ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 650,
+      "original_code": "CMP.B\t#'a',D0",
+      "comment": " is it lower case?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'a',D0",
+      "inline_comment_retained": true
+    },
+    "0x4014be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 651,
+      "original_code": "BLT.S\t@0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "@0"
+    },
+    "0x4014c0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 652,
+      "original_code": "BCLR\t#5,D0",
+      "comment": " yes, force it to be upper case",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#5,D0",
+      "inline_comment_retained": true
+    },
+    "0x4014c4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 656,
+      "original_code": "@0\t\t\tCMP.B\t#13,D0",
+      "comment": " carriage return?",
+      "preceding_comments": [
+        [
+          654,
+          "; now D0.B is the character code value"
+        ]
+      ],
+      "op": "CMP.B",
+      "operand": "#13,D0",
+      "inline_comment_retained": true
+    },
+    "0x4014c8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 657,
+      "original_code": "BEQ.S\tGotCommand",
+      "comment": " -> yes, go process the buffer",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "GotCommand",
+      "inline_comment_retained": true
+    },
+    "0x4014ca": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 659,
+      "original_code": "CMP.B\t#8,D0",
+      "comment": " backspace?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#8,D0",
+      "inline_comment_retained": true
+    },
+    "0x4014ce": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 660,
+      "original_code": "BNE.S\tRegChar",
+      "comment": " -> no, all ok",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "RegChar",
+      "inline_comment_retained": true
+    },
+    "0x4014d0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 662,
+      "original_code": "CMP.L\tA6,A4",
+      "comment": " anything in buffer?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "A6,A4",
+      "inline_comment_retained": true
+    },
+    "0x4014d2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 663,
+      "original_code": "BEQ.S\tCmdLoop",
+      "comment": " no, bail out",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "CmdLoop",
+      "inline_comment_retained": true
+    },
+    "0x4014d4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 665,
+      "original_code": "ADDQ.W\t#1,D6",
+      "comment": " increment remaining buffer space count",
+      "preceding_comments": [],
+      "op": "ADDQ.W",
+      "operand": "#1,D6",
+      "inline_comment_retained": true
+    },
+    "0x4014da": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 669,
+      "original_code": "MOVE.L\tSP,-(SP)",
+      "comment": " @pt",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014dc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 670,
+      "original_code": "_GetPen",
+      "comment": " get current pen pos, leave on stack",
+      "preceding_comments": [],
+      "op": "_GETPEN",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4014de": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 671,
+      "original_code": "MOVE.L\t(SP),-(SP)",
+      "comment": " make copy (building rect on stack)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP),-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014e2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 674,
+      "original_code": "MOVE.B\t(A6),D0",
+      "comment": " get last char",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A6),D0",
+      "inline_comment_retained": true
+    },
+    "0x4014e4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 675,
+      "original_code": "MOVE.W\tD0,-(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)"
+    },
+    "0x4014e6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 676,
+      "original_code": "_CharWidth",
+      "comment": " and measure it",
+      "preceding_comments": [],
+      "op": "_CHARWIDTH",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4014e8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 677,
+      "original_code": "MOVE.W\t(SP)+,D3",
+      "comment": " get width",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(SP)+,D3",
+      "inline_comment_retained": true
+    },
+    "0x4014ea": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 678,
+      "original_code": "SUB.W\tD3,2(SP)",
+      "comment": " adjust left point of rect on stack",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "D3,2(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014ee": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 679,
+      "original_code": "CLR.W\t(SP)",
+      "comment": " top pt = 0",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014f0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 680,
+      "original_code": "MOVE.L\tSP,-(SP)",
+      "comment": " push @rect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014f2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 681,
+      "original_code": "CLR.W\t-(SP)",
+      "comment": " delta h = 0",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014f4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 682,
+      "original_code": "MOVE.W\t#2,-(SP)",
+      "comment": " delta v = 2",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#2,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4014f8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 683,
+      "original_code": "_OffsetRect",
+      "comment": " offset it",
+      "preceding_comments": [],
+      "op": "_OFFSETRECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4014fa": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 684,
+      "original_code": "BSR \tMBDoErase",
+      "comment": " erase it",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "MBDoErase",
+      "inline_comment_retained": true
+    },
+    "0x4014fe": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 686,
+      "original_code": "MOVE.W\tD3,-(SP)",
+      "comment": " char width",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D3,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401500": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 687,
+      "original_code": "NEG.W\t(SP)",
+      "comment": " negative movement",
+      "preceding_comments": [],
+      "op": "NEG.W",
+      "operand": "(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401502": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 688,
+      "original_code": "CLR.W\t-(SP)",
+      "comment": " delta V = 0",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401504": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 689,
+      "original_code": "_Move",
+      "comment": " and reset the pen",
+      "preceding_comments": [],
+      "op": "_MOVE",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401506": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 690,
+      "original_code": "BRA.S\tCmdLoop",
+      "comment": " return",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "CmdLoop",
+      "inline_comment_retained": true
+    },
+    "0x401508": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 692,
+      "original_code": "RegChar\t\tTST.W\tD6",
+      "comment": " any space left?",
+      "preceding_comments": [],
+      "op": "TST.W",
+      "operand": "D6",
+      "inline_comment_retained": true
+    },
+    "0x40150a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 693,
+      "original_code": "BEQ.S\tCmdLoop",
+      "comment": " no, don't add any more chars",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "CmdLoop",
+      "inline_comment_retained": true
+    },
+    "0x40150c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 695,
+      "original_code": "SUBQ.W\t#1,D6",
+      "comment": " dec buffer free space count",
+      "preceding_comments": [],
+      "op": "SUBQ.W",
+      "operand": "#1,D6",
+      "inline_comment_retained": true
+    },
+    "0x40150e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 696,
+      "original_code": "MOVE.B\tD0,(A6)+",
+      "comment": " buffer it up",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D0,(A6)+",
+      "inline_comment_retained": true
+    },
+    "0x401510": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 697,
+      "original_code": "MOVE.W\tD0,-(SP)",
+      "comment": " push on stack",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401512": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 698,
+      "original_code": "_DrawChar",
+      "comment": " draw it",
+      "preceding_comments": [],
+      "op": "_DRAWCHAR",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401514": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 699,
+      "original_code": "BRA.S\tCmdLoop",
+      "comment": " and loop",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "CmdLoop",
+      "inline_comment_retained": true
+    },
+    "0x401516": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 701,
+      "original_code": "GotCommand\tCMP.L\tA4,A6",
+      "comment": " any chars?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "A4,A6",
+      "inline_comment_retained": true
+    },
+    "0x401518": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 702,
+      "original_code": "BNE.S\t@0",
+      "comment": " yes, do reg processing",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x40151a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 703,
+      "original_code": "MOVE.W\tD7,(A6)+",
+      "comment": " stuff previous command",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D7,(A6)+",
+      "inline_comment_retained": true
+    },
+    "0x40151c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 705,
+      "original_code": "@0\t\t\tMOVE.W\t(A4)+,D7",
+      "comment": " get command word",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A4)+,D7",
+      "inline_comment_retained": true
+    },
+    "0x40151e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 706,
+      "original_code": "LEA \tMBcmds,A0",
+      "comment": " point at command table",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MBcmds,A0",
+      "inline_comment_retained": true
+    },
+    "0x401522": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 708,
+      "original_code": "@1\t\t\tMOVE.W\t(A0)+,D0",
+      "comment": " get routine name",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401524": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 709,
+      "original_code": "BMI.S\t@3",
+      "comment": " last command, nothing matched",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x401526": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 710,
+      "original_code": "MOVE.W\t(A0)+,D2",
+      "comment": " get routine offset",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A0)+,D2",
+      "inline_comment_retained": true
+    },
+    "0x401528": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 711,
+      "original_code": "CMP.B\t#'@',D0",
+      "comment": " register display routine (wildcard digit?)",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'@',D0",
+      "inline_comment_retained": true
+    },
+    "0x40152c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 712,
+      "original_code": "BNE.S\t@2",
+      "comment": " nope",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x40152e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 714,
+      "original_code": "MOVE.B\tD7,D0",
+      "comment": " stuff input number",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D7,D0",
+      "inline_comment_retained": true
+    },
+    "0x401530": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 715,
+      "original_code": "CMP.B\t#'0',D0",
+      "comment": " zero reg?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'0',D0",
+      "inline_comment_retained": true
+    },
+    "0x401534": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 716,
+      "original_code": "BMI.S\t@1",
+      "comment": " no, try next command",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x401536": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 717,
+      "original_code": "CMP.B\t#'7',D0",
+      "comment": " last reg",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'7',D0",
+      "inline_comment_retained": true
+    },
+    "0x40153a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 718,
+      "original_code": "BGT.S\t@1",
+      "comment": " no, try next command",
+      "preceding_comments": [],
+      "op": "BGT.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x40153c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 720,
+      "original_code": "@2\t\t\tCMP.W\tD0,D7",
+      "comment": " does input command match table",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "D0,D7",
+      "inline_comment_retained": true
+    },
+    "0x40153e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 721,
+      "original_code": "BNE.S\t@1",
+      "comment": " try next command",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x401540": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 723,
+      "original_code": "LEA \tMBcmds,A0",
+      "comment": " pt to start of this code",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MBcmds,A0",
+      "inline_comment_retained": true
+    },
+    "0x401544": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 724,
+      "original_code": "JSR \t0(A0,D2.W)",
+      "comment": " execute the routine",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "0(A0,D2.W)",
+      "inline_comment_retained": true
+    },
+    "0x401548": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 725,
+      "original_code": "@3\t\t\tBRA \tCmdReset",
+      "comment": " and start cmd loop again",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "CmdReset",
+      "inline_comment_retained": true
+    },
+    "0x40156e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 739,
+      "original_code": "GCmd\t\tBSR \tReadToken",
+      "comment": " try for address",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ReadToken",
+      "inline_comment_retained": true
+    },
+    "0x401572": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 740,
+      "original_code": "BEQ.S\tGotResume",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "GotResume"
+    },
+    "0x401574": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 741,
+      "original_code": "MOVE.L\tD0,-(SP)",
+      "comment": " stuff address \t\t\t\t\t\t\t<EHB 16-Oct-85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401576": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 742,
+      "original_code": "BSR \tOpenClip",
+      "comment": " restore clipping\t\t\t\t\t\t\t<EHB 16-Oct-85>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "OpenClip",
+      "inline_comment_retained": true
+    },
+    "0x40157a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 743,
+      "original_code": "RTS",
+      "comment": " and go to it\t\t\t\t\t\t\t\t<EHB 16-Oct-85>",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40157c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 745,
+      "original_code": "GotResume\tADD.W\t#20,SP",
+      "comment": " get rid of event record, RTS",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#20,SP",
+      "inline_comment_retained": true
+    },
+    "0x401580": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 746,
+      "original_code": "CLR.B\tDSWndUpdate",
+      "comment": " flag GNE to remove the alert . . .",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "DSWndUpdate",
+      "inline_comment_retained": true
+    },
+    "0x401584": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 747,
+      "original_code": "BRA \tRTS2SysErr",
+      "comment": " return to SysError handler",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "RTS2SysErr",
+      "inline_comment_retained": true
+    },
+    "0x401588": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 752,
+      "original_code": "MBDoErase\tMOVE.L\t(SP)+,A2",
+      "comment": " preserve return address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A2",
+      "inline_comment_retained": true
+    },
+    "0x40158a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 753,
+      "original_code": "MOVE.L\tSP,-(SP)",
+      "comment": " push @rect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SP,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40158c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 754,
+      "original_code": "_EraseRect",
+      "comment": " erase lower pane",
+      "preceding_comments": [],
+      "op": "_ERASERECT",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401590": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 756,
+      "original_code": "JMP \t(A2)",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(A2)",
+      "inline_comment_retained": true
+    },
+    "0x401592": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 760,
+      "original_code": "DMCmd\t\tMOVE.L\t#$007001B0,-(SP)",
+      "comment": " push BR",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$007001B0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401598": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 761,
+      "original_code": "CLR.L\t-(SP)",
+      "comment": " TL = 0",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40159a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 762,
+      "original_code": "BSR.S\tMBDoErase",
+      "comment": " erase the rect",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "MBDoErase",
+      "inline_comment_retained": true
+    },
+    "0x40159c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 764,
+      "original_code": "BSR \tReadXToken",
+      "comment": " get address",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ReadXToken",
+      "inline_comment_retained": true
+    },
+    "0x4015a0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 765,
+      "original_code": "@0\t\t\tBCLR\t#0,D0",
+      "comment": " force even address",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x4015a4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 766,
+      "original_code": "MOVE.L\tD0,A3",
+      "comment": " set display address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,A3",
+      "inline_comment_retained": true
+    },
+    "0x4015a6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 767,
+      "original_code": "MOVE.L\tD0,MBdotAddr",
+      "comment": " save as dot addr",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,MBdotAddr",
+      "inline_comment_retained": true
+    },
+    "0x4015ac": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 769,
+      "original_code": "MOVEQ\t#6-1,D6",
+      "comment": " 6 lines",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#6-1,D6",
+      "inline_comment_retained": true
+    },
+    "0x4015ae": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 770,
+      "original_code": "MOVEQ\t#15,D5",
+      "comment": " starting V coord",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#15,D5",
+      "inline_comment_retained": true
+    },
+    "0x4015b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 772,
+      "original_code": "@1\t\t\tADD.W\t#15,D5",
+      "comment": " bump V coord",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#15,D5",
+      "inline_comment_retained": true
+    },
+    "0x4015b4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 773,
+      "original_code": "MOVE.W\t#10,-(SP)",
+      "comment": " push h",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#10,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4015b8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 774,
+      "original_code": "MOVE.W\tD5,-(SP)",
+      "comment": " push v",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D5,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4015ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 775,
+      "original_code": "_MoveTo",
+      "comment": " move there",
+      "preceding_comments": [],
+      "op": "_MOVETO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4015bc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 776,
+      "original_code": "MOVE.L\tA3,D0",
+      "comment": " get address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,D0",
+      "inline_comment_retained": true
+    },
+    "0x4015be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 777,
+      "original_code": "BSR.S\tPrint6Hx",
+      "comment": " print out",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "Print6Hx",
+      "inline_comment_retained": true
+    },
+    "0x4015c0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 779,
+      "original_code": "MOVEQ\t#7,D4",
+      "comment": " 8 words",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#7,D4",
+      "inline_comment_retained": true
+    },
+    "0x4015c2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 780,
+      "original_code": "MOVEQ\t#35,D3",
+      "comment": " starting h coord",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#35,D3",
+      "inline_comment_retained": true
+    },
+    "0x4015c4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 782,
+      "original_code": "@2\t\t\tADD.W\t#45,D3",
+      "comment": " bump h coord",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "#45,D3",
+      "inline_comment_retained": true
+    },
+    "0x4015c8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 783,
+      "original_code": "MOVE.W\tD3,-(SP)",
+      "comment": " push h",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D3,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4015ca": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 784,
+      "original_code": "MOVE.W\tD5,-(SP)",
+      "comment": " push v",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D5,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x4015cc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 785,
+      "original_code": "_MoveTo",
+      "comment": " move there",
+      "preceding_comments": [],
+      "op": "_MOVETO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4015ce": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 786,
+      "original_code": "MOVE.W\t(A3)+,D0",
+      "comment": " get next word",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4015d0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 787,
+      "original_code": "BSR.S\tPrint4Hx",
+      "comment": " print word",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "Print4Hx",
+      "inline_comment_retained": true
+    },
+    "0x4015d2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 788,
+      "original_code": "DBRA\tD4,@2",
+      "comment": " word column loop",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D4,@2",
+      "inline_comment_retained": true
+    },
+    "0x4015d6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 789,
+      "original_code": "DBRA\tD6,@1",
+      "comment": " line loop",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D6,@1",
+      "inline_comment_retained": true
+    },
+    "0x4015da": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 790,
+      "original_code": "MOVE.L\tA3,MBlocAddr",
+      "comment": " set up new address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A3,MBlocAddr",
+      "inline_comment_retained": true
+    },
+    "0x4015e0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 791,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4015e2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 793,
+      "original_code": "Print6Hx\tSWAP\tD0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SWAP",
+      "operand": "D0"
+    },
+    "0x4015e4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 794,
+      "original_code": "BSR.S\tPrint2Hx",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "Print2Hx"
+    },
+    "0x4015e6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 795,
+      "original_code": "SWAP\tD0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SWAP",
+      "operand": "D0"
+    },
+    "0x4015e8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 797,
+      "original_code": "Print4Hx\tMOVE.W\tD0,-(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)"
+    },
+    "0x4015ea": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 798,
+      "original_code": "ROXR.W\t#8,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ROXR.W",
+      "operand": "#8,D0"
+    },
+    "0x4015ec": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 799,
+      "original_code": "BSR.S\tPrint2Hx",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "Print2Hx"
+    },
+    "0x4015ee": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 800,
+      "original_code": "MOVE.W\t(SP)+,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(SP)+,D0"
+    },
+    "0x4015f0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 802,
+      "original_code": "Print2Hx\tMOVE.W\tD0,-(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)"
+    },
+    "0x4015f2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 803,
+      "original_code": "ROR.W\t#4,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ROR.W",
+      "operand": "#4,D0"
+    },
+    "0x4015f4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 804,
+      "original_code": "BSR.S\tPUTHEX",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "PUTHEX"
+    },
+    "0x4015f6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 805,
+      "original_code": "MOVE.W\t(SP)+,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(SP)+,D0"
+    },
+    "0x4015f8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 807,
+      "original_code": "PUTHEX\t\tANDI.B\t#$0F,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ANDI.B",
+      "operand": "#$0F,D0"
+    },
+    "0x4015fc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 808,
+      "original_code": "ORI.B\t#'0',D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ORI.B",
+      "operand": "#'0',D0"
+    },
+    "0x401600": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 809,
+      "original_code": "CMPI.B\t#'9',D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "CMPI.B",
+      "operand": "#'9',D0"
+    },
+    "0x401604": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 810,
+      "original_code": "BLE.S\t@0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@0"
+    },
+    "0x401606": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 811,
+      "original_code": "ADDQ.W\t#7,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ADDQ.W",
+      "operand": "#7,D0"
+    },
+    "0x401608": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 813,
+      "original_code": "@0\t\t\tMOVE.L\tD0,-(SP)",
+      "comment": " save D0",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40160a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 814,
+      "original_code": "MOVE.W\tD0,-(SP)",
+      "comment": " push on stack",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40160c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 815,
+      "original_code": "_DrawChar",
+      "comment": " draw it",
+      "preceding_comments": [],
+      "op": "_DRAWCHAR",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40160e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 816,
+      "original_code": "MOVE.L\t(SP)+,D0",
+      "comment": " restore D0",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401610": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 817,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401612": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 822,
+      "original_code": "SMCmd\t\tBSR \tReadXToken",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ReadXToken"
+    },
+    "0x401616": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 823,
+      "original_code": "MOVE.L\tD0,A1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,A1"
+    },
+    "0x401618": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 824,
+      "original_code": "LEA \tMBdotAddr,A0",
+      "comment": " point at storage",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MBdotAddr,A0",
+      "inline_comment_retained": true
+    },
+    "0x40161e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 825,
+      "original_code": "MOVE.L\tD0,(A0)+",
+      "comment": " set dot and loc addresses",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401620": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 826,
+      "original_code": "MOVE.L\tD0,(A0)+",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(A0)+"
+    },
+    "0x401622": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 827,
+      "original_code": "MOVE.W\t#'DM',D7",
+      "comment": " jam repeat cmd to DM",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#'DM',D7",
+      "inline_comment_retained": true
+    },
+    "0x401626": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 829,
+      "original_code": "@1\t\t\tBSR \tReadToken",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ReadToken"
+    },
+    "0x40162a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 830,
+      "original_code": "BEQ.S\tDMCmd",
+      "comment": " using locAddr, draw lower pane",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "DMCmd",
+      "inline_comment_retained": true
+    },
+    "0x40162e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 831,
+      "original_code": "MOVE.L\tA1,A2",
+      "comment": " get fixed point for shifting bytes in",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A2",
+      "inline_comment_retained": true
+    },
+    "0x401630": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 833,
+      "original_code": "@2\t\t\tMOVE.B\tD0,-1(A2,D1)",
+      "comment": " stuff byte at last position indicated by size (D1.W)",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D0,-1(A2,D1)",
+      "inline_comment_retained": true
+    },
+    "0x401634": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 834,
+      "original_code": "ASR.L\t#8,D0",
+      "comment": " get next byte",
+      "preceding_comments": [],
+      "op": "ASR.L",
+      "operand": "#8,D0",
+      "inline_comment_retained": true
+    },
+    "0x401636": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 835,
+      "original_code": "ADDQ.L\t#1,A1",
+      "comment": " bump destination ptr",
+      "preceding_comments": [],
+      "op": "ADDQ.L",
+      "operand": "#1,A1",
+      "inline_comment_retained": true
+    },
+    "0x401638": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 836,
+      "original_code": "SUBQ.L\t#1,D1",
+      "comment": " dec offset ptr",
+      "preceding_comments": [],
+      "op": "SUBQ.L",
+      "operand": "#1,D1",
+      "inline_comment_retained": true
+    },
+    "0x40163a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 837,
+      "original_code": "BNE.S\t@2",
+      "comment": " not done w/this value, keep looping",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x40163c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 838,
+      "original_code": "BRA.S\t@1",
+      "comment": " any more tokens?",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x40163e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 842,
+      "original_code": "TDCmd\t\tMOVE.L\t#SEVars,MBlocAddr",
+      "comment": " set saved address to be location of regs",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#SEVars,MBlocAddr",
+      "inline_comment_retained": true
+    },
+    "0x401648": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 843,
+      "original_code": "BRA.S\tDMCmd",
+      "comment": " using locAddr, draw lower pane",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "DMCmd",
+      "inline_comment_retained": true
+    },
+    "0x40164c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 847,
+      "original_code": "DCmd\t\tLEA \tSED0,A3",
+      "comment": " pt at reg 0",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SED0,A3",
+      "inline_comment_retained": true
+    },
+    "0x401652": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 848,
+      "original_code": "BRA.S\tSetR",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SetR"
+    },
+    "0x401654": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 850,
+      "original_code": "ACmd\t\tLEA \tSEA0,A3",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SEA0,A3"
+    },
+    "0x40165a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 851,
+      "original_code": "BRA.S\tSetR",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SetR"
+    },
+    "0x40165c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 853,
+      "original_code": "PCCmd\t\tLEA \tSEPC,A3",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SEPC,A3"
+    },
+    "0x401662": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 854,
+      "original_code": "BRA.S\tSetR0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "SetR0"
+    },
+    "0x401664": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 856,
+      "original_code": "SRCmd\t\tLEA \tSESR,A3",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SESR,A3"
+    },
+    "0x40166a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 857,
+      "original_code": "BSR.S\tReadToken",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ReadToken"
+    },
+    "0x40166c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 858,
+      "original_code": "BEQ.S\tSetR2",
+      "comment": " print value",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "SetR2",
+      "inline_comment_retained": true
+    },
+    "0x40166e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 859,
+      "original_code": "MOVE.W\tD0,(A3)",
+      "comment": " stuff input",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,(A3)",
+      "inline_comment_retained": true
+    },
+    "0x401670": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 860,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401672": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 862,
+      "original_code": "SetR\t\tBSR.S\tGetHex",
+      "comment": " convert ascii in D0.B to hex value",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "GetHex",
+      "inline_comment_retained": true
+    },
+    "0x401674": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 863,
+      "original_code": "LSL.L\t#2,D0",
+      "comment": " turn into long offset",
+      "preceding_comments": [],
+      "op": "LSL.L",
+      "operand": "#2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401676": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 864,
+      "original_code": "ADD.L\tD0,A3",
+      "comment": " add offset",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D0,A3",
+      "inline_comment_retained": true
+    },
+    "0x401678": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 866,
+      "original_code": "SetR0\t\tBSR.S\tReadToken",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ReadToken"
+    },
+    "0x40167a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 867,
+      "original_code": "BEQ.S\tSetR1",
+      "comment": " print value",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "SetR1",
+      "inline_comment_retained": true
+    },
+    "0x40167c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 868,
+      "original_code": "MOVE.L\tD0,(A3)",
+      "comment": " stuff value",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(A3)",
+      "inline_comment_retained": true
+    },
+    "0x40167e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 869,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401680": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 871,
+      "original_code": "SetR2\t\tMOVEQ\t#-1,D6",
+      "comment": " normal branch to SetR1 has D6=0",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#-1,D6",
+      "inline_comment_retained": true
+    },
+    "0x401682": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 873,
+      "original_code": "SetR1\t\tMOVE.L\t#$007001B0,-(SP)",
+      "comment": " push BR",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$007001B0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401688": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 874,
+      "original_code": "CLR.L\t-(SP)",
+      "comment": " TL = 0",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x40168a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 875,
+      "original_code": "BSR.S\tMBDoErase",
+      "comment": " erase the rect",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "MBDoErase",
+      "inline_comment_retained": true
+    },
+    "0x40168e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 876,
+      "original_code": "MOVE.L\t#$00300010,-(SP)",
+      "comment": " push 10,30 as drawing pt",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#$00300010,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401694": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 877,
+      "original_code": "_MoveTo",
+      "comment": " go there",
+      "preceding_comments": [],
+      "op": "_MOVETO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401696": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 878,
+      "original_code": "MOVE.W\t(A3)+,D0",
+      "comment": " get current value",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401698": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 879,
+      "original_code": "TST.W\tD6",
+      "comment": " special SR case?",
+      "preceding_comments": [],
+      "op": "TST.W",
+      "operand": "D6",
+      "inline_comment_retained": true
+    },
+    "0x40169a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 880,
+      "original_code": "BNE.S\t@0",
+      "comment": " yes, only print word",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x40169c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 881,
+      "original_code": "BSR.S\tPrint4Hx",
+      "comment": " print high word",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "Print4Hx",
+      "inline_comment_retained": true
+    },
+    "0x4016a0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 882,
+      "original_code": "MOVE.W\t(A3)+,D0",
+      "comment": " get low word",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016a8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 885,
+      "original_code": "GetHex\t\tAND.L\t#$FF,D0",
+      "comment": " mask off anything but low byte",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "#$FF,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016ae": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 886,
+      "original_code": "CMP.B\t#$39,D0",
+      "comment": " Hex digit",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#$39,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016b2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 887,
+      "original_code": "BLE.S\t@0",
+      "comment": " assume so",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x4016b4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 888,
+      "original_code": "SUBQ.B\t#7,D0",
+      "comment": " assume 0..9",
+      "preceding_comments": [],
+      "op": "SUBQ.B",
+      "operand": "#7,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016b6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 889,
+      "original_code": "@0\t\t\tAND.B\t#$F,D0",
+      "comment": " mask off low nybble",
+      "preceding_comments": [],
+      "op": "AND.B",
+      "operand": "#$F,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 890,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4016bc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 898,
+      "original_code": "ReadXToken\tBSR.S\tReadToken",
+      "comment": " try for something",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "ReadToken",
+      "inline_comment_retained": true
+    },
+    "0x4016be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 899,
+      "original_code": "BNE.S\t@0",
+      "comment": " we got something back, return it",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@0",
+      "inline_comment_retained": true
+    },
+    "0x4016c0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 900,
+      "original_code": "MOVE.L\tMBlocAddr,D0",
+      "comment": " return saved address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "MBlocAddr,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016c6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 901,
+      "original_code": "@0\t\t\tRTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4016c8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 903,
+      "original_code": "ReadToken\tMOVEQ\t#0,D4",
+      "comment": " clear accumulator",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D4",
+      "inline_comment_retained": true
+    },
+    "0x4016ca": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 904,
+      "original_code": "MOVEQ\t#0,D6",
+      "comment": " max # digits",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D6",
+      "inline_comment_retained": true
+    },
+    "0x4016cc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 906,
+      "original_code": "ReadMore\tMOVEQ\t#0,D5",
+      "comment": " count # digits",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D5",
+      "inline_comment_retained": true
+    },
+    "0x4016ce": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 907,
+      "original_code": "CLR.W\tMBSign",
+      "comment": " set sign to positive",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "MBSign",
+      "inline_comment_retained": true
+    },
+    "0x4016d4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 908,
+      "original_code": "MOVEQ\t#0,D3",
+      "comment": " assume no indirection",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D3",
+      "inline_comment_retained": true
+    },
+    "0x4016d6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 909,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0"
+    },
+    "0x4016d8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 910,
+      "original_code": "MOVEQ\t#0,D1",
+      "comment": " sub-number built here",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D1",
+      "inline_comment_retained": true
+    },
+    "0x4016da": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 912,
+      "original_code": "blanks\t\tCMP.L\tA6,A4",
+      "comment": " any more chars?",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "A6,A4",
+      "inline_comment_retained": true
+    },
+    "0x4016dc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 913,
+      "original_code": "BGE \tReadExit",
+      "comment": " if not escape",
+      "preceding_comments": [],
+      "op": "BGE",
+      "operand": "ReadExit",
+      "inline_comment_retained": true
+    },
+    "0x4016e0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 915,
+      "original_code": "leadSP\t\tMOVE.B\t(A4)+,D0",
+      "comment": " get next char",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x4016e2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 916,
+      "original_code": "CMPI.B\t#' ',D0",
+      "comment": " skip blanks",
+      "preceding_comments": [],
+      "op": "CMPI.B",
+      "operand": "#' ',D0",
+      "inline_comment_retained": true
+    },
+    "0x4016e6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 917,
+      "original_code": "BLE.S\tblanks",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "blanks"
+    },
+    "0x4016e8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 921,
+      "original_code": "CMP.B\t#'@',D0",
+      "comment": " leading @ indirection",
+      "preceding_comments": [
+        [
+          919,
+          "; See if leading sign or indirection"
+        ]
+      ],
+      "op": "CMP.B",
+      "operand": "#'@',D0",
+      "inline_comment_retained": true
+    },
+    "0x4016ec": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 922,
+      "original_code": "BNE.S\t@0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@0"
+    },
+    "0x4016ee": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 923,
+      "original_code": "ADDQ\t#1,D3",
+      "comment": " bump indirection counter",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#1,D3",
+      "inline_comment_retained": true
+    },
+    "0x4016f0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 924,
+      "original_code": "BRA.S\tleadSP",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "leadSP"
+    },
+    "0x4016f2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 926,
+      "original_code": "@0\t\t\tCMP.B\t#'+',D0",
+      "comment": " leading plus",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'+',D0",
+      "inline_comment_retained": true
+    },
+    "0x4016f6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 927,
+      "original_code": "BEQ.S\tleadSP",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "leadSP"
+    },
+    "0x4016f8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 928,
+      "original_code": "CMP.B\t#'-',D0",
+      "comment": " leading minus",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'-',D0",
+      "inline_comment_retained": true
+    },
+    "0x4016fc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 929,
+      "original_code": "BNE.S\tgetBase",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "getBase"
+    },
+    "0x4016fe": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 930,
+      "original_code": "NOT.B\tMBSign",
+      "comment": " record sign change",
+      "preceding_comments": [],
+      "op": "NOT.B",
+      "operand": "MBSign",
+      "inline_comment_retained": true
+    },
+    "0x401704": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 931,
+      "original_code": "BRA.S\tleadSP",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "leadSP"
+    },
+    "0x401706": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 933,
+      "original_code": "getBase\t\tCMP.B\t#'$',D0",
+      "comment": " leading $?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'$',D0",
+      "inline_comment_retained": true
+    },
+    "0x40170a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 934,
+      "original_code": "BNE \tgetLabel",
+      "comment": " no, try for label",
+      "preceding_comments": [],
+      "op": "BNE",
+      "operand": "getLabel",
+      "inline_comment_retained": true
+    },
+    "0x40170e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 936,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": " clear char value",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x401710": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 937,
+      "original_code": "MOVE.B\t(A4)+,D0",
+      "comment": " next character",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401712": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 939,
+      "original_code": "getNumber\tBSR \tGetHex",
+      "comment": " convert hex ascii digit in D0.B to number",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "GetHex",
+      "inline_comment_retained": true
+    },
+    "0x401714": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 941,
+      "original_code": "ADDQ\t#1,D5",
+      "comment": " increment # digits",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#1,D5",
+      "inline_comment_retained": true
+    },
+    "0x401716": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 942,
+      "original_code": "LSL.L\t#4,D1",
+      "comment": " multiply by 16",
+      "preceding_comments": [],
+      "op": "LSL.L",
+      "operand": "#4,D1",
+      "inline_comment_retained": true
+    },
+    "0x401718": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 943,
+      "original_code": "ADD.L\tD0,D1",
+      "comment": " add in this digit",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D0,D1",
+      "inline_comment_retained": true
+    },
+    "0x40171a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 947,
+      "original_code": "CMP.L\tA6,A4",
+      "comment": " any more chars?",
+      "preceding_comments": [
+        [
+          945,
+          "; Are we done?"
+        ]
+      ],
+      "op": "CMP.L",
+      "operand": "A6,A4",
+      "inline_comment_retained": true
+    },
+    "0x40171c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 948,
+      "original_code": "BGE.S\tReadExit",
+      "comment": " if not escape",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "ReadExit",
+      "inline_comment_retained": true
+    },
+    "0x40171e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 950,
+      "original_code": "MOVE.B\t(A4)+,D0",
+      "comment": " get next char",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401720": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 952,
+      "original_code": "CMP.B\t#'0',D0",
+      "comment": " < ASCII zero",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'0',D0",
+      "inline_comment_retained": true
+    },
+    "0x401724": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 953,
+      "original_code": "BGE.S\tGetNumber",
+      "comment": " go get more",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "GetNumber",
+      "inline_comment_retained": true
+    },
+    "0x401726": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 955,
+      "original_code": "ReadExit\tTST \tD3",
+      "comment": " any indirection?",
+      "preceding_comments": [],
+      "op": "TST",
+      "operand": "D3",
+      "inline_comment_retained": true
+    },
+    "0x401728": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 956,
+      "original_code": "BEQ.S\t@1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@1"
+    },
+    "0x40172a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 957,
+      "original_code": "MOVEQ\t#8,D5",
+      "comment": " jam eight digits",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#8,D5",
+      "inline_comment_retained": true
+    },
+    "0x40172c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 959,
+      "original_code": "@0\t\t\tBCLR\t#0,D1",
+      "comment": " make sure it's even",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "#0,D1",
+      "inline_comment_retained": true
+    },
+    "0x401730": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 960,
+      "original_code": "MOVE.L\tD1,A0",
+      "comment": " indirect it",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D1,A0",
+      "inline_comment_retained": true
+    },
+    "0x401732": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 961,
+      "original_code": "MOVE.L\t(A0),D1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A0),D1"
+    },
+    "0x401734": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 962,
+      "original_code": "SUBQ\t#1,D3",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#1,D3"
+    },
+    "0x401736": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 963,
+      "original_code": "BNE.S\t@0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@0"
+    },
+    "0x401738": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 965,
+      "original_code": "@1\t\t\tTST.B\tMBSign",
+      "comment": " negative?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "MBSign",
+      "inline_comment_retained": true
+    },
+    "0x40173e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 966,
+      "original_code": "BEQ.S\t@2",
+      "comment": " no, keep going",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x401740": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 967,
+      "original_code": "NEG.L\tD1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "NEG.L",
+      "operand": "D1"
+    },
+    "0x401742": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 969,
+      "original_code": "@2\t\t\tADD.L\tD1,D4",
+      "comment": " add into result",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,D4",
+      "inline_comment_retained": true
+    },
+    "0x401744": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 973,
+      "original_code": "ADDQ.W\t#1,D5",
+      "comment": " round up",
+      "preceding_comments": [
+        [
+          971,
+          "; Clean up the bytes counter"
+        ]
+      ],
+      "op": "ADDQ.W",
+      "operand": "#1,D5",
+      "inline_comment_retained": true
+    },
+    "0x401746": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 974,
+      "original_code": "LSR.W\t#1,D5",
+      "comment": " convert # chars to number of bytes",
+      "preceding_comments": [],
+      "op": "LSR.W",
+      "operand": "#1,D5",
+      "inline_comment_retained": true
+    },
+    "0x401748": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 975,
+      "original_code": "CMP.W\t#4,D5",
+      "comment": " more than a long?",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "#4,D5",
+      "inline_comment_retained": true
+    },
+    "0x40174c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 976,
+      "original_code": "BLE.S\t@3",
+      "comment": " no",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x40174e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 977,
+      "original_code": "MOVEQ\t#4,D5",
+      "comment": " jam to a long",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#4,D5",
+      "inline_comment_retained": true
+    },
+    "0x401750": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 979,
+      "original_code": "@3\t\t\tCMP.W\tD6,D5",
+      "comment": " bump max # digits if D5 >",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "D6,D5",
+      "inline_comment_retained": true
+    },
+    "0x401752": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 980,
+      "original_code": "BLE.S\t@4",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@4"
+    },
+    "0x401754": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 981,
+      "original_code": "MOVE.W\tD5,D6",
+      "comment": " max # digits",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D5,D6",
+      "inline_comment_retained": true
+    },
+    "0x401756": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 983,
+      "original_code": "@4\t\t\tCMPI.B\t#'+',D0",
+      "comment": " if plus or minus add a new one",
+      "preceding_comments": [],
+      "op": "CMPI.B",
+      "operand": "#'+',D0",
+      "inline_comment_retained": true
+    },
+    "0x40175a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 984,
+      "original_code": "BEQ.S\t@5",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@5"
+    },
+    "0x40175c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 985,
+      "original_code": "CMPI.B\t#'-',D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "CMPI.B",
+      "operand": "#'-',D0"
+    },
+    "0x401760": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 986,
+      "original_code": "BNE.S\t@6",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@6"
+    },
+    "0x401762": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 988,
+      "original_code": "@5\t\t\tMOVE.B\tD0,-(A4)",
+      "comment": " push back on sign",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "D0,-(A4)",
+      "inline_comment_retained": true
+    },
+    "0x401764": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 989,
+      "original_code": "BRA \tReadMore",
+      "comment": " and keep looping",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "ReadMore",
+      "inline_comment_retained": true
+    },
+    "0x401768": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 991,
+      "original_code": "@6\t\t\tMOVE.L\tD4,D0",
+      "comment": " return the number",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D4,D0",
+      "inline_comment_retained": true
+    },
+    "0x40176a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 992,
+      "original_code": "MOVE.L\tD6,D1",
+      "comment": " return max digits",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D6,D1",
+      "inline_comment_retained": true
+    },
+    "0x40176c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 993,
+      "original_code": "RTS",
+      "comment": " and return",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x40176e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 997,
+      "original_code": "getLabel\tCMP.B\t#'.',D0",
+      "comment": " dot?",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'.',D0",
+      "inline_comment_retained": true
+    },
+    "0x401772": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 998,
+      "original_code": "BNE.S\tnotDot",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "notDot"
+    },
+    "0x401774": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1000,
+      "original_code": "MOVE.L\tMBdotAddr,D1",
+      "comment": " get saved long",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "MBdotAddr,D1",
+      "inline_comment_retained": true
+    },
+    "0x40177a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1001,
+      "original_code": "MOVEQ\t#1,D2",
+      "comment": " amount to skip",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#1,D2",
+      "inline_comment_retained": true
+    },
+    "0x40177c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1003,
+      "original_code": "MOVEQ\t#8,D5",
+      "comment": " all eight bytes",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#8,D5",
+      "inline_comment_retained": true
+    },
+    "0x40177e": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1005,
+      "original_code": "MOVE.B\t(A4)+,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4)+,D0"
+    },
+    "0x401780": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1006,
+      "original_code": "SUBQ\t#1,D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#1,D2"
+    },
+    "0x401782": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1007,
+      "original_code": "BNE \tcleanExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE",
+      "operand": "cleanExit"
+    },
+    "0x401784": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1009,
+      "original_code": "BRA \tReadExit",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "ReadExit"
+    },
+    "0x401786": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1011,
+      "original_code": "notDot\t\tMOVE\tD0,D2",
+      "comment": " build a word",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "D0,D2",
+      "inline_comment_retained": true
+    },
+    "0x401788": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1012,
+      "original_code": "LSL \t#8,D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LSL",
+      "operand": "#8,D2"
+    },
+    "0x40178a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1013,
+      "original_code": "MOVE.B\t(A4),D2",
+      "comment": " get second byte",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4),D2",
+      "inline_comment_retained": true
+    },
+    "0x40178c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1015,
+      "original_code": "CMP \t#'PC',D2",
+      "comment": " PC?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "#'PC',D2",
+      "inline_comment_retained": true
+    },
+    "0x401790": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1016,
+      "original_code": "BNE.S\tnotPC",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "notPC"
+    },
+    "0x401792": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1018,
+      "original_code": "MOVE.L\tSEPC,D1",
+      "comment": " return the PC",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "SEPC,D1",
+      "inline_comment_retained": true
+    },
+    "0x401798": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1020,
+      "original_code": "go2Label\tMOVEQ\t#2,D2",
+      "comment": " amount to skip",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#2,D2",
+      "inline_comment_retained": true
+    },
+    "0x40179a": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1021,
+      "original_code": "BRA \tgoLabel",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "goLabel"
+    },
+    "0x40179c": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1023,
+      "original_code": "notPC\t\tCMP.B\t#'R',D0",
+      "comment": " reg references start with R",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'R',D0",
+      "inline_comment_retained": true
+    },
+    "0x4017a0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1024,
+      "original_code": "BNE.S\tgetNumber",
+      "comment": " try for hex number",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "getNumber",
+      "inline_comment_retained": true
+    },
+    "0x4017a4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1026,
+      "original_code": "CMP.B\t#'A',D2",
+      "comment": " aregs",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'A',D2",
+      "inline_comment_retained": true
+    },
+    "0x4017a8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1027,
+      "original_code": "BNE.S\tnotAs",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "notAs"
+    },
+    "0x4017aa": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1029,
+      "original_code": "LEA \tSEA0,A0",
+      "comment": " point to address regs loc",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SEA0,A0",
+      "inline_comment_retained": true
+    },
+    "0x4017b0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1031,
+      "original_code": "doReg\t\tMOVEQ\t#0,D2",
+      "comment": " calculate the index",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D2",
+      "inline_comment_retained": true
+    },
+    "0x4017b2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1032,
+      "original_code": "MOVE.B\t1(A4),D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "1(A4),D2"
+    },
+    "0x4017b6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1033,
+      "original_code": "SUB \t#'0',D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "SUB",
+      "operand": "#'0',D2"
+    },
+    "0x4017ba": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1034,
+      "original_code": "BMI.S\tgetNumber",
+      "comment": " RAx, x < '0'",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "getNumber",
+      "inline_comment_retained": true
+    },
+    "0x4017be": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1036,
+      "original_code": "CMP \t#7,D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "#7,D2"
+    },
+    "0x4017c2": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1037,
+      "original_code": "BGT.S\tgetNumber",
+      "comment": " RAx, x > '7'",
+      "preceding_comments": [],
+      "op": "BGT.S",
+      "operand": "getNumber",
+      "inline_comment_retained": true
+    },
+    "0x4017c6": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1039,
+      "original_code": "LSL \t#2,D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "LSL",
+      "operand": "#2,D2"
+    },
+    "0x4017c8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1040,
+      "original_code": "MOVE.L\t0(A0,D2),D1",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "0(A0,D2),D1"
+    },
+    "0x4017cc": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1042,
+      "original_code": "MOVEQ\t#3,D2",
+      "comment": " amount to skip",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#3,D2",
+      "inline_comment_retained": true
+    },
+    "0x4017ce": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1043,
+      "original_code": "BRA \tgoLabel",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "goLabel"
+    },
+    "0x4017d0": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1046,
+      "original_code": "CMP.B\t#'D',D2",
+      "comment": " Dregs",
+      "preceding_comments": [],
+      "op": "CMP.B",
+      "operand": "#'D',D2",
+      "inline_comment_retained": true
+    },
+    "0x4017d4": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1047,
+      "original_code": "BNE.S\tgetNumber",
+      "comment": " Rx, x <> A, x <> D",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "getNumber",
+      "inline_comment_retained": true
+    },
+    "0x4017d8": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1049,
+      "original_code": "LEA \tSED0,A0",
+      "comment": " point to data regs loc",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "SED0,A0",
+      "inline_comment_retained": true
+    },
+    "0x4017de": {
+      "path": "OS/StartMgr/StartAlert.a",
+      "line": 1050,
+      "original_code": "BRA \tdoReg",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "doReg"
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4198848,
+      "op": "SUBQ.W",
+      "operand": "#4,A0",
+      "bytes": "5948",
+      "rom_instruction": "subqw #4,%a0"
+    },
+    {
+      "address": 4198850,
+      "op": "MOVE.L",
+      "operand": "A1,(A0)",
+      "bytes": "2089",
+      "rom_instruction": "movel %a1,%a0@"
+    },
+    {
+      "address": 4198852,
+      "op": "LEA",
+      "operand": "GetParam,A1",
+      "bytes": "43f801e4",
+      "rom_instruction": "lea 0x1e4,%a1"
+    },
+    {
+      "address": 4198856,
+      "op": "LEA",
+      "operand": "FAKERGN(PC),A0",
+      "bytes": "41fa0008",
+      "rom_instruction": "lea %pc@(0x4011d2),%a0"
+    },
+    {
+      "address": 4198860,
+      "op": "MOVEQ",
+      "operand": "#10,D0",
+      "bytes": "700a",
+      "rom_instruction": "moveq #10,%d0"
+    },
+    {
+      "address": 4198862,
+      "op": "_BlockMove",
+      "operand": "",
+      "bytes": "a02e",
+      "rom_instruction": ".short 0xa02e"
+    },
+    {
+      "address": 4198876,
+      "op": "MOVEM.L",
+      "operand": "D0-D7/A1-A6,-(SP)",
+      "bytes": "48e7ff7e",
+      "rom_instruction": "moveml %d0-%d7/%a1-%fp,%sp@-"
+    },
+    {
+      "address": 4198880,
+      "op": "TST.B",
+      "operand": "SoundActive",
+      "bytes": "4a38027e",
+      "rom_instruction": "tstb 0x27e"
+    },
+    {
+      "address": 4198884,
+      "op": "BNE.S",
+      "operand": "SysBeepFlash",
+      "bytes": "6606",
+      "rom_instruction": "bnes 0x4011ec"
+    },
+    {
+      "address": 4198886,
+      "op": "TST.B",
+      "operand": "$260",
+      "bytes": "4a380260",
+      "rom_instruction": "tstb 0x260"
+    },
+    {
+      "address": 4198890,
+      "op": "BNE.S",
+      "operand": "SysBeepMakeSound",
+      "bytes": "6614",
+      "rom_instruction": "bnes 0x401200"
+    },
+    {
+      "address": 4198892,
+      "op": "TST.B",
+      "operand": "WWExist",
+      "bytes": "4a3808f2",
+      "rom_instruction": "tstb 0x8f2"
+    },
+    {
+      "address": 4198896,
+      "op": "BNE.S",
+      "operand": "SysBeepDone",
+      "bytes": "661a",
+      "rom_instruction": "bnes 0x40120c"
+    },
+    {
+      "address": 4198898,
+      "op": "CLR.L",
+      "operand": "-(SP)",
+      "bytes": "42a7",
+      "rom_instruction": "clrl %sp@-"
+    },
+    {
+      "address": 4198900,
+      "op": "_FlashMenuBar",
+      "operand": "",
+      "bytes": "a94c",
+      "rom_instruction": ".short 0xa94c"
+    },
+    {
+      "address": 4198902,
+      "op": "SUB.L",
+      "operand": "A0,A0",
+      "bytes": "91c8",
+      "rom_instruction": "subal %a0,%a0"
+    },
+    {
+      "address": 4198904,
+      "op": "ADDQ.W",
+      "operand": "#8,A0",
+      "bytes": "5048",
+      "rom_instruction": "addqw #8,%a0"
+    },
+    {
+      "address": 4198906,
+      "op": "_Delay",
+      "operand": "",
+      "bytes": "a03b",
+      "rom_instruction": ".short 0xa03b"
+    },
+    {
+      "address": 4198908,
+      "op": "_FlashMenuBar",
+      "operand": "",
+      "bytes": "a94c",
+      "rom_instruction": ".short 0xa94c"
+    },
+    {
+      "address": 4198910,
+      "op": "BRA.S",
+      "operand": "SysBeepDone",
+      "bytes": "600c",
+      "rom_instruction": "bras 0x40120c"
+    },
+    {
+      "address": 4198912,
+      "op": "MOVE.W",
+      "operand": "60(SP),D3",
+      "bytes": "362f003c",
+      "rom_instruction": "movew %sp@(60),%d3"
+    },
+    {
+      "address": 4198916,
+      "op": "LEA",
+      "operand": "SYSBEEPDONE(PC),A6",
+      "bytes": "4dfa0006",
+      "rom_instruction": "lea %pc@(0x40120c),%fp"
+    },
+    {
+      "address": 4198920,
+      "op": "BRA.W",
+      "operand": "BootBeep",
+      "bytes": "6000f080",
+      "rom_instruction": "braw 0x40028a"
+    },
+    {
+      "address": 4198924,
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0-D7/A1-A6",
+      "bytes": "4cdf7eff",
+      "rom_instruction": "moveml %sp@+,%d0-%d7/%a1-%fp"
+    },
+    {
+      "address": 4198928,
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "bytes": "205f",
+      "rom_instruction": "moveal %sp@+,%a0"
+    },
+    {
+      "address": 4198930,
+      "op": "ADDQ.W",
+      "operand": "#2,SP",
+      "bytes": "544f",
+      "rom_instruction": "addqw #2,%sp"
+    },
+    {
+      "address": 4198932,
+      "op": "JMP",
+      "operand": "(A0)",
+      "bytes": "4ed0",
+      "rom_instruction": "jmp %a0@"
+    },
+    {
+      "address": 4198934,
+      "op": "LEA",
+      "operand": "DSAlertRect,A0",
+      "bytes": "41f803f8",
+      "rom_instruction": "lea 0x3f8,%a0"
+    },
+    {
+      "address": 4198938,
+      "op": "LEA",
+      "operand": "GetParam+2,A1",
+      "bytes": "43f801e6",
+      "rom_instruction": "lea 0x1e6,%a1"
+    },
+    {
+      "address": 4198942,
+      "op": "MOVEQ",
+      "operand": "#8,D0",
+      "bytes": "7008",
+      "rom_instruction": "moveq #8,%d0"
+    },
+    {
+      "address": 4198944,
+      "op": "_BlockMove",
+      "operand": "",
+      "bytes": "a02e",
+      "rom_instruction": ".short 0xa02e"
+    },
+    {
+      "address": 4198968,
+      "op": "MOVE.W",
+      "operand": "$A5A,-(SP)",
+      "bytes": "3f380a5a",
+      "rom_instruction": "movew 0xa5a,%sp@-"
+    },
+    {
+      "address": 4198972,
+      "op": "MOVE.W",
+      "operand": "$A58,$A5A",
+      "bytes": "31f80a580a5a",
+      "rom_instruction": "movew 0xa58,0xa5a"
+    },
+    {
+      "address": 4199010,
+      "op": "MOVE.W",
+      "operand": "DSErrCode,-(SP)",
+      "bytes": "3f380af0",
+      "rom_instruction": "movew 0xaf0,%sp@-"
+    },
+    {
+      "address": 4199014,
+      "op": "MOVE.L",
+      "operand": "DSAlertTab,D7",
+      "bytes": "2e3802ba",
+      "rom_instruction": "movel 0x2ba,%d7"
+    },
+    {
+      "address": 4199018,
+      "op": "BNE.S",
+      "operand": "AlertInstalled",
+      "bytes": "660c",
+      "rom_instruction": "bnes 0x401278"
+    },
+    {
+      "address": 4199020,
+      "op": "MOVE.W",
+      "operand": "(SP)+,D1",
+      "bytes": "321f",
+      "rom_instruction": "movew %sp@+,%d1"
+    },
+    {
+      "address": 4199022,
+      "op": "MOVE.W",
+      "operand": "#15,A4",
+      "bytes": "387c000f",
+      "rom_instruction": "moveaw #15,%a4"
+    },
+    {
+      "address": 4199026,
+      "op": "SUB.L",
+      "operand": "A3,A3",
+      "bytes": "97cb",
+      "rom_instruction": "subal %a3,%a3"
+    },
+    {
+      "address": 4199028,
+      "op": "BRA.W",
+      "operand": "TestManager",
+      "bytes": "6000eec0",
+      "rom_instruction": "braw 0x400136"
+    },
+    {
+      "address": 4199032,
+      "op": "MOVE.W",
+      "operand": "(SP),D0",
+      "bytes": "3017",
+      "rom_instruction": "movew %sp@,%d0"
+    },
+    {
+      "address": 4199050,
+      "op": "MOVE.W",
+      "operand": "(SP)+,D0",
+      "bytes": "301f",
+      "rom_instruction": "movew %sp@+,%d0"
+    },
+    {
+      "address": 4199058,
+      "op": "ADDQ.L",
+      "operand": "#6,A0",
+      "bytes": "5c88",
+      "rom_instruction": "addql #6,%a0"
+    },
+    {
+      "address": 4199114,
+      "op": "BNE.S",
+      "operand": "InvokeSemantic",
+      "bytes": "6610",
+      "rom_instruction": "bnes 0x4012dc"
+    },
+    {
+      "address": 4199124,
+      "op": "MOVE.W",
+      "operand": "(SP)+,$A5A",
+      "bytes": "31df0a5a",
+      "rom_instruction": "movew %sp@+,0xa5a"
+    },
+    {
+      "address": 4199132,
+      "op": "MOVE.L",
+      "operand": "A0,-(SP)",
+      "bytes": "2f08",
+      "rom_instruction": "movel %a0,%sp@-"
+    },
+    {
+      "address": 4199134,
+      "op": "BSR.W",
+      "operand": "OpenClip",
+      "bytes": "6100fee4",
+      "rom_instruction": "bsrw 0x4011c4"
+    },
+    {
+      "address": 4199138,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4199158,
+      "op": "SUB.L",
+      "operand": "A0,A0",
+      "bytes": "91c8",
+      "rom_instruction": "subal %a0,%a0"
+    },
+    {
+      "address": 4199164,
+      "op": "ADDQ.W",
+      "operand": "#2,A0",
+      "bytes": "5448",
+      "rom_instruction": "addqw #2,%a0"
+    },
+    {
+      "address": 4199180,
+      "op": "MOVE.B",
+      "operand": "(A0)+,D0",
+      "bytes": "1018",
+      "rom_instruction": "moveb %a0@+,%d0"
+    },
+    {
+      "address": 4199192,
+      "op": "MOVE.L",
+      "operand": "A2,-(SP)",
+      "bytes": "2f0a",
+      "rom_instruction": "movel %a2,%sp@-"
+    },
+    {
+      "address": 4199196,
+      "op": "MOVE.L",
+      "operand": "A0,D0",
+      "bytes": "2008",
+      "rom_instruction": "movel %a0,%d0"
+    },
+    {
+      "address": 4199198,
+      "op": "SUB.L",
+      "operand": "A2,D0",
+      "bytes": "908a",
+      "rom_instruction": "subl %a2,%d0"
+    },
+    {
+      "address": 4199200,
+      "op": "SUBQ.W",
+      "operand": "#1,D0",
+      "bytes": "5340",
+      "rom_instruction": "subqw #1,%d0"
+    },
+    {
+      "address": 4199202,
+      "op": "MOVE.L",
+      "operand": "A0,A2",
+      "bytes": "2448",
+      "rom_instruction": "moveal %a0,%a2"
+    },
+    {
+      "address": 4199222,
+      "op": "BNE.S",
+      "operand": "ScanForEOL",
+      "bytes": "66d4",
+      "rom_instruction": "bnes 0x40130c"
+    },
+    {
+      "address": 4199224,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4199246,
+      "op": "BTST",
+      "operand": "#7,DSAlertRect",
+      "bytes": "0838000703f8",
+      "rom_instruction": "btst #7,0x3f8"
+    },
+    {
+      "address": 4199252,
+      "op": "BEQ.S",
+      "operand": "DrawSysAlert",
+      "bytes": "6718",
+      "rom_instruction": "beqs 0x40136e"
+    },
+    {
+      "address": 4199254,
+      "op": "MOVE.L",
+      "operand": "#dsRectTL,(A0)+",
+      "bytes": "20fc00400020",
+      "rom_instruction": "movel #4194336,%a0@+"
+    },
+    {
+      "address": 4199260,
+      "op": "MOVE.L",
+      "operand": "#dsRectBR,(A0)",
+      "bytes": "20bc00be01e0",
+      "rom_instruction": "movel #12452320,%a0@"
+    },
+    {
+      "address": 4199266,
+      "op": "SUBQ.L",
+      "operand": "#4,A0",
+      "bytes": "5988",
+      "rom_instruction": "subql #4,%a0"
+    },
+    {
+      "address": 4199356,
+      "op": "MOVE.W",
+      "operand": "(A3),D0",
+      "bytes": "3013",
+      "rom_instruction": "movew %a3@,%d0"
+    },
+    {
+      "address": 4199368,
+      "op": "PEA",
+      "operand": "2(A3)",
+      "bytes": "486b0002",
+      "rom_instruction": "pea %a3@(2)"
+    },
+    {
+      "address": 4199380,
+      "op": "ADD.W",
+      "operand": "#12,A3",
+      "bytes": "d6fc000c",
+      "rom_instruction": "addaw #12,%a3"
+    },
+    {
+      "address": 4199410,
+      "op": "BTST",
+      "operand": "#3,$EFE1FE",
+      "bytes": "0839000300ef",
+      "rom_instruction": "btst #3,0xefe1fe"
+    },
+    {
+      "address": 4199440,
+      "op": "BSR.S",
+      "operand": "InvertBut",
+      "bytes": "6134",
+      "rom_instruction": "bsrs 0x401446"
+    },
+    {
+      "address": 4199442,
+      "op": "MOVEQ",
+      "operand": "#1,D3",
+      "bytes": "7601",
+      "rom_instruction": "moveq #1,%d3"
+    },
+    {
+      "address": 4199450,
+      "op": "EORI.W",
+      "operand": "#1,D3",
+      "bytes": "0a430001",
+      "rom_instruction": "eoriw #1,%d3"
+    },
+    {
+      "address": 4199456,
+      "op": "BTST",
+      "operand": "#3,$EFE1FE",
+      "bytes": "0839000300ef",
+      "rom_instruction": "btst #3,0xefe1fe"
+    },
+    {
+      "address": 4199474,
+      "op": "BSR.W",
+      "operand": "FindObject",
+      "bytes": "6100feb0",
+      "rom_instruction": "bsrw 0x4012e4"
+    },
+    {
+      "address": 4199478,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4199506,
+      "op": "ADDQ.L",
+      "operand": "#2,SP",
+      "bytes": "548f",
+      "rom_instruction": "addql #2,%sp"
+    },
+    {
+      "address": 4199516,
+      "op": "MOVE.L",
+      "operand": "#dsRectTL+$00060006,-(SP)",
+      "bytes": "2f3c00460026",
+      "rom_instruction": "movel #4587558,%sp@-"
+    },
+    {
+      "address": 4199602,
+      "op": "MOVE.L",
+      "operand": "2(SP),D0",
+      "bytes": "202f0002",
+      "rom_instruction": "movel %sp@(2),%d0"
+    },
+    {
+      "address": 4199606,
+      "op": "BCLR",
+      "operand": "#7,D0",
+      "bytes": "08800007",
+      "rom_instruction": "bclr #7,%d0"
+    },
+    {
+      "address": 4199638,
+      "op": "SUBQ.L",
+      "operand": "#1,A6",
+      "bytes": "538e",
+      "rom_instruction": "subql #1,%fp"
+    },
+    {
+      "address": 4199640,
+      "op": "SUBQ.L",
+      "operand": "#4,SP",
+      "bytes": "598f",
+      "rom_instruction": "subql #4,%sp"
+    },
+    {
+      "address": 4199648,
+      "op": "SUBQ.L",
+      "operand": "#2,SP",
+      "bytes": "558f",
+      "rom_instruction": "subql #2,%sp"
+    },
+    {
+      "address": 4199822,
+      "op": "ADDQ.L",
+      "operand": "#8,SP",
+      "bytes": "508f",
+      "rom_instruction": "addql #8,%sp"
+    },
+    {
+      "address": 4200098,
+      "op": "BSR.W",
+      "operand": "Print4Hx",
+      "bytes": "6100ff44",
+      "rom_instruction": "bsrw 0x4015e8"
+    },
+    {
+      "address": 4200102,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    }
+  ],
+  "restored_equates": {
+    "seRegs": [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      660
+    ]
+  },
+  "restored_symbolic_operands": {
+    "4198938": "GetParam+2,A1",
+    "4198982": "#206+140,SP",
+    "4199120": "#206+140,SP",
+    "4199254": "#dsRectTL,(A0)+",
+    "4199260": "#dsRectBR,(A0)",
+    "4199516": "#dsRectTL+$00060006,-(SP)"
+  },
+  "retained_data": {
+    "4198866": {
+      "length": 10,
+      "text": "        DC.W 10\n\t\t\tDC.W\t$8001,$8001,$7FFF,$7FFF\t;\t\t\t\t\t\t\t\t\t\t\t<16-Oct-85>"
+    },
+    "4199756": {
+      "length": 34,
+      "text": "        \t\tDC.W\t'G ', GCmd-MBcmds\t\t; since command line cleared, 'G' only matches to G & null\n\t\t\tDC.W\t'DM', DMCmd-MBcmds\n\t\t\tDC.W\t'SM', SMCmd-MBcmds\n\t\t\tDC.W\t'TD', TDCmd-MBcmds\n\t\t\tDC.W\t'D@', DCmd-MBcmds\n\t\t\tDC.W\t'A@', ACmd-MBcmds\n\t\t\tDC.W\t'PC', PCCmd-MBcmds\n\t\t\tDC.W\t'SR', SRCmd-MBcmds\n\t\t\tDC.W\t-1"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 1588,
+    "checked_entry_points": 103,
+    "instruction_count": 552,
+    "source_operation_matches": 469,
+    "rom_only_operation_count": 83,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-start-alert-verify",
+    "source_sha256": "d9d2d110f32e9f7b49221d3bb98abb564e843d06d8512c431987d41fa497088f",
+    "assembled_sha256": "8e8efc1246091c7e209741bd83282466cb3598c2bf9795ce066203e1e9bd00fe",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "module": "OS/TimeMgr.a",
+  "source_path": "Reconstruction/Source/OS/TimeMgr.a",
+  "source_sha256": "fe8a53961bfadce0df3f30e4ea8956d46c473497383ab33601fc120be4f74945",
+  "upstream_source": {
+    "path": "OS/TimeMgr/TimeMgr.a",
+    "sha256": "b9582222c33100ee43a06a8961882b1903ec0fe8a51563b2f7d7606c042808ba",
+    "description": "This is the closest surviving Time Manager source. Its history states that the rewrite on July 26, 1988 replaced all code and comments from the old version. It does not preserve the Mac Plus routine bodies."
+  },
+  "upstream_related_sources": [
+    {
+      "path": "OS/TimeMgr/TimeMgrPatch.a",
+      "sha256": "800608c95503121571e3e0c7beafe9034ea8651deb225c275711b0fad9ebe0c4"
+    },
+    {
+      "path": "Patches/PatchPlusROM.a",
+      "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470"
+    }
+  ],
+  "upstream_equates": [
+    {
+      "path": "Internal/Asm/InternalOnlyEqu.a",
+      "sha256": "2eab90672f1b0e223760ffa0b2e724ebb2a2b4b514c3cbac9f62d166fb76e38a"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/Timer.a",
+      "sha256": "077cf97a007d8329e52a88ba27f9b73928c1bc141a3a143ea97b57b4d6b743f6"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x4175d2",
+      "end_address_exclusive": "0x4176f8",
+      "rom_offset": "0x175d2",
+      "length": 294,
+      "sha256": "a0cca819157126d6c1f03c10aa4840e9ea4ed5ccba21cc8063189a431abbb2ad",
+      "first_symbol": "InsTime",
+      "last_symbol": "Timer2Int"
+    }
+  ],
+  "boundary_evidence": {
+    "description": "InsTime begins at the next instruction after the SCSI manager. Timer2Int ends with an RTS at $4176F6. The ROM header longword at offset $1A is $000176F8, which points to the following resource header. This independently fixes the end of the executable span.",
+    "rom_header_field_offset": "0x1a",
+    "rom_resource_offset": "0x176f8",
+    "rom_resource_address": "0x4176f8",
+    "source_reference": {
+      "path": "Internal/Asm/HardwarePrivateEqu.a",
+      "sha256": "71312a5e2578d72aa979d38ff83e3c0f8b1ec49b5b048a248252ca7dbbc60a59",
+      "line": 2864
+    },
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv"
+  },
+  "symbols": {
+    "InsTime": "0x4175d2",
+    "RmvTime": "0x4175e0",
+    "RmvTimeExit": "0x4175f8",
+    "PrimeTime": "0x4175fa",
+    "PrimeReschedule": "0x417634",
+    "PrimeTimeExit": "0x417636",
+    "Reschedule": "0x41763a",
+    "SearchTasks": "0x417658",
+    "NextTask": "0x41766c",
+    "FoundNext": "0x417670",
+    "StartTimer": "0x41767a",
+    "LoadTimer": "0x41768c",
+    "StartTimerExit": "0x4176b4",
+    "Timer2Int": "0x4176b6",
+    "AdjustTasks": "0x4176c6",
+    "NextAdjustment": "0x4176d2",
+    "Timer2IntExit": "0x4176f2"
+  },
+  "external_references": {
+    "TimeVars": "0x000b30",
+    "VIA": "0x0001d4",
+    "Timer2Vector": "0x0001a6",
+    "_Enqueue": "0xa96f",
+    "_Dequeue": "0xa96e"
+  },
+  "edits": [
+    {
+      "kind": "source_provenance",
+      "description": "Kept an exact excerpt of the surviving source header and its rewrite history. Reconstruction notes distinguish that attribution from the unknown author of the earlier ROM implementation. Retained applicable equate and declaration comments."
+    },
+    {
+      "kind": "record_layout",
+      "description": "Used the old Time Manager equates retained in InternalOnlyEqu.a: TTInt at 0, TTAppoint at 4 and MSQueue at 8. Used the queue, task, VIA register and interrupt-vector equates from the interface files."
+    },
+    {
+      "kind": "instruction_restoration",
+      "description": "Reconstructed every instruction from the complete ROM span. InsTime enqueues a task. RmvTime dequeues it and reschedules if it was the next appointment. PrimeTime stores its delay and compares it with the current appointment. The surviving rewrite has different algorithms and cannot supply these bodies."
+    },
+    {
+      "kind": "scheduling",
+      "description": "Restored the scan of nonzero task counts, the next-appointment pointer, the 84-millisecond timer limit and the fixed conversion factor 780. Timer2Int subtracts the elapsed interval from nonzero task counts, reschedules, then calls the previous appointment if its count has expired."
+    },
+    {
+      "kind": "symbol_names",
+      "description": "Retained InsTime, RmvTime and PrimeTime from the reference symbols. Reschedule follows the name in PatchPlusROM.a history and is assigned by its call sites and behavior. Timer2Int follows the later source name and the ROM interrupt-vector assignment. StartTimer, loop labels and the two timing constant names are descriptive reconstruction names."
+    },
+    {
+      "kind": "encoding",
+      "description": "Used symbolic fields, hardware registers, trap declarations and branch targets. Specified the observed branch widths and PC-relative interrupt-handler address. Every code byte comes from an instruction; the two trap instructions use OPWORD declarations."
+    }
+  ],
+  "historical_evidence": [
+    {
+      "path": "Patches/PatchPlusROM.a",
+      "line": 462,
+      "description": "The October 14, 1986 history entry describes a patch to PrimeTime and Reschedule for scheduling with multiple clients. Later entries describe more PrimeTime fixes and a RmvTime patch. The surviving file no longer contains those earlier patch bodies."
+    },
+    {
+      "path": "OS/TimeMgr/TimeMgr.a",
+      "line": 132,
+      "description": "The later source lists correct noErr returns from RmvTime and PrimeTime among its user-visible changes. The ROM implementation reconstructed here does not add those returns."
+    },
+    {
+      "path": "OS/TimeMgr/TimeMgrPatch.a",
+      "line": 143,
+      "description": "The replacement installer handles Plus, SE and II ROMs. It reads the old MSQueue, installs each task in the new manager, and reprimes tasks using the old tmCount. This supports the record interpretation used here."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x4175d2",
+      "description": "InsTime does not initialize tmCount or task flags before enqueueing the task."
+    },
+    {
+      "address": "0x4175e0",
+      "description": "RmvTime overwrites the dequeue result with TTAppoint and does not clear D0 before returning. It does not mask interrupts around rescheduling."
+    },
+    {
+      "address": "0x4175fa",
+      "description": "PrimeTime stores the new count before masking interrupts. When the task is already TTAppoint, the comparison uses that same new count, so equality skips timer adjustment. It does not clear D0 before returning."
+    },
+    {
+      "address": "0x41763a",
+      "description": "Reschedule ignores zero counts but accepts negative counts. Equal counts replace the previous candidate, so the last task with that count becomes TTAppoint."
+    },
+    {
+      "address": "0x41769a",
+      "description": "StartTimer writes the high timer byte before the low timer byte. The reconstruction retains that register order and the conversion factor 780."
+    },
+    {
+      "address": "0x4176b6",
+      "description": "Timer2Int reschedules before clearing the expired appointment count and calling tmAddr. It performs no null check on tmAddr and does not pass the task record in A1."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 294 assembled bytes equal the ROM span. All 17 recorded symbols match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Translated the final source with the shared verifier, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "preserved_original_comment_occurrences": 26,
+    "authored_comment_lines": 11,
+    "temporary_driver": "/tmp/evidence-timemgr.py",
+    "temporary_build": "/tmp/timemgr-build",
+    "commands": [
+      "python3 /tmp/evidence-timemgr.py",
+      "vale /tmp/timemgr-authored.md"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "The original Mac Plus Time Manager source body and its original comments have not been found. This is a ROM instruction reconstruction supported by surviving interfaces, layout equates and patch history.",
+      "Byte equality does not establish the old formatting, private label names or author."
+    ]
+  },
+  "prose_lint": {
+    "command": "vale /tmp/timemgr-authored.md",
+    "result": "Zero errors, warnings or suggestions. Preserved original comments were excluded."
+  },
+  "integration_manifest": {
+    "name": "timemgr",
+    "source": "Reconstruction/Source/OS/TimeMgr.a",
+    "start": "0x4175d2",
+    "end_exclusive": "0x4176f8",
+    "entry_points": {
+      "InsTime": "0x4175d2",
+      "RmvTime": "0x4175e0",
+      "RmvTimeExit": "0x4175f8",
+      "PrimeTime": "0x4175fa",
+      "PrimeReschedule": "0x417634",
+      "PrimeTimeExit": "0x417636",
+      "Reschedule": "0x41763a",
+      "SearchTasks": "0x417658",
+      "NextTask": "0x41766c",
+      "FoundNext": "0x417670",
+      "StartTimer": "0x41767a",
+      "LoadTimer": "0x41768c",
+      "StartTimerExit": "0x4176b4",
+      "Timer2Int": "0x4176b6",
+      "AdjustTasks": "0x4176c6",
+      "NextAdjustment": "0x4176d2",
+      "Timer2IntExit": "0x4176f2"
+    }
+  }
+}

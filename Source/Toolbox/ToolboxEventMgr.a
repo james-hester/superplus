@@ -1,0 +1,492 @@
+*R This module restores the Mac Plus Toolbox event routines.
+*R The source keeps the released routine comments and applicable revision tags.
+*R The ROM uses the earlier system-event and FKey order and direct handle locks.
+*R Later high-level events, delayed SCSI polling, and port changes are omitted.
+*R The activation code restores the removed system/application modifier bit.
+*R See Evidence/toolbox-events.json for the instruction and source comparison.
+
+;
+;	File:		ToolboxEventMgr.a
+;
+;	Contains:	Event-Oriented ROM-Based Routines for User Interface ToolBox
+;
+;
+;	Change History (most recent first):
+
+		IMPORT BaseOfROM,ROMEject ;]
+		EXPORT Button,EventAvail,GetKeys,GetMouse,GetNextEvent,StillDown ;]
+		EXPORT TickCount,WaitMouseUp ;]
+
+		INCLUDE 'HardwarePrivateEqu.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+
+
+MiscMGR PROC EXPORT
+
+; PROCEDURE GetKeys(VAR k: keyMap) returns 128 bits (4 longs) worth of keyMap state.
+;
+GetKeys
+				MOVE.L	4(SP),A1		; Get user's dest. address
+				LEA 	KeyMap,A0		; point to keymap
+
+				MOVE.L	(A0)+,(A1)+ 	; move in first long
+				MOVE.L	(A0)+,(A1)+ 	; move in second long
+				MOVE.L	(A0)+,(A1)+ 	; move in third long
+				MOVE.L	(A0)+,(A1)+ 	; move in last long
+
+				MOVE.L	4(SP),A1		; Get user's dest. address
+				MOVEQ	#jcGetKeys,D1	; GetKeys code
+				BSR.S	GetJournal		; and journal it
+
+				MOVE.L	(SP)+,(SP)		; strip parameter
+				RTS
+
+
+;
+; FUNCTION Button:BOOLEAN is a function that returns the state of the mouse button
+;
+Button
+				LEA 	4(SP),A1		; Get pointer to function result
+				CLR 	(A1)			; return false for now
+				TST.B	MBState 		; See if button down
+				BMI.S	itsUp			; and skip if not
+				ADDQ.B	#1,(A1) 		; Turn false into truth
+itsUp
+				MOVEQ	#jcButton,D1	; Button code
+				BRA.S	GetJournal		; and go journal it if need be(implied return)
+
+
+;
+; FUNCTION TickCount:LongInt returns the current time in Ticks, fall into common
+; journaling code
+;
+TickCount
+				LEA 	4(SP),A1		; point to function result
+				MOVE.L	Ticks,(A1)		; Return the ticks count
+				MOVEQ	#jcTickCount,D1 ; Time code
+
+;
+; GetJournal is the main routine that implements journaling for GetMouse,
+; Button, Time and GetKeys.  It takes a "caller code" in D1 (passed on through
+; the journaling hook) and a pointer to the actual data we're polling (for
+; example, its TICKS for the Time call) in A1
+;
+GetJournal
+				MOVE.W	JournalFlag,D0	; is journaling on?
+				BEQ.S	adios			; if not, skip
+				BPL.S	ItsRecord		;
+
+; handle playBack
+				MOVEQ	#JPlayCtl,D0	; say its PlayBack
+				BRA.S	CallJournal 	; invoke the journal
+
+; handle record
+ItsRecord
+				MOVEQ	#JRecordCtl,D0	; say its Record and fall into callJournal
+
+
+; routine to invoke the journal.  D0 has control code, D1 has "which" selector
+;] and A1 is the address to stuff the result
+
+CallJournal
+				SUB 	#40,SP					; make some space for parameter block
+
+				LEA 	IORefNum(SP),A0 		;										<24Oct85>
+				MOVE	JournalRef,(A0)+		; IORefNum	<-- refNum					<24Oct85>
+				MOVE	D0,(A0)+				; CSCode	<-- journal call			<24Oct85>
+				MOVE.L	A1,(A0)+				; CSParam	<-- result pointer			<24Oct85>
+				MOVE.W	D1,(A0)+				; CSParam+4 <-- caller code 			<24Oct85>
+				MOVE.W	D3,(A0)+				; CSParam+6 <-- GNE vs OSAvail flag 	<24Oct85>
+				MOVE.L	SP,A0					; point up param block
+
+				_Control
+				ADD 	#40,SP					; pop off param block
+				BNE.S	BadJournal				; if couldn't find it, turn off journal
+				RTS 							; all done
+
+BadJournal
+				CLR.W	JournalFlag 			; turn journal off if no good
+				ST		CRSRCouple				; recouple cursor
+adios			RTS
+
+;
+; PROCEDURE GetMouse(VAR mousePt: Point);
+;
+;	 GetMouse is a routine that returns the current mouse position in the local
+;  coordinates of the current grafPort
+;
+GetMouse
+				MOVE.L	4(SP),A1		; put user's result ptr in A1
+				MOVE.L	Mouse,(A1)		; send back the mouse coordinates
+				MOVEQ	#jcGetMouse,D1	; GetMouse code
+				BSR.S	GetJournal		; and journal it (in global space)
+
+				MOVE.L	4(SP),-(SP) 	; put user's result ptr on stack
+				_GlobalToLocal			; map to local coordinates
+
+				MOVE.L	(SP)+,(SP)		; strip parameter
+				RTS
+
+;
+;  FUNCTION StillDown: BOOLEAN;
+;
+; returns true only if the button is down AND there are no button events in the queue
+;
+;
+StillDown
+				LINK	A6,#-20 		;get a buffer for events
+				CLR.W	8(A6)			;assume StillDown := false
+;
+				SUBQ	#2,SP			;make room for function result
+				_Button 				;is the button down?
+				TST 	(SP)+			;inspect result
+				BEQ.S	SDDone			;if not, we're done, return false
+;
+				SUBQ	#2,SP			;make room for result
+				MOVE	#7,-(SP)		;7 is mask for button events
+				PEA    -20(A6)			;push pointer to event buffer
+				_EventAvail 			;are there any?
+				TST 	(SP)+			;well...
+				BNE.S	 SDDONE 		;if there are, return false
+;
+				ADDQ.B	 #$01,8(A6) 	 ;return true(Turn false into true)
+;
+SDDONE			UNLK	A6
+				RTS
+
+;
+; FUNCTION WaitMouseUp:BOOLEAN is sort of like StillDown but eats the
+; buttonUp event.
+;
+WaitMouseUp
+				LINK	A6,#-20 		;get a buffer for events
+
+				CLR.W	-(SP)			;make room for result
+				_StillDown				;is it still down?
+				MOVE	(SP)+,8(A6) 	;update our result
+				BNE.S	ItStillDown 	;branch if stillDown
+;
+; its not stillDown so eat the buttonUp event
+;
+				SUBQ	#2,SP			;make room for result
+				MOVE.W	#4,-(SP)		;event 2 (mouseUp) only
+				PEA 	-20(A6) 		;push buffer address
+				_GetNextEvent			;get it
+ItStillDown
+				UNLK	A6				;deallocate stack frame
+				RTS 					;all done so return to caller
+
+
+;
+; FUNCTION EventAvail(eventMask: INTEGER; VAR myEvent: eventRecord): BOOLEAN;
+;
+;	Here is the high-level EventAvail that is called by the applications.
+;	Its really just a special case of GetNextEvent (see below), but it
+;	doesn't remove events from the queue.
+;
+EventAvail
+				MOVEQ	#-1,D0			; set D0 to indicate EventAvail
+				BRA.S	GNECommon		;use common code
+
+;
+; FUNCTION GetNextEvent(eventMask: INTEGER; VAR myEvent: eventRecord): BOOLEAN;
+;
+;	Here is the high-level GetNextEvent that is called by the applications.
+;	It calls the OS "GetOSEvent" for raw events, supplies updates by
+;	calling CheckUpdate, and calls the journalling and desk Ornament mechanisms
+;	as appropriate.
+
+;	If a filter proc is installed, it passes control to the filter proc before returning
+;	to the caller.
+;
+GetNextEvent
+				MOVEM.L (SP)+,D0-D2 	; pull return,MyEvent,Mask/Result			<EHB 28-Jan-85>
+				SUBQ	#2,SP			; make room for result						<EHB 28-Jan-85>
+				MOVE.L	D0,-(SP)		; push return address						<EHB 28-Jan-85>
+				MOVE.L	D1,-(SP)		; push MyEvent								<EHB 28-Jan-85>
+				MOVEM.L D1-D2,-(SP) 	; push Mask/Result,MyEvent					<EHB 28-Jan-85>
+
+; Call GNECommon with stack like this:	result, return(user), MyEvent, Mask/Result, MyEvent, return(us)
+
+				MOVEQ	#0,D0			; clear D0 to indicate GetNextEvent 		<EHB 28-Jan-85>
+				BSR.S	GNECommon		; do common GetNextEvent Stuff				<EHB 28-Jan-85>
+
+; set things up to call a GetNextEvent Filter Proc. This is what a call to GNEFilter looks like:
+
+;	Entry:		A1 = MyEvent Pointer
+;				D0 = result
+;				 (SP) = return address to caller
+;				4(SP) = result to caller
+;	Exit:		Just like return from GetNextEvent
+
+				MOVE.W	(SP)+,D0		; pull result								<EHB 28-Jan-85>
+				MOVE.L	(SP)+,A1		; MyEvent pointer							<EHB 28-Jan-85>
+				MOVE.W	D0,4(SP)		; pass result to caller (leave ret addr)	<EHB 28-Jan-85>
+				MOVE.L	JGNEFilter,-(SP)	; filter proc?							<EHB 28-Jan-85>
+				BNE.S	@1				; =>yes, RTS to it ...WAS BGT.S!!!			<11Apr85>
+				ADDQ	#4,SP			; else strip it off the stack				<EHB 28-Jan-85>
+@1
+				RTS 					; return to caller							<EHB 28-Jan-85>
+
+; here is common GetNextEvent/EventAvail code.	The DS window check is done here because the
+; registers are already saved here.
+
+GNECommon
+				LINK	A6,#0			;set up a stack frame
+				MOVEM.L D3/A3,-(SP) 	;save some work registers
+				MOVE.L	D0,D3			;put D0 in D3 to discriminate GetNextEvent
+				BNE.S	@1				; don't clear DS window if EventAvail       <EHB 28-Jan-85>
+
+; clear DS Window if there is one
+
+				BSET	#7,DSWndUpdate	; is there a disk switched window to remove?<EHB 28-Jan-85>
+				BNE.S	@1				; =>no, just set up for GNE Filter Proc 	<EHB 28-Jan-85>
+
+				TST.B	WWExist 		; does a window world exist?				<EHB 28-Jan-85>
+				BNE.S	@1				; no, one less world to worry about 		<EHB 28-Jan-85>
+
+				SUBQ	#4,SP			; make space to keep current port			<EHB 28-Jan-85>
+				MOVE.L	SP,-(SP)		; and point to it							<EHB 28-Jan-85>
+				_GetPort				; remember current port on stack			<EHB 28-Jan-85>
+
+				MOVE.L	WMgrPort,-(SP)	; get port w/wide open clip/vis 			<KWK 13-May-85>
+				_SetPort				; and set it								<KWK 13-May-85>
+
+				SUBQ	#4,SP			; get frontWindow for PaintBehind			<EHB 28-Jan-85>
+				_FrontWindow			;											<EHB 28-Jan-85>
+				SUBQ	#4,SP			; get a region for PaintBehind				<EHB 28-Jan-85>
+				_NewRgn 				;											<EHB 28-Jan-85>
+				MOVE.L	(SP),A3 		; and set region to the deep squid window	<EHB 28-Jan-85>
+				PEA 	DSAlertRect 	;											<EHB 28-Jan-85>
+				_RectRgn				;											<EHB 28-Jan-85>
+				MOVE.L	A3,-(SP)		; cover up that ugly alert					<EHB 28-Jan-85>
+				_PaintBehind			;											<EHB 28-Jan-85>
+				MOVE.L	A3,-(SP)		; and then throw away the clobbered region	<EHB 28-Jan-85>
+				_DisposRgn
+
+				_SetPort				; window gone! Restore old port from stack	<EHB 28-Jan-85>
+@1
+
+				CLR.W	14(A6)			;set result to FALSE (assume no event)
+				MOVE.L	8(A6),A3		;point A3 to the event record
+
+; First, see if an activate event and return if so (Z flag reset if found one)
+
+				MOVE.W	12(A6),D0		;get the caller's event mask
+				MOVE.L	A3,A0			;get event pointer in A0
+
+				BSR.W	CheckActivate	; See if activate
+				BEQ.S	Dormant 		;] if none, check the event queue
+				ADDQ.B	#01,14(A6)		; turn the false into true
+				BRA.S	PassToSystem
+
+
+; See if there are any events.
+
+Dormant
+				MOVE.W	12(A6),D0		;get the caller's event mask
+				MOVE.L	A3,A0			;get event pointer in A0
+
+				TST 	D3				;EventAvail or GetNextEvent?
+				BPL.S	DontPeek		;branch if its not an eventAvail
+
+				_OSEventAvail			;ask OS for next event
+				BRA.S	GoCheckJournal	;]go check the journal
+
+DontPeek
+				_GetOSEvent 			;ask the OS for an event
+
+GoCheckJournal
+				MOVE.L	A3,A1			; pass the eventPtr
+				MOVEQ	#jcEvent,D1 	; event code
+				BSR.W	GetJournal		; invoke the journal
+
+; Check to see if we got an event and set return code so far
+				TST.W	EvtNum(A3)		; did we get an event?
+				BEQ.S	noneYet
+
+				ADDQ.B	#1,14(A6)		; if so, return TRUE(Turn false into true)
+				BRA.S	PassToSystem	; and then pass to system code
+
+noneYet
+				MOVE.W	12(A6),D0		;get caller's event mask
+				BTST	#UpdatEvt,D0	;is it enabled?
+				BEQ.S	PassToSystem	;if not, don't bother to check
+
+				CLR.W	-(SP)			;make space for function result
+				MOVE.L	A3,-(SP)		;push the event pointer
+				_CheckUpdate			;any update events?
+				MOVE.W	(SP)+,14(A6)	;return the result
+
+PassToSystem
+				TST 	D3				;was it an EventAvail call?
+				BMI.S	DoneGNE 		;don't pass those to the system
+
+				TST.W	14(A6)			;did we really, truly get one?
+				BEQ.S	DoneGNE 		;if not, we're done
+
+; SEvtEnb is zero if the application wants to disable systemEvent.	Test it.
+TrySysEvent 							;
+				TST.B	SEvtEnb 		; System event enabled??					<EHB 28-Jan-85>
+				BEQ.S	TryFKey		;] if not, check for an FKey
+
+				SUBQ	#2,SP			;make room for function result
+				MOVE.L	A3,-(SP)		;push the event record
+				_SystemEvent			;call the desk manager
+				TST 	(SP)+			;did the system want it?
+				BNE.S	HandBySys		;] hide events handled by the system
+
+
+TryFKey
+				MOVEQ	#$0B,D1 		;seek cmdKey, shiftKey, not alphaLock, and optionKey	<09Apr85>
+				AND.B	evtMeta(A3),D1	;high byte of meta word contains modifier bits			<09Apr85>
+				SUBQ.B	#$03,D1 		;want cmdKey AND shiftKey BUT NOT optionKey 			<09Apr85>
+				BNE.S	DoneGNE	;]if not so, no FKey action!
+
+
+				MOVE.B	evtMessage+3(A3),D1 ;low byte is ascii code (or fkey code)				<09Apr85>
+				CMPI.B	#10,D1
+				BCC.S	DoneGNE	;]10-255 falls out of FKey range
+
+				MOVE.W	evtNum(A3),D0	;what kind of event?									<09Apr85>
+				SUBQ.W	#keyUpEvt,D0	;quick compare											<09Apr85>
+				BEQ.S	DoneFKey		;return FALSE and NULLify the event
+				ADDQ.W	#keyUpEvt-keyDwnEvt,D0	;quick compare with keyDwnEvt					<09Apr85>
+				BNE.S	DoneGNE	;]exit if neither key up nor down
+;
+; Have FKey code in D1, so use code stolen from GNEFilter of yore, to load and execute			<09Apr85>
+; possible resource. 
+;
+
+
+				SUBQ	#4,SP				; load in appropriate function-key package
+				MOVE.L	#'FKEY',-(SP)
+				MOVE.W	D1,-(SP)			; types 0-9
+				_GetResource
+				MOVE.L	(SP)+,D0
+				BNE.S	@2					; br if we got the resource
+;
+;No FKEY=n resource for these keys (Command-Shift-1 to -0) so do the eject
+;]disk thing for -1 and -2.
+;
+                TST.W   D1
+                BEQ.S   DoneFKey
+                CMP.W   #2,D1
+                BGT.S   DoneFKey
+                MOVEQ   #1,D2                  ;flag as from the keyboard
+                JSR     (ROMEject-BaseOfROM+ROMStart).L ;]
+                BRA.S   DoneFKey
+
+@2				MOVE.L	D0,A0
+				MOVE.L	(A0),D0 			; dereference
+				BEQ.S	DoneFKey			; exit if purged
+
+				BSET	#7,(A0)						; lock the FKEY code,
+				MOVE.L	A0,-(SP)			; save for unlock
+				MOVE.L	(A0),A0 			; dereference
+				JSR 	(A0)
+				MOVE.L	(SP)+,A0			; recover handle
+				BCLR	#7,(A0)					; unlock it
+
+;
+; The system handled the event so return false. FKey ups and downs are turned
+;to NULLs to hide them from Modal Dialog, e.g.								<28Oct85>
+;
+DoneFKey
+				CLR.W	evtNum(A3)			; continue as if an accessory	<28Oct85>
+
+
+HandBySys								;											<09Apr85>
+				CLR.W	14(A6)			;return FALSE
+
+; all done with GetNextEvent so restore the registers and return to the caller
+
+DoneGNE
+
+
+                TST.W   EvtNum(A3)             ; did we get one?
+                BNE.S   NeverMind
+                PEA     TempRect               ;we don't care about it so stuff it here
+                _GetMouse                      ;read the mouse so it will be journalled
+
+NeverMind
+				MOVEM.L (SP)+,D3/A3 	;restore registers
+				UNLK	A6				;unbuild stack frame
+				MOVE.L	(SP)+,A0		;get return address
+				ADDQ	#6,SP			;strip both parameters
+				JMP 	(A0)			;return to caller
+
+; CheckActive is used to generate active and deactive events.  It is entered
+; and exited with D0 containing the event mask and A0 and A3 pointing to the
+; event record.  If D3 is set, its an EventAvail call rather than a GetNextEvent
+; call. On exit, if the z-flag is clear, it had an event.
+
+; First see if the event is enabled.
+
+CheckActivate							; <19feb86> BBM
+				BTST	#ActivateEvt,D0	;is it enabled?
+				BEQ.S	DoneChkActive	;if not, we're done
+
+				MOVE.L	CurDeActive,D1	;get the deactived window
+				BGT.S	GotDActive		;if non-zero and non-neg, go post it
+
+				MOVE.L	CurActivate,D1	;how about an activate one?
+				BLE.S	DoneChkActive	;if none, we're done
+				MOVEQ	#1,D2			;flag the activate
+
+; we got an activated or deactived window so make the event
+
+GotActCommon
+				MOVEQ	#0,D0			;use a mask of zero
+				_OSEventAvail			;get a NULL event record
+				MOVE.W	#ActivateEvt,(A0)+ ;flag it as (de)activate event
+				MOVE.L	D1,(A0) 		;the windowPtr is the message
+
+*R Restore the removed system/application modifier bit.
+                MOVE.L  CurDeActive,D0 ;]
+                BEQ.S   @sameKind ;]
+                MOVE.W  CurDeKind,D0 ;]
+                MOVE.L  CurActivate,D1
+                BEQ.S   @sameKind ;]
+                MOVE.L  D1,A0
+                MOVE.W  windowKind(A0),D1
+                EOR.W   D0,D1
+                BPL.S   @sameKind ;]
+                ADDQ.W  #2,D2
+@sameKind ;]
+
+; put the bits into evtMeta
+
+				MOVE.W	EvtMeta(A3),D0	;get it
+				AND 	#$FFFC,D0		;mask in low bits
+				OR		D2,D0			;or in flag bits
+				MOVE.W	D0,EvtMeta(A3)	;stuff it back
+
+; eat up the event by clearing buffer if not a peek call
+
+				TST.W	D3				;is it a peek call?
+				BNE.S	GotDone1		;if so, we're done
+
+				LSR 	#1,D0			;activate or deactivate?
+				BCC.S	ClearDAct		;if deactivate, go clear it
+
+				BSET	#7,CurActivate	;clear activate event
+GotDone1
+				MOVEQ	#-1,D1			;clear z flag to say we got something
+				RTS
+DoneChkActive
+				MOVEQ	#0,D1			;set z flag to say we got nothing
+				RTS
+ClearDAct
+				BSET	#7,CurDeActive
+				BRA.S	GotDone1
+
+GotDActive		CLR 	D2				;flag the deactivate
+				BRA.S	GotActCommon	;go use common code
+
+
+ToolboxEventsEnd ;]
+	END

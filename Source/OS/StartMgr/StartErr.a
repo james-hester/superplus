@@ -1,0 +1,294 @@
+;__________________________________________________________________________________________________
+;
+;	File:		StartErr.a
+;
+;	Contains:	System Error Handler & Debugger Interface
+; 				This file contains the error handling interface code for Macintosh.
+;
+;				This code can be divided into three pieces:
+;
+;					1) _Debugger trap handler
+;					2) _SysError trap handler
+;					3) Exception/interrupt handler
+;
+;	Written by:	Ken Krugler
+;
+;	Copyright:	© 1985-1993 by Apple Computer, Inc., all rights reserved.
+;
+;				 11/4/85	JTC		Save 8 bytes of address/bus error info in SExxx space for new
+;									debuggers.
+;				 11/2/85	JTC		Fix handling of exception frame. Pass whole business to
+;									debugger, saving up for a grand RTE finale. Must dummy a
+;									format-0 frame for 010 and 020.
+;				 7/23/85	RDC		added changes for MidMac
+;									- code to setup and handle true NMI exception
+;									- debounce of NMI int
+;				 7/13/85	JTC		Modified SysErr interface for 010/020 stack handling.
+;				  5/2/85	KWK		new MacJmp flags, NMI signals init call
+;				  5/1/85	KWK		Significant re-structure for flexible debugger call
+;				 4/30/85	KWK		new today
+;__________________________________________________________________________________________________
+
+
+*R This file restores the startup exception handlers
+*R from SysErrInit at $401036 through the final RTE at $4011AA.
+*R It retains matching released operations and applicable comments.
+*R The ROM stores debugger flags in the high byte of MacJmp and uses
+*R the original register-save area at $3FFC80.
+*R Evidence/start-error.json records provenance and exact checks.
+
+		IMPORT DSErrorHandler,ROMDebugger ;]
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+
+
+StartError PROC ;]
+        EXPORT SysErrInit ;]
+        EXPORT Debugger ;]
+        EXPORT DebugProlog
+        EXPORT ToDeepShit ;]
+        EXPORT GenExcps ;]
+        EXPORT IRQException
+        EXPORT SystemError ;]
+        EXPORT SysErr1
+        EXPORT SysErr2
+
+;----------------------------------------------------------------------
+; Routine		SysErrInit
+; Arguments 	A3.L	(input) 		Ram overlay offset value
+;				A6.L	(input) 		Return address
+; Function		Set up exception vectors, nub memory, etc.
+; Uses			A2
+;----------------------------------------------------------------------
+
+*R The ROM installs the same handler for all seven interrupt levels, clears 128 bytes at SEVars, and installs the serial ROM debugger with its installed flag set.
+
+SysErrInit
+        SUB.L     A0,A0	; point A0 at start of RAM
+        ADDQ.L    #8,A0
+        LEA       GENEXCPS,A1
+        MOVEQ     #10-1,D0
+
+InstallErrorVector ;]
+        MOVE.L    A1,(A0)+	;  bus error thru line 1111 emulator vectors
+        ADDQ.L    #2,A1
+        DBRA      D0,InstallErrorVector ;]
+        MOVEQ     #13-1,D0
+
+InstallUnusedVector ;]
+        MOVE.L    A1,(A0)+	;  interrupt vectors to the "undefined" handler
+;  (System Error #11)
+        DBRA      D0,InstallUnusedVector ;]
+        LEA       IRQEXCEPTION,A2	; point to the IRQ exception handler
+        MOVEQ     #6,D0
+
+InstallIRQVector ;]
+        MOVE.L    A2,(A0)+
+        DBRA      D0,InstallIRQVector ;]
+        MOVEQ     #32-1,D0
+
+InstallTrapVector ;]
+        MOVE.L    A1,(A0)+	;  to the "undefined" handler (System Error #11)
+;  since they aren't user-definable
+        DBRA      D0,InstallTrapVector ;]
+        LEA       SEVars,A0	; pt to start of nub memory
+        MOVEQ     #(SEVSize/4)-1,D0	; data size
+
+ClearSEVars ;]
+        CLR.L     (A0)+	; clear it
+; loop
+        DBRA      D0,ClearSEVars ;]
+        LEA       ROMDebugger,A0 ;]
+        MOVE.L    A0,MacJmp ;]
+        BSET      #5,MacJmp ;]
+        JMP       (A6)
+
+;----------------------------------------------------------------------
+; Routine		Debugger (Arg1, Arg2...ArgN, ParamSize, CmdWord)
+; Arguments 	Highly variable
+; Function		Dispatch debugger call to current installed debugger,
+;				else ignore. (_Debugger trap)
+;----------------------------------------------------------------------
+
+Debugger
+        MOVEM.L   A0-A7/D0-D7,SEVars	; save all regs
+        BSET      #7,MacJmp ;]
+        LINK.W    A6,#0	; no locals
+        LEA       8(A6),A0	; pt A0 at args
+        MOVE.W    (A0)+,D0	; get command word
+        MOVE.W    (A0)+,SECmdSize	; stash size of param list
+        BSR.S     DebugProlog	; set up call for debuggers, set CC=existence
+        BLE.S     DebugErr	; V true, so either Z or (NOT N) means no inited debugger
+; Now we know there's a debugger, so call it.
+; A0 = ptr to last command parameter, A1 = ptr to debugger entry pt.
+        BSET      #15,D0	; set high bit of word to flag trap call
+        JSR       (A1)	; call debugger!!!!
+        BRA.S     DebugAdios
+
+DebugErr
+        MOVEQ     #SENoDB,D0	; return "no debugger" error
+
+DebugAdios
+        UNLK      A6	; restore A6
+        MOVEM.L   SEVars,A0-A7/D0-D7	; restore all regs
+        MOVE.L    (SP)+,A0	; get return address
+        ADD.W     SECmdSize,SP	; pop params
+        ADDQ.L    #4,SP	; pop command word & size word
+        BCLR      #7,MacJmp
+        JMP       (A0)	; and return
+
+; Utility for setting CC's for existance of debugger, pointing A1 to debugger code entry.
+; Must preserve D0.
+
+*R The ROM masks the high-byte flags from MacJmp before calling the debugger. Later source stores these flags in MacJmpFlag.
+
+DebugProlog
+        MOVE.L    MacJmp,D2 ;]
+        AND.L     Lo3Bytes,D2
+        MOVE.L    D2,A1
+        MOVE.B    MacJmp,D3 ;]
+        ADD.B     D3,D3	; init flag now high bit, set CC's
+        RTS       	; and return
+
+;----------------------------------------------------------------------
+; Routine		ToDeepShit
+; Arguments 	(SP)	(input) 		Return address to exception receiver
+;				xxxx(SP)				CPU and exception type stack frame					<13Jul85>
+; Function		Receives all the hardware exceptions.  It derives the
+;				deepShit ID from the return address on the stack and then
+;				invokes the deepShit manager.
+;				Modified to call yoghurt manager with stack cleansed of all frame			<13Jul85>
+;				information.  Idea is to save Reg/Stack info then RTE to DS manager,		<13Jul85>
+;				using the RTE to clear whatever frame info is there.						<13Jul85>
+;				Nowadays, pass entire frame (sans PC and SR) to debugger, for later RTE 	<02Nov85>  JTC
+;----------------------------------------------------------------------
+
+ToDeepShit
+        MOVE.W    #$2700,SR	; turn off interrupts
+        TST.B     MacJmp ;]
+; yes, don't bother saving regs
+        BMI.S     ExceptionIndex ;]
+        MOVEM.L   A0-A7/D0-D7,SEVars	; save all regs for debug
+
+ExceptionIndex ;]
+; Compute small integer exception index 1,2,... into D0, based on address atop the stack.	<13Jul85>
+        LEA       GENEXCPS,A0	; get address of receiver table
+        MOVE.L    (SP)+,D0	; get return address
+        SUB.L     A0,D0	; compute delta
+        LSR.W     #1,D0	; divide by 2
+; Now clear stack of exception info, saving SR and PC unless re-entered.  A special case	<13Jul85>
+; is class 0 exception on the 68000, which has 4 words of info on top of the usual SR/PC.	<13Jul85>
+        TST.B     CPUFlag	; 0-000, 1-010, 2-020, etc. 					<13Jul85>
+;												<13Jul85>
+        BNE.S     SaveFrame ;]
+        CMPI.W    #2,D0	; 1 or 2 means nasty bus error frame			<13Jul85>
+;												<13Jul85>
+        BGT.S     SaveFrame ;]
+        MOVE.L    (SP)+,SE000BE	; save fcn code, access address, and instruction word	<04Nov85> JTC
+        MOVE.L    (SP)+,SE000BE+4	; ...the other 4 bytes of the eight 					<04Nov85> JTC
+
+SaveFrame ;]
+        TST.B     MacJmp ;]
+;												<13Jul85>
+        BMI.S     DiscardFrame ;]
+        MOVE.W    (SP)+,SESR	; SR on top for all CPUs						<13Jul85>
+        MOVE.L    (SP)+,SEPC	; next is the saved PC							<13Jul85>
+        BRA.S     EnterSysErr2 ;]
+
+DiscardFrame ;]
+        ADDQ.L    #6,SP
+
+EnterSysErr2 ;]
+        BRA.S     SysErr2
+
+; This is the receiver table for all exceptions (except 1010).	Look at ToDeepShit
+; code to understand BSR.S stuff
+
+GenExcps
+        BSR.S     ToDeepShit	; (1) bus error
+        BSR.S     ToDeepShit	; (2) address error
+        BSR.S     ToDeepShit	; (3) illegal instruction
+        BSR.S     ToDeepShit	; (4) zero divide
+        BSR.S     ToDeepShit	; (5) check instruction
+        BSR.S     ToDeepShit	; (6) trapv instruction
+        BSR.S     ToDeepShit	; (7) privilege violation
+        BSR.S     ToDeepShit	; (8) trace
+        BSR.S     ToDeepShit	; (9) line 1010 (temporarily)
+        BSR.S     ToDeepShit	; (10) line 1111
+        BSR.S     ToDeepShit	; (11) other exceptions (TRAP calls, spurious int, etc)
+        BSR.S     ToDeepShit	; (12) Place holder for no trap number exception
+
+IRQException
+        BSR.S     ToDeepShit	; (13) interrupt exceptions
+
+; Routine		SystemError
+; Arguments 	D0.W	(input) 		System error number
+; Function		Handle system errors.  Allows consistant interface to
+;				debuggers.
+;				Stack is cleansed of all trap parameters, so that return with RTE			<13Jul85>
+;				depends on information restored from SEPC and SESR. 						<13Jul85>
+;				Nowadays, debugger is called with exception parameters on stack.			<02Nov85>  JTC
+;				So must dummy up a format-0 frame when SystemError is called.				<02Nov85>  JTC
+;----------------------------------------------------------------------
+
+SystemError
+        MOVEM.L   D0-D7/A0-A7,SEVars	; save regs up high in nub space
+
+SysErr1
+        MOVE.W    SR,SESR	; save SR										<13Jul85>
+        MOVE.L    (SP)+,SEPC	; clean PC for fall-through to SysErr2			<13Jul85>
+        TST.B     CPUFlag	; zero for 68000								<02Nov85>  JTC
+        BEQ.S     SysErr2	; no need for dummy frame on old cpu			<02Nov85>  JTC
+        CLR.W     -(SP)	;												<02Nov85>  JTC
+
+*R The ROM retains the original exception and debugger path without later parity checks or resource-patch error remapping.
+
+SysErr2
+        TST.B     MacJmp ;]
+; yes, skip reg saving
+        BMI.S     MarkDebuggerActive ;]
+        MOVE.L    SP,SEA7	; save true PC
+
+MarkDebuggerActive ;]
+        BSET      #7,MacJmp ;]
+        MOVE.W    D0,DSErrCode
+; now we've set up all regs, etc.  Time to decide whether to call the debuggers
+; or just call the Deepshit code
+        BSR.W     DebugProlog	; any debuggers?
+        BPL.S     Call2DS	; yes, but not initialized (init bit not set)
+        BNE.S     CallDB	; yes, initialized, call 'em
+
+Call2DS
+; We got a system error w/un-initialized debuggers, if NMI then assume that user wants to try
+; to get the debugger up and running.
+        CMPI.W    #13,D0	; Exception?
+        BNE.S     CallDS	; no, call the deepshit handler
+        MOVEQ     #0,D0	; set special system error (0) for initialization
+        BRA.S     CallDB	; and call the debugger
+
+CallDS
+        LEA       DSErrorHandler,A1	; point at system alert handler
+
+CallDB
+        JSR       (A1)	; call the debugger/system error handler
+        TST.W     D0	; any error?
+        BNE.S     CallDS	; yes, call deepshit
+
+SysErrExit
+        BCLR      #7,MacJmp
+        MOVEM.L   SEVars,D0-D7/A0-A7	; restore regs
+; In order to return with RTE, must set up vanilla 000 or 4-word 010/020 frame. 			<13Jul85>
+        MOVE.L    SEPC,-(SP)	; push user's PC
+        MOVE.W    SESR,-(SP)	; restore status reg
+        RTE       	; and return to caller
+
+StartErrorEnd ;]
+        ENDPROC
+        END

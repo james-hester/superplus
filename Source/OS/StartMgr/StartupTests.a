@@ -1,0 +1,368 @@
+;
+;	File:		STCritTests.a
+;
+;	Contains:	This file includes the critical test routines run at system start up.  There are also
+;				some routines not run at startup but which are available to the Test Manager through 
+;				the TJump Test Table.
+;
+;	Copyright:	© 1983-1991 by Apple Computer, Inc., all rights reserved.
+;
+;
+;	File:		StartFail.a
+;
+;	Copyright:	© 1983-1993 by Apple Computer, Inc.  All rights reserved.
+;
+
+*R This file restores the Mac Plus startup tests,
+*R compressed icon drawing, display helpers, and icon data.
+*R The older RAM tests and fixed display helpers are restored from ROM;
+*R the released tree retains a later checksum test and PutIcon body.
+*R Matching operations retain their applicable original comments.
+*R Evidence/startup-tests.json records provenance and exact checks.
+
+		EXPORT PutSymbolRow ;]
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'HardwarePrivateEqu.a'
+		INCLUDE 'SysEqu.a'
+
+
+StartupTests PROC ;]
+        EXPORT StartUpROMTest
+        EXPORT Mod3Test
+        EXPORT PutIcon
+        EXPORT DeadMac ;]
+        EXPORT HappyMac ;]
+        EXPORT DiskOutline ;]
+        EXPORT QuestionMark ;]
+        EXPORT CrossMark ;]
+
+*R The checksum sums 65,534 words after the stored longword. The ROM combines both halves of the checksum difference into D1 before returning on failure.
+
+StartUpROMTest
+        MOVEQ     #1,D0
+        MOVE.L    D0,A4
+        MOVEQ     #0,d0	;clear checksum accumulator
+        MOVEQ     #0,d1	;clear scratch
+        LEA       ROMStart,A0 ;]
+        MOVE.L    (A0)+,D3
+        MOVE.W    #-3,D2 ;]
+
+ROMLoop
+        MOVE.W    (a0)+,d0	;fetch a ROM word
+        ADD.L     d0,d1	;add to checksum
+        DBRA      D2,ROMLoop ;]
+        EOR.L     D3,D1
+        MOVE.W    D1,D0
+        SWAP      D1
+        OR.W      D0,D1
+        BNE.W     TestReturn ;]
+
+*R The ROM tests address aliasing by toggling one word at successive power-of-two offsets from A3. A4 identifies the test stage.
+
+AddressTest ;]
+        ADDQ.W    #1,A4
+        CLR.W     (A3)
+        MOVEQ     #-1,D0
+        MOVEQ     #2,D1
+        MOVEQ     #15,D3
+
+TestAddressBit ;]
+        MOVE.L    A3,A2
+        ADD.L     D1,A2
+        ADD.L     D1,D1
+        MOVE.W    D0,(A2)
+        TST.W     (A3)
+        BNE.S     AddressFailed ;]
+        CLR.W     (A3)
+        EOR.W     D0,(A2) ;]
+        DBNE      D3,TestAddressBit ;]
+        BEQ.S     SizeRAM ;]
+
+AddressFailed ;]
+        MOVE.W    (A3),D1 ;]
+        BRA.S     TestReturn ;]
+
+*R This older RAM sizing body uses repeated word writes and checks across successive memory blocks. It leaves the detected upper address in A2.
+
+SizeRAM ;]
+        MOVE.L    A3,A2
+        ADD.L     D1,A2
+        CLR.W     (A3)
+        MOVE.W    D0,(A2)
+        TST.W     (A3)
+        BNE.S     StartRAMPatterns ;]
+        MOVE.L    A3,A2
+        ASL.L     #2,D1
+        MOVEQ     #1,D2
+
+TestRAMBlock ;]
+        MOVEQ     #5,D3
+
+ToggleRAMBlock ;]
+        NOT.W     D2
+        MOVE.W    D2,(A2)
+        CMP.W     (A2),D2
+        DBNE      D3,ToggleRAMBlock ;]
+        BNE.S     StartRAMPatterns ;]
+        MOVE.L    A3,A1
+        MOVEQ     #0,D3
+
+CheckRAMBlocks ;]
+        ADDQ.W    #1,D3
+        CMP.W     (A1),D3 ;]
+        BNE.S     StartRAMPatterns ;]
+        ADD.L     D1,A1
+        CMP.W     D3,D2
+        BGT.S     CheckRAMBlocks ;]
+        ADD.L     D1,A2
+        ADDQ.W    #1,D2
+        CMPI.W    #8,D2
+        BLE.S     TestRAMBlock ;]
+
+*R The ROM runs three memory pattern passes when its saved ROMBase and D6 flags permit them. It returns through A6, with the test stage in A4, the upper address in D0, and combined error bits in D1.
+
+StartRAMPatterns ;]
+        ADDQ.W    #1,A4
+        MOVEQ     #0,D0
+        CMPI.L    #ROMStart,ROMBase(A3) ;]
+        BEQ.S     TestResults ;]
+        TST.B     D6
+        BPL.S     TestResults ;]
+        LEA       MOD3PATTERNS,A0 ;]
+        LEA       TESTPATTERN2,A5 ;]
+        BRA.S     Mod3Test ;]
+
+TestPattern2 ;]
+        LEA       MOD3PATTERNS3,A0 ;]
+        LEA       TESTPATTERN3,A5 ;]
+        BRA.S     Mod3Test ;]
+
+TestPattern3 ;]
+        LEA       MOD3PATTERNS2,A0 ;]
+        LEA       TESTRESULTS,A5 ;]
+        BRA.S     Mod3Test ;]
+
+TestResults ;]
+        MOVE.L    A2,A5
+        MOVEQ     #0,D1
+        MOVE.W    D0,D1
+        SWAP      D0
+        OR.W      D0,D1
+
+TestReturn ;]
+        MOVE.L    A5,D0
+        TST.W     D1
+        JMP       (A6)	;and exit
+
+*R The ROM fills memory from both ends with a repeating three-word pattern, then combines readback differences into D0. The later Mod3Test body uses a different algorithm and interface.
+
+Mod3Test
+        MOVE.L    A2,D1
+        SUB.L     A3,D1 ;]
+        MOVE.L    D1,D2
+        CLR.W     D2
+        SWAP      D2
+        MOVEQ     #0,D3
+        MOVE.W    D1,D3
+        ADD.L     D3,D2
+        DIVU.W    #3,D2 ;]
+        CLR.W     D2
+        SWAP      D2
+        MOVE.L    A2,D3
+        SUBQ.L    #2,D2
+        ADD.L     D2,D2
+        ADD.L     D2,D3
+        ADD.L     D2,D1
+        MOVE.W    D1,D7
+        CLR.W     D1
+        SWAP      D1
+        DIVU.W    #12,D1 ;]
+        SWAP      D1
+        SWAP      D7
+        MOVE.W    D1,D7
+        SWAP      D7
+        DIVU.W    #12,D7 ;]
+        MOVE.W    D7,D1
+        MOVE.L    D1,D7
+        LSR.L     #1,D1
+        MOVE.L    D3,A1
+        MOVEM.L   (A0),D2-D6 ;]
+        MOVE.L    A3,A0
+
+FillPattern ;]
+        MOVEM.L   D2-D4,(A0) ;]
+        ADD.W     #12,A0
+        MOVEM.L   D4-D6,-(A1) ;]
+        SUBQ.L    #1,D1
+        BPL.S     FillPattern ;]
+        MOVE.L    A3,A0
+        MOVE.L    D7,D1
+
+CheckPattern ;]
+        MOVEM.L   (A0)+,D5-D7 ;]
+        EOR.L     D2,D5 ;]
+        EOR.L     D3,D6 ;]
+        EOR.L     D4,D7 ;]
+        OR.L      D5,D6
+        OR.L      D6,D7
+        OR.L      D7,D0
+        SUBQ.L    #1,D1
+        BGT.S     CheckPattern ;]
+        JMP       (A5)
+
+*R These 24 data bytes provide three word-aligned starting positions for the memory pattern passes.
+
+Mod3Patterns ;]
+        DC.W $DB6D
+
+Mod3Patterns2 ;]
+        DC.W $B6DB
+
+Mod3Patterns3 ;]
+        DC.W $6DB6,$DB6D,$B6DB,$6DB6,$DB6D,$B6DB,$6DB6,$DB6D ;]
+        DC.W $B6DB,$6DB6 ;]
+
+;_______________________________________________________________________
+;
+;  Routines PutIcon,PutIcon1 are used to display a compressed icon on
+;  the screen.  They are based on Steve Capps' bitmap compression technique.
+;
+;  Arguments:	A2 = screen address
+;				A3 = Ram offset pointer
+;				A4 = address of icon
+;				A6 = holds return address
+;
+;  Called by BSR6
+;
+;  Registers used:	D2,D3,D4,A0,a1,A2,A4
+;_______________________________________________________________________
+
+PutIcon
+        MOVEQ     #16-1,D3
+
+UNCOMP1
+        MOVE.L    A2,A0	; save screen start address
+        MOVEQ     #4-1,D2
+
+UILOOP
+        MOVE.W    #$100,D4	; prime D0 for 8 bit count count
+        MOVE.B    (A4)+,D4	; load map byte from compressed image
+
+MLOOP
+        LSR.W     #1,D4	; shift off map bit
+        BEQ.S     DONE	; byte done when = 0
+        BCC.S     IBLACK	; dispatch on the bit
+        CLR.B     (A2)+	; store zero in new
+        BRA.S     CHECK	; continue for all 8 bits
+
+IBLACK
+        MOVE.B    (A4)+,(A2)+	; store byte in new
+
+CHECK
+        DBRA      D2,MLOOP	; see if on scanline seam (every 4 bytes)
+        ADD.W     #64-4,A2 ;]
+        MOVEQ     #3,D2	; reset row bytes counter
+        BRA.S     MLOOP	; continue for all 8 bits
+
+DONE
+        DBRA      D3,UILOOP	; do the rest of the octals in ICON
+; Now unXOR the icon on the screen
+        MOVE.L    A0,A1	; second pointer
+        MOVEQ     #31-1,D3
+
+XLOOP
+        ADD.W     #64,A1 ;]
+        MOVE.L    (A0),D4	; get long from previous scanline
+        EOR.L     D4,(A1)	; xor into this scanline
+        MOVE.L    A1,A0	; "add" rowBytes to a2
+        DBRA      D3,XLOOP
+        JMP       (A6)
+
+*R The fixed display helpers draw MacOutline at row 145 and its face at row 151 of the 512-pixel screen. They return through A5.
+
+DeadMac
+        LEA       SADFACE,A0 ;]
+
+DrawMacOutline ;]
+        LEA       MACOUTLINE,A4 ;]
+        MOVE.L    A0,D7
+        MOVE.L    #ScreenLow+145*64+30,A2 ;]
+        LEA       DRAWMACFACE,A6 ;]
+        BRA.S     PutIcon ;]
+
+DrawMacFace ;]
+        MOVE.L    #ScreenLow+151*64+31,A2 ;]
+        MOVE.L    D7,A4
+        LEA       DRAWMACDONE,A6 ;]
+        BRA.W     PutSymbol ;]
+
+DrawMacDone ;]
+        JMP       (A5)
+
+HappyMac
+        LEA       HAPPYFACE,A0 ;]
+        BRA.S     DrawMacOutline ;]
+
+*R PutSymbol copies a 16-by-10 face bitmap with a 64-byte screen stride and returns through A6.
+
+PutSymbol ;]
+        MOVEQ     #9,D2
+
+PutSymbolRow ;]
+        MOVE.B    (A4)+,(A2)+
+        MOVE.B    (A4)+,(A2)+
+        ADD.W     #64-2,A2 ;]
+        DBRA      D2,PutSymbolRow ;]
+        JMP       (A6)
+
+*R MacOutline and DiskOutline retain the ROM compressed data. Each expands to 32 rows of four bytes using PutIcon.
+
+MacOutline ;]
+        DC.B $00,$57,$FF,$FF,$D5,$FF,$FF,$FF ;]
+        DC.B $FF,$06,$F8,$3F,$E1,$FF,$FF,$0F ;]
+        DC.B $60,$E3,$FF,$FF,$8F,$E0,$0F,$66 ;]
+        DC.B $E0,$0F,$E0,$0F,$66,$E0,$0F,$E0 ;]
+        DC.B $0F,$66,$E0,$0F,$E0,$0F,$66,$E0 ;]
+        DC.B $0F,$E0,$0F,$66,$E0,$0F,$E0,$0F ;]
+        DC.B $06,$E0,$0F,$E3,$FF,$FF,$8F,$60 ;]
+        DC.B $E1,$FF,$FF,$0F,$E0,$0F,$66,$E0 ;]
+        DC.B $0F,$E0,$0F,$22,$E3,$3F,$0F,$E3 ;]
+        DC.B $3F,$0F,$66,$E0,$0F,$E0,$0F,$06 ;]
+        DC.B $E0,$0F,$FF,$FF,$FF,$FF,$60,$F7 ;]
+        DC.B $FF,$FF,$DF,$F0,$1F,$06,$F0,$1F ;]
+        DC.B $F7,$FF,$FF,$DF ;]
+
+DiskOutline ;]
+        DC.B $00,$7F,$FF,$FF,$F5,$FE,$FF,$FE ;]
+        DC.B $FF,$33,$70,$0F,$F8,$07,$F7,$03 ;]
+        DC.B $FF,$BB,$F8,$70,$98,$01,$FF,$FF ;]
+        DC.B $FF,$FE,$FF,$00,$07,$FF,$FF,$E0 ;]
+        DC.B $0F,$FF,$FF,$F0,$FF,$FF,$FF,$FF ;]
+        DC.B $FF,$FF,$FF,$0F,$77,$FF,$FF,$EF ;]
+
+*R The face and disk symbols are row bitmaps. Their words match the middle 16 bits of the corresponding rows in the later released icons.
+
+HappyFace ;]
+        DC.W $0000,$1110,$1110,$0100,$0100,$0300,$0000,$0840 ;]
+        DC.W $0780,$0000 ;]
+
+SadFace ;]
+        DC.W $2828,$1010,$2828,$0000,$0480,$0300,$0000,$0FC0 ;]
+        DC.W $1030,$0008 ;]
+
+QuestionMark ;]
+        DC.W $0000,$0000,$07E0,$0FF0,$0C30,$0C30,$0070,$00E0 ;]
+        DC.W $01C0,$0180,$0180,$0000,$0180,$0180,$0000 ;]
+
+CrossMark ;]
+        DC.W $0000,$0000,$1008,$381C,$1C38,$0E70,$07E0,$03C0 ;]
+        DC.W $03C0,$07E0,$0E70,$1C38,$381C,$1008,$0000 ;]
+
+StartupTestsEnd ;]
+        ENDPROC
+        END

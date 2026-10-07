@@ -1,0 +1,288 @@
+{
+  "module": "MFSDIR3",
+  "source": "Reconstruction/Source/OS/HFS/MFSDIR3.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSDIR3.a",
+      "sha256": "74cd6b4e4cb368afe2983ccce6e9721a9aa8f32c357a2c5600b183a20d8ba8e8",
+      "line_ranges": [
+        [
+          1,
+          368
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/TFSRFN1.a",
+      "sha256": "931321393f01b039453df960f35e339316f917e009d4101caf96e7d27b39ef64",
+      "line_ranges": [
+        [
+          78,
+          100
+        ]
+      ],
+      "role": "The TFSBitTst helpers precede Seek in the adjacent reconstructed TFSRFN1 span."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          180,
+          180
+        ],
+        [
+          184,
+          184
+        ],
+        [
+          190,
+          190
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          278,
+          278
+        ],
+        [
+          280,
+          280
+        ],
+        [
+          282,
+          282
+        ],
+        [
+          305,
+          306
+        ],
+        [
+          432,
+          432
+        ],
+        [
+          434,
+          436
+        ],
+        [
+          444,
+          444
+        ],
+        [
+          446,
+          446
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          129,
+          129
+        ],
+        [
+          135,
+          135
+        ],
+        [
+          522,
+          522
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          737,
+          737
+        ],
+        [
+          741,
+          741
+        ],
+        [
+          768,
+          768
+        ],
+        [
+          770,
+          770
+        ],
+        [
+          772,
+          772
+        ],
+        [
+          780,
+          780
+        ],
+        [
+          789,
+          789
+        ],
+        [
+          814,
+          814
+        ],
+        [
+          827,
+          829
+        ],
+        [
+          834,
+          834
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x404d66",
+      "end_exclusive": "0x404eb8",
+      "rom_offset": "0x4d66",
+      "length": 338,
+      "sha256": "1f4f3beb85c4b3eb15727b1a61bfe6a78e5c9dd66ce4dd6566fd09e230f2ad65",
+      "start_label": "SetMFlType",
+      "end_label": "MFSDIR3End",
+      "boundary_evidence": "SetMFlType begins immediately after TFSDIR3 at 0x404d66. The final XferMFInfo branch to CkFilStatus ends at 0x404eb8, where the accepted TFSRFN1 module starts with TFSBitTst."
+    }
+  ],
+  "entry_points": {
+    "SetMFlType": "0x404d66",
+    "ChgMFlLock": "0x404d6e",
+    "SRMFXit1": "0x404d82",
+    "SRMFXit2": "0x404d8c",
+    "SRMFXit3": "0x404d8e",
+    "SetMFlInfo": "0x404d92",
+    "FndMFSFile": "0x404dac",
+    "mfFNLoop": "0x404dc0",
+    "mfNFound": "0x404dc8",
+    "scn4MNam": "0x404dcc",
+    "mfFNExit": "0x404e0e",
+    "GtMFlIBI": "0x404e10",
+    "GMFINFErr": "0x404e5e",
+    "GMFIExit": "0x404e60",
+    "GotMIndFile": "0x404e64",
+    "GetMFlInfo": "0x404e7c",
+    "XferMFInfo": "0x404e7c",
+    "MFSDIR3End": "0x404eb8"
+  },
+  "integration_manifest": {
+    "name": "mfsdir3",
+    "source": "Reconstruction/Source/OS/HFS/MFSDIR3.a",
+    "start": "0x404d66",
+    "end_exclusive": "0x404eb8",
+    "entry_points": {
+      "SetMFlType": "0x404d66",
+      "ChgMFlLock": "0x404d6e",
+      "SRMFXit1": "0x404d82",
+      "SRMFXit2": "0x404d8c",
+      "SRMFXit3": "0x404d8e",
+      "SetMFlInfo": "0x404d92",
+      "FndMFSFile": "0x404dac",
+      "mfFNLoop": "0x404dc0",
+      "mfNFound": "0x404dc8",
+      "scn4MNam": "0x404dcc",
+      "mfFNExit": "0x404e0e",
+      "GtMFlIBI": "0x404e10",
+      "GMFINFErr": "0x404e5e",
+      "GMFIExit": "0x404e60",
+      "GotMIndFile": "0x404e64",
+      "GetMFlInfo": "0x404e7c",
+      "XferMFInfo": "0x404e7c",
+      "MFSDIR3End": "0x404eb8"
+    }
+  },
+  "changes": [
+    {
+      "location": "Instruction bodies",
+      "change": "Retained the surviving instruction sequence without behavioral reversions.",
+      "evidence": "SetMFlType, ChgMFlLock, SetMFlInfo, FndMFSFile, GtMFlIBI, and XferMFInfo reproduce all 338 ROM bytes. The ROM retains the October 1985 control-cache flush and the November 1985 longword write of FSRtDirID at 0x404e98."
+    },
+    {
+      "location": "Definitions, addressing, and provenance",
+      "change": "Copied required original equates and supplied external routine addresses. Preserved the original header, applicable history, and comments. Kept the later ioFlxFndrInfo spelling with the same field offset.",
+      "evidence": "The ioFlxFndrInfo value is 84, matching the LEA at 0x404ea6. MarkBlock uses a PC-relative JSR at 0x404d84. CmpString emits 0xa03c at 0x404df0. All 18 recorded labels match."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "MarkBlock",
+      "address": "0x4079f4"
+    },
+    {
+      "name": "MFSCtlFlush",
+      "address": "0x404340"
+    },
+    {
+      "name": "MFSRd1stDB",
+      "address": "0x4050fc"
+    },
+    {
+      "name": "GtNxEntry",
+      "address": "0x40438a"
+    },
+    {
+      "name": "MFSRdNxtDB",
+      "address": "0x40510c"
+    },
+    {
+      "name": "MFSDirRead",
+      "address": "0x40511c"
+    },
+    {
+      "name": "CkFilStatus",
+      "address": "0x404c8c"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x404d66, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "c8f5dd56f4b4a0e8d4992e8f9ea80874e32f8b179835e66de27fb5a17c5ac0e8",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/MFSDIR3.a",
+        "sha256": "c8f5dd56f4b4a0e8d4992e8f9ea80874e32f8b179835e66de27fb5a17c5ac0e8"
+      }
+    ],
+    "assembled_length": 338,
+    "matched_bytes": 338,
+    "entry_points_checked": 18,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

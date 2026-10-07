@@ -1,0 +1,200 @@
+;—————————————————————————————————————————————————————————————————————————————————————————————————————
+;
+;	File:		FontMgr.a
+;
+;	Copyright:	© 1983-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Scaling Font Manager for MacIntosh User Interface ToolBox
+;
+;	written by Andy Hertzfeld	February 5, 1983
+;
+;	New 128K ROM version, AJH, last week of April 1985
+;
+;	Here it is, the new scaling font manager which supports independent
+;	typeFaces and sizes.  The font manager is built on top of the
+;	resource manager and provides a simple swapping mechanism for fonts,
+;	based on the resource/memory manager's purgable objects. It is passed
+;	an input record from QuickDraw consisting of the font face, device, style
+;	and scale and selects the closest font to the requested size that it can.
+;	It is optimized so that it is very fast if the request is the same as the
+;	last time.
+;
+;	Printer support is provided via two control/status calls defined by the font .
+;	manager. After it figures out what everything should be, it gives the
+;	appropriate device a control call to let it change things.  Also, it makes
+;	a status call to get a table of style values to aid in in figuring things out.
+;
+;	Major changes for the new (128K) ROM include a new font addressing
+;	scheme using family definition records as resource type "FONT",
+;	which allows up to 64K different font families and tweaked fonts for
+;	bold, italic, etc.  Fractional widths are fully supported.
+;
+;
+*R This file restores the Mac Plus Font Manager prefix.
+*R It covers InitFonts, InValWidths, and the FMSwapFont dispatch and result setup
+*R at $40E5E4 through $40E6CD. FMSwapFontEntry continues into the unreconstructed
+*R body at $40E6CE. See Evidence/fontmgr-init.json.
+;
+*R The ROM loads the system font directly and preserves
+*R D3 during initialization. It stores the default size as a word at $986.
+*R The later source routes this initialization through FMSwapFont.
+;
+		IMPORT GetFontHandle,SetScreenDevice ;]
+		EXPORT FMSwapFont,InitFonts,InValWidths ;]
+
+		MACHINE MC68000
+		STRING ASIS
+		BLANKS ON
+
+		INCLUDE 'ColorEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+		INCLUDE 'fontPrivate.a'
+
+*R Default size is a word in this ROM.
+FMDefaultSize EQU $986 ;]
+
+;new FONT manager stuff
+
+
+
+
+
+; format of a width table:
+
+WidTabSize	EQU 	WidthASize+2			;total size of a width table.
+
+
+*R External routines and trap words match the ROM.
+
+
+FontManagerInit PROC ;]
+
+; PROCEDURE InitFonts -- initialize the font manager data structures
+
+InitFonts
+            MOVE.L D3,-(SP)
+            CLR.W FOutError               ;clear once at init time
+            MOVEQ #-1,D0
+            MOVE.W D0,CurFMFamily ;]
+            CLR.L LastFOND
+            MOVE.W D0,FONDID              ;init FOND cache
+            BSR SetScreenDevice           ;make the screen the default device
+            CLR.W CurFMDevice             ;make the device 0
+            CLR.B FScaleDisable           ;enable font scaling
+            MOVE.W SPFont,ApFontID         ;set up default font ID
+            ADDQ.W #1,ApFontID             ;bump it by 1
+            MOVEQ #12,D0
+            MOVE.W D0,FMDefaultSize	;]set up FMDefault Size
+            MOVE.W SysFontFam,D3 ;]
+            ASL #7,D3
+            MOVE.W SysFontSize,D1
+            BNE.S @gotSysSize ;]
+            MOVE.W D0,D1
+@gotSysSize ;]
+            OR D1,D3
+            BSR GetFontHandle
+            BNE.S @gotSysFont ;]
+            MOVEQ #12,D3
+            BSR GetFontHandle
+@gotSysFont ;]
+            MOVE.L A0,RomFont0 ;]
+            MOVE.L (SP)+,D3
+            CLR.B FractEnable              ;for now, turn off fractWidths
+
+; allocate and initialize the width table in the system heap, if we haven't already
+
+            MOVE.L WidthTabHandle,D0       ;already got it?
+            BNE.S @4                       ;if we have it, skip
+            MOVE.L #WidTabSize,D0          ;size of table
+            _NewHandle ,SYS                  ;new handle in sysHeap
+            BNE.S CantAllocWTab            ;if an error, skip
+            MOVE.L A0,WidthTabHandle        ;remember it
+
+; allocate a width table list if there is room for them.
+
+            CLR.L WidthListHand            ;assume not enough memory for other tables.
+            CMP.W #2,MemTop                 ;are we in a small memory system?
+            BLS.S @4                       ;yes, then forget the second width table handle.
+            MOVEQ #WidListSize,D0	;]size of table
+            _NewHandle ,SYS,CLEAR	;new handle in sysHeap, cleared
+            BNE.S @4                       ;if an error, skip
+            MOVE.L A0,WidthListHand         ;remember it
+
+; Invalidate all of the extra width tables, if they exist.
+
+@4
+            BSR.S InValWidths              ;invalidate all of the width tables.
+
+; set up swapFont jump table entry
+
+            MOVE.W #FMSwapTrap,D0 ;]
+            _GetTrapAddress
+            LEA FMSwapFont,A1 ;]
+            CMP.L A1,A0
+            BNE.S @setSwapVector ;]
+            LEA FMSwapFontEntry,A0 ;]
+@setSwapVector ;]
+            MOVE.L A0,JSwapFont
+            RTS
+
+; we couldn't allocate the width table so issue the out-of-memory deepShit alert
+
+CantAllocWTab
+            MOVEQ #25,D0                   ;out of mem code
+            _SysError                      ;self-destruct...
+
+; Invalidate all of the extra width tables, if they exist.
+
+InValWidths
+            MOVEQ #-1,D2                   ;get some ones
+            MOVE.L D2,LastSPExtra           ;flag that we can't get a match next time <DLD 24-Oct-85>
+            MOVE.L WidthListHand,D0
+            AND.L Lo3Bytes,D0
+            BEQ.S InvalWidthTab
+            MOVE.L D0,A0
+            MOVE.L (A0),A0                 ;handle->pointer
+            MOVEQ #NumTables-1,D1
+@5
+            MOVE.L (A0)+,D0                ;get a handle from the table
+            BEQ.S InvalWidthTab            ;end of table.
+            MOVE.L D0,A1
+            MOVE.L (A1),D0                 ;was this handle purged?
+            BEQ.S @55
+            MOVE.L D0,A1
+            MOVE.L D2,WidTabFont(A1)	;]invalidate it
+            MOVE.W D2,WidthFID(A1)	;]and invalidate requested font ID.
+@55
+            DBRA D1,@5                     ;until end of table.
+
+; Invalidate the width table.
+
+InvalWidthTab
+            MOVE.L WidthTabHandle,A0
+            MOVE.L (A0),A0                 ;handle->pointer
+            MOVE.L D2,WidTabFont(A0)        ;invalidate it
+            MOVE.W D2,WidthFID(A0)          ;and invalidate requested font ID.
+            RTS
+
+; FUNCTION FMSwapFont(inRec:FontInputRecord):^FontOutputRecord
+;
+; FMSwapFont is the heart of the font manager.  It receives an input record
+; from QuickDraw specifying the font, face, device and scale of the requested
+; font and figures out the best set of bits to load and return in the output
+; record.  It is optimized so that if the request is the same as the previous
+; one, it returns as fast as it can.
+;
+*R The trap entry dispatches through JSwapFont.
+*R InitFonts selects FMSwapFontEntry when the trap still names this wrapper.
+
+FMSwapFont
+            MOVE.L JSwapFont,-(SP)
+            RTS
+FMSwapFontEntry ;]
+            LEA FMgrOutRec,A0              ;get pointer to our output record
+            MOVE.L A0,8(SP)                ;return it as the result
+
+            ENDPROC
+            END

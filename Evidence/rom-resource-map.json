@@ -1,0 +1,82 @@
+{
+  "module": "rom-resource-map",
+  "source": "Reconstruction/Source/Resources/ROMResourceMap.a",
+  "source_sha256": "30e87765cd5414429f79aaa2dced5051a638d81d439139430eff8142f92da401",
+  "originals": [
+    {
+      "path": "Toolbox/ResourceMgr/ResourceMgr.a",
+      "sha256": "9205e992287fc0e2948369879cc112937d7a22390c32423fb3f97eeacd4a171c",
+      "line_ranges": [
+        [
+          1179,
+          1186
+        ],
+        [
+          1343,
+          1348
+        ]
+      ],
+      "role": "Old ROM layout and relative master pointers."
+    },
+    {
+      "path": "Internal/Asm/ResourceMgrPriv.a",
+      "sha256": "7aa25aaf3ad66f296e649f04215f407ecbbaebfb870f2db5ba8e2e8bc09bad68",
+      "line_ranges": [
+        [
+          180,
+          320
+        ]
+      ],
+      "role": "Resource map, type list, and resource reference field definitions."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "spans": [
+    {
+      "start": "0x4176f8",
+      "end_exclusive": "0x417844",
+      "length": 332,
+      "sha256": "33a3116bd54bd7fd117a492be3cca27b89efd288ea1c021bf136fd4fc423c32f"
+    }
+  ],
+  "integration_manifest": {
+    "name": "rom-resource-map",
+    "source": "Reconstruction/Source/Resources/ROMResourceMap.a",
+    "start": "0x4176f8",
+    "end_exclusive": "0x417844",
+    "entry_points": {
+      "RomResourceMap": "0x4176f8",
+      "RomMap": "0x4176fc",
+      "TypeList": "0x417718",
+      "References": "0x417752",
+      "NameList": "0x41781e",
+      "MapEnd": "0x417844"
+    }
+  },
+  "changes": [
+    {
+      "change": "Restored the old ROM resource map as named fields, type entries, resource references, and Pascal strings. Counts and internal offsets use label differences.",
+      "evidence": "The ROM header points to offset $176F8. The map records 17 resources, seven types, and 328 map bytes. ResourceMgr.a documents this old format."
+    },
+    {
+      "change": "Retained the copied resource-file header values and the map fields for the next map, file reference, and attributes.",
+      "evidence": "The first four longs are $100, $8838, $8738, and $148. The following fields contain $CC1C, 2, and $8000. Their field positions follow ResourceMgrPriv.a; their original resource-file context remains unknown."
+    },
+    {
+      "change": "Recorded data offsets for all 17 resources and retained their names, IDs, order, and $58 attributes.",
+      "evidence": "These offsets agree with the ROM block boundaries. This map does not reconstruct the executable resources it references."
+    }
+  ],
+  "verification": {
+    "method": "The shared verifier assembled the source, linked it at its ROM address, and compared every emitted byte and all recorded labels.",
+    "matched_bytes": 332,
+    "entry_points_checked": 6,
+    "result": "exact",
+    "limits": [
+      "The comparison establishes emitted bytes and labels. It does not execute ROM code or establish the exact text of the lost Mac Plus sources."
+    ]
+  }
+}

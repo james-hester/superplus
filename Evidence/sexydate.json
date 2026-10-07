@@ -1,0 +1,64 @@
+{
+  "module": "sexydate",
+  "source": "Reconstruction/Source/Toolbox/SexyDate.a",
+  "originals": [
+    {
+      "path": "Toolbox/SexyDate.a",
+      "sha256": "3ebac9ea1a9e72810a868a79b70a83d4469e5003c1b2bb8eb21f461414b037a5"
+    }
+  ],
+  "scope": "The complete Secs2Date and Date2Secs procedures.",
+  "target": {
+    "program": "Mac Plus",
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "base_address": "0x400000",
+    "size": 131072,
+    "checksum": "0x4d1f8172",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "ghidra_import_path": "/home/james/Mac OS/Mac_ROMs/68k/128k/Macintosh Plus/1986-03 - 4D1F8172 - MacPlus v3.ROM"
+  },
+  "span": {
+    "start": "0x417052",
+    "end_exclusive": "0x41712c",
+    "length": 218,
+    "sha256": "6e7623f598a402f47386f7012ceac0dab00ea41a81ffb6e3a8e7eb817b89caf3",
+    "boundary_evidence": "Secs2Date begins at 0x417052 after the Package Manager dispatch stubs. The final Date2Secs RTS ends at 0x41712c."
+  },
+  "integration_manifest": {
+    "name": "sexydate",
+    "source": "Reconstruction/Source/Toolbox/SexyDate.a",
+    "start": "0x417052",
+    "end_exclusive": "0x41712c",
+    "entry_points": {
+      "Secs2Date": "0x417052",
+      "Date2Secs": "0x4170ca"
+    }
+  },
+  "changes": [
+    "Copied the complete original body from its File SexyDate.TEXT header through END without changing any instructions, labels, or comments.",
+    "Omitted the later EASE archive wrapper. Preserved Jerome T. Coonen's attribution and the original July 1983 date.",
+    "Added a reconstruction note about two original comment errors. The 68000 DIVU divisor limit is 65535; AND #3 computes a remainder modulo four. The original comment text remains unchanged."
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "source_sha256": "3e4040cbdce798920b9a358f9ba23e34baa87a6a4b7e092f269fa1e39b7259b2",
+    "checked_bytes": 218,
+    "entry_points_checked": 2,
+    "assembled_sha256": "6e7623f598a402f47386f7012ceac0dab00ea41a81ffb6e3a8e7eb817b89caf3",
+    "assembler": "GNU assembler 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Byte equality establishes the complete emitted span. It cannot establish which archive header accompanied the original Mac Plus source.",
+      "The calendar comments also start November at March-relative day 244, overlapping October. That table entry is prose; the emitted conversion code remains unchanged."
+    ],
+    "original_body_unchanged": true
+  }
+}

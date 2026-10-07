@@ -1,0 +1,306 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Interfaces/AIncludes/ToolUtils.a
+;
+; File: ToolUtils.a
+;
+; Assembler Interface to the Macintosh Libraries
+; Copyright Apple Computer, Inc. 1984-1992
+; All Rights Reserved
+;
+
+resSysHeap		EQU 		6         				; In system/in application heap
+resLocked 		EQU 		4         				; Locked/not locked
+resProtected  	EQU 		3         				; Protected/not protected
+resPreload		EQU 		2         				; Read in at OpenResource?
+resChanged		EQU 		1         				; Existing resource changed since last update
+rcbMask   		EQU 		$FD       				; Must preserve ResChanged over _ResAttrs
+mapReadOnly   	EQU 		7         				; is this file read-only?
+mapCompact		EQU 		6         				; Is a compact necessary?
+mapChanged		EQU 		5         				; Is it necessary to write map?
+TopMapHndl		EQU 		$A50      				; topmost map in list [handle]
+SysMapHndl		EQU 		$A54      				; system map [handle]
+SysMap			EQU 		$A58      				; reference number of system map [word]
+CurMap			EQU 		$A5A      				; reference number of current map [word]
+ResLoad   		EQU 		$A5E      				; Auto-load feature [word]
+ResErr			EQU 		$A60      				; Resource error code [word]
+ResErrProc		EQU 		$AF2      				; Resource error procedure [pointer]
+SysResName		EQU 		$AD8      				; Name of system resource file [STRING[19]]
+RomMapInsert  	EQU 		$B9E      				; (byte) determines if we should link in map
+TmpResLoad		EQU 		$B9F      				; second byte is temporary ResLoad value.
+MapFalse  		EQU 		$FF00     				; link in ROM map with resload false
+Geneva EQU 3
+ApFontID  		EQU 		$984      				; resource ID of application font [word]
+CurFMInput		EQU 		$988      				; quickdraw FMInput Record [pointer]
+FMgrOutRec		EQU 		$998      				; quickdraw FontOutput Record [pointer]
+FScaleDisable 	EQU 		$A63      				; disable font scaling? [byte]
+WidthListHand 	EQU 		$8E4      				; list of extra width tables, or nil.
+WidthPtr  		EQU 		$B10      				; (long) Font Mgr global
+WidthTabHandle	EQU 		$B2A      				; Font width table handle for measure
+LastSPExtra   	EQU 		$B4C      				; (long) most recent value of space extra
+SysFontFam		EQU 		$BA6      				; (word) System font family ID or zero
+SysFontSize   	EQU 		$BA8      				; (word) System font size (or zero for 12 pt)
+FDevDisable   	EQU 		$BB3      				; (byte) $FF to disable device-defined style extra
+LastFOND  		EQU 		$BC2      				; (long) handle of last font def record
+FONDID			EQU 		$BC6      				; (word) ID of last font def record
+FractEnable   	EQU 		$BF4      				; (byte) flag for fractional font widths
+UsedFWidths   	EQU 		$BF5      				; (byte) flag saying if we used fract widths
+FScaleHFact   	EQU 		$BF6      				; (long) horz. font scale factor
+FScaleVFact   	EQU 		$BFA      				; (long) vertical font scale factor
+dialogKind		EQU 		2         				; dialog windows
+wInContent		EQU 		1         				; in content area
+wInDrag   		EQU 		2         				; in drag area
+wInGrow   		EQU 		3         				; in grow area
+wInGoAway 		EQU 		4         				; in go away area
+wInZoomIn 		EQU 		5         				; in zoom in
+wInZoomOut		EQU 		6         				; in zoom out
+inMenuBar 		EQU 		1         				; in the menu bar
+inSysWindow   	EQU 		2         				; in a system window
+inContent 		EQU 		3         				; in content area of user window
+inDrag			EQU 		4         				; in drag area of user window
+inZoomIn  		EQU 		7         				; in zoom in part code
+deskPatID 		EQU 		16        				; desk pattern PAT ID
+dBoxProc  		EQU 		1         				; dialog box (document without titleBar) WDEF ID
+windowKind		EQU 		$6C       				; type of window [word]
+wVisible  		EQU 		$6E       				; visible flag [byte]
+wHilited  		EQU 		$6F       				; select (hilite) flag [byte]
+wGoAway   		EQU 		$70       				; has go away button [byte]
+wZoom 			EQU 		$71       				; has zoom box [byte]
+structRgn 		EQU 		$72       				; structure region of window [Handle]
+contRgn   		EQU 		$76       				; content region of window [Handle]
+updateRgn 		EQU 		$7A       				; update region of window [Handle]
+windowDef 		EQU 		$7E       				; window definition procedure [Handle]
+wDataHandle   	EQU 		$82       				; window proc-defined data [Handle]
+wTitleHandle  	EQU 		$86       				; title string [Handle]
+wTitleWidth   	EQU 		$8A       				; width in pixels of title string [word]
+wControlList  	EQU 		$8C       				; control list of this window [handle]
+nextWindow		EQU 		$90       				; next window in z-ordered list [pointer]
+windowPic 		EQU 		$94       				; picture handle for updates [handle]
+wRefCon   		EQU 		$98       				; application use [long]
+WindowList		EQU 		$9D6      				; Z-ordered linked list of windows [pointer]
+PaintWhite		EQU 		$9DC      				; erase newly drawn windows? [word]
+WMgrPort  		EQU 		$9DE      				; window manager's grafport [pointer]
+GrayRgn   		EQU 		$9EE      				; rounded gray desk region [handle]
+CurActivate   	EQU 		$A64      				; window slated for activate event [pointer]
+CurDeactive   	EQU 		$A68      				; window slated for deactivate event [pointer]
+DragHook  		EQU 		$9F6      				; user hook during dragging [pointer]
+DeskPattern   	EQU 		$A3C      				; desk pattern [8 bytes]
+DeskHook  		EQU 		$A6C      				; hook for painting the desk [pointer]
+GhostWindow   	EQU 		$A84      				; window hidden from FrontWindow [pointer]
+commandMark   	EQU 		$11       				; command fan (cloverleaf)
+checkMark 		EQU 		$12       				; check mark for menus
+lastMenu  		EQU 		0         				; number of bytes in this menuList [word]
+lastRight 		EQU 		2         				; h coordinate of 1st free point in menuBar [word]
+menuoH			EQU 		0         				; menu handle [handle]
+menuLeft  		EQU 		4         				; coordinate of left edge of menu [word]
+menuID			EQU 		0         				; unique ID for each menuBar [word]
+menuWidth 		EQU 		2         				; menu width [word]
+menuHeight		EQU 		4         				; menu height [word]
+menuDefHandle 	EQU 		6         				; menu definition proc [handle]
+menuEnable		EQU 		$A        				; enable flags, one bit/item [long]
+menuData  		EQU 		$E        				; menu item string [STRING]
+menuBlkSize   	EQU 		$E        				; size of a menu block plus dataString
+itemIcon  		EQU 		0         				; icon byte
+itemCmd   		EQU 		1         				; apple (command key) byte
+itemMark  		EQU 		2         				; checkmark character byte
+itemStyle 		EQU 		3         				; style byte
+MenuList  		EQU 		$A1C      				; current menuBar list structure [handle]
+MenuFlash 		EQU 		$A24      				; flash feedback count [word]
+MenuHook  		EQU 		$A30      				; user hook during menuSelect [pointer]
+MBarEnable		EQU 		$A20      				; menuBar enable for desk accessories[word]
+MBarHook  		EQU 		$A2C      				; user hook during menuSelect [pointer]
+MBarHeight		EQU 		$BAA      				; (word) height of menu bar (usually 20)
+inThumb   		EQU 		129       				; in thumb area of a dial
+nextControl   	EQU 		$0        				; next control in the list [handle]
+contrlOwner   	EQU 		$4        				; owning window [pointer]
+contrlRect		EQU 		$8        				; bounding rectangle [8 bytes]
+contrlVis 		EQU 		$10       				; visible state [byte]
+contrlHilite  	EQU 		$11       				; hilite state [byte]
+contrlValue   	EQU 		$12       				; current value of control [word]
+contrlMin 		EQU 		$14       				; minimum value of control [word]
+contrlMax 		EQU 		$16       				; maximum value of control [word]
+contrlDefHandle   EQU 		$18       				; control definition procedure [handle]
+contrlAction  	EQU 		$20       				; local actionProc [pointer]
+contrlRFcon   	EQU 		$24       				; refcon defined by application [long]
+contrlTitle   	EQU 		$28       				; title string [STRING]
+contrlSize		EQU 		$28       				; size of control data structure less title
+DragPattern   	EQU 		$A34      				; DragTheRgn pattern [8 bytes]
+DragFlag  		EQU 		$A44      				; implicit parameter to DragControl [word]
+CurDragAction 	EQU 		$A46      				; implicit actionProc for dragControl [pointer]
+teDestRect		EQU 		$0        				; destination rectangle [8 bytes]
+teViewRect		EQU 		$8        				; view rectangle rectangle [8 bytes]
+teSelRect 		EQU 		$10       				; select rectangle [8 bytes]
+teLineHite		EQU 		$18       				; lineheight [word]
+teAscent  		EQU 		$1A       				; first baseline offset [word]
+teSelPoint		EQU 		$1C       				; selection point [long]
+teSelStart		EQU 		$20       				; selection start [word]
+teSelEnd  		EQU 		$22       				; selection end [word]
+teActive  		EQU 		$24       				; active [byte]
+teWordBreak   	EQU 		$26       				; word break routine [pointer]
+teClikProc		EQU 		$2A       				; click loop routine [pointer]
+teClikTime		EQU 		$2E       				; time of last click [long]
+teClikLoc 		EQU 		$32       				; location of double click [long]
+teCarTime 		EQU 		$34       				; time for next caret toggle [long]
+teCarOn   		EQU 		$38       				; is caret on? [byte]
+teCarAct  		EQU 		$39       				; is caret active? [byte]
+teJust			EQU 		$3A       				; fill style [word]
+teLength  		EQU 		$3C       				; length of text below [word]
+teTextH   		EQU 		$3E       				; text [handle]
+teRecBack 		EQU 		$42       				; unused [word]
+teLftClick		EQU 		$46       				; click was to left? [byte]
+teLftCaret		EQU 		$47       				; caret was to left? [byte]
+teCROnly  		EQU 		$48       				; <CR> only for line breaks? [byte]
+teFontStuff   	EQU 		$4A       				; space for font specifier [8 bytes]
+teGrafPort		EQU 		$52       				; grafport for editting [pointer]
+teHiHook  		EQU 		$56       				; hook for hilite routine [pointer]
+teCarHook 		EQU 		$5A       				; hook for hilite routine [pointer]
+teNLines  		EQU 		$5E       				; number of lines [word]
+teLines   		EQU 		$60       				; line starts [words...]
+teRecSize 		EQU 		$68       				; base size of a record w/o lines
+TEDoText  		EQU 		$A70      				; textEdit doText proc hook [pointer]
+TERecal   		EQU 		$A74      				; textEdit recalText proc hook [pointer]
+TEScrpLength  	EQU 		$AB0      				; textEdit Scrap Length [word]
+TEScrpHandle  	EQU 		$AB4      				; textEdit Scrap [handle]
+TEWdBreak 		EQU 		$AF6      				; default word break routine [pointer]
+TEFindWord		EQU			$7F8					; low-memory hook for TextEdit's FindWord routine
+WordRedraw		EQU 		$BA5      				; (byte) - used by TextEdit RecalDraw
+TESysJust 		EQU 		$BAC      				; (word) system justification (intl. textEdit)
+TEFlags   		EQU 		teRecBack     			; turn whole byte into bit flags
+tefAutoPos EQU 6
+resCtrl   		EQU 		3         				; control defined in resource file
+stopIcon  		EQU 		0         				; stop icon ID
+noteIcon  		EQU 		1         				; note icon ID
+cautionIcon   	EQU 		2         				; caution icon ID
+dItems			EQU 		$12       				; item list ID and handle
+dTitle			EQU 		$14       				; dialog window title
+aBounds   		EQU 		$0        				; alert box height and width
+aItems			EQU 		$8        				; item list ID
+aStages   		EQU 		$A        				; stages word
+items 			EQU 		$9C       				; Item list [handle]
+teHandle  		EQU 		$A0       				; textEdit object [handle]
+editField 		EQU 		$A4       				; current field being edited [word]
+aDefItem  		EQU 		$A8       				; default item for alerts [word]
+dWindLen  		EQU 		$AA       				; dialog record length
+itmHndl   		EQU 		0         				; handle to the item
+itmRect   		EQU 		$4        				; bounding rect of item
+itmType   		EQU 		$C        				; item type
+itmData   		EQU 		$D        				; item string, must be even length
+ANumber   		EQU 		$A98      				; active alert ID [word]
+ACount			EQU 		$A9A      				; # times this alert called [word]
+DABeeper  		EQU 		$A9C      				; beep routine [pointer]
+DAStrings 		EQU 		$AA0      				; paramText substutution strings [4 handles]
+DlgFont   		EQU 		$AFA      				; default dialog font ID [word]
+AppPacks  		EQU 		$AB8      				; packages' code [8 handles]
+FinderName		EQU 		$2E0      				; "Finder" name [STRING[15]]
+AppParmHandle 	EQU 		$AEC      				; handle to hold application parameters
+ToolScratch   	EQU 		$9CE      				; scratch area [8 bytes]
+TempRect  		EQU 		$9FA      				; scratch rectangle [8 bytes]
+mCCMask   		EQU 		$60       				; mapCompact + mapChanged
+fMgrCtl1  		EQU 		8         				; printer drivers
+fFontType 		EQU 		0         				; font type [word]
+fFirstChar		EQU 		2         				; ASCII code of first char [word]
+fLastChar 		EQU 		4         				; ASCII code of last char [word]
+fWidMax   		EQU 		6         				; maximum width of any char in pixels [word]
+fKernMax  		EQU 		8         				; Negative of maximum character kern [word]
+fNDescent 		EQU 		10        				; negative of descent [word]
+fFRectWidth   	EQU 		12        				; width of font rectangle [word]
+fFRectHeight  	EQU 		14        				; height of font rectangle [word]
+fOWTLoc   		EQU 		16        				; offset to offset/width table [word]
+fAscent   		EQU 		18        				; ascent above baseline in pixels [word]
+fDescent  		EQU 		20        				; descent below baseline in pixels [word]
+fLeading  		EQU 		22        				; space between lines in pixels [word]
+fRowWords 		EQU 		24        				; row width of bit image / 2 [word]
+fmInFamily		EQU 		0         				; family [word]
+fmInSize  		EQU 		2         				; size [word]
+fmInFace  		EQU 		4         				; face [word]
+fmInNeedBits  	EQU 		5         				; needBits [byte]
+fmInDevice		EQU 		6         				; device number [byte]
+fmInNumer 		EQU 		8         				; numerator of scale [fixed]
+fmInDenom 		EQU 		12        				; denominator of scale [fixed]
+fmOutError		EQU 		0         				; error code [word]
+fmOutFontH		EQU 		2         				; the actual font [handle]
+fmOutBold 		EQU 		6         				; bolding factor [byte]
+fmOutItalic   	EQU 		7         				; italic factor [byte]
+fmOutULOffset 	EQU 		8         				; underline offset [byte]
+fmOutULShadow 	EQU 		9         				; underline halo [byte]
+fmOutULThick  	EQU 		10        				; underline thickness [byte]
+fmOutShadow   	EQU 		11        				; shadow factor [byte]
+fmOutExtra		EQU 		12        				; extra horizontal width [byte]
+fmOutAscent   	EQU 		13        				; height above baseline [byte]
+fmOutDescent  	EQU 		14        				; height below baseline [byte]
+fmOutWidMax   	EQU 		15        				; maximum width of character [byte]
+fmOutLeading  	EQU 		16        				; space between lines [byte]
+fmOutNumer		EQU 		18        				; point for numerators of scale factor [long]
+fmOutDenom		EQU 		22        				; point for denominators of scale factor [long]
+WidTabData	EQU 	0					;256 fixed point widths
+WidTabFont	EQU 	1024				;(long) font handle used to generate this width table
+WidthSExtra 	EQU 	WidTabFont+4			;(long) fixed point space extra used for this table
+WidthStyle	EQU 	WidthSExtra+4			;(long) fixed point extra due to style, used for this table
+WidthFID		EQU 	WidthStyle+4			;(word) font family ID for this table
+WidthFSize	EQU 	WidthFID+2			;(word) font size request that generated this table
+WidthFace		EQU 	WidthFSize+2			;(word) face request that generated this table
+WidthDevice 	EQU 	WidthFace+2 			;(word) device requested
+WidthScales 	EQU 	WidthDevice+2			;(8 bytes) scale factors requested on input
+WidthAFID		EQU 	WidthScales+8			;(word) actual font family ID for this table
+WidthFHand	EQU 	WidthAFID+2 			;(long) font family handle for this table
+WidthUsedFam	EQU 	WidthFHand+4			;(boolean) whether we used fixed point family widths
+WidthAFace	EQU 	WidthUsedFam+1		;(byte) actual face produced (may differ for styled fonts)
+WidthVOutput	EQU 	WidthAFace+1			;(word) vertical scale output value
+WidthHOutput	EQU 	WidthVOutput+2		;(word) horizontal scale output value
+WidthVFactor	EQU 	WidthHOutput+2		;(word) vertical scale output value
+WidthHFactor	EQU 	WidthVFactor+2		;(word) horizontal scale output value
+WidthASize	EQU 	WidthHFactor+2		;(word) actual size of font strike used
+CurFMFamily   	EQU 		$988      				; current font family
+CurFMSize 		EQU 		$98A      				; current font size
+CurFMFace 		EQU 		$98C      				; current font face
+CurFMNeedBits 	EQU 		$98D      				; boolean specifying whether it needs strike
+CurFMDevice   	EQU 		$98E      				; current font device
+CurFMNumer		EQU 		$990      				; current numerator of scale factor
+CurFMDenom		EQU 		$994      				; current denominator of scale factor
+FOutRec   		EQU 		$998      				; Font Manager output record
+FMDotsPerInch 	EQU 		$9B2      				; h,v dotsPerInch of current device
+FMStyleTab		EQU 		$9B6      				; style heuristic table supplied by device
+RomFont0  		EQU 		$980      				; system font [handle]
+GotStrike EQU $986
+wDrawMsg  		EQU 		0         				; draw yourself
+wHitMsg   		EQU 		1         				; hit test
+wCalcRgnMsg   	EQU 		2         				; recalculate your regions
+wDisposeMsg   	EQU 		4         				; dispose any private data
+wGrowMsg  		EQU 		5         				; drag out grow outline
+wGIconMsg 		EQU 		6         				; draw the grow icon
+OldStructure  	EQU 		$9E6      				; saved structure region [handle]
+SaveVisRgn		EQU 		$9F2      				; temporarily saved visRegion [handle]
+CurDeKind 		EQU 		$A22      				; window kind of deactivated window [word]
+SaveUpdate		EQU 		$9DA      				; Enable update accumulation? [word]
+MDrawMsg EQU 0
+MChooseMsg EQU 1
+MSizeMsg EQU 2
+TheMenu   		EQU 		$A26      				; ID of hilited menu [word]
+SavedHandle   	EQU 		$A28      				; saved bits under a menu [handle]
+drawCtlMsg		EQU 		0         				; draw message
+hitCtlMsg 		EQU 		1         				; hit test message
+calcCtlMsg		EQU 		2         				; calc region message
+newCtlMsg 		EQU 		3         				; init message
+dispCtlMsg		EQU 		4         				; dispose any private data message
+posCtlMsg 		EQU 		5         				; adjust indicator position message
+thumbCtlMsg   	EQU 		6         				; calculate rectangles for thumb dragging
+dragCtlMsg		EQU 		7         				; custom drag message
+trackCtlMsg   	EQU 		8         				; track yourself message
+FPState   		EQU 		$A4A      				; floating point state [6 bytes]
+App2Packs      EQU      $0BC8
+RMGRPerm  		EQU 		$BA4      				; (byte) - permission byte for OpenResFile
+IconBitmap		EQU 		$A0E      				; bitmap used for plotting things
+TaskLock  		EQU 		$A62      				; re-entering SystemTask [byte]
+CloseOrnHook  	EQU 		$A88      				; hook for closing desk ornaments
+MAErrProc 		EQU 		$BE8      				; (long) MacApp error proc address
+MASuperTab		EQU 		$BEC      				; (long) handle to MacApp superclass table
+mbMenu1Loc EQU 10
+teWordSelect 	EQU			4						; clickExpand to select word
+teWordDrag	 	EQU			8						; clickExpand to drag new word
+teFromFind	 	EQU			12						; FindLine called it ($0C)
+teFromRecal	 	EQU			16						; RecalLines called it ($10)
+teFind			Equ			0						; DoText called for searching
+teHighlight		Equ			1						; DoText called for highlighting
+teDraw			Equ			-1						; DoText called for drawing text
+teCaret			Equ			-2						; DoText called for drawing the caret

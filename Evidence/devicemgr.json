@@ -1,0 +1,302 @@
+{
+  "module": "OS/DeviceMgr.a",
+  "source_path": "Reconstruction/Source/OS/DeviceMgr.a",
+  "source_sha256": "abc24d8af03d0541a96e1d50c99aa561a0ebc6373e9963741bca7d53ce51020f",
+  "upstream_source": {
+    "path": "OS/DeviceMgr.a",
+    "sha256": "85ca113f1d25d588a7c33ca46c2a9598ffbd4166a2a032f2e7cd1d8d6b4ca38e"
+  },
+  "upstream_patch": {
+    "path": "Patches/PatchPlusROM.a",
+    "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470",
+    "line": 1125,
+    "description": "The surviving IODone patch preserves D0 around a call to ROM address $402082. It confirms the original routine entry and the missing preservation in the ROM body."
+  },
+  "upstream_equates": [
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x402030",
+      "end_address_exclusive": "0x402568",
+      "rom_offset": "0x2030",
+      "length": 1336,
+      "sha256": "b9e4d9a2120b9265cece5aaf4d4bf7c31efdfc6f35a008c46f7ad6e0e7f95143",
+      "first_symbol": "FSIODneTbl",
+      "last_symbol": "AddDrive"
+    }
+  ],
+  "data_spans": [
+    {
+      "start_address": "0x402030",
+      "end_address_exclusive": "0x402036",
+      "description": "Three word offsets from FSIODneTbl to Fetch, Stash and IODone, preserved as symbolic expressions."
+    }
+  ],
+  "boundary_evidence": {
+    "description": "The reference comment identifies DeviceMgr.a at FSIODneTbl, $402030. The preceding trap-dispatch module ends at $40202E. The complete surviving DeviceMgr.a ends with AddDrive, whose final RTS is at $402566. Independent initialization code begins at $402568. Interrupt, cursor and trap-dispatch code separates Queue from Device Manager.",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv",
+    "comment_reference": "Reconstruction/Evidence/ghidra-comments.json"
+  },
+  "symbols": {
+    "FSIODneTbl": "0x402030",
+    "Fetch": "0x402036",
+    "FetchStash": "0x40203a",
+    "StashOne": "0x40205a",
+    "FinishFS": "0x40205e",
+    "FSDone": "0x40206e",
+    "IOCoreErr": "0x402076",
+    "Stash": "0x40207a",
+    "IOOK": "0x402080",
+    "IODone": "0x402082",
+    "DeActDrvr": "0x4020a2",
+    "DeActImed": "0x4020a8",
+    "IORTS7": "0x4020c2",
+    "PostCompletion": "0x4020c4",
+    "DoAsyncIO": "0x4020f8",
+    "GoIO": "0x40210a",
+    "DoImedIO": "0x40211e",
+    "GoDriver": "0x402152",
+    "GoError": "0x40219c",
+    "RegExit": "0x4021a0",
+    "MapUnit": "0x4021a8",
+    "BadUnit": "0x4021ca",
+    "ToFSOpen": "0x4021d8",
+    "Open": "0x4021f4",
+    "NonSlotDrvr": "0x402216",
+    "CkInstLoop": "0x402220",
+    "NextEntry": "0x402254",
+    "gotDrvr": "0x402288",
+    "InstallDrvr": "0x4022ac",
+    "DInstalled": "0x4022c2",
+    "DrvrLock": "0x4022f8",
+    "FoundUnit": "0x402314",
+    "ToUnLkStuff": "0x402354",
+    "UnLkStuff": "0x40235c",
+    "OpenEnd": "0x402376",
+    "OpenExit": "0x40237c",
+    "OpenOK": "0x402382",
+    "Close": "0x402386",
+    "IOClose": "0x402390",
+    "WaitUntilDone": "0x4023a2",
+    "Read": "0x4023be",
+    "IORead": "0x4023c8",
+    "IORWCS": "0x4023d0",
+    "RWCSInit": "0x4023e0",
+    "SyncWait": "0x402420",
+    "RWCSDone": "0x402428",
+    "Write": "0x40242e",
+    "IOWrite": "0x402438",
+    "Control": "0x402442",
+    "Status": "0x402450",
+    "RetDCEHandle": "0x40246a",
+    "KillIO": "0x402476",
+    "KillLoop": "0x4024ac",
+    "DoneKillIO": "0x4024be",
+    "KillFailed": "0x4024c4",
+    "DrvrInstall": "0x4024ca",
+    "ClearDCE": "0x4024e8",
+    "DInstOKExit": "0x402500",
+    "DInstRTS": "0x402502",
+    "MpUnitNum": "0x402508",
+    "DrvrRemove": "0x402528",
+    "RemovErr": "0x402554",
+    "AddDrive": "0x402558"
+  },
+  "assembly_symbol_aliases": {
+    "Control": "IOCore__Control",
+    "Status": "IOCore__Status"
+  },
+  "external_references": {
+    "Enqueue": "0x4019ca",
+    "FileOpen": "0x404024",
+    "FileClose": "0x40514e",
+    "FileRead": "0x404f18",
+    "FileWrite": "0x40502a"
+  },
+  "edits": [
+    {
+      "kind": "source_extraction",
+      "description": "Retained the complete manager from FSIODneTbl through AddDrive. Preserved the original header, history through 1985 and applicable comments. Removed later revision tags on restored instructions; retained their comment wording."
+    },
+    {
+      "kind": "iodone_reversion",
+      "description": "Removed the later wrapper that saves and restores D0, and the later StripAddress sequence. The ROM starts IODone with MOVE.L DCtlQHead(A1),D1. PatchPlusROM.a explicitly binds its D0-preserving patch to $402082; DeviceMgr.a records incorporation of that patch on January 13, 1986."
+    },
+    {
+      "kind": "memory_reversion",
+      "description": "Restored direct bit-7 handle locking and unlocking, recovery of a DCE handle from SysZone and -4(A1), and explicit 24-bit address masking. GoDriver strips the high pointer byte on the stack. Open and MpUnitNum mask pointers with Lo3Bytes. These replace later HLock, HUnlock, RecoverHandle and StripAddress calls."
+    },
+    {
+      "kind": "open_reversion",
+      "description": "Removed slot-driver detection, slot resource searches, version comparisons, unit-table growth and extended DCE setup. Retained the installed-driver and named-resource searches. Restored the signed comparison of a driver address with ROMBase and the direct memory flags."
+    },
+    {
+      "kind": "entry_reversion",
+      "description": "Restored A2-A3 in the manager entry-point register lists. Removed the later GoDriver, WaitUntilDone and SyncWait jump hooks, and the Read/Write idle hooks. Restored Control, Status, KillIO and AddDrive names from before the 1992 Trap suffix change."
+    },
+    {
+      "kind": "dce_layout",
+      "description": "Restored DCtlEntrySize to 40. SysEqu.a explicitly records that this field used to be 40 bytes; the later 52-byte layout adds slot fields. The ROM allocates and clears exactly 40 bytes."
+    },
+    {
+      "kind": "trap_encoding",
+      "description": "Replaced the original literal $A43D instruction with the symbolic _DrvrInstallLock trap declaration. Declared the observed system-heap variants of ResrvMem and NewHandle. Restored the base DisposHandle trap $A023 used by this ROM."
+    },
+    {
+      "kind": "external_references",
+      "description": "Assigned Enqueue and the four file-system entry addresses from the ROM call operands. Kept the original symbolic call names and made PC-relative operands explicit."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Matched every source branch to the ROM branch sequence and made its width explicit. All branch conditions agree. Retained the three symbolic FSIODneTbl offsets as data; all other bytes are assembled instructions, including symbolic traps."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x402082",
+      "description": "IODone allows completion routines and subsequent dispatch work to change D0. The reconstruction does not include the later patch that preserves its input value."
+    },
+    {
+      "address": "0x4022dc",
+      "description": "Open uses a signed comparison with ROMBase to distinguish RAM and ROM drivers. It does not apply the later unsigned comparison or StripAddress call."
+    },
+    {
+      "address": "0x4023b0",
+      "description": "Close treats only ClosErr as a failed close. Other driver results still lead to clearing the open flag, matching the compatibility behavior recorded in the 1985 history."
+    },
+    {
+      "address": "0x402528",
+      "description": "DrvrRemove refuses to remove an open driver. It does not call the close routine despite the retained original routine comment saying that it does."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "All 1336 assembled bytes equal the ROM span. All 63 recorded symbols match their addresses.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "method": "Translated the final source directly with the shared verifier, assembled for the 68000, linked at the ROM address, checked for unresolved relocations and compared every byte with the ROM.",
+    "translator_support": "The shared translator qualifies Control and Status code labels to avoid GNU register aliases. The MPW source retains the original names.",
+    "preserved_exact_original_comment_occurrences": 806,
+    "preserved_comment_occurrences_with_removed_revision_tags": 16,
+    "authored_comment_lines": 8,
+    "temporary_driver": "/tmp/evidence-devicemgr.py",
+    "temporary_build": "/tmp/devicemgr-build",
+    "commands": [
+      "python3 /tmp/evidence-devicemgr.py",
+      "vale /tmp/devicemgr-authored.md"
+    ],
+    "limitations": [
+      "MPW assembly has not been run.",
+      "Byte equality does not establish the exact formatting or private-label spelling of the earlier source.",
+      "The final verification covers this module only. QuickDraw files were excluded from this work."
+    ]
+  },
+  "prose_lint": {
+    "command": "vale /tmp/devicemgr-authored.md",
+    "result": "Zero errors, warnings or suggestions. Preserved historical comments were excluded."
+  },
+  "integration_manifest": {
+    "name": "devicemgr",
+    "source": "Reconstruction/Source/OS/DeviceMgr.a",
+    "start": "0x402030",
+    "end_exclusive": "0x402568",
+    "entry_points": {
+      "FSIODneTbl": "0x402030",
+      "Fetch": "0x402036",
+      "FetchStash": "0x40203a",
+      "StashOne": "0x40205a",
+      "FinishFS": "0x40205e",
+      "FSDone": "0x40206e",
+      "IOCoreErr": "0x402076",
+      "Stash": "0x40207a",
+      "IOOK": "0x402080",
+      "IODone": "0x402082",
+      "DeActDrvr": "0x4020a2",
+      "DeActImed": "0x4020a8",
+      "IORTS7": "0x4020c2",
+      "PostCompletion": "0x4020c4",
+      "DoAsyncIO": "0x4020f8",
+      "GoIO": "0x40210a",
+      "DoImedIO": "0x40211e",
+      "GoDriver": "0x402152",
+      "GoError": "0x40219c",
+      "RegExit": "0x4021a0",
+      "MapUnit": "0x4021a8",
+      "BadUnit": "0x4021ca",
+      "ToFSOpen": "0x4021d8",
+      "Open": "0x4021f4",
+      "NonSlotDrvr": "0x402216",
+      "CkInstLoop": "0x402220",
+      "NextEntry": "0x402254",
+      "gotDrvr": "0x402288",
+      "InstallDrvr": "0x4022ac",
+      "DInstalled": "0x4022c2",
+      "DrvrLock": "0x4022f8",
+      "FoundUnit": "0x402314",
+      "ToUnLkStuff": "0x402354",
+      "UnLkStuff": "0x40235c",
+      "OpenEnd": "0x402376",
+      "OpenExit": "0x40237c",
+      "OpenOK": "0x402382",
+      "Close": "0x402386",
+      "IOClose": "0x402390",
+      "WaitUntilDone": "0x4023a2",
+      "Read": "0x4023be",
+      "IORead": "0x4023c8",
+      "IORWCS": "0x4023d0",
+      "RWCSInit": "0x4023e0",
+      "SyncWait": "0x402420",
+      "RWCSDone": "0x402428",
+      "Write": "0x40242e",
+      "IOWrite": "0x402438",
+      "IOCore__Control": "0x402442",
+      "IOCore__Status": "0x402450",
+      "RetDCEHandle": "0x40246a",
+      "KillIO": "0x402476",
+      "KillLoop": "0x4024ac",
+      "DoneKillIO": "0x4024be",
+      "KillFailed": "0x4024c4",
+      "DrvrInstall": "0x4024ca",
+      "ClearDCE": "0x4024e8",
+      "DInstOKExit": "0x402500",
+      "DInstRTS": "0x402502",
+      "MpUnitNum": "0x402508",
+      "DrvrRemove": "0x402528",
+      "RemovErr": "0x402554",
+      "AddDrive": "0x402558"
+    }
+  }
+}

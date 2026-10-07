@@ -1,0 +1,219 @@
+{
+  "module": "CMMAINT",
+  "source": "Reconstruction/Source/OS/HFS/CMMAINT.a",
+  "originals": [
+    {
+      "path": "OS/HFS/CMMAINT.a",
+      "sha256": "29a4ae2a1dd258af0fa7633ab445317a79db58843f137aebedc3e71d4b1184d9",
+      "line_ranges": [
+        [
+          1,
+          363
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/BTSVCS.a",
+      "sha256": "bd19f2d4cc36fb22e1c753ba9148703ee6825ebeef4a4923b71530fed255d364",
+      "line_ranges": [
+        [
+          140,
+          200
+        ]
+      ],
+      "role": "BTClose establishes the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          192,
+          192
+        ],
+        [
+          202,
+          202
+        ],
+        [
+          401,
+          401
+        ],
+        [
+          411,
+          414
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          429,
+          429
+        ],
+        [
+          450,
+          451
+        ],
+        [
+          485,
+          485
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          330,
+          330
+        ],
+        [
+          336,
+          336
+        ],
+        [
+          354,
+          354
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4065d8",
+      "end_exclusive": "0x4066dc",
+      "rom_offset": "0x65d8",
+      "length": 260,
+      "sha256": "764b9101d5a117362943253c59e9a613e8d4def3804515a4de377a4b1799fb8e",
+      "start_label": "CMMaint",
+      "end_label": "CMMAINTEnd",
+      "boundary_evidence": "BuildKey begins after the CMSVCS return at 0x4065d8. UpdCName returns at 0x4066da. BTClose begins BTSVCS at 0x4066dc."
+    }
+  ],
+  "entry_points": {
+    "CMMaint": "0x4065d8",
+    "BuildKey": "0x4065d8",
+    "BKExit": "0x406600",
+    "CMFlush": "0x406606",
+    "CFExit": "0x40662e",
+    "CFExit1": "0x406630",
+    "CMKeyCmp": "0x40663a",
+    "KCCmpName": "0x406650",
+    "KCIsLT": "0x406666",
+    "KCIsEQ": "0x40666a",
+    "KCIsGT": "0x40666e",
+    "KCExit": "0x406670",
+    "LocCNode": "0x406678",
+    "LCExit": "0x406692",
+    "LocCRec": "0x406698",
+    "LRExit": "0x4066bc",
+    "UpdCName": "0x4066c2",
+    "CMMAINTEnd": "0x4066dc"
+  },
+  "integration_manifest": {
+    "name": "cmmaint",
+    "source": "Reconstruction/Source/OS/HFS/CMMAINT.a",
+    "start": "0x4065d8",
+    "end_exclusive": "0x4066dc",
+    "entry_points": {
+      "CMMaint": "0x4065d8",
+      "BuildKey": "0x4065d8",
+      "BKExit": "0x406600",
+      "CMFlush": "0x406606",
+      "CFExit": "0x40662e",
+      "CFExit1": "0x406630",
+      "CMKeyCmp": "0x40663a",
+      "KCCmpName": "0x406650",
+      "KCIsLT": "0x406666",
+      "KCIsEQ": "0x40666a",
+      "KCIsGT": "0x40666e",
+      "KCExit": "0x406670",
+      "LocCNode": "0x406678",
+      "LCExit": "0x406692",
+      "LocCRec": "0x406698",
+      "LRExit": "0x4066bc",
+      "UpdCName": "0x4066c2",
+      "CMMAINTEnd": "0x4066dc"
+    }
+  },
+  "changes": [
+    {
+      "location": "LocCRec at 0x406698",
+      "change": "Removed the vector stub added in October 1986 and restored the NOP on its not-found error path.",
+      "evidence": "The ROM begins LocCRec by saving its return address on A6. It contains NOP at 0x4066ba, where the surviving source comments out a branch to the following LRExit label."
+    },
+    {
+      "location": "Call and branch encodings",
+      "change": "Restored JSR for both LocCRec calls from LocCNode and the word branch in CMKeyCmp. Made PC-relative call addressing explicit.",
+      "evidence": "The calls at 0x40667a and 0x40668e are JSR with PC-relative displacements. The unsigned lower comparison at 0x40664c uses a word branch."
+    },
+    {
+      "location": "Surviving catalog utilities",
+      "change": "Preserved the original header, applicable history, and comments. Retained the key construction, catalog flush, name comparison, lookup, and name-copy bodies with original equates and trap opcodes.",
+      "evidence": "All 260 bytes and 18 labels match. The RelString trap at 0x406660 uses 0xa050, and BlockMove at 0x4066d4 uses 0xa02e."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "BTFlush",
+      "address": "0x4068c2"
+    },
+    {
+      "name": "BTSearch",
+      "address": "0x406d4a"
+    },
+    {
+      "name": "BTUpdate",
+      "address": "0x406dd6"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    },
+    {
+      "name": "FlushMDB",
+      "address": "0x402d2e"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4065d8, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "cd9de6621e38f8a8012d3d622e8f575c829a86c75579112134f3f4f9ef1fff93",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/CMMAINT.a",
+        "sha256": "cd9de6621e38f8a8012d3d622e8f575c829a86c75579112134f3f4f9ef1fff93"
+      }
+    ],
+    "assembled_length": 260,
+    "matched_bytes": 260,
+    "entry_points_checked": 18,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

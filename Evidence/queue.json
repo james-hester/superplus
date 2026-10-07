@@ -1,0 +1,77 @@
+{
+  "source": "Reconstruction/Source/OS/Queue.a",
+  "original_source": {
+    "path": "OS/Queue.a",
+    "sha256": "e7918c024cb79e1274eeca009f328f698c5bcd94eda2e0fda15a0028f0e529d1"
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "start_address": "0x4019ca",
+  "end_address_exclusive": "0x401a42",
+  "length": 120,
+  "sha256": "b60d76ab44ce1e2c39e7103bce802536b2729e94e063da6e745da96f14d46379",
+  "routines": [
+    {
+      "name": "Enqueue",
+      "start_address": "0x4019ca",
+      "end_address_exclusive": "0x4019f0",
+      "length": 38,
+      "sha256": "569fc940ac4d94d3cee23695e9f4e15c5c5376518bc5ddc1be762a52ea4e578c"
+    },
+    {
+      "name": "Dequeue",
+      "start_address": "0x4019f0",
+      "end_address_exclusive": "0x401a38",
+      "length": 72,
+      "sha256": "aac4d27e9283c9dfff29b5e21755e06ee4302c87a32b0fa538b1b54f8bd31135"
+    },
+    {
+      "name": "InitQueue",
+      "start_address": "0x401a38",
+      "end_address_exclusive": "0x401a42",
+      "length": 10,
+      "sha256": "69f03589cfca9b1de79c4d462dac171e731c8260f5e52b3c6fd1a39c44eb1975"
+    }
+  ],
+  "changes": [
+    {
+      "change": "Remove EnqueueHead.",
+      "reason": "The ancestor records its addition on September 12, 1993. The ROM places Dequeue immediately after Enqueue."
+    },
+    {
+      "change": "Rename ENQUEUETRAP to ENQUEUE and DEQUEUETRAP to DEQUEUE.",
+      "reason": "The ancestor records the Trap suffix change on May 21, 1992. The Ghidra labels use Enqueue and Dequeue."
+    },
+    {
+      "change": "Replace StandardEqu.d and HardwarePrivateEqu.a with five local equates.",
+      "reason": "The ROM uses qLink=0, qHead=2, qTail=6, qErr=-1 and HiIntMask=$0300. The queue layout and error value agree with Interfaces/AIncludes/SysEqu.a and SysErr.a. HardwareEqu.a provides the $0300 interrupt mask for earlier machines."
+    },
+    {
+      "change": "Omit history entries after July 1985.",
+      "reason": "Those entries describe later archive, build, header and feature changes. The retained header, attribution, copyright, history and routine comments remain verbatim."
+    }
+  ],
+  "verification": {
+    "date": "2026-10-03",
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "source_sha256": "27cb5212b08e5e3f923453099ae94c09ec4971ffcab77a5b892dceb0eb0d0e0c",
+    "checked_bytes": 120,
+    "assembled_sha256": "b60d76ab44ce1e2c39e7103bce802536b2729e94e063da6e745da96f14d46379",
+    "rom_span_sha256": "b60d76ab44ce1e2c39e7103bce802536b2729e94e063da6e745da96f14d46379",
+    "linked_relocations": 0,
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Historical MPW assembly has not been tested.",
+      "The translator supports the constructs used by the current excerpts.",
+      "Byte equality does not establish the exact historical source text or prove completion of the ROM."
+    ]
+  },
+  "source_sha256": "27cb5212b08e5e3f923453099ae94c09ec4971ffcab77a5b892dceb0eb0d0e0c"
+}

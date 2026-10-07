@@ -1,0 +1,162 @@
+;__________________________________________________________________________________________________
+;
+;	File:		SysUtil.a
+;
+;	Contains:	This file contains system utility core routines: ReadParam, WriteParam,
+;				ReadDateTime, SetDateTime, InitUtil, Delay, CmpString
+;
+;	Written by:	Larry Kenyon
+;
+;	Copyright © 1982-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/30/85	LAK		Incorporated init of new parameter RAM into InitUtil. Set bit 5
+;									(13) of Hardware vector if parameter RAM was valid at boot.
+;				 10/3/85	BBM		added three new Defs for new clock.text
+;				 7/24/85	RDC		Deleted ClkRW routine (moved to new Clock.text) Changed BSR to
+;									JSR for ref's to ClkRW routine
+;				  6/7/85	JTC		Modified to return long to OS dispatcher. <07Jun85>
+;				 2/27/85	JTC		Add RelString to return -1,0,1 (<,=,>) rather than simply 0,1.
+;									Increase size, but speed, too. Marked... <27Feb85>
+;				 1/31/85	LAK		Removed false RTE. Exclude all ints when talking to clock chip.
+;				 1/23/85	LAK		Adapted for new equate files.
+;				  9/5/83	SC		Changed default volume control to 3; changed init.
+;				 8/22/83	LAK		Init port A parameter RAM to 9600 baud, etc.
+;				 8/21/83	SC		Fixed "" "".
+;				 8/20/83	LAK		Added new parameter ram stuff and changed init.
+;				 8/17/83	JTC		changed CmpString, UprString for international character sets.
+;				 8/17/83	LAK		initutil nolonger mucks with the time if param ram check byte is
+;									invalid. serial port a is no longer initialized to async.
+;				 5/25/83	LAK		changed CmpString, UprString to general-purpose string
+;									operators.
+;				 4/29/83	LAK		changed param ram cksum byte to $A6 to reset all machines.
+;				 4/27/83	LAK		corrected serial port init values for 2 stop bit (not 1 1/2)
+;				 4/19/83	LAK		added UprString routine; put in SCC config values for default
+;									param mem init (9600 baud, 8 data, 2 stop, no parity: both
+;									ports).
+;				  4/4/83	AJH		changed initial value of misc2 param byte
+;				 3/10/83	LAK		Updated defaults for font, menu flash, volume control.
+;				  3/8/83	LAK		Fixed bug in Delay.
+;				  3/3/83	LAK		Updated documentation on CmpString.
+;				 2/17/83	LAK		ReadParam and WriteParam now preserve A2. InitUtil writes
+;									initial values to clock chip if it was not initialized. Added
+;									read verify to WriteParam. InitUtil is now a trap and observes
+;									Pascal regsave conventions.
+;				 2/10/83	LAK		moved clock chip r/w procs here from boot code.
+;				  2/4/83	LAK		put delay back in.
+;				 1/12/83	LAK		removed Alert, Delay, and CoreWakeUp.
+;				 6/10/82	LAK		SetDateTime now sets CLasTime to Ticks value.
+;				  6/9/82	ALO		added Alert proc
+;				  6/7/82	LAK		added an initialization routine which reads the clock.
+;				 5/27/82	LAK		changed ReadDateTime, SetDateTime to use keyboard driver to do
+;									the work; ReadParam, WriteParam, ReadDateTime, SetDateTime
+;									interfaces have all been changed.
+;				 5/26/82	LAK		changed ReadParam to read copy in memory instead of clock ram
+;									changed WriteParam to use keyboard driver to do the work
+;__________________________________________________________________________________________________
+
+*R This excerpt precedes Delay in the ROM.
+*R WriteParam omits the later A0/A1 saves. Calls use the original ROM targets.
+*R The original ReadDateTime comment describes SetDateTime by mistake.
+*R ReadDateTime reads the clock into memory and copies Time to the caller.
+*R See Evidence/sysutil-calls.json for the source and ROM comparison.
+;
+		IMPORT ReadPram,ReadTime,WritePram,WriteTime ;]
+
+        BLANKS ON
+        STRING ASIS
+        MACHINE MC68000
+
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+
+
+SysUtilCalls PROC ;]
+        EXPORT ReadParam,WriteParam,ReadDateTime,SetDateTime ;]
+
+;______________________________________________________________________
+;
+; Routine:		  ReadParam
+;					A0 (input)	-- pointer to buffer which returns parameters
+;					D0 (input)	-- bits 0-19 indicate which of parameter bytes
+;									 0-19 to return in the buffer.	bytes are
+;									 returned in 0-19 order.
+; Arguments:		D0 (output) -- result code
+; Function: 	  This routine returns the requested bytes from the copy
+;				  of parameter ram kept in low memory (SysParam).
+;
+;______________________________________________________________________
+
+ReadParam	LEA 	SysParam,A1 		; ptr to parameter ram copy in memory
+			BSR.S	XferPRam			; return requested bytes
+			MOVEQ	#0,D0				; never any errors
+			RTS
+
+XferPRam	MOVEQ	#20-1,D2			; D2 is the loop counter (for 20 bytes . . .)
+
+XPLoop		LSR.L	#1,D0				; read a byte for each one set
+			BCC.S	@1					; skip if bit is not set
+			MOVE.B	(A1),(A0)+			; load the next byte in return buffer
+@1			ADDQ.L	#1,A1				; incr pointer into parameter ram
+			DBRA	D2,XPLoop
+			RTS
+
+;______________________________________________________________________
+;
+; Routine:		WriteParam
+; Input:		A0 (input) -- pointer to PRAM buffer
+; Arguments:	D0 (output) -- result code
+; Function: 	This routine writes the parameter ram copy in SysParam 
+;				to the clock chip and then reads it back to verify.
+;______________________________________________________________________
+
+WriteParam
+
+			BSR.W WritePram			; write out SysParam to the chip		<30Oct85> LAK
+
+			LEA 	GetParam,A1 		; now read it back to verify
+			BSR.W ReadPram			; use our special scratch area
+			LEA 	SysParam,A0 		; point to original data
+			MOVEQ	#PRWrErr,D0 		; assume parameter ram write error
+			MOVEQ	#20/4-1,D2			; loop count for 5 longs
+
+@2			CMPM.L	(A0)+,(A1)+
+			BNE.S	@3					; exit on compare error
+			DBRA	D2,@2
+
+			MOVEQ	#0,D0				; no errors
+@3
+			RTS
+
+;______________________________________________________________________
+;
+; Routine:		  ReadDateTime
+;					A0 (input)	-- pointer to buffer in which time is returned
+; Arguments:		D0 (output) -- result code
+; Function: 	  This routine updates Time in memory and then writes
+;				  it out to the clock chip.
+;
+;______________________________________________________________________
+
+ReadDateTime
+			BSR.W ReadTime
+			MOVE.L	Time,(A0)			; give it back to requester in buffer
+			RTS
+
+;______________________________________________________________________
+;
+; Routine:		  SetDateTime
+; Arguments:		D0 (input)	--	32-bit value to write to clock
+;					D0 (output) --	result code
+; Function: 	  This routine updates Time in memory and then writes
+;				  it out to the clock chip.
+;
+;______________________________________________________________________
+
+SetDateTime
+			MOVE.L	D0,Time 			; update the time variable in memory
+			BRA.W WriteTime			;
+
+
+        END

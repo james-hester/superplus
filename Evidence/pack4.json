@@ -1,0 +1,323 @@
+{
+  "module": "PACK 4 floating-point arithmetic and conversions",
+  "source": "Reconstruction/Source/Resources/SANE/FP68K.a",
+  "source_sha256": "18ec0b67d93d2d0ae4e8c3d9147800a4db9929614a368b2d9af854195bd98122",
+  "originals": [
+    {
+      "path": "Toolbox/SANE/FP68K.a",
+      "sha256": "6ecea1c345bc9b3280916cc8286f6003b3e5da9b599c532ada4beb7b65863c65",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/FP68K.a",
+      "reconstructed_sha256": "18ec0b67d93d2d0ae4e8c3d9147800a4db9929614a368b2d9af854195bd98122",
+      "retained_nonempty_comment_occurrences": 50
+    },
+    {
+      "path": "Toolbox/SANE/FPEqus.a",
+      "sha256": "4201e7fcd36f461f9919f35e8f9d69d72183722edaf52781d610d95be1d1dc1b",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/FPEqus.a",
+      "reconstructed_sha256": "624578d6aac9d351acad5205cf1d37714fae37fff9a16f533477750cc9f2d34a",
+      "retained_nonempty_comment_occurrences": 132
+    },
+    {
+      "path": "Toolbox/SANE/FPCtrl.a",
+      "sha256": "8ffedf4a47783451874d3464c14df5c66e68c5259d2365d905b115ee8b043b2f",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/FPCtrl.a",
+      "reconstructed_sha256": "57edb438eb9c907f56d93df3df9b698912d761ff7d4119bbf6ed0349ac97b94e",
+      "retained_nonempty_comment_occurrences": 762
+    },
+    {
+      "path": "Toolbox/SANE/FPOps.a",
+      "sha256": "558d9c926e7f11c515e89d57212210aa739294a7240675bb35dfa2c8dcf3d8e4",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/FPOps.a",
+      "reconstructed_sha256": "903ad7113e530e91647cde520f7567febdff0c49bb3c8057b9a86c67f0794cf7",
+      "retained_nonempty_comment_occurrences": 1020
+    },
+    {
+      "path": "Toolbox/SANE/FPBD.a",
+      "sha256": "33074f6dc73470f699d812c1c67a72216a4b1b885b23e21168f005f077aa0f6b",
+      "reconstructed_path": "Reconstruction/Source/Resources/SANE/FPBD.a",
+      "reconstructed_sha256": "8fc1c95945ebbe59858bd943eec49f811e9429bc50d6616acacc2580ddef77c0",
+      "retained_nonempty_comment_occurrences": 687
+    }
+  ],
+  "equate_provenance": [
+    {
+      "path": "Interfaces/AIncludes/SANEMacs.a",
+      "sha256": "62d7338f06707342ab2b3387b322fe35274ca493db3a9c24eaad813d0b2ef06f",
+      "definitions": [
+        {
+          "line": 42,
+          "definition": "FOADD\t\t\tEQU \t\t$0000\t\t\t\t\t; add"
+        },
+        {
+          "line": 1583,
+          "definition": "NANSQRT \t\tEQU \t\t1\t\t\t\t\t\t; Invalid square root such as sqrt(-1)."
+        },
+        {
+          "line": 1584,
+          "definition": "NANADD\t\t\tEQU \t\t2\t\t\t\t\t\t; Invalid addition such as +INF - +INF."
+        },
+        {
+          "line": 1585,
+          "definition": "NANDIV\t\t\tEQU \t\t4\t\t\t\t\t\t; Invalid division such as 0/0."
+        },
+        {
+          "line": 1586,
+          "definition": "NANMUL\t\t\tEQU \t\t8\t\t\t\t\t\t; Invalid multiply such as 0 * INF."
+        },
+        {
+          "line": 1587,
+          "definition": "NANREM\t\t\tEQU \t\t9\t\t\t\t\t\t; Invalid remainder or mod such as x REM 0."
+        },
+        {
+          "line": 1589,
+          "definition": "NANCOMP \t\tEQU \t\t20\t\t\t\t\t\t; Result of converting comp NaN to floating."
+        },
+        {
+          "line": 1590,
+          "definition": "NANZERO \t\tEQU \t\t21\t\t\t\t\t\t; Attempt to create a NaN with a zero code."
+        }
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "definitions": [
+        {
+          "line": 826,
+          "definition": "FPState   \t\tEQU \t\t$A4A      \t\t\t\t; floating point state [6 bytes]"
+        }
+      ]
+    }
+  ],
+  "rom": {
+    "start": "0x41df8c",
+    "end_exclusive": "0x41f14c",
+    "body_start": "0x41df94",
+    "body_bytes": 4536,
+    "sha256": "9bb2b2e0f06ae08e565d9a7595678375714a83eca5f0b1820c25c33294e12b6c"
+  },
+  "changes": [
+    "The resource block header derives its 4,544-byte length from labels and records master-pointer offset $7C. The PACK header retains resource ID 4 and version 2.",
+    "FPFORMAC is 1; FPFORDEB and FPFORLISA are 0. ROMRSRC remains 0, as in the released driver. Conditional assembly therefore selects the same arithmetic and exception-handling paths as the ROM.",
+    "PCOK is 1 to select the original source alternatives that explicitly name the program counter. This changes assembler syntax while retaining the ROM addressing mode.",
+    "The zero-valued FOADD push at $41ED5A uses CLR.W -(SP) to reproduce the ROM encoding. The released MOVE.W #FOADD,-(SP) has the same stack value but occupies two more bytes with this assembler.",
+    "A NOP at $41F0C6 restores two bytes immediately before BD9. The April 1991 history says that an extraneous branch was removed. That entry is consistent with an earlier assembler replacing a branch to the next instruction with NOP, but the lost source spelling remains uncertain.",
+    "The original arithmetic bodies and numeric tables remain in FPCtrl.a, FPOps.a, and FPBD.a. Only the zero push and restored NOP change their active computational statements.",
+    "Required SANEMacs and ToolUtils equates retain their original definitions and comments. The StandardEqu load, unused SANEMacs include, listing controls, and later build-wrapper history are omitted. Original authorship, copyright, and routine histories remain.",
+    "The unprefixed DELETED annotation in FPCtrl.a gains a semicolon so it remains a comment. Decimal constants with leading zeros retain their original spelling; the shared translator now preserves their decimal values."
+  ],
+  "verification": {
+    "name": "pack4",
+    "source": "Reconstruction/Source/Resources/SANE/FP68K.a",
+    "source_sha256": "18ec0b67d93d2d0ae4e8c3d9147800a4db9929614a368b2d9af854195bd98122",
+    "start": "0x41df8c",
+    "end_exclusive": "0x41f14c",
+    "bytes": 4544,
+    "sha256": "9bb2b2e0f06ae08e565d9a7595678375714a83eca5f0b1820c25c33294e12b6c",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Resources/SANE/FP68K.a",
+        "sha256": "18ec0b67d93d2d0ae4e8c3d9147800a4db9929614a368b2d9af854195bd98122"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/SANE/FPBD.a",
+        "sha256": "8fc1c95945ebbe59858bd943eec49f811e9429bc50d6616acacc2580ddef77c0"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/SANE/FPCtrl.a",
+        "sha256": "57edb438eb9c907f56d93df3df9b698912d761ff7d4119bbf6ed0349ac97b94e"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/SANE/FPEqus.a",
+        "sha256": "624578d6aac9d351acad5205cf1d37714fae37fff9a16f533477750cc9f2d34a"
+      },
+      {
+        "path": "Reconstruction/Source/Resources/SANE/FPOps.a",
+        "sha256": "903ad7113e530e91647cde520f7567febdff0c49bb3c8057b9a86c67f0794cf7"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "pack4",
+    "source": "Reconstruction/Source/Resources/SANE/FP68K.a",
+    "start": "0x41df8c",
+    "end_exclusive": "0x41f14c",
+    "entry_points": {
+      "Pack4Block": "0x41df8c",
+      "FP68K": "0x41df94",
+      "Pack4End": "0x41f14c",
+      "absz": "0x41ea16",
+      "add00": "0x41e58e",
+      "addcase": "0x41e530",
+      "addd0": "0x41e5b0",
+      "addinf": "0x41e5b4",
+      "addnum": "0x41e542",
+      "addq00": "0x41e5a6",
+      "adds0": "0x41e5a8",
+      "addtop": "0x41e528",
+      "arithop": "0x41e06c",
+      "arithtab": "0x41e074",
+      "b2d": "0x41ef26",
+      "bd1": "0x41ef9c",
+      "bd3": "0x41efee",
+      "bd85": "0x41f08e",
+      "bd9": "0x41f0c8",
+      "bdfin": "0x41f144",
+      "bdgetcnt": "0x41f074",
+      "both32": "0x41e622",
+      "canon": "0x41ec90",
+      "canontop": "0x41ec86",
+      "chkerr": "0x41e0a2",
+      "classfin": "0x41e9be",
+      "classtop": "0x41e9ac",
+      "cmp0": "0x41e7bc",
+      "cmpcase": "0x41e796",
+      "cmpd0": "0x41e7ac",
+      "cmpfin": "0x41e780",
+      "cmpinf": "0x41e7b6",
+      "cmpnum": "0x41e7c0",
+      "cmps0": "0x41e7a8",
+      "cmptop": "0x41e778",
+      "coerce": "0x41e31a",
+      "comint": "0x41e80a",
+      "cpsz": "0x41ea2a",
+      "cvt2e": "0x41e7e4",
+      "cvte2": "0x41e858",
+      "d2b": "0x41ebbe",
+      "dbcore": "0x41eccc",
+      "dbcorereturn": "0x41ed74",
+      "dbnfin": "0x41ec36",
+      "dbssto": "0x41ec44",
+      "dbstore": "0x41eca4",
+      "dbzer": "0x41ec3c",
+      "dbzsto": "0x41ec42",
+      "dcoerce": "0x41e41c",
+      "dig10": "0x41ec54",
+      "divby0": "0x41e680",
+      "divbyi": "0x41e68e",
+      "divcase": "0x41e66e",
+      "divnum": "0x41e696",
+      "divtop": "0x41e662",
+      "donedig": "0x41ec94",
+      "entryp": "0x41e9fa",
+      "epexit": "0x41ebba",
+      "exitp": "0x41ebb0",
+      "finalign": "0x41e840",
+      "fpbegin": "0x41dfa0",
+      "fpcom": "0x41dfd4",
+      "fpnanout": "0x41e2ae",
+      "getv": "0x41ea0a",
+      "getw": "0x41ea00",
+      "go1": "0x41ea1a",
+      "ialign": "0x41e83e",
+      "invalidop": "0x41e232",
+      "ioflow": "0x41e880",
+      "ipalign": "0x41e828",
+      "jam1lsb": "0x41ed66",
+      "logbtop": "0x41e966",
+      "minexp": "0x41ed54",
+      "mulcase": "0x41e5ce",
+      "mulnum": "0x41e5e0",
+      "multop": "0x41e5c2",
+      "mulu32": "0x41e630",
+      "nancoerce": "0x41e26a",
+      "nandst": "0x41e262",
+      "nanfloat": "0x41e28e",
+      "nanpre": "0x41e252",
+      "nans": "0x41e246",
+      "nansrc": "0x41e26a",
+      "negz": "0x41ea10",
+      "nextz": "0x41ea3e",
+      "normcoerce": "0x41e30c",
+      "notminexp": "0x41ed56",
+      "nxdec": "0x41eb3c",
+      "nxerr": "0x41eb06",
+      "nxfin": "0x41eb34",
+      "nxgreat": "0x41eac2",
+      "nxinc": "0x41eac8",
+      "nxord": "0x41eab6",
+      "oddball": "0x41e9cc",
+      "oddtab": "0x41e9da",
+      "oflow": "0x41e3a8",
+      "opmasks": "0x41dfae",
+      "pack": "0x41e460",
+      "packc64": "0x41e48c",
+      "packcase": "0x41e476",
+      "packdbl": "0x41e4e6",
+      "packext": "0x41e492",
+      "packi16": "0x41e484",
+      "packi32": "0x41e488",
+      "packsgl": "0x41e4c0",
+      "pasthalt": "0x41e0ca",
+      "pop1": "0x41e0d6",
+      "pop2": "0x41e0d0",
+      "pop3": "0x41e0f0",
+      "popit": "0x41e0da",
+      "pow10": "0x41edf4",
+      "prepack": "0x41e092",
+      "ptloop": "0x41ee10",
+      "ptmul": "0x41ee6e",
+      "ptquick": "0x41ee66",
+      "ptskip": "0x41ee5e",
+      "putv": "0x41ea04",
+      "putw": "0x41e9f6",
+      "qnans": "0x41e246",
+      "qrtshift": "0x41e2ec",
+      "rdst": "0x41e2da",
+      "rdstsgn": "0x41e2d8",
+      "refp68k": "0x41dfcc",
+      "remcase": "0x41e710",
+      "remdiv": "0x41e732",
+      "remdst": "0x41e72a",
+      "remfin": "0x41e774",
+      "remnum": "0x41e722",
+      "remquo": "0x41e760",
+      "remtop": "0x41e6fa",
+      "restore": "0x41e6d6",
+      "rint": "0x41e7ec",
+      "round": "0x41e356",
+      "roundup": "0x41e396",
+      "rsrc": "0x41e2e0",
+      "rsrcsgn": "0x41e2e0",
+      "rtshift": "0x41e2e2",
+      "scalbtop": "0x41e99c",
+      "scoerce": "0x41e3e4",
+      "setxcp": "0x41eba4",
+      "sigdigs": "0x41ec6a",
+      "sqrttop": "0x41e8c0",
+      "src32": "0x41e60e",
+      "src64": "0x41e5fc",
+      "submag": "0x41e578",
+      "subtop": "0x41e524",
+      "tab10": "0x41ed76",
+      "tab10e": "0x41ede6",
+      "tab10s": "0x41ee90",
+      "testxcp": "0x41ea1e",
+      "tint": "0x41e7f8",
+      "toa3": "0x41ecc2",
+      "traildig": "0x41ec7e",
+      "uflow": "0x41e346",
+      "unp0": "0x41e184",
+      "unpack": "0x41e0f6",
+      "unpc64": "0x41e122",
+      "unpcase": "0x41e106",
+      "unpcgen": "0x41e14a",
+      "unpcunr": "0x41e18e",
+      "unpdbl": "0x41e1e8",
+      "unpext": "0x41e15e",
+      "unpi16": "0x41e114",
+      "unpi32": "0x41e11c",
+      "unpigen": "0x41e146",
+      "unpnan": "0x41e1b0",
+      "unpnin": "0x41e19c",
+      "unpnrm": "0x41e196",
+      "unpsgl": "0x41e1be",
+      "unpunr": "0x41e18a",
+      "unpzun": "0x41e17c",
+      "zerosum": "0x41e594",
+      "znormcoerce": "0x41e2fc"
+    }
+  },
+  "historical_limits": "Matching bytes establish the emitted instructions and data. They do not establish the exact source spelling, assembler optimizations, or build date."
+}

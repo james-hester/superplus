@@ -1,0 +1,683 @@
+*R Mac Plus v3 MDEF 0, including its ROM resource block header.
+*R The resource body retains version 4. Later menu features have been removed.
+*R TopMenuItem is an item index here, and AtMenuBottom is a Boolean flag.
+*R Original comments below describe the surviving code unless a reconstruction note says otherwise.
+*R Retained comment tags identify revisions of the surviving source.
+*R The ROM bytes establish which instructions were restored.
+*R Explicit instruction sizes retain the ROM encodings. See Evidence/standard-mdef.json.
+;
+;
+;	File:		StandardMDEF.a
+;
+;	Contains:	Standard text menu definition procedure.
+;
+;				Originally written by Andy Hertzfeld in July 1982.
+;
+;	Copyright:	© 1982-1992 by Apple Computer, Inc.  All rights reserved.
+;
+;   This file is used in these builds: ROM, disk
+;
+;	Change History (most recent first):
+;
+;
+;				10/15/85	EHB		Fixed bugs in display of menu icons
+;				10/11/85	EHB		Do test byte of low memory justification word, so intl. people
+;									can use the high byte for further discrimination (yuck).
+;				 9/30/85	EHB		Made scrolling smoother.
+;		<v5>	 9/27/85	EHB		Added International menu display. Added emergency menu
+;									scrolling.
+;		<v4>	 8/26/85	EHB		ROM/Ram version (tests ROM85)
+;		<v3>	  8/1/85	EHB		adapted for variable height system fonts
+;				 7/29/85	EHB		converted back to porkshop
+;				 4/10/85	EHB		fixed CalcMenuSize for items with 0 length
+;				 2/15/85	SC		fixed applemark/commandMark bug in command keys
+;				 2/14/85	JTC		named rsrc.
+;				 1/11/85	JTC		convert to MDS
+;				 2/13/84	AJH		speeded up CalcMenuSize message (linear instead of N squared)
+;				 11/6/83	AJH		back to old disabling; special-cased "-" item
+;				10/30/83	AJH		changed disabling
+;				 4/28/83	AJH		added "calcMenuSize" message
+;				 3/17/83	AJH		no more forcing bold
+;				 3/17/83	AJH		Fixed 4 pixel choosing offset
+;				 1/28/83	AJH		made "GrayRect" use FillRect and a hardwired gray
+;				12/27/82	AJH		Broke off into separate file for resources
+;
+;	To Do:
+;		*** Fix all this pixel tweeking!  It is unecessary if it was done correctly.
+;
+
+;
+; PROCEDURE TextMenuProc(	message		:Integer,
+;							theMenu		:menuHandle,
+;						VAR menuRect	:Rect,
+;							hitPt		:Point,
+;						VAR whichItem	:Integer);
+;
+;Msg		theMenu		menuRect			hitPt		whichItem
+;------		-----------	-----------			-------		-----------
+; 0 Draw	handle		entry: ptr to		not used	not used
+;						return: no chg
+; 1	Choose	handle		entry: ptr to		mouse pt	entry: ptr to currently selected item
+;						return: no chg					return: newly selected item
+; 2 Calc	handle		not used			not used	not used
+
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+portRect  		EQU 		$10       				; port's rectangle [rect]
+patBic			EQU 		11
+top   			EQU 		0         				; top coordinate [word]
+left  			EQU 		2         				; left coordinate [word]
+bottom			EQU 		4         				; bottom coordinate [word]
+right 			EQU 		6         				; right coordinate [word]
+v 				EQU 		0         				; vertical coordinate [word]
+Gray            EQU     -24
+TopMenuItem     EQU     $B26 ;]
+AtMenuBottom    EQU     $B28 ;]
+
+; message
+MMESSAGE        EQU     24 ;]
+; theMenu
+MMENUHANDLE     EQU     20 ;]
+; VAR menuRect
+MMENURECT       EQU     16 ;]
+; hitPt
+MPOINT          EQU     12 ;]
+; VAR whichItem
+MWHICHITEM      EQU     8 ;]
+ParamSize       EQU     18                      ; size of all the passed parameters
+; NOTE: This is really the "leading" field of fontinfo
+MFHeight        EQU     -2 ;]
+MWidMax         EQU     -4 ;]
+MDescent        EQU     -6 ;]
+MAscent         EQU     -8 ;]
+MInfoRec        EQU     MAscent
+; size of all the local variables
+LinkSize        EQU     MInfoRec ;]
+
+
+ResourceBlockFlags EQU $C0 ;]
+MasterPointerOffset EQU $6C ;]
+
+MDEFResourceBlock ;]
+                DC.L    ResourceBlockFlags*$1000000+MDEFResourceEnd-MDEFResourceBlock ;]
+                DC.L    MasterPointerOffset ;]
+
+
+;
+;	Start of Code -- save work registers and dispatch on message number
+;
+;----------------------------------------------------------------------------------------
+MDEF0 PROC EXPORT
+                BRA.S   StartMDEF
+
+; Standard Header
+
+                DC.W    0                       ; flags word
+                DC.L    ('MDEF')                ; type
+                DC.W    0                       ; ID
+                DC.W    4                       ; version 4 = MacPlus
+
+
+StartMDEF
+                LINK.W  A6,#LinkSize            ; set up a stack frame						<1Aug85>
+                MOVEM.L D3-D7/A2-A4,-(SP)       ; save a whole bunch of work registers
+                MOVE.L  MMENUHANDLE(A6),A3      ; keep menuHandle in A3
+                MOVE.W  MMESSAGE(A6),D0         ; get the message type
+                BEQ.W   DoDrawMsg ;]
+                SUBQ.W  #1,D0
+                BNE.W   DoCalcMsg ;]
+
+;
+;	Msg #1 -- Choose -- examine the mouse position and hilite the appropriate item
+;
+;----------------------------------------------------------------------------------------
+DoChooseMsg
+                BSR.W   GetSizes                ; get font info into stackframe
+                MOVE.L  MWHICHITEM(A6),A4       ; get pointer to whichItem
+                MOVE.W  (A4),D3                 ; remember oldWhichItem
+                CLR.W   (A4)                    ; set whichItem to zero
+                MOVE.L  MMENURECT(A6),A2        ; get the menu rect							<27Sep85>
+                MOVE.W  TopMenuItem,D4          ; get top of (scrolled) menu			<30Jan86>
+                MOVE.L  MPOINT(A6),D5           ; get the mouse point					<27Sep85>
+                BEQ.S   NOITEMSEL               ; => special case for flashing			<27Sep85>
+                CLR.W   -(SP)                   ; make room for PtInRect result
+                MOVE.L  D5,-(SP)                ; push the point
+                MOVE.L  A2,-(SP)                ; push the rect
+                _PTINRECT                       ; test if the point is in the rect
+                TST.B   (SP)+                   ; was it?
+                BNE.S   ChooseItem ;]
+                MOVE.W  MFHeight(A6),D7         ; get distance for scroll					<30Sep85>
+                SWAP    D5                      ; get mouse.v into low word					<27Sep85>
+                CMP.W   Top(A2),D5              ; above top?								<27Sep85>
+                BGE.S   CheckScrollBottom ;]
+                SUBQ.W  #1,D4
+                BLE.S   NOITEMSEL ;]
+ScrollMenu ;]
+                MOVE.W  D3,D0
+                BSR.W   INVERTITEM
+                MOVE.W  D4,TopMenuItem          ; stuff new topItem						<27Sep85>
+                CLR.L   -(SP)                   ; room for region #1					<30Sep85>
+                _NEWRGN                         ; get it								<30Sep85>
+                MOVE.L  (SP),D0
+                MOVE.L  A2,-(SP)                ; push rect								<27Sep85>
+                CLR.W   -(SP)                   ; dh = 0								<30Sep85>
+                MOVE.W  D7,-(SP)                ; dv = itemHeight						<30Sep85>
+                MOVE.L  D0,-(SP)
+                _SCROLLRECT                     ; scroll the menu						<30Sep85>
+                _DISPOSRGN                      ; dispose of region #1					<30Jan86>
+                BSR.W   DRAWMENU
+                BRA.S   MDEFDone ;]
+CheckScrollBottom ;]
+                CMP.W   Bottom(A2),D5 ;]
+                BLT.S   NOITEMSEL               ; => no									<27Sep85>
+                TST.W   AtMenuBottom ;]
+                BNE.S   NOITEMSEL ;]
+                NEG.W   D7                      ; change direction of scroll			<30Sep85>
+                ADDQ.W  #1,D4
+                BRA.S   ScrollMenu ;]
+
+; the point is in the menu, so waltz through the itemList keeping track of vertical
+; position seeing which item it’s in.  In the following loop, D4 holds the item number
+; while D2 has the cumulative vertical space
+;
+ChooseItem
+                BSR.S   GetMenuBarHeight ;]
+                MOVE.W  D0,D2
+MSELOOP
+                MOVE.L  (A3),A0                 ; get menuPtr
+                MOVE.W  D4,D0                   ; get item number
+                BSR.W   GETITEMRECORD           ; look it up
+                BEQ.S   NOITEMSEL               ; if so, nothing selected
+                BSR.S   GetItemHeight           ; get item height in D0						<1Aug85>
+                ADD.W   D0,D2                   ; update vertical							<1Aug85>
+                CMP.W   MPOINT+V(A6),D2         ; compare with mouse point
+                BGT.S   GOTSEL                  ; when D2 is bigger, we found it
+NEXTMSEL
+                ADDQ.W  #1,D4                   ; bump to next item
+                BRA.S   MSELOOP                 ; loop till we find it
+GOTSEL
+                BSR.S   ENABLETEST              ; make sure whole menu is enabled
+                BEQ.S   NOITEMSEL               ; if so, nothing selected
+                MOVE.W  D4,(A4)                 ; menu is enabled, so store item
+
+; see if whichItem changed; if it has, unselect the old item and select the new one
+;
+NOITEMSEL
+                CMP.W   (A4),D3                 ; have they changed?
+                BEQ.S   MDEFDone ;]
+                MOVE.W  D3,D0                   ; unhilite old item
+                BSR.S   INVERTITEM              ;
+                MOVE.W  (A4),D0                 ; hilite new item
+                BSR.S   INVERTITEM              ;
+MDEFDone ;]
+                MOVEM.L (SP)+,D3-D7/A2-A4
+                UNLK    A6                      ; unbuild the stack frame
+                MOVE.L  (SP)+,A0                ; get return address
+                ADD.W   #ParamSize,SP           ; strip parameters
+                JMP     (A0)                    ; return to caller
+GetMenuBarHeight ;]
+                TST.W   ROM85
+                BMI.S   DefaultMenuBarHeight ;]
+                MOVE.W  MBarHeight,D0
+                BNE.S   MenuBarHeightDone ;]
+DefaultMenuBarHeight ;]
+                MOVE.W  #20,D0
+MenuBarHeightDone ;]
+                RTS
+
+;---------------------------------------
+;	Utility -- GetSizes
+;---------------------------------------
+; GetSizes reads the size of the current font into the stack frame.  It puts
+; ascent+descent+leading into the leading field and tweaks width for chicago
+GetSizes
+                LEA     MInfoRec(A6),A2         ; point to our info rec						<1Aug85>
+                MOVE.L  A2,-(SP)                ; push a pointer							<1Aug85>
+                _GETFONTINFO                    ; and get the font’s info					<1Aug85>
+                MOVE.W  (A2)+,D0                ; get ascent								<1Aug85>
+                ADD.W   (A2)+,D0                ; add descent								<1Aug85>
+                CMP.W   #14,(A2)
+                BNE.S   SizesNotChicago ;]
+                SUBQ.W  #2,(A2)                 ; yes its Chicago, so fudge width					<1Aug85>
+SizesNotChicago ;]
+                ADDQ.W  #2,A2                   ; skip over widmax									<1Aug85>
+                ADD.W   D0,(A2)                 ; add leading, store total height in MFHeight(A6)	<1Aug85>
+                RTS
+GetItemHeight
+                MOVE.W  MFHeight(A6),D0         ; Get the MFHeight
+                TST.B   itemIcon(A1)
+                BEQ.S   ItemHeightDone ;]
+                MOVEQ   #36,D0
+ItemHeightDone ;]
+                RTS
+
+;---------------------------------------
+;	Utility -- EnableTest
+;---------------------------------------
+; EnableTest is a utility which tests if an item is enabled.  It expects a menuHandle
+; in A3 and the item number in D4.  It returns the result in the Z-flag
+ENABLETEST
+                MOVE.L  (A3),A0                 ; get menu pointer
+                MOVE.L  MENUENABLE(A0),D0       ; get enable flags
+                BTST.L  D4,D0 ;]
+                BEQ.S   ETDONE                  ; if not, return 0
+                BTST.L  #0,D0
+ETDONE
+                RTS                             ; return to caller
+
+;	Utility -- InvertItem
+;---------------------------------------
+; InvertItem is an internal utility that hilites/unHilites an item.
+;
+; On entry:		D0		Item number
+;				A3		Menu handle
+;
+; If the high bit of D0 is set, bit-clear with gray instead of inverting the
+; item (used by DoDrawMsg routine).
+INVERTITEM
+                MOVEM.L D3-D4,-(SP)             ; save work registers
+                MOVE.W  D0,D3                   ; keep item number in safe place
+                BEQ.S   INVERTDONE              ; if zero, ignore
+                BSR.S   GetMenuBarHeight ;]
+                MOVE.W  D0,D2
+                MOVE.W  TopMenuItem,D4
+IILOOP
+                MOVE.W  D4,D0                   ; get item
+                MOVE.L  (A3),A0                 ; get menuPtr
+                BSR.W   GETITEMRECORD           ; look it up
+                BSR.S   GetItemHeight           ; get item height into D0			<1Aug85>
+                CMP.B   D3,D4 ;]
+                BEQ.S   GOINVERT                ; if so, go invert it
+                ADD.W   D0,D2                   ; add total to cumulative v position
+                ADDQ.W  #1,D4                   ; bump to next position
+                BRA.S   IILOOP                  ; loop till we find it
+
+; it’s time to invert the item.  The menuRect contains the horizontal bounds, D2 contains
+; the top of the vertical, D0 has the vertical size
+GOINVERT
+                MOVE.B  1(A0),D1                ; remember 1st char of item
+                LEA     TempRect,A0             ; get pointer to temporary rectangle
+                MOVE.L  MMENURECT(A6),A1        ; point to menuRect
+                MOVE.L  (A1)+,(A0)              ; copy menuRect into tempRect
+                MOVE.L  (A1),4(A0)
+                MOVE.W  D2,TOP(A0)              ; D2 has the top coordinate
+                ADD.W   D0,D2                   ; add in the height
+                MOVE.W  D2,BOTTOM(A0)           ; set up the bottom
+                TST.W   D3
+                BMI.S   GrayItem ;]
+                MOVE.L  A0,-(SP)
+                _INVERRECT                      ; invert it
+INVERTDONE
+                MOVEM.L (SP)+,D3-D4             ; recover work regs
+                RTS
+GrayItem ;]
+; first char a dash?
+                CMP.B   #'-',D1 ;]
+                BEQ.S   INVERTDONE              ; if zero, ignore
+                BSR.W   GRAYRECT
+                BRA.S   INVERTDONE ;]
+
+;	Utility -- TweakPos
+;---------------------------------------
+; TweakPos is passed an element size in D0.  It gets a horizontal offset into
+; D2 depending on whether things are right justified or not.  It also adjusts
+; D5 and D6 (the left and right positions).
+TweakPos
+                MOVE.W  D5,D2                   ; assume left to right					<27Sep85>
+                ADDQ.W  #2,D2
+                ADD.W   D0,D5                   ; assume bump past icon					<27Sep85>
+                TST.B   TESysJust+1             ; check for right just					<11oct85>
+                BPL.S   TweakPosDone ;]
+                SUB.W   D0,D6                   ; else back up for icon					<27Sep85>
+                SUB.W   D0,D5                   ; and fix up left						<27Sep85>
+                MOVE.W  D6,D2                   ; and set position						<27Sep85>
+TweakPosDone ;]
+                RTS
+
+; here is the part of the TextMenuProc that draws the menu.  For most of this routine,
+; A3 holds the menuHandle, D4 is the item counter and D3 holds the cumulative
+; vertical position.  DrawMenu is broken off for use in scrolling.
+DoDrawMsg
+                MOVE.W  #1,TopMenuItem ;]
+                BSR.S   DRAWMENU                ; call draw menu
+                BRA.W   MDEFDone ;]
+DONEDRAW
+                ST      AtMenuBottom ;]
+DrawMenuDone ;]
+                MOVEM.L (SP)+,D3-D4/A4
+                RTS
+DRAWMENU
+                MOVEM.L D3-D4/A4,-(SP)
+                CLR.W   AtMenuBottom
+                BSR.W   GetSizes
+                MOVE.W  TopMenuItem,D4
+                BSR.W   GetMenuBarHeight ;]
+                MOVE.W  D0,D3
+                ADD.W   MAscent(A6),D3          ; add in the ascent for baseline
+DRAW1MLOOP
+                MOVE.L  MMENURECT(A6),A0
+                MOVE.L  (A0)+,D5
+                MOVE.W  (A0)+,D2
+                MOVE.W  (A0),D6
+                MOVE.W  D4,D0
+                MOVE.L  (A3),A0
+                BSR.W   GETITEMRECORD
+                BEQ.S   DONEDRAW
+                CMP.W   D2,D3
+                BGE.S   DrawMenuDone ;]
+                MOVE.L  A0,A2                   ; Store string pointer in A2				<S550	27Jul88	EMT>
+                MOVE.L  A1,A4                   ; And properties in A4						<S550	27Jul88	EMT>
+                MOVE.B  ITEMSTYLE(A4),D0
+                CMP.B   #'-',1(A2) ;]
+                BEQ.W   DrawDash ;]
+                MOVE.B  itemIcon(A4),D0
+                BEQ.S   DrawMark                ; if not, skip
+                MOVEQ   #36,D0
+                SUB.W   MFHeight(A6),D0         ; subtract font height						<1Aug85>
+                MOVE.W  D0,D7                   ; save font height in D7					<1Aug85>
+                LSR.W   #1,D0                   ; get delta									<1Aug85>
+                ADD.W   D0,D3                   ; keep baseline in D3						<1Aug85>
+
+; ---------------------	draw the mark	--------------------------
+DrawMark
+                MOVE.W  MWidMax(A6),D0          ; get char width							<27Sep85>
+                BSR.W   TweakPos                ; get hpos into D2, adjust d5,d6			<27Sep85>
+                TST.B   itemMark(A4)            ; does it have a mark?
+                BEQ.S   CHKDRAWICON             ; if not, skip
+                MOVE.W  D2,-(SP)                ;
+                MOVE.W  D3,-(SP)                ; push v position
+                _MOVETO                         ; position pen
+                CLR.W   D0                      ; clear out high part
+                MOVE.B  ITEMMARK(A4),D0         ; get the mark character
+                MOVE.W  D0,-(SP)                ; push it
+                _DRAWCHAR
+
+CHKDRAWICON
+                TST.B   itemIcon(A4)            ; icon spec’d in resource?				<2.2>
+                BEQ.S   DrawCmdChar             ; if not, skip
+                MOVEQ   #40,D0
+                BSR.W   TweakPos                ; get hpos into D2, adjust D5,D6			<S550	27Jul88	EMT>
+                LEA     TempRect,A0             ; get pointer to rectangle
+                MOVE.L  A0,-(SP)                ; push rect for plotIcon call
+                MOVE.W  D3,D1                   ; get baseline								<1Aug85>
+                MOVE.W  D7,D0                   ; font height from D7						<15Oct85>
+                LSR.W   #1,D0                   ; get delta									<15Oct85>
+                SUB.W   D0,D1                   ; subtract delta							<15Oct85>
+                SUB.W   MAscent(A6),D1          ; subtract font height						<15Oct85>
+                ADDQ.W  #2,D1
+                MOVE.W  D1,(A0)+                ; and stuff top							<1Aug85>
+                MOVE.W  D2,(A0)
+                ADDQ.W  #3,(A0)+ ;]
+                MOVE.L  -4(A0),(A0)             ; copy bottom right
+                ADD.W   #32,(A0)+ ;]
+                ADD.W   #32,(A0) ;]
+                CLR.L   -(SP)
+                MOVE.L  #'ICON',-(SP) ;]
+                MOVE.W  #$0100,D0               ; menu icons are 256-511
+                MOVE.B  itemIcon(A4),D0         ; get icon number - 256
+                MOVE.W  D0,-(SP)                ; push icon number
+                _GETRESOURCE                    ; get the icon handle (keep it on stack)
+                _PLOTICON
+DrawCmdChar
+                TST.B   itemCmd(A4)             ; is there a command key?				<2.2>
+                BEQ.S   DRAWITEXT               ; if not, skip
+                MOVE.W  MWidMax(A6),D0          ; get width										<27Sep85>
+                ADD.W   D0,D0                   ; *2											<27Sep85>
+                SUB.W   D0,D6                   ; assume it will go on right					<27Sep85>
+                MOVE.W  D6,-(SP)                ; put it on stack								<27Sep85>
+                TST.B   TESysJust+1             ; check for right just							<11oct85>
+                BPL.S   PositionCommand ;]
+                MOVE.W  D5,(SP)                 ; else do it from left							<27Sep85>
+                ADDQ.W  #2,(SP) ;]
+                ADD.W   D0,D5                   ; and bump left position						<27Sep85>
+                ADD.W   D0,D6                   ; else back up for icon							<27Sep85>
+PositionCommand ;]
+                MOVE.W  D3,-(SP)                ; push vertical position
+                _MOVETO                         ; position pen
+                MOVE.W  #commandMark,-(SP)      ; push command character						<15Feb85>
+                _DRAWCHAR                       ; draw the character
+                CLR.W   D0                      ; clear high part
+                MOVE.B  itemCmd(A4),D0          ; get command character
+                MOVE.W  D0,-(SP)                ; push command char
+                _DRAWCHAR                       ; draw the character
+                CLR.W   -(SP)
+                _TEXTFACE
+
+; ----------------	draw the text of the item (position in D5)	----------------------
+DRAWITEXT
+                CLR.W   D0                      ; clear it out
+                MOVE.B  ITEMSTYLE(A4),D0        ; get the style parameter
+                MOVE.W  D0,-(SP)                ; Set style parameter
+                _TEXTFACE                       ; <51=BRC#79297>
+                MOVE.B  TESysJust+1,D1          ; need special justification?			<11oct85>
+                EXT.W   D1                      ; make it a signed word					<11oct85>
+                BNE.S   DrawIntl ;]
+                MOVE.W  D5,-(SP)                ; and baseline left						<27Sep85>
+                MOVE.W  D3,-(SP)                ; else push baseline vertical			<27Sep85>
+                _MOVETO                         ; push the pen							<27Sep85>
+                MOVE.L  A2,-(SP)                ; point to the string					<27Sep85>
+                _DRAWSTRING                     ; and draw it							<27Sep85>
+                BRA.S   RestoreTextFace ;]
+
+;
+; do International stuff here if TESysJust is negative
+;
+DrawIntl ;]
+                LEA     TempRect,A0             ; build rect for TextBox				<27Sep85>
+                SUBQ.W  #1,D5                   ; textBox indents by one				<27Sep85>
+                MOVE.W  D3,(A0)                 ; get y position						<27Sep85>
+                MOVE.W  MAscent(A6),D0          ; move up to top of rect				<27Sep85>
+                SUB.W   D0,(A0)+                ;										<27Sep85>
+                MOVE.W  D5,(A0)+                ; D5 is left							<27Sep85>
+                MOVE.W  D3,(A0)                 ; as top and bottom						<27Sep85>
+                MOVE.W  MDescent(A6),D0         ; and move down to bottom				<27Sep85>
+                ADD.W   D0,(A0)+                ;										<27Sep85>
+                MOVE.W  D6,(A0)                 ; and setup right						<27Sep85>
+                MOVEQ   #0,D0                   ; get length							<27Sep85>
+                MOVE.B  (A2)+,D0                ; into D0								<27Sep85>
+                MOVE.L  A2,-(SP)                ; push text pointer						<27Sep85>
+                MOVE.L  D0,-(SP)                ; and length							<27Sep85>
+                PEA     TempRect                ; push rect of rects					<27Sep85>
+                MOVE.W  D1,-(SP)                ; and justification word				<11oct85>
+                _TEXTBOX
+RestoreTextFace ;]
+                CLR.W   -(SP)
+                _TEXTFACE
+                BSR.W   ENABLETEST
+                BNE.S   NextDrawItem ;]
+                MOVE.W  D4,D0
+                OR.W    #$8000,D0
+                BSR.W   INVERTITEM
+NextDrawItem ;]
+                TST.B   itemIcon(A4)
+                BEQ.S   NextBaseline ;]
+                MOVE.W  D7,D0                   ; get delta height
+                LSR.W   #1,D0                   ; divide by 2
+                SUB.W   D0,D7                   ; and get remainder
+                ADD.W   D7,D3                   ; bump the rest of the difference for icon
+NextBaseline ;]
+                ADD.W   MFHeight(A6),D3         ; bump to next baseline
+                ADDQ.W  #1,D4
+                BRA.W   DRAW1MLOOP
+
+;---------------------------------------
+;	Utility -- DrawDash
+;---------------------------------------
+; handle the case of a dash item by drawing a line
+DrawDash
+                MOVE.L  (A5),A0                 ; get QuickDraw globals
+                PEA     Gray(A0)                ; set pattern to gray
+                _PENPAT
+                MOVE.W  D3,-(SP)                ; save y position
+                MOVE.W  D5,-(SP)                ; push x position
+                MOVE.W  MFHeight(A6),D0         ; center the dash
+                LSR.W   #1,D0                   ; by backing up to top of cell
+                SUB.W   MAscent(A6),D0          ; and going halfway down
+                ADD.W   D0,D3                   ; add to current position
+                MOVE.W  D3,-(SP)                ; push new y position
+                _MOVETO
+                MOVE.W  D6,-(SP)                ; push	right edge
+                MOVE.W  D3,-(SP)                ; push	y
+                _LINETO                         ; draw	the line
+                MOVE.W  (SP)+,D3                ; restore baseline
+                _PENNORMAL
+                BRA.S   NextDrawItem ;]
+
+;---------------------------------------
+;	Utility -- GetItemRecord
+;---------------------------------------
+;	GetItemRecord is the main utility used for accessing the menu item data structure.
+;	It has a register interface to save code.
+;
+;	On entry:	A0 points to a menuInfo block,
+;				D0 has the item number of interest.
+;
+;	On exit:	A0 points to the item string of interest
+;				A1 points to that item’s attribute byte list.
+;	If the item can’t be found, A0 and A1 both return NIL.
+;
+;	Eats:		D0 and D1
+GETITEMRECORD
+                TST.W   D0
+                BLE.S   NOITEM
+                MOVEQ   #0,D1                   ; clear D1 for byte arithmetic
+                LEA     MENUDATA(A0),A1         ; get menuData handle
+                MOVE.B  (A1)+,D1                ; get title length
+                ADD.W   D1,A1                   ; skip over title string
+
+; here is the item search loop.  A1 points to the beginning of the next item.
+GETILOOP
+                SUBQ.W  #1,D0                   ; is this the one we’re looking for?
+                BEQ.S   GOTITEM                 ; if so, we got it
+                MOVE.B  (A1)+,D1                ; get length of current item
+                BEQ.S   NOITEM                  ; length zero marks end of list
+                ADDQ.W  #4,D1                   ; there are 4 bytes of item properties
+                ADD.W   D1,A1                   ; bump to next item
+                BRA.S   GETILOOP                ; loop till done
+NOITEM
+                SUB.L   A0,A0                   ; zero A0
+                MOVE.L  A0,A1                   ; and A1 too
+                MOVE.L  A0,D0                   ; and set the z-flag				<2.2>
+                RTS                             ; return to caller
+
+; we found the item so return a pointer to it in A0 and a pointer to the
+; item properties in A1
+GOTITEM
+                TST.B   (A1)                    ; is this the NIL item?
+                BEQ.S   NOITEM                  ; if so, we really didn’t get one
+                MOVE.L  A1,A0                   ; put the item string into a0
+                MOVE.B  (A1)+,D1                ; get length
+                ADD.W   D1,A1                   ; bump to item properties
+                RTS                             ; return to caller
+
+;----------------------------------------------------------------------------------------
+;
+;	Msg #2 -- Calc Menu Size
+;
+;----------------------------------------------------------------------------------------
+; Calculate the menu size for the given text menu.  The handle is in A3.
+DoCalcMsg
+                SUBQ.W  #4,SP
+                MOVE.L  SP,-(SP)
+                _GETPORT
+                MOVE.L  WMgrPort,-(SP)          ; push the wmgr port, do not use color port here.
+                _SETPORT                        ; set it									<PMAB364	23Jan88	EMT>
+                MOVE.L  WMgrPort,A0
+                MOVE.W  PortRect+bottom(A0),D5  ; get the screen bottom						<27Sep85>
+                BSR.W   GetMenuBarHeight ;]
+                SUB.W   D0,D5
+                SUBQ.W  #4,D5
+                BSR.W   GetSizes                ; get font sizes from wmgr port				<FJL CXXX>
+                MOVEQ   #0,D6                   ; set initial <height,width> to 0
+                MOVEQ   #1,D0                   ; find item 1
+                MOVE.L  (A3),A0                 ; point to the menuRecord
+                BSR.S   GETITEMRECORD           ; point to first item
+                BEQ.S   DoCalcDone1             ; if zero, we’re done							<EHB 10-Apr-85>
+                MOVE.L  A0,A4                   ; keep pointer in A4
+
+;
+; here is the main loop of calcMenuSize.  Process each item one at a time, keeping the
+; height and maximum width in D6
+;
+CMLOOP
+                MOVEQ   #0,D7                   ; set "extra" width to zero
+                MOVE.L  (A3),A0                 ; handle -> pointer
+                MOVEQ   #0,D0                   ; clear out high part
+                MOVE.B  (A4),D0                 ; get length of item
+                BEQ.S   DoCalcDone              ; if zero, we’re done with this menu
+                LEA     1(A4,D0),A1 ;]
+                BSR.W   GetItemHeight           ; get height of item into D0
+                TST.B   itemIcon(A1)
+                BEQ.S   CalcVertical ;]
+                MOVEQ   #40,D7 ;]
+                MOVEQ   #36,D0
+CalcVertical ;]
+                SWAP    D6                      ; get vertical into low word				<27Sep85>
+                ADD.W   D0,D6                   ; increment vertical height					<27Sep85>
+                CMP.W   D5,D6                   ; past bottom of screen?					<27Sep85>
+                BLT.S   CalcHorizontal ;]
+                SUB.W   D0,D6                   ; yes, don’t make menu taller				<27Sep85>
+CalcHorizontal ;]
+                SWAP    D6
+                MOVE.W  MWidMax(A6),D1          ; get char width							<1Aug85>
+                ADD.W   D1,D7                   ; add once for mark							<1Aug85>
+                TST.B   itemCmd(A1)             ; is there a commmand?						<2.2><51=BRC#80417>
+                BEQ.S   CalcTextWidth ;]
+                ADD.W   D1,D7                   ; add twice for command equivalent			<1Aug85>
+                ADD.W   D1,D7                   ;											<1Aug85>
+                ADDQ.W  #8,D7                   ; plus an eight pixel margin				<1Aug85>
+CalcTextWidth ;]
+                MOVEQ   #0,D1                   ; clear out high byte
+                MOVE.B  ITEMSTYLE(A1),D1        ; get style setting
+                MOVE.W  D1,-(SP)                ; push the style
+                _TEXTFACE                       ; tell LisaGraf about new style
+                CLR.W   -(SP)                   ; make room for stringWidth result
+                MOVE.L  A4,-(SP)                ; move string pointer
+                _STRINGWIDTH                    ; find out the width
+                ADD.W   (SP)+,D7                ; add width to extra
+                CMP.W   D7,D6
+                BGE.S   CALCNEXT
+                MOVE.W  D7,D6
+
+; go process next item; loop till we get a null one
+;
+CALCNEXT
+                MOVEQ   #0,D0                   ; zero high part
+                MOVE.B  (A4),D0                 ; get the length of current item
+                LEA     5(A4,D0),A4             ; point to the next item
+                BRA.S   CMLOOP                  ; loop till done
+
+;	we’ve scanned all the items update menuHeight and menuWidth
+DoCalcDone
+                ADDQ.W  #4,D6                   ; add some extra for right margin
+DoCalcDone1
+                MOVE.L  (A3),A0                 ; get menu pointer
+                MOVE.W  D6,MENUWIDTH(A0)        ; update menu width
+                SWAP    D6
+                MOVE.W  D6,MENUHEIGHT(A0)       ; update menu height
+                CLR.W   -(SP)
+                _TEXTFACE
+                _SETPORT                        ; restore original grafPort					<PMAB364	23Jan88	EMT>
+                BRA.W   MDEFDone ;]
+
+;---------------------------------------
+;	Utility -- GrayRect
+;---------------------------------------
+;	GrayRect is a utility that bit-clears the current "tempRect" with gray
+;
+GRAYRECT
+                MOVE.L  A0,-(SP)
+                MOVE.L  (A5),A0                 ; get QuickDraw globals
+                PEA     Gray(A0)                ; push gray
+                _PENPAT                         ; set pen to it
+                MOVE.W  #PatBIC,-(SP)           ; push patBIC penMode
+                _PENMODE                        ; set penMode
+                _PAINTRECT                      ; "OR" on the dim pattern
+                _PENNORMAL
+                RTS
+
+                ENDP
+MDEFResourceEnd ;]
+                END

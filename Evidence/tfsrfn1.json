@@ -1,0 +1,292 @@
+{
+  "module": "TFSRFN1",
+  "source": "Reconstruction/Source/OS/HFS/TFSRFN1.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSRFN1.a",
+      "sha256": "931321393f01b039453df960f35e339316f917e009d4101caf96e7d27b39ef64",
+      "line_ranges": [
+        [
+          1,
+          610
+        ]
+      ],
+      "role": "Routine bodies, applicable history, and original comments. Later change records identify differences from this ROM."
+    },
+    {
+      "path": "OS/HFS/MFSRFN1.a",
+      "sha256": "960dc34ec8ab080b7fee20b6fb855d045235e6f9291fff0ddd4b2a5e914e4863",
+      "line_ranges": [
+        [
+          1,
+          72
+        ]
+      ],
+      "role": "The next source module begins with MFSRd1stDB, which establishes the end boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          40,
+          41
+        ],
+        [
+          259,
+          259
+        ],
+        [
+          303,
+          303
+        ],
+        [
+          357,
+          361
+        ]
+      ],
+      "role": "HFS trap bit, signature, volume fields, and file record fields."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          296,
+          299
+        ]
+      ],
+      "role": "Cache read and release options."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          733,
+          755
+        ]
+      ],
+      "role": "I/O parameter-block fields."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          325,
+          325
+        ]
+      ],
+      "role": "The JBlockMove vector address."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          138,
+          138
+        ],
+        [
+          183,
+          187
+        ]
+      ],
+      "role": "Parameter, position, end-of-file, and I/O error values."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x404eb8",
+      "end_exclusive": "0x4050fc",
+      "rom_offset": "0x4eb8",
+      "length": 580,
+      "sha256": "7c325673e6279db91058be24104a8338522d41fae37074d44ec36feb079a18b0",
+      "start_label": "TFSBitTst",
+      "end_label": "TFSRFN1End",
+      "boundary_evidence": "TFSBitTst begins at its exported ROM address 0x404eb8 and opens the surviving source module. The last DoPart branch ends at 0x4050fc, where MFSRd1stDB begins the next module."
+    }
+  ],
+  "entry_points": {
+    "TFSBitTst": "0x404eb8",
+    "TFSVolTst": "0x404ec2",
+    "TFSVCBTst": "0x404ec6",
+    "Seek": "0x404ece",
+    "PM3": "0x404ef2",
+    "PM01": "0x404ef6",
+    "SkExit": "0x404efa",
+    "SkExitRTS": "0x404f0e",
+    "GetFPos": "0x404f10",
+    "SetFPos": "0x404f14",
+    "FileRead": "0x404f18",
+    "RdPart": "0x404f62",
+    "RdMain": "0x404f76",
+    "FRdOK": "0x404f8e",
+    "FRdExit": "0x404f90",
+    "FRdEOFXit": "0x404f9e",
+    "FRdExit0": "0x404fa0",
+    "FRdExit1": "0x404fa8",
+    "FRNewLine": "0x404fac",
+    "PreRdFileBlk": "0x404fe4",
+    "RdFileBlk": "0x404fee",
+    "RdFileB1": "0x404ffa",
+    "ReadBlock": "0x405006",
+    "FileWrite": "0x40502a",
+    "SameLen": "0x40506a",
+    "WrPart": "0x405072",
+    "WrMain": "0x405080",
+    "FWrOK": "0x405096",
+    "FWrExit": "0x405098",
+    "FWrExit0": "0x4050a0",
+    "FWrExit1": "0x4050a6",
+    "UpdteCntPos": "0x4050aa",
+    "DoPart": "0x4050b4",
+    "TFSRFN1End": "0x4050fc"
+  },
+  "integration_manifest": {
+    "name": "tfsrfn1",
+    "source": "Reconstruction/Source/OS/HFS/TFSRFN1.a",
+    "start": "0x404eb8",
+    "end_exclusive": "0x4050fc",
+    "entry_points": {
+      "TFSBitTst": "0x404eb8",
+      "TFSVolTst": "0x404ec2",
+      "TFSVCBTst": "0x404ec6",
+      "Seek": "0x404ece",
+      "PM3": "0x404ef2",
+      "PM01": "0x404ef6",
+      "SkExit": "0x404efa",
+      "SkExitRTS": "0x404f0e",
+      "GetFPos": "0x404f10",
+      "SetFPos": "0x404f14",
+      "FileRead": "0x404f18",
+      "RdPart": "0x404f62",
+      "RdMain": "0x404f76",
+      "FRdOK": "0x404f8e",
+      "FRdExit": "0x404f90",
+      "FRdEOFXit": "0x404f9e",
+      "FRdExit0": "0x404fa0",
+      "FRdExit1": "0x404fa8",
+      "FRNewLine": "0x404fac",
+      "PreRdFileBlk": "0x404fe4",
+      "RdFileBlk": "0x404fee",
+      "RdFileB1": "0x404ffa",
+      "ReadBlock": "0x405006",
+      "FileWrite": "0x40502a",
+      "SameLen": "0x40506a",
+      "WrPart": "0x405072",
+      "WrMain": "0x405080",
+      "FWrOK": "0x405096",
+      "FWrExit": "0x405098",
+      "FWrExit0": "0x4050a0",
+      "FWrExit1": "0x4050a6",
+      "UpdteCntPos": "0x4050aa",
+      "DoPart": "0x4050b4",
+      "TFSRFN1End": "0x4050fc"
+    }
+  },
+  "changes": [
+    {
+      "location": "TFSBitTst",
+      "change": "Restored MOVE.W IOtrap(A0),D0 followed by BTST #HFSBit,D0.",
+      "evidence": "The ROM at 0x404eb8 loads the trap word into D0 and tests bit 9. The surviving source instead tests memory directly, as its January 14, 1986 history records."
+    },
+    {
+      "location": "GetFPos and SetFPos",
+      "change": "Restored the entry names before the Trap suffix. Preserved their fallthrough into FileRead.",
+      "evidence": "The source history dates the name change to May 21, 1992. At 0x404f10 the ROM clears the position-mode byte; at 0x404f14 it clears the requested count."
+    },
+    {
+      "location": "FileRead",
+      "change": "Removed later vector dispatch and processor-cache flushing. Restored the short FRNewLine branch and omitted ST CacheFlag before FlushCache.",
+      "evidence": "The ROM starts FileRead with BSR FSQueue at 0x404f18 and ends through CmdDone at 0x404fa8. Its branch to FRNewLine is short. The read-verify path loads VCBBufAdr into A1 and calls FlushCache immediately. The source dates CacheFlag initialization to January 22, 1986, vector dispatch to April 13, 1989, and processor-cache flushing and the longer branch to October 26, 1992."
+    },
+    {
+      "location": "FileWrite and transfer helpers",
+      "change": "Removed the later FileWrite vector dispatch and processor-cache flush. Retained the source bodies for file extension, block reads, partial transfers, newline reads, and read verification.",
+      "evidence": "FileWrite begins with BSR FSQueue at 0x40502a. ReadBlock retains the alternate A6 stack convention and immediate cache release. DoPart saves D1/A0-A2 and calls through JBlockMove at 0x04b8. All instructions through the final DoPart branch match the ROM."
+    },
+    {
+      "location": "Source form and provenance",
+      "change": "Preserved the original header and applicable history and comments. Added reconstruction notes, required equates, external addresses, and explicit PC-relative JSR operands.",
+      "evidence": "The equate values come from surviving include files. The restored bodies use instructions and symbolic fields; no instruction bytes substitute for source."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "FSQueue",
+      "address": "0x4028aa"
+    },
+    {
+      "name": "RFnCall",
+      "address": "0x405352"
+    },
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "FlushCache",
+      "address": "0x4076c6"
+    },
+    {
+      "name": "CacheRdIP",
+      "address": "0x407b2a"
+    },
+    {
+      "name": "GetBlock",
+      "address": "0x4077b0"
+    },
+    {
+      "name": "TstMod",
+      "address": "0x40539c"
+    },
+    {
+      "name": "Alloc",
+      "address": "0x4055be"
+    },
+    {
+      "name": "MarkA5Block",
+      "address": "0x407a02"
+    },
+    {
+      "name": "CacheWrIP",
+      "address": "0x407b56"
+    },
+    {
+      "name": "AdjEOF",
+      "address": "0x405530"
+    },
+    {
+      "name": "JBlockMove",
+      "address": "0x000004b8"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x404eb8, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "42a009516505e1afb226c217fadd1e7359afc6da52314fedc139b6c61a5cb905",
+    "assembled_length": 580,
+    "matched_bytes": 580,
+    "entry_points_checked": 34,
+    "result": "exact",
+    "limits": [
+      "The comparison proves the emitted bytes and label positions. It does not execute file operations, asynchronous calls, or cache and disk behavior.",
+      "External routines and the JBlockMove target lie outside this span. Their referenced addresses are checked here, but their implementations are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Later source history explains individual differences but does not establish the ROM build date."
+    ]
+  }
+}

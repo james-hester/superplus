@@ -1,0 +1,229 @@
+{
+  "module": "DrawText",
+  "source": "Reconstruction/Source/QuickDraw/DrawText.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/DrawText.m.a",
+      "sha256": "4edfc5f51706df9766eda35da6c5a3df7979458bdcfd3751e4976d9d360ac569",
+      "line_ranges": [
+        [
+          1,
+          32
+        ],
+        [
+          44,
+          982
+        ]
+      ],
+      "role": "The complete surviving character generator supplies the procedure, comments, labels, frame definitions, and almost all instructions."
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+      "line_ranges": [
+        [
+          162,
+          182
+        ],
+        [
+          443,
+          487
+        ],
+        [
+          502,
+          535
+        ],
+        [
+          550,
+          581
+        ]
+      ],
+      "role": "QuickDraw equate names and the UNLINK and _StackAvail macro interfaces."
+    },
+    {
+      "path": "Interfaces/AIncludes/QuickDraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "line_ranges": [
+        [
+          229,
+          267
+        ]
+      ],
+      "role": "Point, rectangle, bitmap, region, and GrafPort offsets."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          621,
+          621
+        ]
+      ],
+      "role": "HeapEnd at 0x0114."
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "line_ranges": [
+        [
+          218,
+          218
+        ]
+      ],
+      "role": "WidthPtr at 0x0b10."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x408f26",
+      "end_exclusive": "0x409668",
+      "rom_offset": "0x8f26",
+      "length": 1858,
+      "sha256": "4916f21b69b2b8a384acb5f158dc5614c4c2e2971563cbc02628ffa41745d5cb",
+      "start_label": "DrText",
+      "end_label": "DrTextEnd",
+      "boundary_evidence": "StdText calls 0x408f26. That address begins the stack frame and register save for DrText. The final JMP (A0) ends at 0x409668, where the Ghidra export names the following procedure StdLine."
+    }
+  ],
+  "entry_points": {
+    "DrText": "0x408f26",
+    "DrTextEnd": "0x409668"
+  },
+  "internal_labels": {
+    "Fast": "0x4090ca",
+    "NotFast": "0x409122",
+    "StackOK": "0x4091bc",
+    "GetPtrs": "0x4091d0",
+    "NextCh": "0x40925a",
+    "Missing": "0x40927a",
+    "Main1": "0x40936c",
+    "Long1": "0x4093ac",
+    "Word1": "0x4093d4",
+    "StrDone": "0x4093ee",
+    "CheckUL": "0x40947a",
+    "NoShad": "0x409624",
+    "GoHome": "0x409656"
+  },
+  "changes": [
+    {
+      "location": "Stack frame",
+      "change": "Restored BufStart after BufEnd, and SrcAddr and the word SrcRow after FakePtr. Removed the later grouping of those fields at the end of the frame. The final Denom2 field leaves a 196-byte frame.",
+      "evidence": "Every stack displacement matches the ROM. SrcAddr is -98, SrcRow is -100, BufStart is -36, and Denom2 is -196. The surviving source places all three bitmap fields together and makes SrcRow a longword.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Font rows and character blitting",
+      "change": "Restored word stores, arithmetic, and address increments for SrcRow. Reinstated separate loads of SrcAddr and BufStart.",
+      "evidence": "The ROM stores SrcRow as a word at 0x409062, reads it as a word at 0x409338, and advances A4 with ADDA.W A2,A4 in all three drawing loops. The original file preserves the replaced instructions as comments beside the <1.4-4april89-CEL> additions.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Fast drawing path",
+      "rom_address": "0x40906c",
+      "change": "Restored the single TST.W 6(A4) that tests bold and italic together.",
+      "evidence": "ROM bytes 4a6c0006 test both style bytes at once. The later file tests fmOutItalic and fmOutBold separately.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Font table setup",
+      "rom_address": "0x4091d0",
+      "change": "Restored the 16-bit strike length and direct WidthPtr access. Removed the use of fNDescent as the high word of the width-table offset and the later width-table handle dereferences.",
+      "evidence": "The ROM multiplies the font height by word SrcRow, clears D0 before loading the word LENGTH, and doubles that value. It reads WidthPtr at 0x40921a and 0x409264. The source history dates support for strikes larger than 128K to July 1, 1987.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Missing characters and branches",
+      "change": "Moved the Missing block after the character range check and restored BLS.S OKCHAR, BPL.S NotMiss, and BMI.S Missing. Restored the ROM branch widths elsewhere.",
+      "evidence": "The ROM branches over Missing at 0x409278 and backward to it at 0x409298. Two exits to StrDone use word branches at 0x4093a8 and 0x4093d0 even though short branches would fit. The stack allocation check also contains a word branch at 0x40915e.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "_StackAvail",
+      "rom_address": "0x409170",
+      "change": "Restored MOVE.L SP,D0 followed by SUB.L HeapEnd,D0 in the macro body.",
+      "evidence": "ROM bytes 200f90b80114 encode this calculation. GrafTypes.m.a history <1.2> says the macro changed to call _StackSpace on June 6, 1989. The reconstructed source invokes the restored macro.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "UNLINK and external references",
+      "change": "Restored the 68000 UNLINK return used by the ROM and made PC-relative calls explicit. Replaced include and import dependencies with local equates for the values and target addresses used by this file.",
+      "evidence": "The final return at 0x40965e is UNLK A6; MOVE.L (SP)+,A0; ADD #14,SP; JMP (A0). All call displacements and the MaskTab LEA match the ROM.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Comments and history",
+      "change": "Preserved the original file header, copyright, April 1985 history, routine and algorithm comments, and applicable instruction comments. Removed history and change markers for reversed additions. Marked the restored macros and frame as reconstruction work. Corrected the location-table comment from A1 to A0 to match its instruction.",
+      "evidence": "The original source path and SHA256 are recorded above. Most comments remain verbatim. The ROM confirms the restored instructions and field offsets.",
+      "confidence": "source provenance recorded"
+    }
+  ],
+  "external_references": [
+    {
+      "name": "MapRect",
+      "address": "0x0040e5cc",
+      "evidence": "Ghidra symbol and the ROM targets of the corresponding source calls."
+    },
+    {
+      "name": "RSect",
+      "address": "0x0040a110",
+      "evidence": "ROM target of the source call that intersects four rectangles."
+    },
+    {
+      "name": "TrimRect",
+      "address": "0x0040c1ba",
+      "evidence": "ROM target of the corresponding source call; Ghidra exports a default function label."
+    },
+    {
+      "name": "MaskTab",
+      "address": "0x00408438",
+      "evidence": "ROM LEA target and the mask table in the reconstructed Util module."
+    },
+    {
+      "name": "RightMask",
+      "address": "0x00408420",
+      "evidence": "Ghidra symbol and the ROM target of the corresponding source call."
+    },
+    {
+      "name": "StretchBits",
+      "address": "0x0040d062",
+      "evidence": "Both source calls transfer bitmap buffers and have this ROM target."
+    },
+    {
+      "name": "ShieldCursor",
+      "address": "0x004082fe",
+      "evidence": "Ghidra symbol for the QuickDraw cursor glue entry."
+    },
+    {
+      "name": "ShowCursor",
+      "address": "0x004082f8",
+      "evidence": "Ghidra symbol for the QuickDraw cursor glue entry."
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py expanded the source macros, assembled for the 68000, linked at 0x408f26, and compared every emitted byte against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "2d3089fd2f69876d39fd5e3c1287515ebd2cb55de887841f475114855ee0b8e9",
+    "assembled_length": 1858,
+    "matched_bytes": 1858,
+    "entry_points_checked": 2,
+    "result": "exact",
+    "limits": [
+      "The original Mac Plus source and historical assembler output remain unavailable. The ROM proves instruction encoding for this span; exact historical spelling, macro definitions, and source layout remain partly inferred.",
+      "External calls use recorded ROM addresses. This module does not verify the bodies of the Font Manager, region routines, cursor routines, MapRect, or StretchBits.",
+      "Only the 14-byte parameter case of UNLINK is invoked in this file. Its other retained cases emit no bytes here."
+    ]
+  }
+}

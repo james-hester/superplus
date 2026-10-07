@@ -1,0 +1,17 @@
+*R QuickDraw return macros retain the Mac Plus instruction sizes.
+*R The UNLINK structure follows QuickDraw Source/GrafTypes.a.
+*R See Evidence/shared-includes.json for the module-specific encoding choices.
+;
+*R UNLINK uses ADD.W for every nonzero parameter count.
+
+        MACRO
+        UNLINK
+        UNLK A6                         ;RELEASE LOCAL VARIABLES
+        IF &Eval(&Syslst[1])=0 THEN
+        RTS                             ;THEN JUST RTS
+        ELSE
+        MOVE.L (SP)+,A0
+        ADD.W #&Syslst[1],SP
+        JMP (A0)
+        ENDIF
+        ENDM

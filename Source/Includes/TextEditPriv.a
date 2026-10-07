@@ -1,0 +1,24 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/TextEditPriv.a
+;
+;	File:		TextEditPriv.a
+;
+;	Contains:	Private TextEdit equates.
+;
+;	Written by:	Sue Bartalo
+;
+;	Copyright:	© 1990-1992 by Apple Computer, Inc., all rights reserved.
+;
+
+returnChar		equ		$0D
+inHandle	Equ			8						; TE handle offset
+saveHandle	Equ			-2						; incoming handle flags
+savePort	Equ			saveHandle-4			; incoming graf port
+saveClip	Equ			savePort-4				; incoming clip in TE port
+saveTH		Equ			saveClip-2				; saved text handle flags
+TBJust		Equ			8
+TBBox		Equ			10
+TBLength	Equ			14
+TBText		Equ			18

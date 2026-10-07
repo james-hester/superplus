@@ -1,0 +1,27 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/ColorEqu.a
+;
+;	File:		ColorEqu.a
+;
+;	Copyright:	© 1986-1991 by Apple Computer, Inc., all rights reserved.
+;
+
+FontFlag  		EQU 		$15E  					; font manager loop flag [byte]
+FOutError 		EQU 		$998  					; error code
+FOutFontHandle	EQU 		$99A  					; handle to font bits
+FOutBold  		EQU 		$99E  					; bolding factor
+FOutItalic		EQU 		$99F  					; italic factor
+FOutULOffset  	EQU 		$9A0  					; underline offset
+FOutULShadow  	EQU 		$9A1  					; underline halo
+FOutULThick   	EQU 		$9A2  					; underline thickness
+FOutShadow		EQU 		$9A3  					; shadow factor
+FOutExtra 		EQU 		$9A4  					; extra horizontal width
+FOutAscent		EQU 		$9A5  					; height above baseline
+FOutDescent   	EQU 		$9A6  					; height below baseline
+FOutWidMax		EQU 		$9A7  					; maximum width of character
+FOutLeading   	EQU 		$9A8  					; space between lines
+FOutUnused		EQU 		$9A9  					; unused byte (must have even number)
+FOutNumer 		EQU 		$9AA  					; point for numerators of scale factor
+FOutDenom 		EQU 		$9AE  					; point for denominators of scale factor

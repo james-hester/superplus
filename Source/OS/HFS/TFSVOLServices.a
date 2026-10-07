@@ -1,0 +1,1723 @@
+;	Contains:	This file contains mostly volume-level routines for the Turbo
+;				File System.
+
+*R TFSVOLServices contains the remainder of OS/HFS/TFSVOL.a.
+*R It reproduces ROM $4D1F8172 from FindDrive at $403414 through SetupDef,
+*R ending at $403DAA before MFSVOL begins. Applicable source comments remain.
+*R Later dispatch vectors are absent except for the original DtrmV1 vector.
+*R Eject1 performs the shared synchronization for both offline and eject.
+*R XferVName restores the 24-bit mask and checks the result against BufPtr.
+*R The inactive source retains the check but uses the later MemTop bound.
+*R GetWDCBInfo does not clear D1 first, and CkWDRefNum checks only the index.
+*R Inactive *EX-CODE* lines use semicolons.
+*R FlVolStart names the shared flush entry restored from the ROM.
+
+*R These equates retain the original include definitions.
+		IMPORT CmdDone,CMGetCN,DEQUEUE,DsposVBlks,DsposVCB,ENQUEUE ;]
+		IMPORT ExtOffLinCk,FClose,FlushCache,FlushMDB,FndFilName,FSQueue ;]
+		IMPORT FSQueueSync,GetVCBDrv,GetVCBRfn,GetWDCBRfn,Gt1stFCB,Gt1stWDCB ;]
+		IMPORT GtNxtFCB,GtNxtWDCB,MarkVCB,MarkVCBDirty,MDspsMap,MFSFlush ;]
+		IMPORT QWordSearch,TFSVCBTst ;]
+		EXPORT CkExtFS,CkWDRefNum,CVFlgs,DtrmV1,DtrmV2,DtrmV3 ;]
+		EXPORT DumpCaches,Eject,FindDrive,FlushBuffers,FlushVol,GetVol ;]
+		EXPORT GetVolInfo,NSVErrXit,OffLine,SetVol,SetVolName,UnMountVol ;]
+		EXPORT vDtrmV1,XferVName ;]
+
+		INCLUDE 'FSEqu.a'
+		INCLUDE 'FSPrivate.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SonyInterfaceEqu.a' ;]
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+; 0 = no disk in place
+; 1 = disk in place
+; 2 = disk has been read
+; >8 = non-ejectable disk
+
+*R Control uses the asynchronous trap variant.
+
+
+
+;_______________________________________________________________________
+;
+; Routine:		FindDrive
+; Arguments:	  D2.W (input)	-- drive number
+;				  D1.W (output) -- driver refnum for this drive number
+;				  D2.W (output) -- drive number
+;				  D0.W (output) -- error code (no such drive)
+;				  A3.L (output) -- pointer to DQE for drive in question
+;				  All other registers are preserved.
+; Calls:		QWordSearch
+; Called By:	Eject,MountVol
+; Function: 	Given a drive number, this routine returns the RefNum
+;				for the driver by searching the system drive queue.
+;
+; Modification History:
+;  06 Dec 82  LAK  New today.
+;  13 Jan 83  LAK  Removed block offset - now returns drive number in D2
+;  01 Jun 83  LAK  Checks added DQFSID field, reporting ExtFSErr if nonzero
+;  25 Apr 85  PWD  Changed to return DQE pointer in A3 for use in Eject.
+;_______________________________________________________________________
+
+FindDrive:
+			MOVE.L	A0,-(SP)			; preserve A0
+			MOVE.W	D2,D0				; search using this drive number as the key
+			LEA 	DrvQHdr,A0			; search the queue of drive numbers
+			MOVEQ	#DQDrive,D1 		; for drive number
+			BSR		QWordSearch
+			BNE.S	@2					; exit if not found
+
+			MOVEA.L A0,A3				; Return pointer to DQE
+			MOVE	DQRefNum(A0),D1 	; return refnum
+			MOVE.W	DQFSID(A0),D0		; is it for us?
+			BEQ.S	@1					; br if so
+			MOVEQ	#ExtFSErr,D0		; otherwise, report an error
+
+@1			MOVEA.L (SP)+,A0			; restore A0
+			RTS
+
+@2			MOVEQ	#NSDrvErr,D0		; no such drive number
+			BRA.S	@1
+
+;_______________________________________________________________________
+;
+; Routine:		OffLine
+; Arguments:
+; Calls:
+; Called By:
+; Function:
+;
+; Modification History:
+;
+;  5 Jul 84   GSS	Added this call to the TFS code
+;_______________________________________________________________________
+OffLine:
+			
+			ST		NoEject 			; NoEject.B = -1: mark vol. offline but
+										;	don't eject the diskette
+			BRA 	Eject1				; share code with Eject
+;_______________________________________________________________________
+;
+; Routine:		Eject
+; Arguments:	  A0 (input)  -- pointer to volume parameter block, uses IODrvNum,
+;									IOFileName
+;				  D0 (output) -- error code
+;				  This call is executed synchronously until the eject call is
+;				  actually made.
+; Calls:		_FlushVol,_Control
+;
+; Function: 	The volume in the drive is flushed and its block map and buffer
+;				block are deallocated.	A control call to the disk driver
+;				is made to eject the diskette.
+;
+; Modification History:
+; 06-Dec-82   LAK	New today.
+; 13-Jan-83   LAK	Disk control call now uses drive number parameter. Completion
+;					routine is now just CmdDone.
+; 01-Jun-83   LAK	Changed to just flush the volume before ejecting; VCB
+;					drive number and driver number are zeroed.
+; 05-Jul-84   GSS	Patched from MSFileFix code
+; 12-Feb-85   PWD	Split off MFS code and adapted for use in Turbo FS.
+; 25-Apr-85   PWD	Changed to leave non-ejectable volumes online.
+; 26-Jun-85   PWD	Changed to not call driver for non-ejectable disks
+; <30Aug85>   LAK	Changed to force Eject to be synchronous since FlushMDB must be
+;					 done BEFORE closing of volume B-tree files.  Why not use
+;					 a separate parameter block for Eject so we can return immediately?
+; <14Oct85>   PWD	Added DumpCaches routine for use by MountVol on remount.
+; <28Oct85>   PWD	Changed to pass control call to drivers anyway if 64 <= DIP <= 127
+;					 mung VCB as for _Offline call for these drivers.  Changed to
+;					 interpret NoEject as tri-state flag: -1[offline], 0[eject], or
+;					 +1 [offline w. special eject control call].
+;
+; Notes:
+;	- CmdDone gets result code from D0 and assumes it is being called when the
+;	  first routine on the queue is satisfied, so it all works . . .
+;	- Should the diskette still be ejected if the flush does not work?
+;	  Should directory writes be verified for paranoid users?
+;
+;_______________________________________________________________________
+
+; DumpCaches is called by MountVol when a remount is detected to flush out any	<14Oct85>
+; changes the consistency check may have brought [part. in the bitmap cache],	<14Oct85>
+; and trash the cache blocks marked with the now-defunct VRefNum/VCBPtr 		<14Oct85>
+;																				<14Oct85>
+; Called by:	MountVol														<14Oct85>
+
+DumpCaches: MOVE.L	(SP)+,-(A6) 		; Save return address across ,ASYNC I/O <14Oct85>
+			MOVEM.L A1/D1-D2,-(A6)		; Free same scratch registers as below	<24Oct85>
+			CLR.B	FlushOnly			; Trash cache blocks after flushing 	<14Oct85>
+			BRA.S	flVCaches			; Go flush the cache buffers			<14Oct85>
+			
+; FlushBuffers is a code-sharing routine used by Eject and Flush/UnMountVol to flush the
+; MDB (marking the volume consistent for Eject and UnMount), and flushing (and
+; closing for Eject and UnMount) the volume control files . . . it likes to have
+; the FlushOnly flag and A2 set appropriately on entry . . . It also flushes all buffers
+; (and invalidates all cache blocks for the volume if FlushOnly=0).
+;
+; Called By:	Eject, FlushVol, MFSFlush
+
+FlushBuffers:							;										<01Oct85>
+			MOVE.L	(SP)+,-(A6) 		; Save return address for ,ASYNC calls	<29Aug85>
+			MOVEM.L A1/D1-D2,-(A6)		; Save all regs except D0				<24Oct85>
+			BSR 	TFSVCBTst			; Is it an MFS volume?					<01Oct85>
+			BNE.S	flVCaches			; Br if so (just flush caches)			<01Oct85>
+
+			TST.B	FlushOnly			; Just flushing?						<29Aug85>
+			BNE.S	@1					; Br if so								<29Aug85>
+			BSR 	CVFlgs				; Is volume write protected?			<01Oct85>
+			BNE.S	@1					; If so, don't try to mark it dirty     <01Oct85>
+			BSET	#VCBAtVOK,VCBAtrb(A2) ; Indicate vol was unmounted ok		<29Aug85>
+			BSR 	MarkVCBDirty		; mark VCB dirty so it will be written	<10Oct85>
+@1
+			JSR 	FlushMDB			; Go flush the VCB info BEFORE close	<29Aug85>
+
+			MOVEA.L FCBsPtr,A1			; Point to FCB array					<29Aug85>
+
+			MOVE.W	VCBCTRef(A2),D1 	; Catalog B*-Tree file refnum			<29Aug85>
+			BSR 	FClose				; Close the file itself 				<29Aug85>
+			BNE.S	flBufExit			; Punt on errors						<29Aug85>
+			TST.B	FlushOnly			; Just flushing?						<29Aug85>
+			BNE.S	@2					; If so, the FCB's still 'live'         <29Aug85>
+			CLR.W	VCBCTRef(A2)		; Indicate it's gone                    <29Aug85>
+
+@2			MOVE.W	VCBXTRef(A2),D1 	; Extent B*-Tree file refnum			<29Aug85>
+			BSR 	FClose				; Close the file itself 				<29Aug85>
+			BNE.S	flBufExit			; Rats - and we were SO CLOSE...		<29Aug85>
+			TST.B	FlushOnly			; Just flushing?						<29Aug85>
+			BNE.S	flVCaches			; If so, there's still data in the FCB  <29Aug85>
+			CLR.W	VCBCTRef(A2)		; It's a goner now...                   <29Aug85>
+
+; Flush the volume caches (this code is shared with MFSFlush)
+
+flVCaches:
+			MOVEQ	#0,D1				; Clear options byte (we'll trash later)
+			ST		CacheFlag			; Yes, REALLY flush . . .				<05Sep85>
+
+			MOVE.L	SysBMCPtr,A1		; System-wide bitmap cache pointer		<30Aug85>
+			MOVE.W	VCBVRefNum(A2),D0	; Volume refnum 						<21Sep85>
+			JSR 	FlushCache			; A2=VCB ptr							<30Aug85>
+
+			MOVE.L	SysCtlCPtr,A1		; System-wide control cache pointer 	<30Aug85>
+			MOVE.W	VCBVRefNum(A2),D0	; Volume refnum 						<21Sep85>
+			JSR 	FlushCache			; A2=VCB ptr							<30Aug85>
+
+			MOVE.L	SysVolCPtr,A1		; System-wide volume cache pointer		<30Aug85>
+			MOVE.W	VCBVRefNum(A2),D0	; Volume refnum 						<21Sep85>
+			JSR 	FlushCache			; A2=VCB ptr							<30Aug85>
+
+			TST.B	FlushOnly			; Just flushing?						<30Aug85>
+			BNE.S	flBufOK 			; If so, that's all we ask              <30Aug85>
+			BSR 	DsposVBlks			; Otherwise, trash blocks for A2 volume <30Aug85>
+
+flBufOK 	MOVEQ	#0,D0				; it's cool                             <29Aug85>
+
+flBufExit	MOVEM.L (A6)+,A1/D1-D2		; Restore regs							<24Oct85>
+			MOVE.L	(A6)+,-(SP) 		; Restore the return address			<29Aug85>
+			TST.W	D0					;										<29Aug85>
+			RTS 						;										<29Aug85>
+
+Eject:
+			
+			CLR.B	NoEject 			; want to really eject here . . .
+
+Eject1:
+			BSR		FSQueueSync
+			BSR 	DtrmV3				; check name, drive number, etc.		<30Aug85>
+			BNE.S	@1					; br if drive not mounted (why flush?)	<30Aug85>
+			BSR 	CkExtFS 			; see if it's for an external fs        <30Aug85>
+			BNE.S	EjectDone			; exit if so							<30Aug85>
+			BRA.S	ejectMnted			; otherwise, go the 'mounted volume' route <30Aug85>
+
+@1			MOVE.W	IOVDrvNum(A0),D2	; drive number
+
+ejectDrvNum BSR		FindDrive			; get disk driver refnum in D1
+			BNE.S	ejectDone			; exit if no mapping for this drive 	<29Aug85>
+			TST.B	NoEject 			; REALLY eject this thing?
+			BEQ 	EjectIt 			; OK, OK; it's going already...
+
+ejectDone	BRA 	CmdDone 			; we're done . . .                      <29Aug85>
+
+ejectMnted	LEA 	VCBDrvNum(A2),A1
+			MOVE.W	(A1),D2 			; on-line, non-ejected?
+			BNE.S	@0					; br if so								<29Aug85>
+
+			MOVE.W	2(A1),D2			; is it already ejected?
+			BPL.S	ejectDone			; just exit if so
+			TST.B	NoEject 			; no eject?
+			BNE.S	ejectDone			; br if so (it's already offline . . .) <29Aug85>
+
+			NEG.W	D2					; get non-ejected offline disk's drive number
+			NEG.W	2(A1)				; mark it now ejected . . .
+			BRA.S	ejectDrvNum 		; and eject it (pass D2=drive number)
+										; NOTE: the previous OffLine call would have marked
+										;  a TFS disk consistent.
+
+; OK, it's on-line and not ejected . . . so make it offline and eject if appropriate . . .
+
+@0			BSR 	FindDrive			; Find DQE from drive number in D2
+			BNE.S	ejectDone			; Punt if can't be found
+			TST.B	NoEject 			; Just an _Offline call?				<28Oct85>
+			BNE.S	@5					; Yes - don't try harder than needed    <28Oct85>
+			CMP.B	#8,DQDIP(A3)		; Check drive ejectability: 			<29Aug85>
+			BLT.S	@5					; Skip if it's ejectable                <28Oct85>
+			ST		NoEject 			; If DQDIP > 8, it's non-ejectable      <28Oct85>
+			CMP.B	#64,DQDIP(A3)		; Send a _Control call anyway?			<28Oct85>
+			BLT.S	@5					; No need - we're set as is.            <28Oct85>
+			MOVE.B	#1,NoEject			; If >64, call the driver anyway.		<28Oct85>
+
+@5			ST		FlushOnly			; only flushing (don't close . . .)     <11Sep85>
+			BSR.S	FlushVFiles 		; flush all files on this volume		<11Sep85>
+
+			BSR 	TFSVCBTst			; Are we dealing with a TFS volume? 	<01Oct85>
+			BNE.S	@10 				; Nope.
+
+*R Offline and eject close the control files in this ROM.
+*R The later NoCloseOnEject patch replaced this clear with a flush-only path.
+            CLR.B   FlushOnly
+			BSR 	FlushBuffers		;  and flush MDB as 'consistent'		<01Oct85>
+			BRA.S	ejectMark			; now go mark it . . .					<29Aug85>
+
+; FlushOnly is still set for MFS (otherwise MFSFlush would dispose the VCB)
+
+@10 		BSR 	MFSFlush			; flush the MFS allocation map and MDB	<11Sep85>
+			BSR 	MDspsMap			; and dispose MFS map buffer			<01Oct85>
+			BSR 	DsposVBlks			; finally, trash blocks for A2 volume	<01Oct85>
+
+; OK, mark it offline by zeroing the drive number field in the VCB.  Then, put the
+; drive number in the driver refnum field in the VCB and if it's really just Offline,
+; negate that field.
+
+ejectMark	CLR.W	(A1)+				; zero drive number to mark it offline/ejected
+			TST.B	NoEject 			; Real eject call						<28Oct85>
+			BEQ.S	@1					; br if so								<28Oct85>
+			NEG.W	D2					; neg drive number for offline indication  <29Aug85>
+@1			MOVE.W	D2,(A1)+			; store drive number here for disk-switch  <29Aug85>
+										;  (negated drivenum for offline)
+
+			TST.B	NoEject 			; eject or offline? 					<29Aug85>
+			BEQ.S	ejectIt 			; go eject it if eject call 			<29Aug85>
+
+; OffLine calls requeue the VCB for fairness (let some other drive get taken offline next time)
+
+			MOVE.L	A2,A0				; VCB queue element 						<29Aug85>
+			LEA 	VCBQHdr,A1			; VCB queue header							<29Aug85>
+
+; DeQueue then EnQueue to force VCB to		<29Aug85><v1.4>
+			JSR 	DEQUEUE ;]
+;  the end for round-robin offline scheme	<29Aug85><v1.4>
+			JSR 	ENQUEUE ;]
+			
+			TST.B	NoEject 			; Was this a real _Offline call?			<28Oct85>
+			BMI		ejectDone			; Yes - offline br to command done			<29Aug85>
+
+; Here is where it finally gets ejected . . .
+
+ejectIt 								; shared by MFS and TFS eject code . . .
+			LEA 	Params,A0			; general purpose I/O param block			<29Aug85>
+			LEA 	IODrvNum(A0),A1 	; prepare to fill in 3-in-a-row 			<29Aug85>
+			MOVE.W	D2,(A1)+			; IODrvNum (the drive)						<29Aug85>
+			MOVE.W	D1,(A1)+			; IORefNum (driver handling this drive) 	<29Aug85>
+			MOVE.W	#EjectCode,(A1) 	; CSCode (eject it!)						<29Aug85>
+			LEA 	CmdDone,A1			; completion routine just says done 		<29Aug85>
+			MOVE.L	A1,IOCompletion(A0) ;											<29Aug85>
+; asynchronous call 						<29Aug85>
+			_Control ,ASYNC
+			RTS 						; always return at this level				<29Aug85>
+
+;_______________________________________________________________________
+;
+; Routine:		UnMountVol
+; Arguments:	  A0 (input)  -- pointer to volume parameter block, uses IODrvNum,
+;									IOFileName
+;				  D0 (output) -- error code
+;				  This call is executed synchronously.
+; Calls:		FlushVolume
+;
+; Function: 	All files on the volume in the drive are closed and any changed
+;				directory information is written out to the diskette.  Memory
+;				for the VCB, volume buffer, and block map is deallocated.
+;
+; Modification History:
+;  06 Dec 82  LAK  No longer ejects the diskette (This combination function
+;				   is now done by calling Eject).  If the default volume is
+;				   unmounted, the default volume pointer is set to the first
+;				   VCB in the VCB queue.
+;  21 Dec 82  LAK  Rewrote to share code with FlushVol; now calls DtrmVol to
+;				   figure out the VCB pointer.
+;  22 Apr 85  PWD  Fixed to write VCBLsMod field.
+;  22-Aug-85  PWD  Changed to set 'volume consistent' flag in volume attributes
+;				   before flushing MDB.
+;_______________________________________________________________________
+
+UnMountVol:
+*R The original unmount entry closes open files through
+*R the shared flush path. It has no later busy-file or shutdown exception.
+            BSR     FSQueueSync
+            CLR.B   FlushOnly
+            BRA.S   FlVolStart ;]
+
+;_______________________________________________________________________
+;
+; Routine:		FlushVolume
+; Arguments:	  A0 (input)  -- VCB pointer to volume to flush
+;				  D0 (output) -- error code
+; Calls:		FClose,MyWriteDB
+; Called By:	UnMountVol
+; Function: 	All file buffers on the volume are flushed and any changed
+;				directory information is written out to the diskette.
+;
+; Modification History:
+;  20 Nov 82  LAK  Clears the modified bit after writing out the VCB.
+;				   Removed logic to get rid of a file's own buffer after closing
+;					it (should be done by close routine; also changing open to
+;					get a pointer to a buffer from the user -> so user would
+;					deallocate after a close or an eject . . .
+;				   Removed logic to deallocate the VCB buffers: this is now done
+;				   by unmount volume . . .
+;  06 Dec 82  LAK  Modified for new file system data structures . . .
+;  07 Dec 82  LAK  Made into an external procedure.
+;  21 Dec 82  LAK  Changed to flush file buffers but not close the files; now
+;					combines code of both unmountvol and flushvol.
+;  13 Jan 83  LAK  Zeros rest of last block map block before writing it out;
+;					some cosmetic and minor changes. Fills in IODrvNum field.
+;  26 Jan 83  LAK  Doesn't read in the master block first anymore; always
+;					flushes dirty volume buffer.
+;  02 Jun 83  LAK  Made flush of off-line volume a no-op; also allows unmount
+;					of an off-line volume.
+;  11 Mar 85  PWD  Changed to call BTClose for files with non-nil FCBBTCBPtrs as
+;				   a temporary patch (eventually this will be part of FlClose).
+;	4 Apr 85  PWD  B*-Tree are now handled by FClose; removed calls to BTClose.
+;	1 May 85  PWD  Added code to free WDCBs pointing to unmounted volume
+;				   on UnMount
+;	4-Jun-85  PWD  Changed to write MDB as last block (should always have highest
+;				   sequence number in tags).
+;  <29Aug85>  LAK  MDB cannot be written after control files are closed.
+;_______________________________________________________________________
+
+FlushVFiles:
+			MOVE.L	(SP)+,-(A6) 		; Save return address for ,ASYNC calls	<30Aug85>
+			MOVEM.L A0-A5/D1-D7,-(A6)	; Save all regs except D0				<11Sep85>
+
+; scan through the FCBs and flush any files on this volume that are open
+; (also close them if we are unmounting the volume . . .)
+
+			BSR 	Gt1stFCB
+ckNxtFCB	TST.L	FCBFlNm(A1,D1)		; file open?
+			BEQ.S	ckNxtF1 			; br if not
+
+			CMP.L	FCBVPtr(A1,D1),A2	; pointing at this VCB?
+			BNE.S	ckNxtF1 			; nope.
+			BSR 	TFSVCBTst			; Are we dealing with a TFS volume? 	<01Oct85>
+			BNE.S	@1					; Nope - all's safe                     <28Aug85>
+			CMP.L	#FSUsrCNID,FCBFlNm(A1,D1) ; Check file id - internal file?
+			BCS.S	ckNxtF1 			; If LO, yes - wait until later 		<28Aug85>
+@1			BSR 	FClose				; file is on this volume so flush it
+			BNE.S	fvFilesExit 		; report any errors
+
+ckNxtF1 	BSR 	GtNxtFCB			; look at next file
+			BCS.S	ckNxtFCB			; until we have looked at them all
+			MOVEQ	#0,D0				; we're cool
+
+fvFilesExit
+			MOVEM.L (A6)+,A0-A5/D1-D7	; Restore regs							<11Sep85>
+			MOVE.L	(A6)+,-(SP) 		; restore return address
+			TST.W	D0
+			RTS
+
+FlushVol:
+			BSR 	FSQueue 			; wait our turn
+			ST		FlushOnly			; only flushing . . .
+
+; first, find the appropriate VCB in our queue
+
+FlVolStart ;]
+	BSR.S	DtrmV3				; check name, drive number, etc.
+			BNE.S	FlVolExit			; exit if no such volume
+FlUnMnt:																	;	<04Nov87>
+			BSR.S	CkExtFS 			; see if it's for an external fs
+			BNE.S	FlVolExit			; exit if so
+
+			BSR.S	FlushVFiles 		; flush all files on this volume
+			BNE.S	FlVolExit
+
+; All files on this volume are flushed now.  Update the volume information as
+; appropriate, depending on the file structure:
+
+			BSR 	TFSVCBTst			; is this a TFS volume? 				<01Oct85>
+			BEQ.S	@1					; br if so								<11Sep85>
+			BSR 	MFSFlush			; flush the MFS allocation map and MDB	<11Sep85>
+			BRA.S	FlVolExit			; and exit . . .						<11Sep85>
+
+; Unmounting a TFS volume: close the volume control B*-Tree and use the
+; volume buffer to write out the MDB
+;
+*R Offline volumes skip FlushBuffers because offline and
+*R eject already closed their control files. The later close path is absent.
+@1          TST.W   VCBDrvNum(A2)
+            BEQ.S   FlVolDone ;]
+            BSR     FlushBuffers
+            BNE.S   FlIOErrExit
+
+FlVolDone	TST.B	FlushOnly			; only flushing?
+			BNE.S	FlVolOK 			; br if so
+
+; For UnMountVol, dequeue the VCB and trash any WDCBs for this volume . . .
+
+			BSR 	DsposVCB			; share code with MountVol error routine <30Aug85>
+
+FlVolOK 	MOVEQ	#0,D0				; no error
+FlIOErrExit 							;
+FlVolExit	BRA 	CmdDone
+
+;_______________________________________________________________________
+;
+; Routine:		CkExtFS
+; Arguments:	  A2.L (input)	-- VCB pointer
+;				  D0.W (output) -- 0=belongs to us, ExtFSErr=belongs to another
+; Called By:
+; Function: 	Simple routine to separate out calls to be handled by an
+;				external file system.
+;
+; Modification History:
+;  06 Dec 82  LAK  New today.
+;_______________________________________________________________________
+
+CkExtFS:
+
+			MOVE.W	VCBFSID(A2),D0		; is this VCB for us?
+			BEQ.S	@1					; br if so
+			MOVEQ	#ExtFSErr,D0
+@1			RTS
+
+;_______________________________________________________________________
+;
+; Routine:		DtrmVol,DtrmV1,DtrmV2,DtrmV3
+; Arguments:	  HFSFlags (input) -- who really sets this up???				<29Aug85>
+;				  A0.L (input)	-- IOFileName(A0) = ptr to path name
+;				  D0.W (output) -- 0 or error code: NSVErr
+;				  D2.W (output) -- pathname length (not including any vol prefix)
+;				  D3.W (output) -- 0 if no vol name specified, non-zero otherwise
+;				  A2.L (output) -- VCB pointer
+;				  A3.L (output) -- WDCB pointer or zero (if none specified)
+;				  A4.L (output) -- pathname ptr (not including any vol prefix)
+;				  All other regs are preserved
+;				  Makes use of the fact that all IO parameter blocks have
+;				   their filename pointers and drive numbers in the same spot.
+; Calls:		_CmpString,QWordSearch,GetVCBDrv,GetVCBRfn
+; Called By:	SetVol,UnMountVol,FlushVol,Open,Create,Delete,Rename,
+;				 GetFileInfo(DtrmV1),GetVolInfo(DtrmV1,DtrmV3)
+; Function: 	Determine what volume is being used in a name. Main entry
+;				requires a name pointer; DtrmV2 also does, but the pointer is
+;				passed in D2.  DtrmV1 just looks at drive number; DtrmV3
+;				looks at name field if not nil, otherwise drive number.
+;
+; Modification History:
+;  02 Dec 82  LAK  Changed to set CCR when done.  Changed to reflect that volumes
+;					off-line have a zero VCB pointer.  Preserves non-interface
+;					regs. Searches thru VCB queue as mountVol, unmountVol do.
+;  10 Dec 82  LAK  Changed to look at drive number field when there is no
+;					volume prefix. Now uses global string compare proc.
+;  13 Dec 82  LAK  Added entry point DtrmVol1 for GetFileInfo.
+;  13 Jan 83  LAK  Calls OS _CmpString proc. Don't ignore parity bit when looking
+;					for colon in name.
+;  23 Jan 83  LAK  Changed DtrmV2 entrypoint to have pointer already; report
+;					error at DtrmVol and DtrmV2 entrys if name ptr is nil;
+;					deleted DtrmV1 (just call GetDrvVCB).
+;  25 May 83  LAK  A4 points to first filename byte now.
+;  02 Jun 83  LAK  Changed to support VRefNum: GetDrvVCB has been factored
+;					out and made into GetVCBDrv, GetVCBRfn
+;  23 Feb 85  GJC  added TFS support for pathnames of the form
+;					volname:<dirname:><dirname:><etc>filename (scan filename from
+;					left to right).
+;				   also, added support for working directory queue and
+;					WDRefnums (search WDCB queue for VRefNums < WDRfnMax).
+;  28-Feb-85  PWD  Changed to stash WDCB pointers in A3, always return VCB pointer
+;				   in A2.  Note that A3 is CLEARED in cases where no WDCB is
+;				   specified, INCLUDING MFS CALLS.
+;	1-Mar-85  PWD  Changed to check for and ignore zero-length volume names
+;				   (possible if WDCB/partial pathname is specified).  Name pointer
+;				   is left pointing AFTER leading colon at first pathname element.
+;  22-Aug-85  PWD  Changed to skip search path if requested through lo-mem flag
+;				   (for GetFileInfo/GetCatInfo by index).
+;  <29Aug85>  LAK  Rewrote in a more straightforward fashion.  Only error returned
+;					now is NSVErr.
+;  <06Sep85>  LAK  Slight modification to DtrmV3 prefix to prevent passing to DtrmVol
+;					if IOFileName points to a zero-length string (for the dubious
+;					result of making CatMove work with a zero-length string . . .).
+;  <25Sep85>  PWD  Added support for PMSPHook and PMSP Enable/Disable.
+;
+; Test: no vol name, very short vol names, vol name which is only a colon,
+;  internal-external-no volume,only drive specified
+;
+; NOTE: WHY ZERO THE ENTIRE PMSP BLOCK?
+;_______________________________________________________________________
+
+DtrmV3:
+
+			MOVE.L	IOFileName(A0),D2	; entry for flush,set,eject,unmountvol	<06Sep85>
+			MOVE.L	D2,A4				;										<06Sep85>
+			BEQ.S	DtrmV1				; br if nil filename pointer (D2,A4=0)	<06Sep85>
+			TST.B	(A4)				; is it a zero-length name? 			<06Sep85>
+			BNE 	DtrmVol 			; if non-zero, check for vol prefix 	<06Sep85>
+DtrmV1:
+			MOVE.L	jDtrmV1,-(SP)		; jumptable entry for vDtrmV1			<29Oct85>
+			RTS 						; go there								<29Oct85>
+vDtrmV1 								; 'vectored' DtrmV1 routine 			<29Oct85>
+
+			MOVEQ	#0,D3				; No volume name specified				<29Aug85>
+			SUB.L	A3,A3				; Assume no WDCB spec'd for now...      <29Aug85>
+
+			MOVE.W	IOVRefNum(A0),D0	; volume refnum
+			BEQ.S	dtrmDeflt			; br if no drive/vrefnum specified		<29Aug85>
+			BMI.S	dtrmVRef			; br if volume refnum					<29Aug85>
+			BSR 	GetVCBDrv			; try to figure VCB by drive number 	<29Aug85>
+			BRA.S	dtrmGotCk			;										<29Aug85>
+
+dtrmVRef	CMP.W	#WDRfnMax,D0		; Check against max. WDRefNum			<29Aug85>
+			BLE.S	@1					; If LE, it's a working directory RefNum <29Aug85>
+			BSR 	GetVCBRfn			; try to figure VCB by volume refnum	<29Aug85>
+			BRA.S	dtrmGotCk			;										<29Aug85>
+
+@1			BSR 	GetWDCBRfn			; search WDCB queue for WD entry		<29Aug85>
+
+dtrmGotCk	BEQ.S	dtrmGotVol			; br if A2->VCB 						<29Aug85>
+dtrmErrRTS	MOVEQ	#NSVErr,D0			; let's be consistent nowadays . . .    <29Aug85>
+			RTS
+
+dtrmDeflt	MOVE.L	DefVCBPtr,D0		; Is a default set up?					<29Aug85>
+			BEQ.S	dtrmErrRTS			; br if no name, no drive, no refnum, no default
+			MOVEA.L D0,A2				; Otherwise, set it up for use
+			MOVEA.L WDCBsPtr,A3 		; Point to the WDCB array
+			ADDQ.L	#2,A3				; Point to the default WDCB there
+
+; OK, we have A2 set up with the VCB pointer, and A3 -> WDCB if specified by WDCB or default
+
+dtrmGotVol	MOVEQ	#0,D0				; All's well so far
+			MOVE.L	A2,ReqstVol 		; save in case of offline, ext fs vols
+
+; Now that we've determined a volume to work with, check to make sure some
+; defaults are set up to deal with the possibility that the file we're looking
+; for doesn't appear in the first directory tried (if none was specified
+; explicitly):
+
+			BTST	#NoPMSP,HFSFlags	; PMSP disabled?								<25Sep85>
+			BNE.S	@0					; If set, don't search any other directories    <25Sep85>
+
+			BTST	#SkipPMSP,HFSFlags	; Don't bother with PMSP for this operation?    <22Aug85>
+			BEQ.S	dtrmPath			; If flag isn't set, give it a chance           <22Aug85>
+
+; Zero the search path:
+
+@0			MOVE.L	A4,-(SP)			; Create scratch registers						<22Aug85>
+			MOVEA.L PMSPPtr,A4			; Point to the search path						<22Aug85>
+			ADDQ.L	#2,A4				; Point to first entry							<22Aug85>
+			MOVEQ  #((PMSPSize-SPHdrSize-2)/2)-1,D0 ; Pick up length of PMSP			<22Aug85>
+@1			CLR.W	(A4)+				; Clear out the search path 					<22Aug85>
+			DBRA	D0,@1				;												<22Aug85>
+			MOVE.L	(SP)+,A4			; Restore the original A4						<22Aug85>
+
+dtrmExOK	MOVEQ	#0,D0				; All's well so far                             <29Aug85>
+			RTS 						; So quit while we're ahead.                    <29Aug85>
+
+dtrmPath	BTST	#HFSBit,ioTrap(A0)	; Use of HFSBit (9) mod 8 is OK on high byte
+			BEQ.S	@1					; If no TFS trap, there's no DirID
+			TST.L	ioDirID(A0) 		; Otherwise, was one specified?
+			BNE.S	dtrmExOK			; Yes - there'll be no defaulting.
+
+@1			MOVEM.L A4/A1/D2/D4,-(SP)	; Save scratch registers from all this wickedness
+										; for use as PMSP pointers...
+			MOVEA.L PMSPPtr,A4			; Point off to the Poor Man's Search Path
+			MOVE.W	PMSPIndx(A4),D4 	; Pick up the default volume index
+			BGT.S	dtrmPthUse			; If it's initialized, go for it
+
+; Initialize the search path list:
+
+			MOVEQ	#2,D4				; Index beyond the size word to set up 1st entry
+			MOVE.W	VCBVRefNum(A2),D2	; Pick up the volume's VRefNum for use
+
+; The first entry is the default volume/directory:
+
+			MOVE.L	A3,D0				; Was a WDCB [or default] specified?
+			BEQ.S	@2					; Nope - use the root
+			MOVE.L	WDDirID(A3),D0		; Otherwise, we want the default DirID
+			BRA.S	@3					; [A3 points to a WDCB]
+@2			MOVEQ	#FSRtDirID,D0		; No WDCB - use the root
+@3			BSR.S	AddSPEntry			; Add this entry to the search path
+
+; The remainder only makes sense for TFS volumes, which actually have
+; distinguishable directories:
+
+			BSR 	TFSVCBTst			; is this a TFS volume? 					<01Oct85>
+			BNE.S	dtrmPthEnd			; Nope - put an end to it all
+
+; The second entry is the directory referred to by BootDrive, if it's
+; a working directory on the same volume:
+
+dtrmPth2	MOVE.W	BootDrive,D0		; Pick up BootDrive
+			BGE.S	dtrmPth3			; If it's a real DriveNum, forget it
+										; (it would just refer to the root, anyways)
+			CMP.W	#WDRfnMax,D0		; Is it a working directory?
+			BGT.S	dtrmPth3			; If not, forget it
+			BSR 	GetWDCBRfn			; Look up the VCB (sets A2 and A3)
+			BNE.S	dtrmPth3			; Punt on errors
+			CMP.W	VCBVRefNum(A2),D2	; Same volume?
+			BNE.S	dtrmPth3			; If not, forget it
+			MOVE.L	WDDirID(A3),D0		; Pick up the DirID from the WDCB
+			BSR.S	AddSPEntry			; And add the entry to the PMSP
+
+; The third entry is the system directory on the same volume:
+
+dtrmPth3	MOVEA.L ReqstVol,A2 		; Revert back to the requested volume
+			MOVE.L	VCBFndrInfo(A2),D0	; Pick up the system DirID
+			BEQ.S	dtrmPthEnd			; If it doesn't exist, just skip it.
+			BSR.S	AddSPEntry			; Add this to the search path, too
+
+; The fourth entry is the root of the volume:										   <25Sep85>
+
+;*EX-CODE:* MOVEQ   #FSRtDirID,D0	   ; Pick up the root directory ID				  <25Sep85>
+;*EX-CODE:* BSR.S   AddSPEntry		   ; And add it to the search path				  <25Sep85>
+
+; *Add directories on the boot drive, too? (a setup FROUGHT with peril!)*
+
+dtrmPthEnd	CLR.W	SPVRefNum(A4,D4)	; Zero last VRefNum to indicate end of PMSP.
+			MOVEQ	#2,D4				; Set up to point to first entry in PMSP
+			MOVE.W	D4,PMSPIndx(A4) 	; Store it for future reference
+
+; Check if a PMSP hook was defined, and give it a chance to change the PMSP table		<30Sep85>
+; (pointed to by A4), and/or the PMSP index (D4) using the VCB (A2) and IOPB (A0)		<30Sep85>
+
+			MOVE.L	PMSPHook(A4),D0 	; Pick up the hook, if any						<30Sep85>
+			BEQ.S	dtrmPthUse			; If zero, no hook is currently installed		<30Sep85>
+			MOVEA.L D0,A1				; Shift hook address over for dispatch			<30Sep85>
+			JSR 	(A1)				; Call the PMSP hook							<30Sep85>
+
+dtrmPthUse	MOVE.W	SPVRefNum(A4,D4),D0 ; Pick up the default VRefNum
+			BSR 	GetVCBRfn			; Find the corresponding VCB
+			BNE.S	@1					; Br if found no more
+
+			MOVEA.L WDCBsPtr,A3 		; Point to WDCB table
+			ADDA.W	#(2+WDCBLen),A3 	; Point A3 off to newly created default
+			MOVE.L	A2,WDVCBPtr(A3) 	; Set up second WDCB VCB pointer
+			MOVE.L	SPDirID(A4,D4),WDDirID(A3) ; Set up second WDCB DirID
+			CLR.L	WDCatHint(A3)		; No catalog hint
+			CLR.L	WDProcID(A3)		; No ProcID
+
+			MOVEQ	#0,D0				; We're all set, and all is well.
+
+@1			MOVEM.L (SP)+,A4/A1/D2/D4	; Restore scratch registers to original state	<25Sep85>
+			RTS
+
+
+;_______________________________________________________________________
+;
+;	Add an entry to the Poor Man's Search path
+;
+;	Input:	D0 = DirID
+;			D2 = VRefNum
+;			D4 = PMSP index of next free entry
+;			A4 = PMSP table pointer
+;
+;	Output: D4 = updated to point to next entry if entry is used.
+;
+;	D0 is clobbered.
+;_______________________________________________________________________
+
+AddSPEntry:
+
+; Look for an existing entry in the PMSP with the same VRefNum/DirID combination:
+
+			MOVE.L	D4,-(SP)			; Save PMSP index across search
+			MOVEQ	#2,D4				; Index D4 to first entry in PMSP
+@10 		CMP.L	(SP),D4 			; Reached the free slot already?
+			BCC.S	@60 				; Yes - fill in the entry
+			CMP.W	SPVRefNum(A4,D4),D2 ; Match on VRefNum?
+			BNE.S	@40 				; If not, give up
+			CMP.L	SPDirID(A4,D4),D0	; Match on DirID?
+			BEQ.S	@50 				; Yes - No need to fill this one in again
+@40 		ADDQ.W	#SPEntLen,D4		; Point to the next entry
+			CMP.W	(A4),D4 			; Exceeded the table size?
+			BLO.S	@10 				; Nope - continue
+
+@50 		MOVEQ	#0,D0				; Yes - no more room
+@60 		MOVE.L	(SP)+,D4			; Restore D4 to index to free entry again
+
+; Now consider adding the new entry:
+
+			TST.L	D0					; Check the DirID: still want to use it?
+			BEQ.S	@90 				; If it's zeroed, there's no point
+			MOVE.W	D2,SPVRefNum(A4,D4) ; Otherwise, set up the VRefNum
+			MOVE.L	D0,SPDirID(A4,D4)	; And the new DirID
+			ADDQ.W	#SPEntLen,D4		; Advance to the next entry
+
+@90 		RTS
+
+DtrmVol:	MOVE.L	IOFileName(A0),D2	; get pointer to 'volume:<dirname:>filename'
+
+DtrmV2:
+			MOVEM.L D4-D6/A0-A1,-(SP)	; save regs
+			TST.L	D2					; Name specified?
+			BEQ.S	NoNameErr			; need a name this entrypoint
+			MOVE.L	D2,A4
+			MOVEQ	#0,D2				; clear index into name (long for later add)
+			MOVEA.L D2,A3				; Clear WDCB pointer (never specified)
+			MOVE.B	(A4)+,D2			; len of file name
+			BEQ.S	NoNameErr			; no zero-length names
+			MOVEQ	#0,D3				; initialize loop count to zero
+
+@1			MOVE.B	0(A4,D3),D4 		; watch for colons in the name
+			CMP.B	#$3A,D4 			; ':'?
+			BEQ.S	@2					; found possible volume name
+			ADDQ.W	#1,D3				; scan entire name from front to back
+			CMP.W	D3,D2				; have we scanned the entire length yet?
+			BNE.S	@1					; If more to scan, go for it
+			BRA.S	@3					; Otherwise, go look by DrvNum/VRefNum
+
+@2			SUB.L	D3,D2				; file name len excluding volume part
+			SUBQ.W	#1,D2				; and the colon
+			MOVE.L	A4,A1				; ptr to 1st char of vol name string
+			ADD.L	D3,A4				; ptr to first colon in pathname string
+			ADDA.L	#1,A4				; now pointing to the pathname
+
+			TST.W	D3					; Have we scanned over any characters?
+			BGT.S	VolSpcfd			; Yes - go look for volume by name
+@3			BSR		DtrmV1				; no volume prefix; use DrvNum/VRefNum
+
+DtrmDone	MOVEM.L (SP)+,D4-D6/A0-A1	; restore regs
+			TST.W	D0					; set condition codes
+			RTS
+
+NoNameErr	MOVEQ	#BdNamErr,D0		; zero name pointer
+			BRA.S	DtrmDone
+
+; A volume name was specified. figure out which one (if any)
+
+VolSpcfd	MOVE.L	VCBQHdr+QHead,D0	; search the VCB queue
+CkVol:		BEQ.S	@2					; br if end of queue reached
+			MOVE.L	D0,A2				; next VCB pointer
+			LEA 	VCBVN(A2),A0		; string pointer
+			MOVEQ	#0,D0
+			MOVE.B	(A0)+,D0			; length of (A0) string
+			SWAP	D0
+			MOVE.W	D3,D0				; length of (A1) string
+			_CmpString					; compare strings @A0, @A1
+			BNE.S	@1					; br if not equal
+			MOVE.L	A2,ReqstVol 		; note the requested volume
+			BRA.S	DtrmDone			; br if it compares
+
+@1			MOVE.L	QLink(A2),D0
+			BNE.S	CkVol
+
+@2			MOVEQ	#NSVErr,D0			; no volume name match, so volname must
+			BRA.S	DtrmDone			; be dir name, so use drvnum/vrefnum
+
+
+;_______________________________________________________________________
+;
+; Routine:		SetPMSP
+; Arguments:	  A0.L (input)	--	I/O volume parameter block: uses ioCompletion
+;									and ioMisc ($1C).
+;				  D0.W (output) -- error code
+; Calls:		FSQueue,CmdDone
+;
+; Function: 	Specify the behavior of TFS' Poor Man's Search Path.
+;
+;				ioCompletion(A0) is the address of a hook procedure (zero to disable)
+;					which is called when TFS has just initialized the PMSP table.
+;					The hook is called with (A4,D4) pointing to the first PMSP entry.
+;
+;				ioMisc(A0) is a word, the LSB of which determines whether the PMSP is
+;					used at all (if set) or ignored alltogether (if clear).
+;
+; Modification History:
+;  <25Sep85>  PWD  New today.
+;_______________________________________________________________________
+
+SetPMSP:	BSR 	FSQueue 			; Patiently wait our turn
+
+			MOVE.L	ioPMSPHook(A0),D0	; Pick up the hook procedure
+			BMI.S	@1					; If negative, don't install it
+			MOVEA.L PMSPPtr,A1			; Point to the PMSP table
+			MOVE.L	D0,PMSPHook(A1) 	; Install the new hook
+
+@1			MOVE.W	ioPMSPFlg(A0),D0	; Pick up the accompanying boolean
+			BCLR	#NoPMSP,HFSFlags	; Clear flag, enabling PMSP
+			BTST	#0,D0				; Test the LDB [a la Pascal]
+			BNE.S	SetPMSPOK			; If enabled, we're set
+			BSET	#NoPMSP,HFSFlags	; If flag is clear, PMSP is off
+
+SetPMSPOK	MOVEQ	#0,D0				; Always a big hit
+			BRA 	CmdDone 			; So let's just call it a day here
+
+
+;_______________________________________________________________________
+;
+; Routine:		GetVolInfo
+; Arguments:	  A0.L (input)	--	I/O volume parameter block: uses all volume
+;									 fields.
+;				  D0.W (output) -- error code
+; Calls:		FSQueue,CmdDone
+;
+; Function: 	Return information about the volume in a mounted drive.
+;				If the IOVolIndex field is 0,
+;				the name of the default volume is returned; if non-zero, the
+;				name of the nth mounted volume is returned. The maximum length
+;				of a volume name is 27 bytes.  The drive number for the volume
+;				is also returned.
+;
+; Modification History:
+;  07 Dec 82  LAK  Changed to support new file system data structures.
+;  16 Dec 82  LAK  Removed backup file lgth subtract in free blk determination.
+;  21 Dec 82  LAK  Changed to call DtrmVol to figure the volume name. Free
+;					 blocks comes from VCB info already stored.
+;  14 Jan 83  LAK  The latest changes.
+;  23 Jan 83  LAK  Changed to use the volindex field, call XferVName.
+;  03 Jun 83  LAK  Added in-use bit: true if any files on the volume are open;
+;					returns volume refnum now instead of drive number.
+;	6-Aug-85  PWD  Changed to call external file system for non-Macintosh volumes
+;				   AFTER filling in the I/O parameter block information.
+;  15-Aug-85  PWD  Changed to add ioVFilCnt and ioVDirCnt fields
+;  21-Sep-85  PWD  Changed to exclude B*-Tree file allocations from NmAlBlks
+;  21-Sep-85  PWD  Changed to return directory valence instead of VCBNmFls if
+;				   ioVRefNum is a working directory refNum.
+;  24-Sep-85  PWD  Fixed bug (MOVE.L vs. MOVEM.L) in directory valence lookup
+;  11-Oct-85  PWD  Changed to pin NmAlBlks and NmFrBlks at (32767*1000)/1024
+;				   instead of 32767 for programs that figure in 'decimal K'
+;  13-Oct-85  PWD  Fixed bug: don't try to read working directory valence for
+;					external FS volumes.
+;  27-Oct-85  PWD  Changed to ignore volume control files in determining vol. busy
+;				   Changed to set bit 5 in attributes if volume is default
+;
+; - if this was the twin of GetFileInfo, the volume really shouldn't have to
+;	be mounted . . . if it is, get the info from the VCB and block map: if
+;	not, read the drive's master block into a stack buffer (would have to
+;	read the block map, tho, to determine the number of free blocks) . . .
+;_______________________________________________________________________
+
+GetVolInfo:
+			BSR 	FSQueue 			; queue up the request
+
+			MOVE.W	IOVolIndex(A0),D2	; if positive,
+			BGT.S	@3					;  go search by index
+			BEQ.S	@1					; if zero, go by drive number/default
+
+			BSR 	DtrmV3				; if negative, go by name
+			BRA.S	@2
+
+@1			BSR 	DtrmV1				; figure by drvnum, vrefnum, or default
+@2			BNE 	TGVIDone
+			BRA.S	RetVolInfo
+
+@3			MOVEQ	#0,D3				; Never any name specified				<25Sep85>
+										; (ioFileName is output arg)			<25Sep85>
+			CLR.W	ioVRefNum(A0)		; make sure this gets filled in later	<25Sep85>
+			MOVE.L	VCBQHdr+QHead,D1	; we want nth VCB in queue
+@4			BEQ 	NSVErrXit			; exit with err at end of queue
+			SUBQ.W	#1,D2				; the one we want?
+			MOVE.L	D1,A2
+			BEQ.S	RetVolInfo			; br if so
+			MOVE.L	QLink(A2),D1		; if not, keep traversing the queue
+			BRA.S	@4
+
+; first copy the heart of the VCB into the parameter block
+
+RetVolInfo	MOVEQ	#IOVDirLen-2,D0 	; number of bytes to straight copy
+@4			MOVE.W	VCBCrDate(A2,D0.W),IOVCrDate(A0,D0.W)
+			SUBQ	#2,D0
+			BPL.S	@4
+
+			BSET	#6,ioVAtrb+1(A0)	; set if any files are opened			<28Oct85>
+			BSR 	Gt1stFCB			; get (A1,D1) pointing to first FCB
+
+@0			CMP.L	FCBVPtr(A1,D1),A2	; file open on this volume?
+			BNE.S	@1					; br if so
+			BSR 	TFSVCBTst			; Are we looking at a TFS VCB?			<27Oct85>
+			BNE.S	@2					; Nope - all files are fair game		<27Oct85>
+			MOVE.L	FCBFlNm(A1,D1),D0	; Check the file number 				<27Oct85>
+			CMP.L	#FSUsrCNID,D0		; Is it a system control file?			<27Oct85>
+			BHS		@2					; Accept only the highest quality...	<27Oct85>
+
+@1			BSR 	GtNxtFCB			; get next one until we run out
+			BCS.S	@0
+			BCLR	#6,ioVAtrb+1(A0)	; 0 if no open files match				<28Oct85>
+
+@2			BCLR	#5,ioVAtrb+1(A0)	; Assume this volume is not the default.<27Oct85>
+			CMPA.L	DefVCBPtr,A2		; Check the default volume pointer		<27Oct85>
+			BNE.S	@3					; If this isn't it . . .                <27Oct85>
+			BSET	#5,ioVAtrb+1(A0)	; If this is default, drop a hint.		<27Oct85>
+
+@3			SUBA.L	A3,A3				; Clear WDCB pointer					<14Oct85>
+
+			TST.W	ioVolIndex(A0)		; Check volIndex:						<21Sep85>
+			BGT.S	retVRef 			; If vol was indexed, leave things be	<21Sep85>
+			TST.W	D3					; Was a volume name specified?			<21Sep85>
+			BNE.S	retVRef 			; If so, always return real file count	<21Sep85>
+			MOVE.W	ioVRefNum(A0),D1	; Check VRefNum supplied:				<21Sep85>
+			BGT.S	retVRef 			; If driveNum, ignore it				<21Sep85>
+			BLT.S	@5				   ; If negative, might be a WDRefNum	   <21Sep85>
+			MOVEQ	#2,D1				; If 0, look at default WDCB			<21Sep85>
+			BRA.S	@7					;										<21Sep85>
+
+@5			CMP.W	#WDRfnMax,D1		; Otherwise, compare to max WDRefNum	<21Sep85>
+			BGT.S	retVRef 			; If it's a real VRefNum, we're OK		<21Sep85>
+
+; a WDRefNum was supplied as VRefNum: change the number of files to be the		<21Sep85>
+; valence of the directory in question: 										<21Sep85>
+
+			SUB.W	#WDRfnMin,D1		; Change WDRefNum to index				<21Sep85>
+@7			MOVE.L	WDCBsPtr,A3 		; Point to WDCB array					<12Oct85>
+			ADD.W	D1,A3				; Point A3 to WDCB for ext. FS			<13Oct85>
+			BSR 	ExtOffLinCk 		; Is this an external file system vol?	<13Oct85>
+			BNE.S	retVRef 			; Yes - don't try to read the catalog   <13Oct85>
+
+			MOVEM.L A0-A1,-(A6) 		; Use A0,A1 as scratch registers		<21Sep85>
+			MOVEA.L WDCBsPtr,A1 		; Point to WDCB array					<21Sep85>
+			MOVE.L	WDDirID(A1,D1),D0	; Pick up the DirID in question 		<21Sep85>
+			CMP.L	#FSRtDirID,D0		; Is it the root directory anyway?		<21Sep85>
+			BEQ.S	@8					; If so, don't make special efforts     <21Sep85>
+
+			MOVE.L	WDCatHint(A1,D1),D2 ; Pick up directory hint				<21Sep85>
+			SUBA.L	A0,A0				; CName = Nil							<21Sep85>
+			JSR 	CMGetCN 			; Look up the directory 				<21Sep85>
+			BNE.S	@8					; If can't find it, forget it.          <21Sep85>
+
+			MOVE.W	dirVal(A1),D0		; Store directory valence				<21Sep85>
+			MOVEM.L (A6)+,A0-A1 		; Restore scratch regs					<21Sep85>
+			MOVE.W	D0,ioVNmFls(A0) 	; Replace file count w. dir. valence	<21Sep85>
+			BRA.S	retVRef 			; And continue							<21Sep85>
+
+@8			MOVEM.L  (A6)+,A0-A1		; Continue without changing file count	<24Sep85>
+
+; Do some hairy checking: if a working directory was specified, it shouldn't
+; be overwritten by the volRefNum.	However, if a volume NAME was used, the
+; volRefNum field is ignored, and SHOULD be filled in with the volume's VRefNum.
+
+retVRef 	TST.W	D3					; Was a volume name specified?
+			BNE.S	@10 				; If so, always return volRefNum
+			TST.W	IOVRefNum(A0)		; VRefNum or WDRefNum supplied?
+			BLT.S	@20 				; If so, leave it alone
+@10 		MOVE.W	VCBVRefNum(A2),IOVRefNum(A0) ; return volume refnum
+@20 		BSR 	XferVName			; copy volume name
+
+retAlBks	BSR 	TFSVCBTst			; Are we dealing with a TFS volume? <13Oct85>
+			BNE.S	@25 				; If not, don't fiddle with NmAlBlks<21Sep85>
+
+; Subtract the physical sizes of the extent B*-Tree and the catalog B*-Tree <21Sep85>
+; from the volume size, so that the difference between the volume size and	<21Sep85>
+; the free space reflects only the user's allocations:                      <21Sep85>
+
+			MOVE.W	VCBXTAlBks(A2),D0	; Pick up extent B*-Tree size		<21Sep85>
+			SUB.W	D0,ioVNmAlBlks(A0)	; Take out XT allocation			<21Sep85>
+			MOVE.W	VCBCTAlBks(A2),D0	; Pick up catalog B*-Tree size		<21Sep85>
+			SUB.W	D0,ioVNmAlBlks(A0)	; Take out CT allocation			<21Sep85>
+
+@25 		BTST	#HFSBit,ioTrap(A0)	; TFGetVolInfo vs. plain GetVolInfo?
+			BNE.S	@40 				; Br if it's TGetVolInfo
+
+			MOVE.W	#AlBlkLim,D0		; Pick up our favorite constant, 32767			<11Oct85>
+			CMP.W	ioVNmAlBlks(A0),D0	; Check the number of allocation blocks:		<11Oct85>
+			BHI.S	@30 				; If we're under the limit, we're fine. 		<11Oct85>
+			MOVE.W	D0,ioVNmAlBlks(A0)	; Otherwise, pin the value there				<11Oct85>
+			CMP.W	ioVFrBlk(A0),D0 	; Check the number of free blocks:				<11Oct85>
+			BHI.S	@30 				; If we're under the limit, we're fine. 		<11Oct85>
+			MOVE.W	D0,ioVFrBlk(A0) 	; Otherwise, pin the value there				<11Oct85>
+
+@30 		BRA.S	GVIDone
+
+; Return some additional information for TGetVolInfo requests:
+
+@40 		MOVE.W	VCBVRefNum(A2),ioVRefNum(A0)	; ALWAYS return VRefNum 		<25Sep85>
+			MOVE.W	VCBSigWord(A2),ioVSigWord(A0)	; Volume signature
+			MOVE.W	VCBDrvNum(A2),ioVDrvInfo(A0)	; Driver number
+			MOVE.W	VCBDRefNum(A2),ioVDRefNum(A0)	; Driver RefNum
+			MOVE.W	VCBFSID(A2),ioVFSID(A0) 		; File System ID
+			CLR.L	ioVFilCnt(A0)					; Clear top word
+			MOVE.W	VCBNmFls(A2),ioVFilCnt+2(A0)	; Stuff low word as if MFS
+			CLR.L	ioVDirCnt(A0)					; Clear top word
+			MOVE.W	#1,ioVDirCnt+2(A0)				; Stuff low word as if MFS
+
+			BSR 	TFSVCBTst						; Are we dealing with a TFS volume? 	<01Oct85>
+			BNE.S	TGVIOK							; No - the information below doesn't exist
+
+			MOVE.L	VCBVolBkup(A2),ioVBkup(A0)		; Last backup date
+			MOVE.W	VCBVSeqNum(A2),ioVSeqNum(A0)	; Volume sequence number
+			MOVE.L	VCBWrCnt(A2),ioVWrCnt(A0)		; Volume write count
+			MOVE.L	VCBFilCnt(A2),ioVFilCnt(A0) 	; Files count for volume
+			MOVE.L	VCBDirCnt(A2),ioVDirCnt(A0) 	; Directory count for volume
+
+			MOVE.L	A0,-(SP)						; Free up A0 as a scratch register
+			LEA 	ioVFndrInfo(A0),A1				; Destination finder info
+			LEA 	VCBFndrInfo(A2),A0				; Volume's finder info
+			MOVEQ	#32,D0							; Length of finder info
+			_BlockMove								; Copy finder info
+			MOVE.L	(SP)+,A0						; Restore original A0
+
+GVIDone 	MOVE.L	A2,ReqstVol 					; Make sure ReqstVol is set up
+
+			BSR 	TFSVCBTst						; Are we dealing with a TFS volume? 	<01Oct85>
+			BNE.S	TGVIOK							; No - dont' pass to unsuspecting ext. FS
+			BSR 	CkExtFS
+			BNE.S	TGVIDone
+
+TGVIOK		MOVEQ	#0,D0							; No errors
+TGVIDone	BRA 	CmdDone
+
+;_______________________________________________________________________
+;
+; Routine:		SetVolInfo
+; Arguments:	  A0.L (input)	--	I/O PB pointer
+;				  D0.W (output) -- error code (volume locked, wr prot error)
+; Called By:
+; Function: 	Change certain user-alterable fields in the VCB
+;
+; Modification History:
+;  14-May-85  PWD  New today.
+;	6-Oct-85  PWD  Moved SetVolName here from TFSDir2.	Changed SetVolInfo to
+;				   use SetVolName.
+;_______________________________________________________________________
+
+SetVolInfo:
+			BSR 	FSQueue 			; Wait our turn
+			BSR 	DtrmV1				; Determine volume by drvnum/refnum
+			BNE.S	SVIDone 			; Punt on errors
+			BSR 	CVFlgs				; Check if volume can be modified
+			BNE.S	SVIDone 			; Give up easily
+			BSR 	ExtOffLinCk 		; Check if volume is on-line, non ext. FS
+			BNE.S	SVIDone 			; Be a wimp - give up now.
+
+; Set user-modifiable fields in the VCB:
+
+			MOVE.L	IOVCrDate(A0),VCBCrDate(A2) ; Volume creation date
+			MOVE.L	IOVLsMod(A0),VCBLsMod(A2)	; Date of last modification
+			MOVE.W	IOVAtrb(A0),D0				; Volume attributes
+			AND.W	#$8000,D0					; Clear all but vol. locked bit
+			MOVE.W	VCBAtrb(A2),D1				; Current volume attributes
+			AND.W	#$7FFF,D1					; Clear vol. locked bit
+			OR.W	D0,D1						; Combine attributes
+			MOVE.W	D1,VCBAtrb(A2)				; Set new volume attributes
+
+			BSR 	TFSVCBTst					; Is it a  TFS volume?					<01Oct85>
+			BNE.S	@3							; br if not - MFS VCBs don't have       <01Oct85>
+												;  this info
+			MOVE.L	IOVClpSiz(A0),VCBClpSiz(A2) ; Volume clump size
+			MOVE.L	IOVBkup(A0),VCBVolBkup(A2)	; Last backup date
+			MOVE.W	IOVSeqNum(A0),VCBVSeqNum(A2); Volume sequence number
+			MOVE.L	A0,-(SP)					; Save IOPB pointer
+			LEA 	IOVFndrInfo(A0),A0			; Point to finder info source
+			LEA 	VCBFndrInfo(A2),A1			; Finder info in VCB
+			MOVEQ	#32,D0						; Length of finder info
+			_BlockMove							; Copy it in
+			MOVEA.L (SP)+,A0					; Restore IOPB pointer
+
+@3			MOVE.L	IOVNPtr(A0),D0				; New name specified?
+			BEQ.S	@10 						; If not, forget it
+			MOVEA.L D0,A1						; Point to new name 				<PWD 06Oct85>
+			BSR.S	SetVolName					; Update name in VCB				<PWD 06Oct85>
+@10 		BSR		MarkVCB
+			MOVEQ	#0,D0						; All went well...
+
+SVIDone 	BRA 	CmdDone
+
+SetVolName
+			MOVEM.L A1/A2,-(SP) 		; Save original VCB pointer
+			LEA 	VCBVN(A2),A2		; point to 1st char in name destination 	<PWD 06Oct85>
+			MOVEQ	#1,D0				; set up to copy 1st character in name		<PWD 06Oct85>
+
+@1			CMP.B	(A1),D0 			; Exceeded source length?					<PWD 06Oct85>
+			BGT.S	@5					; If so, call it off						<PWD 06Oct85>
+			CMP.B	#':',0(A1,D0)		; Hit a colon?								<PWD 06Oct85>
+			BEQ.S	@5					; Yes - punt.								<PWD 06Oct85>
+			CMP.B	#VCBMaxNam,D0		; Exceeded the max. length? 				<PWD 06Oct85>
+			BGT.S	@5					; Yes - stop here.							<PWD 06Oct85>
+			MOVE.B	0(A1,D0),0(A2,D0)	; move in new name							<PWD 06Oct85>
+			ADDQ.W	#1,D0				; Advance to the next character 			<PWD 06Oct85>
+			BRA.S	@1					; And try again 							<PWD 06Oct85>
+
+@5			SUBQ.W	#1,D0				; Back up to real # characters copied		<PWD 06Oct85>
+			MOVE.B	D0,(A2) 			; Set new name length						<PWD 06Oct85>
+			MOVEM.L (SP)+,A1/A2 		; Reset pointer to VCB						<PWD 06Oct85>
+			BSR 	MarkVCB 			; mark VCB info changed 					<PWD 06Oct85>
+			RTS 						; And call it a day
+
+;_______________________________________________________________________
+;
+; Routine:		CVFlgs
+; Arguments:	  A2.L (input)	--	VCB pointer
+;				  D0.W (output) -- error code (volume locked, wr prot error)
+; Called By:
+; Function: 	Check the volume's flags to see if modify requests are allowed.
+;
+; Modification History:
+;  08 Dec 82  LAK  Changed to support new file system data structures.
+;
+;_______________________________________________________________________
+
+CVFlgs		MOVEQ	#VLckdErr,D0		; assume volume locked
+			TST.W	VCBAtrb(A2) 		; volume locked?
+			BMI.S	CVExit				; br if so
+			MOVEQ	#WPrErr,D0			; assume diskette is write protected
+			TST.B	VCBAtrb+1(A2)		; bit 7=1 means write protected
+			BMI.S	CVExit				; br if so
+			MOVEQ	#0,D0				; otherwise, no error
+CVExit		RTS 						; that's all folks (BEQ FOR OK)
+
+;_______________________________________________________________________
+;
+; Routine:		GetVol
+; Arguments:	  A0.L (input)	-- ptr to volume parameter block, uses IOVNPtr,
+;									IOVDrvNum
+;				  D0.W (output) -- error code
+; Calls:		FSQueue,CmdDone
+; Function: 	Find out what the name of the default volume is. The volume
+;				name is stored at IOVNPtr(A0). The maximum length
+;				of a volume name is 27 bytes.  The drive number for the volume
+;				is also returned.
+;
+; Modification History:
+;  06 Dec 82  LAK  Rewrote to reflect file system data structure changes.
+;				   Changed to return name of nth volume (0=default).
+;  21 Dec 82  LAK  Returns drive number, too.
+;  23 Jan 83  LAK  Changed to just return the name of the default volume.
+;  02 Jun 83  LAK  Changed to return volume refnum instead of drive number.
+;  30-May-85  PWD  Changed to return VRefNum only if drive number of volindex given
+;
+; Test: existing vol name, illegal vol name, etc.
+;_______________________________________________________________________
+
+GetVol:
+			BTST	#HFSBit,D1			; Check if request is TFS-flavor		<04Oct85> PWD
+			BNE 	GetDir				; If so, go to different code altogether<01oct85> BBM
+
+			BSR 	FSQueue 			; wait for my turn
+
+			MOVE.L	DefVCBPtr,D0		; ptr to default VCB
+			BEQ.S	NSVErrXit			; error if no default volume
+			MOVEA.L D0,A2				;
+			MOVE.W	DefVRefNum,ioVRefNum(A0) ; Return the original default RefNum
+										; (which could be a WDRefNum)
+			BSR.S	XferVName			; Go copy volume name and set D0=0
+GetVolDone	BRA 	CmdDone
+
+NSVErrXit	MOVEQ	#NSVErr,D0
+			BRA.S	GetVolDone
+
+; Quick little routine shared by GetVol, GetVolInfo, GetWDCBInfo: returns
+;  the volume name if IOVNPtr(A0) is not zero . . .
+; Returns: D0=0 always . . .
+
+XferVName	MOVEM.L A1-A2,-(SP) 		; Save regs except D0					<31Aug85>
+
+			LEA 	VCBVN(A2),A2		; ptr to vol name
+			MOVE.L	IOVNPtr(A0),D0		; ptr to return name buffer
+			BEQ.S	@3					; don't return name if pointer is nil
+			AND.L	Lo3Bytes,D0 		; let's add in a range check cause      <10Dec86>
+			CMP.L	BufPtr,D0			;  it's a common error to forget to     <10Dec86>
+			BGT.S	@3					;  fill in the name ptr . . .			<10Dec86>
+			MOVE.L	D0,A1				; A1 = cleaned up name buffer ptr
+
+			MOVEQ	#0,D0				; Clear upper bytes
+			MOVE.B	(A2),D0 			; len of volume name
+@2			MOVE.B	(A2)+,(A1)+ 		; move a char of name
+			DBRA	D0,@2				; loop until all + 1 done (length too)
+
+@3			MOVEM.L (SP)+,A1-A2 		; Restore regs							<31Aug85>
+			MOVEQ	#0,D0				; Always a success
+			RTS
+
+;_______________________________________________________________________
+;
+; Routine:		SetVol
+; Arguments:	  A0.L (input)	-- ptr to volume parameter block: volume may be
+;									specified by either IODrvNum or IOFileName
+;				  D0.W (output) -- error code
+;				  All other regs are preserved
+; Calls:		DtrmV3
+; Function: 	Set the current default volume.  The volume must be mounted
+;				and may be specified by either name or drive number.  If neither
+;				is specified, the default volume is set to the current value
+;				if there is a current default (otherwise an error is reported).
+;				The volume name may be followed by a filename (for convenience).
+;
+; Modification History:
+;  06 Dec 82  LAK  Rewrote to reflect file system data structure changes.
+;  14 Jan 83  LAK  Minor rework.
+;  14-Mar-85  PWD  Changed to set up default WDCB
+;	9-Jul-85  PWD  Changed to preserve default VRefNum (or WDRefNum) in DefVRefNum
+;  20-Sep-85  PWD  Fixed bug in determination of new DefVRefNum when vol. spec'd by name
+;  24-Sep-85  PWD  Changed to branch to SetDir when TFS bit is set on trap
+;
+; Test: existing vol name, illegal vol name, etc.
+;_______________________________________________________________________
+
+SetVol:
+			BTST	#HFSBit,D1			; Check if request is TFS-flavor		<02Oct85>
+			BNE.S	SetDir				; If so, go to different code altogether<24Sep85>
+
+			BSR 	FSQueue 			; wait for my turn
+			BSR		DtrmV3				; determine the volume being asked for
+			BNE.S	@20 				; br if we couldn't                     <31Aug85>
+
+			MOVE.W	VCBVRefNum(A2),D0	; Pick up the new default vol's refNum  <20Sep85>
+			TST.W	D3					; Was a volume name spec'd?             <20Sep85>
+			BNE.S	@3					; If so, use its VRefNum straight		<20Sep85>
+			TST.W	ioVRefNum(A0)		; Otherwise, was a driveNum given?		<20Sep85>
+			BGT.S	@3					; If so, use the VRefNum from the VCB	<20Sep85>
+			MOVE.W	ioVRefNum(A0),D0	; Pick up the VRefNum supplied
+			BEQ.S	@5					; If none was supplied, leave the world as is
+@3			MOVE.W	D0,DefVRefNum		; Save this VRefNum/WDRefNum for posterity
+										; ... but mostly for GetVol's use
+@5			MOVEQ	#FSRtDirID,D6		; Default directory is the volume's root
+			MOVE.L	A3,D7				; Working directory specified (may zero hint)
+			BEQ.S	@10 				; If not, hint is zeroed, we're all set
+			MOVE.L	WDDirID(A3),D6		; Directory ID of working directory
+			MOVE.L	WDCatHint(A3),D7	; Catalog hint
+@10 		BSR 	SetDefWDCB			; And go fill in the default WDCB
+			MOVEQ	#0,D0				; Return success
+@20 		BRA 	CmdDone 			; And call it a day.
+
+;_______________________________________________________________________
+;
+; Routine:		SetDir
+; Arguments:	  A0.L (input)	--	I/O parameter block
+;				  D0.W (output) -- error code
+; Called By:
+; Function: 	Set the default directory (and, implicitly, the default volume).
+;
+; Modification History:
+;
+;	14-Mar-85  PWD	New today.
+;	21-Sep-85  PWD	Changed to alloc null file names (or just 'vol name:') as well
+;					as Nil file name pointers.
+;
+;_______________________________________________________________________
+
+SetDir:
+			BSR 	FSQueue 			; Wait for our turn to come
+			BSR 	FndFilName			; Look for the indicated directory
+			BEQ.S	@0					; continue if all went well
+
+; Special hack to allow MFS volumes to be specified by volume name only (which
+; normally causes FndFilName to choke on the zero-length file name remaining):
+
+			CMP.W	#BdNamErr,D0		; Was it a bad name?					<21Sep85>
+			BNE.S	SetDirExit			; Nope - give up						<21Sep85>
+			TST.B	D2					; Yes - 'cuz there wasn't one?			<21Sep85>
+			BNE.S	SetDirExit			; Nope - give up after all				<21Sep85>
+			MOVEQ	#FSRtDirID,D6		; Yes - OK, use the root on MFS 		<21Sep85>
+			BRA.S	SetDefDir			; Yes - that's OK here...               <21Sep85>
+
+@0			MOVEQ	#DirNFErr,D0		; Let's be pessimistic here
+			CMP.B	#CDRDirRec,CDRType(A5) ; Was record a directory?
+			BNE.S	SetDirExit			; Thought so...
+			MOVE.L	DirDirID(A5),D6 	; DirID to set up = directory's DirID
+;
+; Since SetDir may arrive at the final directory from a pathname relative to a
+; working directory, SetDir cannot simply set DefVRefNum to the WDRefNum supplied,
+; to be returned by GetVol.  SetDir ALWAYS stores the real VRefNum, therefore...
+;
+SetDefDir	MOVE.W	VCBVRefNum(A2),DefVRefNum ; Save this VRefNum for posterity
+										; ... but mostly for GetVol's use
+			MOVEQ	#0,D7				; No catalog hint known.
+			BSR.S	SetDefWDCB			; Set up the default WDCB
+
+SetDirOK	MOVEQ	#0,D0				; Return success
+
+SetDirExit	BRA 	CmdDone 			; And that's all, folks!
+
+;_______________________________________________________________________
+;
+; Routine:		GetDir
+; Arguments:	  A0.L (input)	--	I/O parameter block
+;				  D0.W (output) -- error code
+; Called By:
+; Function: 	Get the default volume's name and the current default directory.
+;
+; Modification History:
+;
+;	14-Mar-85  PWD	New today.
+;	14-Oct-85  PWD	Added call to XferVName now that RetDefInfo doesn't do it anymore
+;_______________________________________________________________________
+
+GetDir:
+			BSR 	FSQueue 			; Wait our turn
+			BSR 	Gt1stWDCB			; Set up A1, D1 to point at first WDCB		<28Aug85>
+			MOVEQ	#NSVErr,D0			; Assume no default directory set
+			TST.L	WDVCBPtr(A1,D1) 	; Is this entry actually set up?
+			BEQ.S	@1					; If not, we're finished right here & now   <28Aug85>
+
+			BSR 	RetDefInfo			; Otherwise - return the WDCB information
+			BSR 	XferVName			; Return the name of the associated volume	<PWD 14Oct85>
+			MOVE.W	DefVRefNum,ioVRefNum(A0) ; Return the original default RefNum
+			MOVEQ	#0,D0				; A totally stunning success
+
+@1			BRA 	CmdDone 			; Call it a day.
+
+;_______________________________________________________________________
+;
+; Routine:		OpenWD
+; Arguments:	  A0.L (input)	--	I/O parameter block
+;				  D0.W (output) -- error code
+; Called By:
+; Function: 	Create a working directory control block from the pathname
+;				information in the parameter block.
+;
+; Modification History:
+;
+;	14-Mar-85  PWD	New today.
+;	 1-Jul-85  PWD	Changed to recycle WDRefNums for callers with same procID
+;					and return WDRefNum in ioVRefNum field.
+;	21-Sep-85  PWD	Changed to allow opening of root of MFS volumes with DirID=2
+;					and null or nil filename.
+;_______________________________________________________________________
+
+OpenWD: ;]
+			BSR 	FSQueue 			; Wait for our turn to come
+			BSR 	FndFilName			; Look for the indicated directory
+			BEQ.S	@1					; Br if found
+			CMP.W	#BdNamErr,D0		; Was it a bad filename?				<21Sep85>
+			BNE.S	opnWDExit			; If not, there's no more hope          <21Sep85>
+			TST.B	D2					; Otherwise, check the name length		<21Sep85>
+			BNE.S	opnWDExit			; If nonzero, it's real BdNamErr        <21Sep85>
+			BRA.S	@2					; Return VRefNum for MFS null file names<21Sep85>
+
+@1			MOVEQ	#DirNFErr,D0		; Let's be pessimistic here
+			CMP.B	#CDRDirRec,CDRType(A5) ; Was record a directory?
+			BNE.S	opnWDExit			; Thought so...
+
+			MOVE.L	DirDirID(A5),D6 	; DirID to set up = directory's DirID
+			CMP.L	#FSRtDirID,D6		; Accessing the root?					<21Sep85>
+			BEQ.S	@2					; Nope - create a real new WDCB 		<21Sep85>
+
+			MOVEQ	#0,D7				; No catalog hint known.
+			BSR.S	PickWDCB			; Look for a suitable WDCB
+			BRA.S	opnWDExit
+
+@2			MOVE.W	VCBVRefNum(A2),ioVRefNum(A0) ; Return the VRefNum as WDRfn	<21Sep85>
+
+opnWDOK 	MOVEQ	#0,D0				; Call it a success 					<21Sep85>
+opnWDExit	BRA 	CmdDone 			; we're finished . . .
+
+SetDefWDCB	MOVE.L	A2,DefVCBPtr		  ; set the (new?) default
+			MOVEQ	#2,D1				  ; Pick the default-WDCB
+
+FillWDCB	MOVE.L	WDCBsPtr,A1 		  ; Point to the WDCB array
+			MOVE.L	A2,WDVCBPtr(A1,D1.W)  ; Set the default VCB
+			MOVE.L	D6,WDDirID(A1,D1.W)   ; In the default WDCB
+			MOVE.L	D7,WDCatHint(A1,D1.W) ; Catalog hint for this directory
+			MOVE.L	ioWDProcID(A0),D0	  ; Pick up caller's procID
+			MOVE.L	D0,WDProcID(A1,D1.W)  ; Mark WDCB with it
+			ADD.W	#WDRfnMin,D1		  ; Offset into the WDCB Refnum range
+			RTS 						  ; And return it to the caller
+
+; Look for a matching working directory, starting with the third (the first two are
+; reserved to hold the system-wide volume and directory defaults).
+
+*R Restored the ProcID-only WDCB search before the parallel
+*R Process Manager records and ioWDCreated field. Applicable loop comments
+*R come from the surviving PickWDCB body.
+PickWDCB
+            MOVE.L  ioWDProcID(A0),D3
+            MOVEQ   #0,D2               ; Clear free WDCB index
+            BSR     Gt1stWDCB           ; Set up A1, D1 (point at first WDCB)
+            BSR     GtNxtWDCB           ; Point at 2nd WDCB
+@1          BSR     GtNxtWDCB           ; Point at next (3rd) WDCB
+            BCC.S   @3                  ; Br if we've seen them all
+            TST.L   WDVCBPtr(A1,D1)      ; Is this WDCB free?
+            BNE.S   @2                  ; If NE, no
+            TST.W   D2                  ; Already found a free one?
+            BNE.S   @1                  ; Yes - continue scan
+            MOVE.W  D1,D2               ; No - hang on to this WD index
+            BRA.S   @1                  ; And continue scanning
+@2          CMP.L   WDVCBPtr(A1,D1),A2   ; For same volume?
+            BNE.S   @1                  ; Nope - keep looking
+            CMP.L   WDDirID(A1,D1),D6    ; Same directory?
+            BNE.S   @1                  ; Nope - keep looking
+            CMP.L   WDProcID(A1,D1),D3
+            BNE.S   @1
+            ADD.W   #WDRfnMin,D1        ; Offset the index to make a WDRefNum
+            BRA.S   @4                  ; Return the current WDRefNum
+
+; Use a new WDCB:
+
+@3          MOVE.W  D2,D1               ; Free WDCB found?
+            BEQ.S   pickNoMore          ; Nope - die.
+            BSR.S   FillWDCB ;]
+@4          MOVE.W  D1,IOVRefNum(A0)     ; Store in user's I/O parameter block
+            MOVEQ   #0,D0               ; Total success
+            RTS
+pickNoMore  MOVEQ   #TMWDOErr,D0         ; No WDCBs are free: fail miserably
+            RTS
+
+;_______________________________________________________________________
+;
+; Routine:		CloseWD
+; Arguments:	  A0.L (input)	--	I/O parameter block
+;				  D0.W (output) -- error code
+; Called By:
+; Function: 	Release the storage used for a working directory control block.
+;
+; Modification History:
+;
+;	14-Mar-85  PWD	New today.
+;	 1-Jul-85  PWD	Changed to do away with VCBWDCnt maintenance
+;					Changed to take WDRefNum in ioVRefNum field.
+;	 6-Aug-85  PWD	Changed to call external FS (WITHOUT clearing WDCB!)
+;	20-Aug-85  PWD	Changed to make VRefNum arg a no-op.
+;
+;_______________________________________________________________________
+
+CloseWD: ;]
+			BSR 	FSQueue 			; Wait for our turn to come
+			MOVEQ	#0,D1				; Clear top half of D1
+			MOVE.W	IOVRefNum(A0),D1	; Pick up the WDRefNum
+			BSR 	CkWDRefNum			; Check if it's OK for use, set up A1=WDCBSptr <31Aug85>
+			BEQ.S	@1					; Br if so
+
+			CMP.W	#WDRfnMax,D1		; Is it a VRefNum?						<20Sep85>
+			BHI.S	clsWDOK 			; OK HI ($F000-$FFFF) . . . (assume valid VRefNum)
+			BRA.S	clsWDExit			; Punt on errors
+
+; The refnum provided checked out OK:
+
+@1			SUB.W	#WDRfnMin,D1		; Offset to change to WD array index
+			MOVEA.L WDVCBPtr(A1,D1),A2	; Pick up volume referred to
+			TST.W	VCBFSID(A2) 		; Mac FS?
+			BEQ.S	@2					; Yes - please continue
+			MOVE.L	A2,ReqstVol 		; No - indicate such to the external FS
+			ADD.L	A1,D1				; Point D1 to WDCB
+			MOVEQ	#ExtFSErr,D0		; And leave this one alone
+			BRA.S	clsWDExit			;
+
+@2			CLR.L	WDVCBPtr(A1,D1) 	; Clear the VCB pointer to free the WDCB
+
+clsWDOK 	MOVEQ	#0,D0				; Success at last!
+clsWDExit	BRA 	CmdDone 			; Leave by common exit
+
+;_______________________________________________________________________
+;
+; Routine:		GetWDInfo
+; Arguments:	  A0.L (input)	--	I/O parameter block
+;				  D0.W (output) -- error code	NSVErr = couldn't find it
+; Called By:
+; Function: 	Read the information in a WDCB for a given volume.
+;
+; Modification History:
+;
+;	 1-May-85  PWD	New today.
+;	 1-Jul-85  PWD	Changed to match procID on indexed requests.
+;	 6-Aug-85  PWD	Changed to call external FS for ext. FS volumes AFTER
+;					copying volume information.
+;	22-Aug-85  PWD	Changed to return root information for requests by RefNum
+;	<28Aug85>  LAK	Fixed bug in indexed get.  Now allows specification by
+;					 default volume even, or drive number . . . why not? No
+;					 more ParamErr, it's NSVErr or it's ok.
+;_______________________________________________________________________
+
+GetWDInfo: ;]
+			BSR 	FSQueue 			; Wait our turn
+			BSR.S	GetWDCBInfo 		; Return the WDCB information				<PWD 14Oct85>
+			BNE.S	GtWDIExit			; Punt on errors							<PWD 14Oct85>
+
+			EXT.L	D1
+			ADD.L	A1,D1				; Point D1 to WDCB for extFS
+			MOVE.L	A2,ReqstVol 		; in case of extFSErr
+			BSR 	CkExtFS 			; Is this an external file system volume?	<PWD 14Oct85>
+			BNE.S	GtWDIExit			; br if not (pass D1=WDCB ptr or 0 if not a WDCB)
+GtWDIOK 	MOVEQ	#0,D0				; Otherwise, a total success
+GtWDIExit	BRA 	CmdDone 			; And call it a day.						<PWD 14Oct85>
+
+;
+; Subroutine shared between _GetWDInfo (queuing) and _ReadWDCB (non-queueing):		<PWD 14Oct85>
+;
+GetWDCBInfo TST.W	ioWDIndex(A0)		; Test working dir index
+			BGT.S	IndxWDInfo			; If positive, look up WD by index/volume
+
+; Return information for a specific Working Directory, indicated by RefNum:
+
+			MOVE.W	IOVRefNum(A0),D1	; Pick up a WDRefNum/VRefNum
+			BSR 	CkWDRefNum			; Check its integrity (trashes D0, sets A1=WDCBsPtr)
+			BEQ.S	getWD_1 			; br if it's a valid WDCB refnum        <22Aug85>
+
+			BSR 	DtrmV1				; Does VRefNum specify a valid volume?	<22Aug85>
+			BNE.S	GetWDIExit			; Give up easily						<22Aug85>
+
+; By special arrangement, calling _GetWDInfo with a VRefNum will fill out		<22Aug85>
+; a working directory arrangement for the root: 								<22Aug85>
+
+			CLR.L	ioWDProcID(A0)		; No proc. id's defined for system      <22Aug85>
+			MOVEQ	#FSRtDirID,D0		;										<22Aug85>
+			MOVE.L	D0,ioWDDirID(A0)	; Pick up the volume's root directory ID<22Aug85>
+			MOVE.W	VCBVRefNum(A2),ioWDVRefNum(A0) ; Return the volume's refNum <22Aug85>
+			MOVE.W	VCBVRefNum(A2),ioVRefNum(A0) ;	for both fields . . .		<22Aug85>
+			MOVEQ	#0,D1				; no WDCB ptr for extFS . . .			<28Aug85>
+			BRA.S	XferVN				; proceed to return the name (pass A2)	<22Aug85>
+
+; WD refnum was supplied and ioWDIndex<=0, so return a specific entry . . .
+
+getWD_1
+			MOVEQ	#NSVErr,D0			; Let's just assume thing's aren't cool
+			SUB.W	#WDRfnMin,D1		; Change refNum to index
+			TST.L	WDVCBPtr(A1,D1) 	; This entry really in use?
+			BEQ.S	GetWDIExit			; Nope - too bad.
+			BRA.S	XferWDInfo			; Yes - fill in the info (pass A1, D1)
+
+IndxWDInfo
+			MOVEQ	#NSVErr,D0			; Let's be pessimistic for a moment...
+			MOVEQ	#0,D2				; assume no volume match
+			TST.W	IOVRefNum(A0)		; Was a VRefNum supplied?
+			BEQ.S	@1					; Nope - go for it
+			BSR 	DtrmV3				; Find the VCB
+			BNE.S	GetWDIExit			; Punt if no volume found
+			MOVE.L	A2,D2				; Stash VCB pointer
+
+; Try to find the requested WDCB:
+
+@1			MOVE.W	ioWDIndex(A0),D4	; Get a hold of the working dir. index
+			MOVE.L	ioWDProcID(A0),D3	; Pick up the caller's procID, if any
+
+			MOVEQ	#NSVErr,D0			; Start out pessimistic
+			BSR 	Gt1stWDCB			; Set up A1, D1 (point at first WDCB)
+			BSR 	GtNxtWDCB			; Point at 2nd WDCB
+
+getWDLoop	BSR 	GtNxtWDCB			; Point at next WDCB (the first two WDCBs are not counted)
+			BCC.S	GetWDIExit			; Br if we've seen them all
+			TST.L	WDVCBPtr(A1,D1) 	; Is this WDCB in use?
+			BEQ.S	getWDLoop			; If EQ, it's not (only count the used ones)
+
+			TST.L	D3					; Match on procID?
+			BEQ.S	@1					; If not, don't bother checking
+			CMP.L	WDProcID(A1,D1),D3	; Is it for this caller?
+			BNE.S	getWDLoop			; If no match, it's not
+
+@1			TST.L	D2					; Match on volume?
+			BEQ.S	@2					; No - this WDCB is OK
+			CMP.L	WDVCBPtr(A1,D1),D2	; Yes - for requested volume?
+			BNE.S	getWDLoop			; If not, skip it.
+
+@2			SUBQ.W	#1,D4				; Count down: one done
+			BGT.S	getWDLoop			; Keep going until the right one's found
+
+XferWDInfo	BSR.S	RetWDInfo			; Copy out the Working directory information
+XferVN		BSR 	XferVName			; Copy volume name (sets D0)					<PWD 14Oct85>
+GetWDIExit	TST.W	D0					; Set condition codes							<PWD 14Oct85>
+			RTS 						; And call it a day.							<PWD 14Oct85>
+
+ReadWDCB:	MOVEM.L D3-D7/A1-A6,-(SP)	; Save registers [normally done in FSQueue] 	<PWD 14Oct85>
+			MOVEA.L HFSStkTop,A6		; Set up A6 for use as stack pointer			<PWD 14Oct85>
+			BSR 	GetWDCBInfo 		; Pick up the WDCB information requested		<PWD 14Oct85>
+			MOVEM.L (SP)+,D3-D7/A1-A6	; Restore scratch registers [normally CmdDone]	<PWD 14Oct85>
+			MOVE.W	D0,IOResult(A0) 	; post result code								<PWD 14Oct85>
+			RTS 						; Call it a day 								<PWD 14Oct85>
+
+; Small routine to transfer the information of interest:
+; (RetDefInfo called by GetDir)
+; Expects: A1,D1
+; Returns: A2=WDVCBPtr(A1,D1)
+; Blows: D0
+
+RetWDInfo:								; GetWDInfo entry
+			MOVE.L	WDProcID(A1,D1),ioWDProcID(A0) ; Copy ProcID (NOT FOR GETDIR . . .)
+RetDefInfo: 							; GetDir entry
+			MOVEA.L WDVCBPtr(A1,D1),A2	; Point to VCB for associated volume
+			MOVE.W	VCBVRefNum(A2),ioWDVRefNum(A0) ; Copy VRefNum
+			MOVE.L	WDDirID(A1,D1),ioWDDirID(A0)   ; Copy WD's DirID
+
+			MOVE.W	D1,D0				; use D0 as scratch 					<31Aug85>
+			ADD.W	#WDRfnMin,D0		; Convert index back to WD RefNum		<31Aug85>
+			MOVE.W	D0,ioVRefNum(A0)	; And return it to the user 			<31Aug85>
+			RTS 						; Call it a day 						<14Oct85>
+
+;_______________________________________________________________________
+;
+; Routine:		CkWDRefNum
+; Arguments:	  D1.L (input)	-- WDCB RefNum (top half should be 0)
+;				  D0.W (output) -- 0 for success, or RFNumErr
+;				  A1.L (output) -- WDCBsPtr
+; Called By:
+; Function: 	A quick common routine to check a WDCB refnum for validity.
+;
+; Modification History:
+;
+;	 1-May-85  PWD	New today.
+;	<28Aug85>  LAK	Some short branches, please.  Also removed redundant check
+;					 against min and max (this is accomplished by the unsigned
+;					 compare against index bounds).
+;_______________________________________________________________________
+;
+CkWDRefNum	MOVE.L	D1,-(SP)			; Save D1 across the call			   <29Aug85>
+			MOVEQ	#RFNumErr,D0		; Let's just assume thing's aren't cool
+
+			SUB.W	#WDRfnMin,D1		; Offset to zero
+			MOVEA.L WDCBsPtr,A1 		; Point to the WDCB array
+			CMP.W	(A1),D1 			; Pointing beyond the end?
+			BCC.S	WDRfnCkExit 		; Yes - bad news.						<28Aug85>
+
+			SUBQ.W	#2,D1				; Compensate for the length word
+			DIVU	#WDCBLen,D1 		; Divide by the length of a WDCB
+			SWAP	D1					; Get a hold of the remainder
+			TST.W	D1					; Check if it's zero
+			BNE.S	WDRfnCkExit 		; Unmasked at last! 					<28Aug85>
+
+			MOVEQ	#0,D0				; OK - all seems well.
+
+WDRfnCkExit MOVE.L	(SP)+,D1			; Restore original D1 value 			<29Aug85>
+			TST.W	D0					; Set CCR								<28Aug85>
+			RTS
+;_______________________________________________________________________
+;
+; Routine:		SetUpWDCB, SetupDef
+; Arguments:	  A0.L (input) -- I/O Parameter block
+;								  Uses: ioVRefNum - Volume to refer to
+;										ioDirID - Directory of choice
+;										ioWDProcID - Caller's procID
+;
+;				  D0.W (output) -- error code, or 0 for success
+;				  ioVRefNum(A0) -- Updated with WDRefNum if D0 = 0 on output.
+;								   (from SetUpWDCB)
+; Called By:
+; Function: 	A low-level routine to set up a WDCB, or the default WDCB
+;				in particular
+;
+; Modification History:
+;
+;	22-May-85  PWD	New today.
+;	26-Sep-85  PWD	Added SetupDef entry point for external FS support.
+;_______________________________________________________________________
+
+; NOTE: This code executes under special conditions: since it does NOT call
+;		FSQueue on entry, A6 is never set up; any code called from this routine
+;		cannot rely on A6 being set.  Furthermore, it does NOT provide the
+;		standard full-fledged file finding: VRefNum/DirID is the ONLY valid input.
+
+SetUpWDCB:
+			MOVEM.L D3-D7/A1-A6,-(SP)	; Save registers (not done in FSQueue now...)
+			MOVEA.L HFSStkTop,A6		; Set up A6 for use as stack pointer			<PWD 14Oct85>
+			BSR 	DtrmV1				; Determine the volume of choice
+			BNE.S	SetWDExit			; Punt on errors
+			MOVE.L	ioDirID(A0),D6		; Requested DirID
+			MOVEQ	#0,D7				; No known catalog hint
+			BSR 	PickWDCB			; Select and fill a WDCB, or
+			BNE.S	SetWDExit			; ... bail out with an error
+
+			MOVE.W	D1,ioVRefNum(A0)	; Return a WDRefNum, because
+SetWDOK 	MOVEQ	#0,D0				; ... All went well
+
+SetWDExit	MOVEM.L (SP)+,D3-D7/A1-A6	; Restore scratch registers
+			MOVE.W	D0,ioResult(A0) 	; Set up result code							<PWD 14Oct85>
+			RTS 						; And call it a day.
+										; [returns directly to trap dispatcher]
+
+SetupDef:	MOVEM.L D3-D7/A1-A6,-(SP)	; Save registers, same as SetUpWDCB 				<26Sep85>
+			MOVEA.L HFSStkTop,A6		; Set up A6 for use as stack pointer			<PWD 14Oct85>
+			BSR 	DtrmV1				; Determine volume by refNum/driveNum				<26Sep85>
+			BNE.S	SetWDExit			; Punt on errors									<26Sep85>
+			MOVE.W	VCBVRefNum(A2),DefVRefNum ; Save this one for posterity 				<26Sep85>
+			MOVE.L	ioDirID(A0),D6		; Requested DirID									<26Sep85>
+			MOVEQ	#0,D7				; No hint known 									<26Sep85>
+			BSR 	SetDefWDCB			; Set up the full default WDCB						<26Sep85>
+			BRA.S	SetWDOK 			; And call it a day 								<26Sep85>
+										; [returns directly to trap dispatcher] 			<26Sep85>
+
+TFSVOLServicesEnd ;]
+	END

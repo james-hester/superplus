@@ -1,0 +1,920 @@
+{
+  "recorded_at_utc": "2026-10-03T19:30:32.360690+00:00",
+  "description": "Shared includes and a host Hiram adaptation reproduce every byte of the Mac Plus v3 ROM.",
+  "historical_baseline": {
+    "path": "Reconstruction/Evidence/complete-build.json",
+    "sha256": "4e2d2fa58c4767033e6148cbc65e084e792a4653ab8de1d1bf61680e057a84bf"
+  },
+  "shared_includes": {
+    "path": "Reconstruction/Evidence/shared-includes.json",
+    "sha256": "8d1613f318cc9514c28819af4f57c4eb06241c6159fed074cbf8b944af95f00c",
+    "counts": {
+      "declarations_moved": 3798,
+      "shared_declarations": 1995,
+      "include_files": 22,
+      "files_using_includes": 103,
+      "macro_definitions_moved": 30,
+      "macro_include_files": 5,
+      "total_new_include_files": 27,
+      "all_direct_consumers": 115
+    }
+  },
+  "hiram_provenance": {
+    "path": "Reconstruction/Tools/hiram-notes.md",
+    "sha256": "b6607ae9c931d4ec203846803271963b4adb7f311c8caeb5d60a5ade10433103"
+  },
+  "target": {
+    "path": "Reconstruction/target.json",
+    "sha256": "3910dfba21212b170b3a77677f798854cd44102d9b566713d8570cc10554e235"
+  },
+  "module_count": 124,
+  "checked_assembly_entry_points": 5142,
+  "assembled_prefix_bytes": 131024,
+  "verified_assembly_bytes": 131020,
+  "hiram_generated_bytes": 52,
+  "verified_bytes": 131072,
+  "remaining_bytes": 0,
+  "checksum": "0x4d1f8172",
+  "gaps": [],
+  "reference_image": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "rebuilt_image": {
+    "path": "Reconstruction/Build/MacPlus-v3.rebuilt.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+  },
+  "verification_report": {
+    "path": "Reconstruction/Build/verification.json",
+    "sha256": "88f9bd55243f138fde1e361a72aeb8f851f9b12ccb435d4770976d72cc2e4840"
+  },
+  "postlink": {
+    "tool": "hiram",
+    "settings": {
+      "tool": "hiram",
+      "rom_size": 131072,
+      "fill_start": "0x1ffd0",
+      "initials": "HB JTC SC DLD PWD KWK LAK SEL B",
+      "date": "Wed, Nov 6, 1985"
+    },
+    "source": "Reconstruction/Tools/hiram.c",
+    "source_sha256": "909a6c4075c7cb9d14710be99b056839678490acdfd358332fd22cd54f011453",
+    "historical_source": "Tools/hiram.c",
+    "historical_source_sha256": "19eb09aa0d4921936eea0034f5928889cf68cff1e36808a439ffcab75dbe5c9f",
+    "compile_command": [
+      "cc",
+      "-std=c99",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "/Users/james/src/super-plus/Reconstruction/Tools/hiram.c",
+      "-o",
+      "/Users/james/src/super-plus/Reconstruction/Build/hiram"
+    ],
+    "command": [
+      "/Users/james/src/super-plus/Reconstruction/Build/hiram",
+      "-s",
+      "128",
+      "-i",
+      "HB JTC SC DLD PWD KWK LAK SEL B",
+      "-fd",
+      "Wed, Nov 6, 1985",
+      "--fill-start",
+      "0x1ffd0",
+      "/Users/james/src/super-plus/Reconstruction/Build/MacPlus-v3.unfinished.bin",
+      "/Users/james/src/super-plus/Reconstruction/Build/MacPlus-v3.hiram.bin"
+    ],
+    "executable_sha256": "9fe37acb5e109a2b789b80d34247093f713d02d9d92e79f266a0b41d14bb19b9",
+    "input_path": "/Users/james/src/super-plus/Reconstruction/Build/MacPlus-v3.unfinished.bin",
+    "input_sha256": "487d2f3123e337d4de9d7220d56d6ff6a0b545ed9c9b3c396e11783c155e05cb",
+    "output_path": "/Users/james/src/super-plus/Reconstruction/Build/MacPlus-v3.hiram.bin",
+    "output_sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "generated_spans": [
+      {
+        "offset": "0x0",
+        "bytes": 4,
+        "kind": "checksum",
+        "sha256": "447123f015720cb355acb22816b9c4e3939d3f0debda0fbb708ce7699afc4b7e"
+      },
+      {
+        "offset": "0x1ffd0",
+        "bytes": 48,
+        "kind": "initials-and-date",
+        "sha256": "dc4c15d97b36f1c4b3953c1e9fd7a68bba3566a0ab1b85417f5870bddcf1097b"
+      }
+    ]
+  },
+  "separate_build": {
+    "command": "python3 Reconstruction/Tools/verify.py --require-complete --build /tmp/macplus-includes-hiram-fresh",
+    "report": {
+      "path": "/tmp/macplus-includes-hiram-fresh/verification.json",
+      "sha256": "474bccab949a3631c903618e0aa1575add33869ad63024ba34d87e2f63fd3fa1"
+    },
+    "image": {
+      "path": "/private/tmp/macplus-includes-hiram-fresh/MacPlus-v3.rebuilt.bin",
+      "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7"
+    },
+    "all_module_results_identical": true
+  },
+  "comparison": {
+    "reference_equals_rebuilt": true,
+    "rebuilt_equals_separate_build": true,
+    "all_recorded_dependencies_match_saved_sources": true
+  },
+  "tests": [
+    {
+      "command": "python3 -m unittest discover -s Reconstruction/Tools -p 'test_*.py'",
+      "tests": 51,
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -m unittest discover -s Reconstruction/Source/QuickDraw -p 'test_*.py'",
+      "tests": 6,
+      "exit_code": 0
+    }
+  ],
+  "quickdraw_separate_build": {
+    "command": "python3 Reconstruction/Source/QuickDraw/verify_quickdraw.py --build /tmp/macplus-includes-quickdraw",
+    "report": {
+      "path": "/tmp/macplus-includes-quickdraw/verification.json",
+      "sha256": "c5629c74c3cddb461328be59987a6a521c963f9eed6a1087ef8fd8499132e592"
+    },
+    "verified_bytes": 25374,
+    "exit_code": 0
+  },
+  "original_inventories": [
+    {
+      "path": "Reconstruction/Evidence/source-inventory.json",
+      "sha256": "491dc812f2ee2cee39d9a705821f7f0adbc903c73766caf4d63a51fe19de32f9",
+      "files_checked": 906,
+      "all_match": true
+    },
+    {
+      "path": "Reconstruction/Evidence/resource-source-inventory.json",
+      "sha256": "7e7a2bd81749604de3d390eca1b7f12996fda195834367278aca1621b019ece1",
+      "files_checked": 2,
+      "all_match": true
+    }
+  ],
+  "source_inputs": [
+    {
+      "path": "Reconstruction/Source/Includes/AppleTalk.a",
+      "sha256": "7220c45752610eb0f687bc1719bc05485665dc650c39109757cff8a91bc60641"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/BootEqu.a",
+      "sha256": "1f2d0e282c4107087b9f2136363b803f3617cf95e56af60eb02bd5b7b51ab4f3"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/ColorEqu.a",
+      "sha256": "60f9415d0f45bdbde063fab9259875fe501ef37d3a9abd3af617f086b2abca95"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/FSEqu.a",
+      "sha256": "a0353f2b2e67fdd88ed57a07f21ee8dbea423862527eb2a24bfe6ffd7055db3c"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/FSPrivate.a",
+      "sha256": "7f07974f122f9e193f26addbd660f0de89d961402f2fb1421091238f057220c0"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/GrafMacros.a",
+      "sha256": "d00785cce13f6dbdc3b1306032d1c5be97f381f8a7bfb7be64e6b985908987d7"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/GrafMacrosAdd.a",
+      "sha256": "6d7e9028cdd7e217387ddccfb4e46bba7cf9e44c6f723d855ee173d82a85591e"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/GrafMacrosWord.a",
+      "sha256": "058ba623c66ba72a06cc20e655749c2cf0b1e6d9be62f06de900875e2b2bec16"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/GrafTraps.a",
+      "sha256": "54684dbe3f88d05e07b72648d0ee5709e3eeb943ebfb6b46b57018a981d39e92"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/HardwareEqu.a",
+      "sha256": "bce6684449fa626aecb201769b42783d955b2a872f0a126fc8f574f92e3efaf0"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/HardwarePrivateEqu.a",
+      "sha256": "73897bb1af04bc9044d91969f70e04b90f6cd357ee4e70d05d7ec7c4fbabb6a4"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/InternalOnlyEqu.a",
+      "sha256": "43137dc27d69c9c0c5f5206108fb01132adee8cfb9a96ce86c8ec7f79bea9f39"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/PrPrivate.a",
+      "sha256": "a82dc2e8e7622cf8824f9c224dbe39e5c296a11f6955e763f0378942fbc97f94"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/Private.a",
+      "sha256": "7c63ec7043f422b967fd962c7747ae4aecf7884b14ebc7774c8c49502489e133"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/Quickdraw.a",
+      "sha256": "e710fdda3f1c1932fd869748e7f019f0af1545eb8dd611d41a343ebfe957d3c0"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/ResourceMgrPriv.a",
+      "sha256": "4c42350cace6e9c4e30da5c8ccfc6f034c9f22c186e91fdb972d1ee597686b67"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/SANEMacs.a",
+      "sha256": "966d125bff7d7a56d1433c9e53f8aed7dfbf81c31e5c842ee8584a24da4437a4"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/SCSI.a",
+      "sha256": "6bd0467cb58c001c0ac82d309137f112f027801bdf64d4f09eebe1fff9b1b7dc"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/SCSIMacs.a",
+      "sha256": "693f997fce6822feaa2781f4af2d61e26d414326607c2d0428e1339b9606abd4"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/SonyInterfaceEqu.a",
+      "sha256": "73f9d0d2db0a0a44fa48239b51d985e519cf2d51398b0873c9a80dd7a162a7e2"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/SysEqu.a",
+      "sha256": "c7d332f0e7a76b7460a2361c01ae17240a377c42a096bcc298d68a8f43afbee7"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/SysErr.a",
+      "sha256": "aff52e6e5194ccf225cd958ae977b213227aefabfda0f2bbc11cfd05002f835b"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/TextEditPriv.a",
+      "sha256": "e75ed0ac196f6d94e0578bfeeff963ded3694f6f60aa902fa5d4ace2ca9fe778"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/Timer.a",
+      "sha256": "6146d113ad7224a715ef6f647f757d3cae2021dc401da849298451c81d5c762d"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/ToolUtils.a",
+      "sha256": "a64ee4009ecd0cca7863d29942b094c67e29be30b9b4e34666fd12ab50bb6f87"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/Traps.a",
+      "sha256": "a3d9f4d32fdbc8e013b13889db821825dab3802fab369128109b16990a7426ca"
+    },
+    {
+      "path": "Reconstruction/Source/Includes/fontPrivate.a",
+      "sha256": "61ecd335a239257edf0c519abf578916f5f72f4d79d043ea0820fea22e904446"
+    },
+    {
+      "path": "Reconstruction/Source/OS/Clock.a",
+      "sha256": "8ba17c5bb65df3dcabe41b11b2e42c3a43cf91c82abb3b2e8b323376935fa3af"
+    },
+    {
+      "path": "Reconstruction/Source/OS/CursorCore.a",
+      "sha256": "514996b67339f69ffaefa954ab11a7d2fc6c5e218a73e9a67c2603a28ed10a24"
+    },
+    {
+      "path": "Reconstruction/Source/OS/DeviceMgr.a",
+      "sha256": "3ae3c395d964268573b55de1e0017d6f117eebead2ebcf3b997980ac32fe765e"
+    },
+    {
+      "path": "Reconstruction/Source/OS/DispTable.a",
+      "sha256": "612182f38793086612e52813cf3d2be5fd6decc9ef05c853144640b125049756"
+    },
+    {
+      "path": "Reconstruction/Source/OS/EarlyInterrupts.a",
+      "sha256": "c7284c7593f28bae6efb559ee0413b52653a9730370504996415b31003924c53"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/BTALLOC.a",
+      "sha256": "28ebe7a50218fa86a590c80e1cd908784d0c0f8305f477d586048b049b2c72b7"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/BTMAINT1.a",
+      "sha256": "d75ce3cab4df5a45d16c6008be43f54eaaf00c810a1dba62e39484705b332a06"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/BTMAINT2.a",
+      "sha256": "fc979cc7da8982c40573d668909049bc02cd64bf8cc31b99c91127f7a2ba70b3"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/BTSVCS.a",
+      "sha256": "4c9cde255e640327a92793a1595275e950cdd0fd7f5df3a71e6ac6e25d2b0f15"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/CACHE.a",
+      "sha256": "112c4566fe96e6698f18948bfcd6a1617a22952e8a27a143c541db61f5ea65f8"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/CACHEIO.a",
+      "sha256": "2e54e5922deb77d29f6ac812e9e8c6e675514d6cc5484f7f620614599077033c"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/CMMAINT.a",
+      "sha256": "7c3b8a6cc183996f77a8962483544fe119dc04a99037c4e69102bac8556fa7e1"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/CMSVCS.a",
+      "sha256": "3560ffc7e26d433bf2fcab8b0c965082a0dfbe9b94a6a4c7c0ae45c331ec9e3a"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/FXM.a",
+      "sha256": "99d562fd28731b457dabff789120baaff383372cff39609c6d714d8bed23a4f1"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSDIR1.a",
+      "sha256": "c2592bce285d97eea970fa8b35de77fb7f515a85981e3711cfc0d048be30e6d7"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSDIR2.a",
+      "sha256": "16ecd01da4312a4863bbb55935ac3309f42816d6c88793d7da252ae0d114ef30"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSDIR3.a",
+      "sha256": "e218f7d98e0a9bfd6aab1aa18c0336f4e8cf9d580b71b602d55fa8ef092a9d1b"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSRFN1.a",
+      "sha256": "916cab9a4354ae5a9cd00b2aace3a002e6faab424a5874fe93ceb52f18362fac"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSRFN2.a",
+      "sha256": "9819862517bd3898d7a5f3c44ffb35199931b8b1cca15f0daeed26d60ba969e9"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSRFN3.a",
+      "sha256": "b9c4d6bc9a7691250ffb8f2042a3940e89f99edbdf444ebd87b07bbeea13c7d5"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/MFSVOL.a",
+      "sha256": "e33dd2d50e43f36fc5c3a0e4c359e81a96b1a7ee6defe882c874e2baaa186660"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFS.a",
+      "sha256": "5d3ecfa526244dd1a975963fc3fe490e83af583207d1156a15a764518b425a93"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSCOMMON.a",
+      "sha256": "326559ee1b6b97944142d31251b8e53022aea3a15c6a597e515931e2c01f64e6"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSDIR1.a",
+      "sha256": "d0315fa9a83cbd7b744ecbe00522376a0169807ffedce5231ca10edb009cd0a4"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSDIR2.a",
+      "sha256": "cd79ca3067e87c9f8fa23f5c861dd30ff703bcbe930275b5d3989a124635c7f9"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSDIR3.a",
+      "sha256": "521dc8cdbc668c7943c5970651d9a09f7646775d16f690195aa997d1c94618e9"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSRFN1.a",
+      "sha256": "fc5df81aec6f6248a8be3370bc2ffe05c8457e131d81799199fb0f7e8709c244"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSRFN2.a",
+      "sha256": "19b010bf82a5bfa6ba957b05c0b0b978169dd7c07bf408fa3026d65b20bf83a1"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSRFN3.a",
+      "sha256": "6a58f289202e8cbb58a4341197e936f8df1483006f5a882ad81bc9fca61daa1f"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSVOL.a",
+      "sha256": "899aa087f004ec0787f9d402ee0eeec81e9db3f5f500106cb798f0ba3cae2f48"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/TFSVOLServices.a",
+      "sha256": "6a61331098f43041f902e661fdeb924bd5ce6dc68e97722a72f305ca25964204"
+    },
+    {
+      "path": "Reconstruction/Source/OS/HFS/VSM.a",
+      "sha256": "8dd7bbe9a04108dec20bafcd9942308894083cd032ec27d2ea6fce77a8e2b08c"
+    },
+    {
+      "path": "Reconstruction/Source/OS/InitDispatcher.a",
+      "sha256": "2af40d7818e7a5d14d0c230eab81ca98cfae5bd225620ea22510a015df62eeeb"
+    },
+    {
+      "path": "Reconstruction/Source/OS/Keyboard.a",
+      "sha256": "ce8d5f72e3c5439845b6919a0c859f8377198f0992f4f3db7ff6d1f39973ab94"
+    },
+    {
+      "path": "Reconstruction/Source/OS/MemoryMgr/BlockMove.a",
+      "sha256": "f7be0dc69eabfeea6a47262060bcae781c61eb31f59ce5501822b93c8333838e"
+    },
+    {
+      "path": "Reconstruction/Source/OS/MemoryMgr/MemoryMgr.a",
+      "sha256": "08c9332c20b6130376d6e897cab95945b9886daef35a137c777a2a2d54d82976"
+    },
+    {
+      "path": "Reconstruction/Source/OS/MemoryMgr/MemoryMgrInternal.a",
+      "sha256": "b3a142ec51db1b9cf7dc6f9eb80ffacd3b7b15b94735040ec4793a9f575d0c9e"
+    },
+    {
+      "path": "Reconstruction/Source/OS/MouseInterrupt.a",
+      "sha256": "e1b296eef319e9419c213dd693a42da0bb883b5f56fa6be22566f776ac8027d4"
+    },
+    {
+      "path": "Reconstruction/Source/OS/OSEventMgr.a",
+      "sha256": "38a8762688f91cda7a91a67c1d4a42a82ba13bfa671b0f53a6de96480c098e36"
+    },
+    {
+      "path": "Reconstruction/Source/OS/Queue.a",
+      "sha256": "d6e50a88a5fc9687a852c7804cba1341fb817f7ce7d480a17a9e58db0f06f70b"
+    },
+    {
+      "path": "Reconstruction/Source/OS/SCSIBoot.a",
+      "sha256": "4979987edac5ab80b8b4201804e7aec9a94184e663ae5ff9dda1c6727a6d4e79"
+    },
+    {
+      "path": "Reconstruction/Source/OS/SCSIMgr.a",
+      "sha256": "4cbda02d1adb40a6920e859f69f3a3400219cf1ac9bf0cc52d899aae0f3d48a5"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/ROMDebugger.a",
+      "sha256": "f96f831a1c1da2458654fb5e1fd5766f97b7d8b9e2e7438caa6beae0f4bac0d0"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartAlert.a",
+      "sha256": "f2939251c8c9f6a2d0d20c59e869c6170911f539200dbed02d993fd14e6ba726"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartErr.a",
+      "sha256": "d81dfa836065d483b67188c6da68ae53c86d9b00902bd24aa6c5cf07582c7236"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartHardware.a",
+      "sha256": "de2e537002efdbcc514fa0512f9db323b6f8ae3d45c2cb438afbce9f8423ccb4"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartHardwareEqu.a",
+      "sha256": "fbecd6b24561016ee6b8e9a0aa0d2b9ee449963db29b97e50c4afd1641a7bbee"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartInitPrefix.a",
+      "sha256": "aae3681506910ae5a7c1fb63d6b6e86f400afb20cfad9aae6f4b73213035806e"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartupBoot.a",
+      "sha256": "457a0c1b885de5896d15a3c37d5c0bb83a35a8186acd0910801b44cd4b571bc9"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartupFS.a",
+      "sha256": "e8af07e8965fa67dca0bc0e23d7db8c75d2052666942428cf2e2b76fa7e1ad9f"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartupSystem.a",
+      "sha256": "d4204cf485566d013e4a9f61fc2adf699698cac06bfff5b92f8699035ca9ff8b"
+    },
+    {
+      "path": "Reconstruction/Source/OS/StartMgr/StartupTests.a",
+      "sha256": "47db65146973308d4deef3996c591eac60c9cf1ed3814df24eb8839f8c435f48"
+    },
+    {
+      "path": "Reconstruction/Source/OS/SysUtil.a",
+      "sha256": "9e8d29c6234c948fe47783c4b594949441003ec747bc93195b926b9b2eef8fca"
+    },
+    {
+      "path": "Reconstruction/Source/OS/SysUtilCalls.a",
+      "sha256": "81691602176562cc8aa153956e8193a465cca6ff451f35e5b74a13c7211b713c"
+    },
+    {
+      "path": "Reconstruction/Source/OS/TimeMgr.a",
+      "sha256": "4e15891079151b2c77295484d152f160d733d95b6fe3886445c6b2146783c41d"
+    },
+    {
+      "path": "Reconstruction/Source/OS/TrapDispatcher.a",
+      "sha256": "441f1dcb3d8a08b858b3567b29c93f68a0eb41be7f3abfdf6094e5c2f665c3d2"
+    },
+    {
+      "path": "Reconstruction/Source/OS/VBLInterrupt.a",
+      "sha256": "12b94bb39df2bab3854a44978a1838f6138cb54b779f58d0f3fc7396ab0ce289"
+    },
+    {
+      "path": "Reconstruction/Source/OS/VerticalRetraceMgr.a",
+      "sha256": "335cc771f3bd9f52673598fc14cb5b4bcc3f4770522c9fd36b0135bf0b256f80"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Angles.a",
+      "sha256": "9a06ad728b417f8d26871b0b0ac8da28b04dd0623d15a67844b5116b8cb7aef5"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Arcs.a",
+      "sha256": "7e3dceec1ca930b31467d02a57fee2c9179028948656c624f3d5cd06fd75b069"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/BitBlt.a",
+      "sha256": "6ccaad26186e0ae80185140c0b7267d571360ca906442be506f48ec0371d2002"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Bitmaps.a",
+      "sha256": "5d4101a2f90bc345996c3413e650b38981b7ea02846531358b6b361f307054a9"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/DrawArc.a",
+      "sha256": "778fa26b8adabfe048343bd7e164b0475518c4696b187882843fec0f21c47ebb"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/DrawLine.a",
+      "sha256": "41a2ecce426b9199f9bef006b47a03776b7df0b1386dc4b5fee509a6d84463af"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/DrawText.a",
+      "sha256": "e4b8dfd86bd74d6cfd5f0c20795c57a92abb4d1e4e23de6ef838e6dc353370b6"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/GrafInit.a",
+      "sha256": "1df6f3dfd8ead3632a012af26bdb3791200b379b886b916a7b83bdd2321937a8"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/GrafTypes.a",
+      "sha256": "8752c2538d935abbcd153bfdb0a3577dedf22aa09ad810aad586233f3beda3ab"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/LCursor.a",
+      "sha256": "2d79ab672535c63288623e39acc84d4d916be884e8e3c4e81c75832b9afc5abd"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Lines.a",
+      "sha256": "30d81e3ebbc54b7f99eab91052d8827c125e5c06c78ac962709cc68acc20a10a"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Ovals.a",
+      "sha256": "c838c1f5313034838f7e993d9beac6afaad34c16cb78eb495ad0f9577daa142c"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/PackRgn.a",
+      "sha256": "5d99558c51ce0a994a147687357af74376bc9c8bafeac8a133c4d491095b7888"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Pictures.a",
+      "sha256": "90a443bdf219910d62d1da713e44d9c7cd58e7056f7fd8f6d653aa787329db61"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Points.a",
+      "sha256": "3b55edf5340537a3777b07c762dc7412b8b5279f10a5884febf351e1d95fc7a9"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Polygons.a",
+      "sha256": "0b0982b24ac1509351c7969c4defa520ca602a74923e470af1848274fabf49e1"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/PutLine.a",
+      "sha256": "ebcaba32fb1b889db356251cc64be8d2217c7f6d8937cd64af4e6daba28e38e9"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/PutOval.a",
+      "sha256": "b6dba94e371e4b8c4109c073bfe0bc10694ac51c22026a587dcf5870b067962d"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/PutRgn.a",
+      "sha256": "b051b948cd24c957cdaeb7dffc5b44155767e3b94b44587a8c0f997171aaa6d8"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/QDUtil.a",
+      "sha256": "e62e89aed56b0300a4f9cf89192b5af57841121796bbe102cc6ba0fe41fbd38d"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/RRects.a",
+      "sha256": "5b775c5398c71cdf6c6cb3bc3781ec32d99d249cbd6406bf0b848982041e47cd"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Rects.a",
+      "sha256": "65f3ce815d29d6e7db2c29fb5f89e71dd246a05bc82719fd2fdacfc79c82660f"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Regions.a",
+      "sha256": "bafa19c4e75d7941f115da713e99462a3eedd0008b2939b3ce717c62c74a403e"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/RgnBlt.a",
+      "sha256": "4fb7a7b8b8337cbb6e9da68c38afcff591358c77edf629c064b55e69a817931e"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/RgnOp.a",
+      "sha256": "23fe4e712b9aac5786ee6fb9caf33348e362d17aa595dc01ad51f824ba9792ea"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/SeekRgn.a",
+      "sha256": "563314af31c329d1cf9b8fe38d8ecf2c8365cddc707c2cbe7d6c3d06480bfef7"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/SortPoints.a",
+      "sha256": "06089bb4aec6f9c1308d389f3c03a0df6cf239f9b6c0107fe8baec6d2c793109"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Stretch.a",
+      "sha256": "c2bde82051e597089188b39b25e17ed54ca8c1e7b0abb7379b35a4bd9773b872"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/Text.a",
+      "sha256": "76ffea4d609e30ef69c7954fa9eadce5dbbab52f80367f427e5c5553145a28bb"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/UtilExtra.a",
+      "sha256": "7edebf43ebc57e092a057173a04066a0d70b7dd65fa8b727838df03b4b48e542"
+    },
+    {
+      "path": "Reconstruction/Source/ROMTail.a",
+      "sha256": "0dd3fce89c2f2055f2446832ffbc7143cc0528b62acc5e8e2e236fd26c3ed1a0"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/ATP.a",
+      "sha256": "8ca12ddc28add30c8c26a0bdd9cf3d0e4ba1e3e47413d4e0af44ae33eff8de45"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Cursors.r",
+      "sha256": "e6c862d66fc83243326db9bc93fe9c241f686dc0804fedf84c2688ba200fe00d"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/MPP.a",
+      "sha256": "c280c7d2299b49380e31dbc00288a2e3e9ba5c94fb0cd4d1c49f3c3470c5a4cf"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/PrintDriver.a",
+      "sha256": "0c4644e1532061ed3c99e34bca06ff2995730808690f70e431aee908a0883edd"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/ROMResourceMap.a",
+      "sha256": "30e87765cd5414429f79aaa2dced5051a638d81d439139430eff8142f92da401"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/BinDec.a",
+      "sha256": "0c759d30bc6fd71c740f7914d57f1cb422af90d43a1b699c7e7069942dc9cc3b"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Dec2Str.a",
+      "sha256": "40beb0ac63dae3886bb81a348f006eaea4ae57d6782e7ba477ff2a3dc2de8bd1"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Elems68K.a",
+      "sha256": "3ed98a06fcaf1e11789dc9c4f5ca851cabadee5c7a2947e80caddc7f8a2d688f"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Elems68K1.a",
+      "sha256": "3f12a2d6a673f22d12af16f359eadd301049690c10bb8cb380061028cb52d1d6"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Elems68K2.a",
+      "sha256": "54e71561e6074df527451d4630e55d8d773e8741face53eeccd6472e18ccd3ec"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Elems68K3.a",
+      "sha256": "3d7375176654f56e3d70cdf425f99da651cdb25fe34a65fb24e554b0e83db321"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Elems68KC.a",
+      "sha256": "4009c7d7c35e09601a151b1469f6bc62f0afabc12568e59f26e5c45184192832"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/ElemsSANEMacs.a",
+      "sha256": "d47fe75c26b78fa3ab73745bc5ebaf1524b433b554d75eba7c6abf50033507ec"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/FP68K.a",
+      "sha256": "d02067f75811b268375105dc269ac8178ac26e4ec9424493c7781e3e385dd58c"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/FPBD.a",
+      "sha256": "8fc1c95945ebbe59858bd943eec49f811e9429bc50d6616acacc2580ddef77c0"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/FPCtrl.a",
+      "sha256": "57edb438eb9c907f56d93df3df9b698912d761ff7d4119bbf6ed0349ac97b94e"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/FPEqus.a",
+      "sha256": "624578d6aac9d351acad5205cf1d37714fae37fff9a16f533477750cc9f2d34a"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/FPOps.a",
+      "sha256": "903ad7113e530e91647cde520f7567febdff0c49bb3c8057b9a86c67f0794cf7"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SANE/Str2Dec.a",
+      "sha256": "67af9f27d113f9a9ccb9bd7c1fee34eb66df5e7b5391e93300cfe85d12447db2"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Serial/SerialDriver.a",
+      "sha256": "b63811e6180cc5f182e6767e3db7f5f14557e366b9bcda5e9ec20585c81c80db"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Serial/SerialDriverEqu.a",
+      "sha256": "dc28224fe70c13c53b3a81262c5f6a89a2b7270b67383476575c697aab367f03"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Serial/SerialEqu.a",
+      "sha256": "8ae77c500a33b576c30760c47dca428ac72fed4985977e9d548e47069897a499"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/Sony.a",
+      "sha256": "d9104aa63b55b4e0855ad47980ed2d2105d2a44081a192015156efed1aae74e0"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyDCD.a",
+      "sha256": "2d18de2e8634fb3e1746329b6422d06856feb1cc139fda5cfb0344e58a97e5ce"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyDCDEqu.a",
+      "sha256": "11d1751f1e939fed53eae3f1feeee211b8b8c3161b260504fca470444a85db2d"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyEqu.a",
+      "sha256": "b49e5b01e82ab822f137d765353c919644061559cf5dcd70ca700a436d39d465"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyFormat.a",
+      "sha256": "fab15a7e9bb5cbfa583b43a18b666951999b863041866764a88ee38332f9d366"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyFormatEqu.a",
+      "sha256": "cc578ab9da9cb68247cef2bddabfe4ced8cb50969927dd5c2bde6e5f98ab6fd0"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyRWT.a",
+      "sha256": "7d91f022456b70a659392d945d007c3ed156eb11c5a7810febb6eec55178f2c6"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyRWTEqu.a",
+      "sha256": "45e7fc2eab724becfb8bf8833f5a30d574b21c49c41596e87b3f8a6978231089"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyRead.a",
+      "sha256": "2f3805fd91ca1251d6c8a757d577a46da1483158694ba99d5e1d081b8a253584"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyReadEqu.a",
+      "sha256": "3673b00e4a742beb1c1715b4cbe40dc6545fadfeb8a6ea25f5cd43ead6e6d76e"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyUtil.a",
+      "sha256": "dabf8891511c074ba75ae9b8c849538de09ec4a06be46831d9366e4d3aa718ed"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyUtilEqu.a",
+      "sha256": "1f6586fdf5bc21b343dae1fb0ffe682e8bc424781087ff39f38cc96076a1c5be"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyWrite.a",
+      "sha256": "c4a8ead7812b875c25b9e77f71e6e75ab3dccd2a20a8b6adade95874a60c49b2"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/Sony/SonyWriteEqu.a",
+      "sha256": "93616ec20d263c54b25706cfca24afff03a9f89f282a99b9e3a3d44a38205c1f"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SoundDriver.a",
+      "sha256": "c8229a9c6dd139d4756efc9067a8d52f52f6545b62055375b592005473bc7da3"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/StandardMDEF.a",
+      "sha256": "810249102f5169820bb50f2eac1e4341bc9e18384b35d48db1f06695b0e6a47c"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/StandardWDEF.a",
+      "sha256": "76edfb2742949d1ec6b18470c514d9c1d891acba44b69d6dafba03f770e8d1de"
+    },
+    {
+      "path": "Reconstruction/Source/Resources/SystemFonts.r",
+      "sha256": "173273cbefa0b302ae94a1283866edec1cba753ce3b2b4a0e82d70019d43e4bf"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/ControlMgr.a",
+      "sha256": "501c665762e0be2b0287ee75adf1e6bbb7bce6656875d5bee382551fa5ebfa1e"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/DeskMgr.a",
+      "sha256": "5ab621ab8ff1a8bb18d64d2a33b19a15ef3052df4257892a4a3d72afe19daf21"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/DialogMgr.a",
+      "sha256": "727feff0288bc6d898ca8b6d891df812bd2667486dc4bac2dc1c02b606cb858d"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/FontMgr.a",
+      "sha256": "15e67421febed61aa85e87918684850439ac3e170d852c2a10403d512f1541ca"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/FontMgrCore.a",
+      "sha256": "71b20d9b86cb7a0d3ddc87fa80b202603af23cea468878e768f497d577b9b987"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/FontMgrInit.a",
+      "sha256": "15b1ff8ea3aac6cb90d9527de7024de0284a4349dfb7654b958336a31c18bd96"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/GetMgr.a",
+      "sha256": "9f7aa7025551f9cc2c092dd9d1062319ffdfbd1a6ce1614b3c6dcc184760cf6c"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/MenuMgr.a",
+      "sha256": "8ee340880d4588a30fe214ffe1bfe68bd1f5327b1207bcbfd1c37e486d1e88d2"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/Munger.a",
+      "sha256": "ae998c465bb3acc77e1e6a405965858730f3cb3f5783bec46abba3bd71f94d30"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/PackageMgr.a",
+      "sha256": "c9476addd496f7c508c76f41a5c66ca62e21fe2f407ccadbbf982d91bd6b44a6"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/ResourceMgr.a",
+      "sha256": "30e4a3909c382e27da67cbf0face8424fa09c3b8af56cf35dfc87899bd7f4796"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/ScrapMgr.a",
+      "sha256": "6f28660b11ac5bb93933d042ccb07fd087125e097da4e1f1c7d6acc8f376bcf5"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/SegmentLoader.a",
+      "sha256": "0557317d756b92a676b34bd6830c6777835ddce59b4fc8856309f625d59fb4ec"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/SexyDate.a",
+      "sha256": "3e4040cbdce798920b9a358f9ba23e34baa87a6a4b7e092f269fa1e39b7259b2"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/TextEdit.a",
+      "sha256": "cbcb98de868684aa41bf6e2866dc30f52a16f9ffe8e2e981aabc4341029b6315"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/ToolboxEventMgr.a",
+      "sha256": "4a11648bd4cafe4ed380262e422f39dd98eee6c6e9b9842a71482f5a2d41c33d"
+    },
+    {
+      "path": "Reconstruction/Source/Toolbox/WindowMgr.a",
+      "sha256": "f56adae490f4be587b1db305ac55301d9a95c421972af9e6bade64fd6b38b2e7"
+    }
+  ],
+  "tool_inputs": [
+    {
+      "path": "Reconstruction/Tools/dispatch_table.py",
+      "sha256": "52afd85a8b9c3288ac45de7d49268562b91e06df370dc55e8e6326a1177429c1"
+    },
+    {
+      "path": "Reconstruction/Tools/hiram.py",
+      "sha256": "e0995c801cba146f7ff53d306cbb7d63fda215d367676b65cb026b94d45cce58"
+    },
+    {
+      "path": "Reconstruction/Tools/index_sources.py",
+      "sha256": "20473904a7adb3e855ea80b8ed8725f863b1107a67999a15a69c73631a850497"
+    },
+    {
+      "path": "Reconstruction/Tools/rez_data.py",
+      "sha256": "068a17bbeba3a34055a7dcc2ac9c9d9a041006b369c7f8f5db300ff939fcf68c"
+    },
+    {
+      "path": "Reconstruction/Tools/test_dispatch_table.py",
+      "sha256": "4eb1ca397f47c279237da5ad199b8308ffae7dc5146cd3071635954071801f04"
+    },
+    {
+      "path": "Reconstruction/Tools/test_hiram.py",
+      "sha256": "b4de7d3568aa9ff2e7f05250b2563d88a8f3b7dca947d5980532fda00f8e505e"
+    },
+    {
+      "path": "Reconstruction/Tools/test_image.py",
+      "sha256": "3dce726157b2c691d9e60f5a417c6421fbfab8ef1a4ae2cf74ebfbc061b59dd8"
+    },
+    {
+      "path": "Reconstruction/Tools/test_index_sources.py",
+      "sha256": "1efc453636ccf0cbfb815f1a07c7edbc9709e1241a5e42f0330cf81918a224f9"
+    },
+    {
+      "path": "Reconstruction/Tools/test_verify.py",
+      "sha256": "930299e558ecf9d5eb1859610f9f2b42aa98dfccd8743969f8bd0b750769166f"
+    },
+    {
+      "path": "Reconstruction/Tools/verify.py",
+      "sha256": "c5a3d558bfcf609ce8cb2b31c7ff6f20220a07670c1a0e4bf24195e87abda345"
+    },
+    {
+      "path": "Reconstruction/Tools/hiram.c",
+      "sha256": "909a6c4075c7cb9d14710be99b056839678490acdfd358332fd22cd54f011453"
+    },
+    {
+      "path": "Tools/hiram.c",
+      "sha256": "19eb09aa0d4921936eea0034f5928889cf68cff1e36808a439ffcab75dbe5c9f"
+    },
+    {
+      "path": "Reconstruction/Source/QuickDraw/verify_quickdraw.py",
+      "sha256": "d3a1aa0b136bfa072eb034319c8b1f7f70ae2e87ef152487fe6e6cc621674414"
+    }
+  ],
+  "limits": [
+    "The include families follow the surviving sources; the exact lost include tree remains unknown.",
+    "Procedure constants, layout expressions, and fixed ROM entry addresses remain local where their scope requires it.",
+    "Hiram restores the date format documented in its history. The original date routine and complete initials string are not available.",
+    "The host adaptation covers initials, date, and checksum. It does not port later resource loading, declaration data, encryption, or slice output."
+  ],
+  "vale": {
+    "errors": 0,
+    "warnings": 0,
+    "suggestions": 0,
+    "scope": "Authored prose and comments; preserved historical comments retain their original wording."
+  }
+}

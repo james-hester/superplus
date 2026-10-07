@@ -1,0 +1,497 @@
+{
+  "module": "TFSDIR3",
+  "source": "Reconstruction/Source/OS/HFS/TFSDIR3.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSDIR3.a",
+      "sha256": "bc4bb0a37c6904575c5ff2bd30774f8010404551343ee134ade7650719576c44",
+      "line_ranges": [
+        [
+          1,
+          877
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/MFSDIR3.a",
+      "sha256": "74cd6b4e4cb368afe2983ccce6e9721a9aa8f32c357a2c5600b183a20d8ba8e8",
+      "line_ranges": [
+        [
+          43,
+          70
+        ]
+      ],
+      "role": "SetMFlType establishes the next module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          41,
+          41
+        ],
+        [
+          260,
+          260
+        ],
+        [
+          262,
+          262
+        ],
+        [
+          278,
+          278
+        ],
+        [
+          286,
+          286
+        ],
+        [
+          292,
+          292
+        ],
+        [
+          298,
+          298
+        ],
+        [
+          305,
+          305
+        ],
+        [
+          332,
+          333
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          354,
+          354
+        ],
+        [
+          437,
+          437
+        ],
+        [
+          453,
+          454
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          138,
+          138
+        ],
+        [
+          184,
+          184
+        ],
+        [
+          190,
+          190
+        ],
+        [
+          195,
+          195
+        ],
+        [
+          199,
+          199
+        ],
+        [
+          213,
+          213
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          733,
+          733
+        ],
+        [
+          737,
+          737
+        ],
+        [
+          740,
+          741
+        ],
+        [
+          769,
+          770
+        ],
+        [
+          772,
+          772
+        ],
+        [
+          774,
+          774
+        ],
+        [
+          780,
+          781
+        ],
+        [
+          789,
+          789
+        ],
+        [
+          813,
+          814
+        ],
+        [
+          822,
+          822
+        ],
+        [
+          827,
+          830
+        ],
+        [
+          834,
+          839
+        ],
+        [
+          841,
+          843
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          129,
+          129
+        ],
+        [
+          135,
+          135
+        ],
+        [
+          139,
+          139
+        ],
+        [
+          166,
+          166
+        ],
+        [
+          202,
+          202
+        ],
+        [
+          406,
+          407
+        ],
+        [
+          413,
+          414
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          427,
+          428
+        ],
+        [
+          435,
+          438
+        ],
+        [
+          441,
+          442
+        ],
+        [
+          459,
+          459
+        ],
+        [
+          461,
+          461
+        ],
+        [
+          463,
+          464
+        ],
+        [
+          471,
+          471
+        ],
+        [
+          473,
+          475
+        ],
+        [
+          522,
+          522
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          369,
+          369
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x404852",
+      "end_exclusive": "0x404d66",
+      "rom_offset": "0x4852",
+      "length": 1300,
+      "sha256": "6eb5c582c9a92fba79beb84cfe64b4be7bce97a5aa0709a0810f1a48223409b2",
+      "start_label": "SetFilType",
+      "end_label": "TFSDIR3End",
+      "boundary_evidence": "SetFilType follows the MFSDIR2 AdjFlPos return at 0x404852. XferCInfo ends with a branch to GFIExit at 0x404d62. SetMFlType begins MFSDIR3 at 0x404d66."
+    }
+  ],
+  "entry_points": {
+    "SetFilType": "0x404852",
+    "SetFilLock": "0x40488a",
+    "RstFilLock": "0x404894",
+    "SRFLck": "0x40489c",
+    "SRFLXit1": "0x4048c8",
+    "SRFLXit2": "0x4048d0",
+    "SRFLXit3": "0x4048d2",
+    "SetFileInfo": "0x4048d6",
+    "SetCatInfo": "0x404908",
+    "SetCatIExit": "0x404976",
+    "CkFilMod": "0x40497a",
+    "FndFilName": "0x404990",
+    "vFndFilName": "0x404996",
+    "FndFNRTS": "0x40499c",
+    "FndWDChk": "0x40499e",
+    "FndFN2": "0x4049ca",
+    "FNDFNExit": "0x404aae",
+    "FNDFNErr": "0x404ab0",
+    "ExtOffLinCk": "0x404aba",
+    "GetCatInfo": "0x404ad0",
+    "GetFileInfo": "0x404ae2",
+    "FndCatEntry": "0x404aec",
+    "GetDirInfo": "0x404b1c",
+    "GFIByIndx": "0x404b1e",
+    "dtrmDir": "0x404b32",
+    "rootCheck": "0x404b5a",
+    "fakeRoot": "0x404b6c",
+    "GFIOK": "0x404bb8",
+    "retDirInfo": "0x404bbe",
+    "LookupErr": "0x404c2a",
+    "GFINFErr": "0x404c34",
+    "GFIExit": "0x404c36",
+    "GetCatOff": "0x404c3a",
+    "GotIndFile": "0x404c4a",
+    "XferFInfo": "0x404c68",
+    "CkFilStatus": "0x404c8c",
+    "XferCInfo": "0x404ce0",
+    "TFSDIR3End": "0x404d66"
+  },
+  "integration_manifest": {
+    "name": "tfsdir3",
+    "source": "Reconstruction/Source/OS/HFS/TFSDIR3.a",
+    "start": "0x404852",
+    "end_exclusive": "0x404d66",
+    "entry_points": {
+      "SetFilType": "0x404852",
+      "SetFilLock": "0x40488a",
+      "RstFilLock": "0x404894",
+      "SRFLck": "0x40489c",
+      "SRFLXit1": "0x4048c8",
+      "SRFLXit2": "0x4048d0",
+      "SRFLXit3": "0x4048d2",
+      "SetFileInfo": "0x4048d6",
+      "SetCatInfo": "0x404908",
+      "SetCatIExit": "0x404976",
+      "CkFilMod": "0x40497a",
+      "FndFilName": "0x404990",
+      "vFndFilName": "0x404996",
+      "FndFNRTS": "0x40499c",
+      "FndWDChk": "0x40499e",
+      "FndFN2": "0x4049ca",
+      "FNDFNExit": "0x404aae",
+      "FNDFNErr": "0x404ab0",
+      "ExtOffLinCk": "0x404aba",
+      "GetCatInfo": "0x404ad0",
+      "GetFileInfo": "0x404ae2",
+      "FndCatEntry": "0x404aec",
+      "GetDirInfo": "0x404b1c",
+      "GFIByIndx": "0x404b1e",
+      "dtrmDir": "0x404b32",
+      "rootCheck": "0x404b5a",
+      "fakeRoot": "0x404b6c",
+      "GFIOK": "0x404bb8",
+      "retDirInfo": "0x404bbe",
+      "LookupErr": "0x404c2a",
+      "GFINFErr": "0x404c34",
+      "GFIExit": "0x404c36",
+      "GetCatOff": "0x404c3a",
+      "GotIndFile": "0x404c4a",
+      "XferFInfo": "0x404c68",
+      "CkFilStatus": "0x404c8c",
+      "XferCInfo": "0x404ce0",
+      "TFSDIR3End": "0x404d66"
+    }
+  },
+  "changes": [
+    {
+      "location": "SetFilLock and RstFilLock",
+      "change": "Removed the later writes to Finder extended lock attributes.",
+      "evidence": "The ROM sets or clears FilWrtFlag and proceeds directly to the existing exits at 0x4048be and 0x4048c8. It lacks the ORI.B and ANDI.B writes to filFndrInfo+fdXFlags from the June 1990 patch incorporated in 1992."
+    },
+    {
+      "location": "GetFileInfo empty-name behavior",
+      "change": "Restored the unconditional synthetic-root path after a bad-name result for a zero-length name.",
+      "evidence": "At 0x404b06, the ROM branches directly to fakeRoot. It lacks the January 1987 HFSReq test that restricted this path to GetCatInfo and returned BdNamErr from GetFileInfo. The source history states that this fix was not patched for the Mac Plus."
+    },
+    {
+      "location": "Directory enumeration index",
+      "change": "Restored clearing VCBDirIndex after lookup by name and removed its invalidation in GetCatOff.",
+      "evidence": "The ROM clears D0 at 0x404b12 and stores its word into VCBDirIndex at 0x404b14. GetCatOff at 0x404c3a saves registers and prepares the catalog call without writing -1 to VCBDirIndex. The source history describes the different sequence as a RAM patch, and its 1989 history records removal of forROM conditionals. The reconstruction follows the ROM bytes and marks the replacement comments."
+    },
+    {
+      "location": "Definitions, encoding, and provenance",
+      "change": "Copied required original equates and supplied external routine addresses. Preserved the original header, applicable history, and comments. Retained later equate spellings whose values match the ROM.",
+      "evidence": "The jFndFilName expression resolves to 0x78c. The ioFlxFndrInfo and ioHFQElSiz values reproduce the extended information fields and clear count. JSR calls use explicit PC-relative operands. GFIOK uses the original word branch at 0x404bba. All 1,300 bytes and 38 recorded labels match."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "FSQueue",
+      "address": "0x4028aa"
+    },
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "TFSVCBTst",
+      "address": "0x404ec6"
+    },
+    {
+      "name": "SetMFlType",
+      "address": "0x404d66"
+    },
+    {
+      "name": "ChgMFlLock",
+      "address": "0x404d6e"
+    },
+    {
+      "name": "CMUpdateCN",
+      "address": "0x40656c"
+    },
+    {
+      "name": "SetMFlInfo",
+      "address": "0x404d92"
+    },
+    {
+      "name": "CVFlgs",
+      "address": "0x403a76"
+    },
+    {
+      "name": "DtrmV3",
+      "address": "0x403642"
+    },
+    {
+      "name": "FndMFSFile",
+      "address": "0x404dac"
+    },
+    {
+      "name": "CMGetCN",
+      "address": "0x406238"
+    },
+    {
+      "name": "CkExtFS",
+      "address": "0x403638"
+    },
+    {
+      "name": "GetMFlInfo",
+      "address": "0x404e7c"
+    },
+    {
+      "name": "DtrmV1",
+      "address": "0x403650"
+    },
+    {
+      "name": "GtMFlIBI",
+      "address": "0x404e10"
+    },
+    {
+      "name": "CMGetOff",
+      "address": "0x406258"
+    },
+    {
+      "name": "Gt1stMatch",
+      "address": "0x404002"
+    },
+    {
+      "name": "GtNxtMatch",
+      "address": "0x404010"
+    },
+    {
+      "name": "UpDatFlNtry",
+      "address": "0x405326"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x404852, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "d92beedc979230f48cce73ba6acced91ff09c224a4c9f8ba3faa1e11d0f94c3d",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/TFSDIR3.a",
+        "sha256": "d92beedc979230f48cce73ba6acced91ff09c224a4c9f8ba3faa1e11d0f94c3d"
+      }
+    ],
+    "assembled_length": 1300,
+    "matched_bytes": 1300,
+    "entry_points_checked": 38,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

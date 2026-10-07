@@ -1,0 +1,379 @@
+{
+  "module": "Resources/StandardMDEF.a",
+  "source_path": "Reconstruction/Source/Resources/StandardMDEF.a",
+  "source_sha256": "e80d468751702547cabb76c03e6aff93676ee752214551cf7dd56be8c76a7b72",
+  "upstream_source": {
+    "path": "Toolbox/MenuMgr/StandardMDEF.a",
+    "sha256": "45d7e23b75a3a132b24b490740a0a9d20732b26d18341cec712f9950061e0fec",
+    "description": "This is the only surviving standard MDEF source found in the repository. It retains the Mac Plus header convention, early history, routine structure and substantial instruction sequences. Later revisions replace scrolling, dispatch, drawing and menu sizing code. The reconstruction restores those earlier paths against the complete ROM body."
+  },
+  "upstream_equates": [
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x41bf38",
+      "end_address_exclusive": "0x41c33e",
+      "rom_offset": "0x1bf38",
+      "length": 1030,
+      "sha256": "63cde4cb4a1a837fb01fbef589a36a02f3461b39b5673b6fd1c6d4ea9e3cd055",
+      "first_symbol": "MDEFResourceBlock",
+      "last_symbol": "GRAYRECT"
+    }
+  ],
+  "resource": {
+    "type": "MDEF",
+    "id": 0,
+    "name": null,
+    "attributes": "0x58",
+    "offset": "0x1bf40",
+    "size": 1022,
+    "end": "0x1c33e",
+    "block_offset": "0x1bf38",
+    "block_size": 1030,
+    "block_flags": "0xc0",
+    "master_pointer_offset": 108
+  },
+  "boundary_evidence": {
+    "description": "The ROM resource map identifies MDEF 0 at offset $1BF40 with 1022 body bytes. Its preceding eight-byte block begins at $1BF38 and declares 1030 bytes, so the block ends at $1C33E. GRAYRECT ends with RTS at $41C33C. The following block belongs to WDEF 0.",
+    "resource_reference": "Reconstruction/Evidence/rom-resources.json",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv"
+  },
+  "data_spans": [
+    {
+      "start_address": "0x41bf38",
+      "end_address_exclusive": "0x41bf40",
+      "length": 8,
+      "description": "The block header combines flag byte $C0 with the derived block length, then stores relative master-pointer offset $6C. The resource map separately records attributes $58."
+    },
+    {
+      "start_address": "0x41bf42",
+      "end_address_exclusive": "0x41bf4c",
+      "length": 10,
+      "description": "The standard definition header contains flags zero, type MDEF, ID zero and version four. The entry branch skips this header."
+    }
+  ],
+  "code_spans": [
+    {
+      "start_address": "0x41bf40",
+      "end_address_exclusive": "0x41bf42",
+      "length": 2
+    },
+    {
+      "start_address": "0x41bf4c",
+      "end_address_exclusive": "0x41c33e",
+      "length": 1010
+    }
+  ],
+  "symbols": {
+    "MDEF0": "0x41bf40",
+    "StartMDEF": "0x41bf4c",
+    "DoChooseMsg": "0x41bf66",
+    "ScrollMenu": "0x41bf9a",
+    "CheckScrollBottom": "0x41bfbc",
+    "ChooseItem": "0x41bfce",
+    "MSELOOP": "0x41bfd2",
+    "NEXTMSEL": "0x41bfe6",
+    "GOTSEL": "0x41bfea",
+    "NOITEMSEL": "0x41bff0",
+    "MDEFDone": "0x41bffc",
+    "GetMenuBarHeight": "0x41c00a",
+    "DefaultMenuBarHeight": "0x41c016",
+    "MenuBarHeightDone": "0x41c01a",
+    "GetSizes": "0x41c01c",
+    "SizesNotChicago": "0x41c030",
+    "GetItemHeight": "0x41c036",
+    "ItemHeightDone": "0x41c040",
+    "ENABLETEST": "0x41c042",
+    "ETDONE": "0x41c050",
+    "INVERTITEM": "0x41c052",
+    "IILOOP": "0x41c062",
+    "GOINVERT": "0x41c076",
+    "INVERTDONE": "0x41c098",
+    "GrayItem": "0x41c09e",
+    "TweakPos": "0x41c0aa",
+    "TweakPosDone": "0x41c0bc",
+    "DoDrawMsg": "0x41c0be",
+    "DONEDRAW": "0x41c0ca",
+    "DrawMenuDone": "0x41c0ce",
+    "DRAWMENU": "0x41c0d4",
+    "DRAW1MLOOP": "0x41c0ee",
+    "DrawMark": "0x41c128",
+    "CHKDRAWICON": "0x41c146",
+    "DrawCmdChar": "0x41c18a",
+    "PositionCommand": "0x41c1a8",
+    "DRAWITEXT": "0x41c1c0",
+    "DrawIntl": "0x41c1de",
+    "RestoreTextFace": "0x41c208",
+    "NextDrawItem": "0x41c21c",
+    "NextBaseline": "0x41c228",
+    "DrawDash": "0x41c232",
+    "GETITEMRECORD": "0x41c25a",
+    "GETILOOP": "0x41c268",
+    "NOITEM": "0x41c276",
+    "GOTITEM": "0x41c27e",
+    "DoCalcMsg": "0x41c28a",
+    "CMLOOP": "0x41c2b6",
+    "CalcVertical": "0x41c2d0",
+    "CalcHorizontal": "0x41c2da",
+    "CalcTextWidth": "0x41c2ee",
+    "CALCNEXT": "0x41c306",
+    "DoCalcDone": "0x41c310",
+    "DoCalcDone1": "0x41c312",
+    "GRAYRECT": "0x41c328"
+  },
+  "symbol_provenance": {
+    "description": "Names shared with StandardMDEF.a identify matching source routines and loops. Their use does not establish their exact spelling in the lost Mac Plus source revision. The reference symbols identify only the resource entry; its internal symbols are default analysis names. The following labels describe restored code whose original label spelling is unavailable.",
+    "descriptive_labels": [
+      "ScrollMenu",
+      "CheckScrollBottom",
+      "ChooseItem",
+      "MDEFDone",
+      "GetMenuBarHeight",
+      "DefaultMenuBarHeight",
+      "MenuBarHeightDone",
+      "SizesNotChicago",
+      "ItemHeightDone",
+      "GrayItem",
+      "TweakPosDone",
+      "DrawMenuDone",
+      "PositionCommand",
+      "DrawIntl",
+      "RestoreTextFace",
+      "NextDrawItem",
+      "NextBaseline",
+      "CalcVertical",
+      "CalcHorizontal",
+      "CalcTextWidth"
+    ],
+    "resource_entry_reference": "_MDEF_0_ at 0x41bf40"
+  },
+  "changes": [
+    {
+      "kind": "resource_header",
+      "description": "Added the eight-byte ROM block header. Its total size is MDEFResourceEnd-MDEFResourceBlock. Kept the standard MDEF header inside the body and restored version four."
+    },
+    {
+      "kind": "source_history",
+      "description": "Retained the source header, applicable history through October 15, 1985, the three-message interface description and comments for surviving operations. Later inline revision tags remain exact where their comments still apply. They identify the surviving source context and do not date the ROM instructions."
+    },
+    {
+      "kind": "dispatch_and_frame",
+      "description": "Restored direct draw and choose tests, with other message values entering size calculation. Removed the later dispatch table, message bounds checks, menu handle locking, color state, cached item records, help state, arrow handles and extended item buffers. The original parameter fields occupy 18 bytes and the restored font-info locals occupy eight bytes; explicit equates replace the larger RECORD layout."
+    },
+    {
+      "kind": "scrolling",
+      "description": "Restored TopMenuItem at $B26 as an item number and AtMenuBottom at $B28 as a Boolean word. The code changes the item index by one, scrolls by the font height with one temporary region, disposes that region and redraws the menu. Removed later pixel coordinates, two-region clipping, scroll arrows, variable speed, hierarchical-menu state and balloon handling."
+    },
+    {
+      "kind": "font_sizes",
+      "description": "Restored GetMenuBarHeight with the ROM85 test and a fallback of 20. GetSizes treats width 14 as Chicago and reduces it by two. GetItemHeight returns the font height for text or 36 for an icon. Removed family checks, style-based height changes, icon-size variants and cached space widths."
+    },
+    {
+      "kind": "inversion_and_disabling",
+      "description": "Restored bit tests against the 32-bit enable mask and the menu bit. InvertItem compares item numbers as bytes, inverts the item rectangle directly, and uses the high bit of the requested item to select gray painting. It skips gray painting for a leading dash. Removed the later checks for items above 31 and redraw-based color inversion."
+    },
+    {
+      "kind": "drawing",
+      "description": "Restored one drawing loop for marks, fixed 32-pixel ICON resources, command characters, text and dash separators. Kept TextBox for nonzero system justification and the byte test of TESysJust+1. Restored the two-pixel and three-pixel icon offsets and the original gray pen pattern. Removed color icons, icon suites, hierarchical arrows, script selection, auxiliary menu data, truncated text and popup-specific drawing."
+    },
+    {
+      "kind": "item_lookup_and_size",
+      "description": "Restored the uncached scan over length-prefixed strings with four property bytes per item. The size loop advances directly to the next item, caps height against the screen bottom minus menu-bar height and four pixels, and tracks the widest item. Removed record caching, item expansion, screen-width limiting and later per-item size helpers."
+    },
+    {
+      "kind": "encoding",
+      "description": "Kept the observed instruction sizes, register lists and branch lengths. Trap calls use names from Traps.a and OPWORD declarations. Resource fields use symbolic expressions. No instruction is represented by a raw data directive."
+    }
+  ],
+  "historical_evidence": [
+    {
+      "source_lines": [
+        222,
+        225
+      ],
+      "description": "The January 1986 entries describe the enable-bit fix and a rewrite of scrolling for icons. The ROM retains the earlier enable test and item-index scrolling."
+    },
+    {
+      "source_lines": [
+        225,
+        245
+      ],
+      "description": "The 1985 history records icon fixes, the TESysJust byte test, smoother scrolling, international display and font-height support. The ROM contains these paths. The history calls one revision v5 while the actual resource header still contains four; the reconstruction preserves both facts."
+    },
+    {
+      "source_lines": [
+        1007,
+        1017
+      ],
+      "description": "The later GetSizes comment says width 14 is insufficient to identify Chicago. The ROM uses that earlier width test."
+    },
+    {
+      "source_lines": [
+        1258,
+        1259
+      ],
+      "description": "The surviving InvertItem contract documents the high-bit request for gray painting, which matches the restored path."
+    },
+    {
+      "source_lines": [
+        2645,
+        2651
+      ],
+      "description": "An inactive block preserves the earlier first-item lookup used by the ROM size loop."
+    },
+    {
+      "source_lines": [
+        2696,
+        2704
+      ],
+      "description": "Another inactive block preserves direct advancement by the item string length plus five bytes."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x41c048",
+      "description": "The item enable test uses BTST.L D4,D0 without a range check, so the processor reduces item numbers modulo 32."
+    },
+    {
+      "address": "0x41c06c",
+      "description": "InvertItem compares only the low bytes of the requested and current item numbers. It also continues after GetItemRecord without the later missing-item check."
+    },
+    {
+      "address": "0x41bf96",
+      "description": "Scrolling changes the top item number by one while moving pixels by the font height. The later source history explicitly identifies the scrolling rewrite for icons."
+    },
+    {
+      "address": "0x41c2e6",
+      "description": "An item without a command key skips the eight-pixel command margin. The later source places that margin after the branch target."
+    }
+  ],
+  "limitations": [
+    "The exact Mac Plus source revision is unavailable. The reconstructed source combines surviving routines, symbolic field definitions and instruction restoration from the ROM.",
+    "The restored menu-bar height helper and several local control-flow labels use descriptive names. The compiled bytes establish their addresses and behavior.",
+    "The block comparison verifies every code and data byte and all recorded labels. It does not execute menu drawing, resource loading or user interaction."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-standard-mdef.py",
+    "method": "Translated the final source, assembled for the 68000, linked at the block address, rejected unresolved relocations and compared every emitted byte with the ROM. Checked all recorded labels.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 1030,
+    "instruction_count": 398,
+    "data_bytes": 18,
+    "entry_points_checked": 57,
+    "result": {
+      "name": "standard_mdef",
+      "source": "Reconstruction/Source/Resources/StandardMDEF.a",
+      "source_sha256": "e80d468751702547cabb76c03e6aff93676ee752214551cf7dd56be8c76a7b72",
+      "start": "0x41bf38",
+      "end_exclusive": "0x41c33e",
+      "bytes": 1030,
+      "sha256": "63cde4cb4a1a837fb01fbef589a36a02f3461b39b5673b6fd1c6d4ea9e3cd055",
+      "matches_rom": true
+    },
+    "preserved_original_comment_occurrences": 435,
+    "authored_comment_lines": 7,
+    "vale": {
+      "command": "vale Reconstruction/Source/Resources/StandardMDEF.a Reconstruction/Evidence/standard-mdef.json /tmp/standard-mdef-authored.md",
+      "authored_prose_extraction": "/tmp/standard-mdef-authored.md",
+      "errors": 0,
+      "warnings": 0,
+      "suggestions": 0,
+      "preserved_original_comments_excluded": true
+    }
+  },
+  "integration_manifest": {
+    "name": "standard_mdef",
+    "source": "Reconstruction/Source/Resources/StandardMDEF.a",
+    "start": "0x41bf38",
+    "end_exclusive": "0x41c33e",
+    "entry_points": {
+      "MDEF0": "0x41bf40",
+      "StartMDEF": "0x41bf4c",
+      "DoChooseMsg": "0x41bf66",
+      "ScrollMenu": "0x41bf9a",
+      "CheckScrollBottom": "0x41bfbc",
+      "ChooseItem": "0x41bfce",
+      "MSELOOP": "0x41bfd2",
+      "NEXTMSEL": "0x41bfe6",
+      "GOTSEL": "0x41bfea",
+      "NOITEMSEL": "0x41bff0",
+      "MDEFDone": "0x41bffc",
+      "GetMenuBarHeight": "0x41c00a",
+      "DefaultMenuBarHeight": "0x41c016",
+      "MenuBarHeightDone": "0x41c01a",
+      "GetSizes": "0x41c01c",
+      "SizesNotChicago": "0x41c030",
+      "GetItemHeight": "0x41c036",
+      "ItemHeightDone": "0x41c040",
+      "ENABLETEST": "0x41c042",
+      "ETDONE": "0x41c050",
+      "INVERTITEM": "0x41c052",
+      "IILOOP": "0x41c062",
+      "GOINVERT": "0x41c076",
+      "INVERTDONE": "0x41c098",
+      "GrayItem": "0x41c09e",
+      "TweakPos": "0x41c0aa",
+      "TweakPosDone": "0x41c0bc",
+      "DoDrawMsg": "0x41c0be",
+      "DONEDRAW": "0x41c0ca",
+      "DrawMenuDone": "0x41c0ce",
+      "DRAWMENU": "0x41c0d4",
+      "DRAW1MLOOP": "0x41c0ee",
+      "DrawMark": "0x41c128",
+      "CHKDRAWICON": "0x41c146",
+      "DrawCmdChar": "0x41c18a",
+      "PositionCommand": "0x41c1a8",
+      "DRAWITEXT": "0x41c1c0",
+      "DrawIntl": "0x41c1de",
+      "RestoreTextFace": "0x41c208",
+      "NextDrawItem": "0x41c21c",
+      "NextBaseline": "0x41c228",
+      "DrawDash": "0x41c232",
+      "GETITEMRECORD": "0x41c25a",
+      "GETILOOP": "0x41c268",
+      "NOITEM": "0x41c276",
+      "GOTITEM": "0x41c27e",
+      "DoCalcMsg": "0x41c28a",
+      "CMLOOP": "0x41c2b6",
+      "CalcVertical": "0x41c2d0",
+      "CalcHorizontal": "0x41c2da",
+      "CalcTextWidth": "0x41c2ee",
+      "CALCNEXT": "0x41c306",
+      "DoCalcDone": "0x41c310",
+      "DoCalcDone1": "0x41c312",
+      "GRAYRECT": "0x41c328",
+      "MDEFResourceBlock": "0x41bf38",
+      "MDEFResourceEnd": "0x41c33e"
+    }
+  }
+}

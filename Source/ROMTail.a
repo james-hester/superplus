@@ -1,0 +1,24 @@
+*R Mac Plus v3 SCSI helper, $41FFC0 through $41FFCF.
+*R The helper clears the loaded-driver bitmap, resets SCSI and calls SCSILoad.
+*R The helper's original source and name have not been found.
+*R SCSI.p defines the reset call as CLR.W -(SP) followed by _SCSIDispatch.
+*R Hiram writes the following initials and date from target.json at build time.
+*R The labels below are reconstruction names. See Evidence/rom-tail.json.
+
+		IMPORT BaseOfROM,SCSILoad ;]
+
+                INCLUDE 'HardwarePrivateEqu.a'
+                INCLUDE 'SCSI.a'
+                INCLUDE 'Traps.a'
+
+
+ResetAndReloadSCSI PROC EXPORT ;]
+                CLR.W   SCSIDrvrs ;]
+                CLR.W   -(SP)
+                _SCSIDispatch
+                JSR     (SCSILoad-BaseOfROM+ROMStart).L ;]
+                RTS
+                ENDP
+
+ROMTailEnd ;]
+                END

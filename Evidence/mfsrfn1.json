@@ -1,0 +1,169 @@
+{
+  "module": "MFSRFN1",
+  "source": "Reconstruction/Source/OS/HFS/MFSRFN1.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSRFN1.a",
+      "sha256": "960dc34ec8ab080b7fee20b6fb855d045235e6f9291fff0ddd4b2a5e914e4863",
+      "line_ranges": [
+        [
+          1,
+          124
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/TFSRFN2.a",
+      "sha256": "f42723d503bfce9283e4dee516b2936738ebb0d84fc06e17bff3b3ed4805f115",
+      "line_ranges": [
+        [
+          106,
+          132
+        ]
+      ],
+      "role": "FlushFile establishes the next module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          280,
+          280
+        ],
+        [
+          282,
+          282
+        ],
+        [
+          301,
+          301
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          149,
+          150
+        ],
+        [
+          155,
+          155
+        ],
+        [
+          297,
+          297
+        ],
+        [
+          519,
+          519
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          180,
+          180
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4050fc",
+      "end_exclusive": "0x405144",
+      "rom_offset": "0x50fc",
+      "length": 72,
+      "sha256": "ed239aac03244baaac368f012c3d921a2ea14ee2bb6461e61ff6abd9b66747c9",
+      "start_label": "MFSRd1stDB",
+      "end_label": "MFSRFN1End",
+      "boundary_evidence": "MFSRd1stDB begins after the TFSRFN1 SetFPos branch at 0x4050fc. MFSMapR2 ends with RTS at 0x405142. FlushFile begins TFSRFN2 at 0x405144."
+    }
+  ],
+  "entry_points": {
+    "MFSRd1stDB": "0x4050fc",
+    "MFSRdNxtDB": "0x40510c",
+    "MFSDirRead": "0x40511c",
+    "MFSVolRead": "0x40512a",
+    "MFSMapRead": "0x405130",
+    "MFSMapR1": "0x405136",
+    "MFSMapR2": "0x40513a",
+    "MFSRFN1End": "0x405144"
+  },
+  "integration_manifest": {
+    "name": "mfsrfn1",
+    "source": "Reconstruction/Source/OS/HFS/MFSRFN1.a",
+    "start": "0x4050fc",
+    "end_exclusive": "0x405144",
+    "entry_points": {
+      "MFSRd1stDB": "0x4050fc",
+      "MFSRdNxtDB": "0x40510c",
+      "MFSDirRead": "0x40511c",
+      "MFSVolRead": "0x40512a",
+      "MFSMapRead": "0x405130",
+      "MFSMapR1": "0x405136",
+      "MFSMapR2": "0x40513a",
+      "MFSRFN1End": "0x405144"
+    }
+  },
+  "changes": [
+    {
+      "location": "Instruction bodies and definitions",
+      "change": "Retained the surviving instruction sequence without behavioral reversions. Copied required original equates and supplied the ReadBlock address.",
+      "evidence": "All 72 bytes and eight recorded labels match. Each BSR to ReadBlock passes its continuation address for the shared cache setup. MFSMapRead selects kGBNoRead, and MFSMapR2 passes the unsigned block number and volume reference number."
+    },
+    {
+      "location": "Source provenance",
+      "change": "Preserved the original header, applicable history, and comments.",
+      "evidence": "The October 1985 source change moved most earlier file I/O code to Cache and TFSRFN1. The remaining cache-read wrappers match this ROM."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "ReadBlock",
+      "address": "0x405006"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4050fc, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "1c770ecce7ecfcb096c3d27c5b71da8f029a42eed5adf1681c05678b4cdd1fdf",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/MFSRFN1.a",
+        "sha256": "1c770ecce7ecfcb096c3d27c5b71da8f029a42eed5adf1681c05678b4cdd1fdf"
+      }
+    ],
+    "assembled_length": 72,
+    "matched_bytes": 72,
+    "entry_points_checked": 8,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

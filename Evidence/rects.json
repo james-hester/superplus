@@ -1,0 +1,181 @@
+{
+  "module": "QuickDraw/Rects.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Rects.a",
+  "source_sha256": "a7cda6114c6b1cd9e510b08723afbecb675dffa4643af89b86d1ff873d140a32",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/Rects.m.a",
+    "sha256": "d87e1ece6fe9ceac96343bf2677bec27ca58e00c4ca5f5d166b8434886654985",
+    "instruction_lines": [
+      32,
+      683
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        103,
+        107
+      ],
+      [
+        161,
+        175
+      ],
+      [
+        228,
+        230
+      ],
+      [
+        248,
+        272
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        528
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x409e7e",
+      "end_address_exclusive": "0x40a284",
+      "rom_offset": "0x9e7e",
+      "length": 1030,
+      "sha256": "a75a8c40cf3061c9c41233d1e7a6af60c46f419e30a90a5579ce355f06c95f68",
+      "first_symbol": "StdRect",
+      "last_symbol": "PutRect"
+    }
+  ],
+  "symbols": {
+    "StdRect": "0x409e7e",
+    "PushVerb": "0x409ee0",
+    "FillRect": "0x409f12",
+    "FrameRect": "0x409f28",
+    "PaintRect": "0x409f2c",
+    "EraseRect": "0x409f30",
+    "InvertRect": "0x409f34",
+    "CallRect": "0x409f38",
+    "DrawRect": "0x409f58",
+    "FrRect": "0x409f94",
+    "SetRect": "0x40a082",
+    "EqualRect": "0x40a090",
+    "EmptyRect": "0x40a0aa",
+    "OffsetRect": "0x40a0c4",
+    "InsetRect": "0x40a0d6",
+    "SectRect": "0x40a0e8",
+    "RSect": "0x40a110",
+    "UnionRect": "0x40a184",
+    "Pt2Rect": "0x40a1c2",
+    "PtInRect": "0x40a1f8",
+    "PutRect": "0x40a228"
+  },
+  "manifest_entry": {
+    "name": "rects",
+    "source": "Reconstruction/Source/QuickDraw/Rects.a",
+    "start": "0x409e7e",
+    "end_exclusive": "0x40a284",
+    "entry_points": {
+      "StdRect": "0x409e7e",
+      "PushVerb": "0x409ee0",
+      "FillRect": "0x409f12",
+      "FrameRect": "0x409f28",
+      "PaintRect": "0x409f2c",
+      "EraseRect": "0x409f30",
+      "InvertRect": "0x409f34",
+      "CallRect": "0x409f38",
+      "DrawRect": "0x409f58",
+      "FrRect": "0x409f94",
+      "SetRect": "0x40a082",
+      "EqualRect": "0x40a090",
+      "EmptyRect": "0x40a0aa",
+      "OffsetRect": "0x40a0c4",
+      "InsetRect": "0x40a0d6",
+      "SectRect": "0x40a0e8",
+      "RSect": "0x40a110",
+      "UnionRect": "0x40a184",
+      "Pt2Rect": "0x40a1c2",
+      "PtInRect": "0x40a1f8",
+      "PutRect": "0x40a228"
+    }
+  },
+  "external_routines": {
+    "CheckPic": "0x40e448",
+    "PutPicVerb": "0x40e34a",
+    "PutPicRect": "0x40e2ea",
+    "RgnBlt": "0x40a732",
+    "SetHSize": "0x408798"
+  },
+  "external_routine_evidence": {
+    "RgnBlt": "The ROM calls at 0x409f86 and 0x40a074 target 0x40a732. The source identifies this routine as RgnBlt.",
+    "SetHSize": "The ROM call at 0x40a24a targets 0x408798, verified separately in GrafInit.a."
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained all rectangle routines from StdRect through PutRect in their original order. Preserved the original drawing header, comments, and parameter equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. For four-byte parameters it moves the return address over the parameter and executes RTS. For larger parameters it pops the return address into A0, removes parameters, and jumps through A0. The later source macro uses RTD_ for the latter cases."
+    },
+    {
+      "kind": "instruction_encoding",
+      "upstream_lines": [
+        110,
+        484,
+        518
+      ],
+      "description": "Spelled the two small immediate additions as ADDQ and the decrement as SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "instruction_encoding",
+      "upstream_line": 173,
+      "description": "Spelled the branch from InvertRect to the next instruction as NOP, matching the ROM at 0x409f36. This changes no control flow."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls. Made the word BLT and short BSR encodings explicit. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the Mac Plus Toolbox table at $C00 and the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Omitted later archive history and added marked reconstruction notes. No original executable routine was omitted."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 1030,
+    "checked_entry_points": 21,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-rects-verify",
+    "temporary_verifier": "/tmp/verify-rects.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "a7cda6114c6b1cd9e510b08723afbecb675dffa4643af89b86d1ff873d140a32",
+    "assembled_sha256": "a75a8c40cf3061c9c41233d1e7a6af60c46f419e30a90a5579ce355f06c95f68",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

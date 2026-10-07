@@ -1,0 +1,623 @@
+{
+  "module": "TFSVOL mount group",
+  "source": "Reconstruction/Source/OS/HFS/TFSVOL.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSVOL.a",
+      "sha256": "532dac54d50c57c28d90e1a37a316ae0bb24d06bc5071f114601c8299f3c76e4",
+      "line_ranges": [
+        [
+          1,
+          886
+        ]
+      ],
+      "role": "The leading mount-volume routines, original comments, and history. Later replacements identify the removed retry and remount bodies."
+    },
+    {
+      "path": "OS/HFS/FileMgrPatches.a",
+      "sha256": "f693045a52a563c63e7d0499db7f3868fc5d35d330cda3e0228f36b84c7fa849",
+      "line_ranges": [
+        [
+          1918,
+          1952
+        ],
+        [
+          5347,
+          5414
+        ]
+      ],
+      "role": "MountVolFor1991 describes the changed allocation policy. The CheckRemount patches identify the old ROM body removed from the surviving source."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          39,
+          40
+        ],
+        [
+          48,
+          50
+        ],
+        [
+          53,
+          53
+        ],
+        [
+          257,
+          260
+        ],
+        [
+          263,
+          263
+        ],
+        [
+          274,
+          274
+        ],
+        [
+          277,
+          278
+        ],
+        [
+          283,
+          283
+        ],
+        [
+          286,
+          286
+        ],
+        [
+          289,
+          289
+        ],
+        [
+          292,
+          293
+        ],
+        [
+          298,
+          303
+        ],
+        [
+          307,
+          307
+        ],
+        [
+          311,
+          311
+        ],
+        [
+          314,
+          319
+        ],
+        [
+          327,
+          331
+        ],
+        [
+          334,
+          334
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          352,
+          354
+        ],
+        [
+          356,
+          359
+        ],
+        [
+          361,
+          361
+        ],
+        [
+          363,
+          363
+        ],
+        [
+          368,
+          368
+        ],
+        [
+          370,
+          370
+        ],
+        [
+          373,
+          374
+        ],
+        [
+          380,
+          380
+        ],
+        [
+          390,
+          390
+        ],
+        [
+          402,
+          402
+        ],
+        [
+          418,
+          418
+        ],
+        [
+          422,
+          425
+        ],
+        [
+          437,
+          438
+        ],
+        [
+          441,
+          441
+        ],
+        [
+          452,
+          455
+        ]
+      ],
+      "role": "File, volume, directory, and low-memory definitions."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          128,
+          128
+        ],
+        [
+          130,
+          130
+        ],
+        [
+          148,
+          150
+        ],
+        [
+          152,
+          152
+        ],
+        [
+          157,
+          157
+        ],
+        [
+          192,
+          192
+        ],
+        [
+          220,
+          220
+        ],
+        [
+          222,
+          224
+        ],
+        [
+          234,
+          234
+        ],
+        [
+          309,
+          309
+        ],
+        [
+          406,
+          407
+        ],
+        [
+          413,
+          414
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          427,
+          428
+        ],
+        [
+          437,
+          437
+        ],
+        [
+          444,
+          444
+        ],
+        [
+          464,
+          464
+        ],
+        [
+          466,
+          466
+        ],
+        [
+          469,
+          469
+        ],
+        [
+          476,
+          477
+        ],
+        [
+          525,
+          525
+        ]
+      ],
+      "role": "Private File Manager fields, cache options, and catalog and extent record definitions."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          524,
+          524
+        ],
+        [
+          529,
+          529
+        ],
+        [
+          638,
+          638
+        ],
+        [
+          738,
+          738
+        ],
+        [
+          794,
+          795
+        ],
+        [
+          813,
+          816
+        ],
+        [
+          818,
+          818
+        ],
+        [
+          956,
+          957
+        ]
+      ],
+      "role": "I/O parameter-block fields, queue fields, and root identifiers."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          138,
+          138
+        ],
+        [
+          189,
+          189
+        ],
+        [
+          201,
+          201
+        ],
+        [
+          203,
+          203
+        ],
+        [
+          208,
+          208
+        ],
+        [
+          324,
+          324
+        ]
+      ],
+      "role": "File Manager and memory error codes."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x402de6",
+      "end_exclusive": "0x403414",
+      "rom_offset": "0x2de6",
+      "length": 1582,
+      "sha256": "78bbaa715770f169e2b23660c2d4920955887287cce77854abb8bae130b8fb90",
+      "start_label": "MakeStkPB",
+      "end_label": "TFSVOLMountEnd",
+      "boundary_evidence": "MakeStkPB starts the surviving TFSVOL source and begins at ROM address 0x402de6. AccessBT ends with RTS at 0x403412. FindDrive begins the next routine at 0x403414 and remains outside this group."
+    }
+  ],
+  "entry_points": {
+    "MakeStkPB": "0x402de6",
+    "MountVol": "0x402df8",
+    "MountVolRetry": "0x402e14",
+    "MountVolScan": "0x402e18",
+    "MountVolNoMem": "0x402e44",
+    "MountVolBody": "0x402e48",
+    "mv_Start": "0x402e50",
+    "toMVDone": "0x402e68",
+    "mv_getDrive": "0x402e6c",
+    "mv_GetVRef": "0x402ebe",
+    "mv_GetMDB": "0x402edc",
+    "mv_GotMDB": "0x402f00",
+    "MV_GetWPStatus": "0x402f1a",
+    "CheckRemount": "0x403008",
+    "MtVolOK": "0x403138",
+    "MtVolDone": "0x40313a",
+    "MtChkErr": "0x403158",
+    "MtVolErr": "0x40315e",
+    "MtVolEr1": "0x403162",
+    "MtVolEr2": "0x403166",
+    "MtCheck": "0x403190",
+    "BMScan": "0x4031c0",
+    "CTScan": "0x403206",
+    "VCBChk": "0x40327a",
+    "XTScan": "0x4032d8",
+    "BMChk": "0x403332",
+    "DsposFCBs": "0x40334c",
+    "DsposVCB": "0x40336e",
+    "DsposExit": "0x40339e",
+    "DsposVBlks": "0x4033a2",
+    "FindFCB": "0x4033c0",
+    "AccessBT": "0x4033e0",
+    "TFSVOLMountEnd": "0x403414"
+  },
+  "integration_manifest": {
+    "name": "tfsvol",
+    "source": "Reconstruction/Source/OS/HFS/TFSVOL.a",
+    "start": "0x402de6",
+    "end_exclusive": "0x403414",
+    "entry_points": {
+      "MakeStkPB": "0x402de6",
+      "MountVol": "0x402df8",
+      "MountVolRetry": "0x402e14",
+      "MountVolScan": "0x402e18",
+      "MountVolNoMem": "0x402e44",
+      "MountVolBody": "0x402e48",
+      "mv_Start": "0x402e50",
+      "toMVDone": "0x402e68",
+      "mv_getDrive": "0x402e6c",
+      "mv_GetVRef": "0x402ebe",
+      "mv_GetMDB": "0x402edc",
+      "mv_GotMDB": "0x402f00",
+      "MV_GetWPStatus": "0x402f1a",
+      "CheckRemount": "0x403008",
+      "MtVolOK": "0x403138",
+      "MtVolDone": "0x40313a",
+      "MtChkErr": "0x403158",
+      "MtVolErr": "0x40315e",
+      "MtVolEr1": "0x403162",
+      "MtVolEr2": "0x403166",
+      "MtCheck": "0x403190",
+      "BMScan": "0x4031c0",
+      "CTScan": "0x403206",
+      "VCBChk": "0x40327a",
+      "XTScan": "0x4032d8",
+      "BMChk": "0x403332",
+      "DsposFCBs": "0x40334c",
+      "DsposVCB": "0x40336e",
+      "DsposExit": "0x40339e",
+      "DsposVBlks": "0x4033a2",
+      "FindFCB": "0x4033c0",
+      "AccessBT": "0x4033e0",
+      "TFSVOLMountEnd": "0x403414"
+    }
+  },
+  "changes": [
+    {
+      "location": "MountVol entry and retry",
+      "change": "Restored the wrapper that retries after taking a mounted internal volume offline when a mount returns MemFullErr or TMFOErr. Restored the direct FSQueueSync and NewMount body entry.",
+      "evidence": "Instructions at 0x402df8..0x402e48 save the original drive number, call the mount body, scan the VCB queue, build a temporary parameter block, invoke Offline, and retry. The 1991 patch description explicitly removes this allocation policy. Helper names beginning MountVol are inferred."
+    },
+    {
+      "location": "CheckRemount",
+      "change": "Restored the removed volume and open-file checks, VCB copy, cache disposal, and release of the newly allocated VCB.",
+      "evidence": "The ROM at 0x403008..0x403138 compares signature, creation date, and volume name with an offline VCB. It checks MFS file start blocks and EOF values or HFS catalog EOF values. It copies either 86 or 170 bytes into the existing VCB, retains the old volume reference number, updates tree FCB pointers, and removes the new VCB. FileMgrPatches.a documents patches that skip this old body on the Plus."
+    },
+    {
+      "location": "MtCheck root name",
+      "change": "Restored the earlier root rename sequence without the later volume-name length checks.",
+      "evidence": "The ROM at 0x4031b2 decrements both string pointers, exchanges A0 and A1, sets FSRtParID, and calls CMRenameCN. The surviving source retains part of that sequence as inactive lines marked September 16, 1986."
+    },
+    {
+      "location": "Catalog and extent scan bounds",
+      "change": "Restored DivUp calls with lenDir and lenXDR and quick stack adjustments for the extent key.",
+      "evidence": "At 0x4031f4 the ROM divides catalog length by the 70-byte directory record size. At 0x4032e4 it divides extent-tree length by the 12-byte extent record size. The later source uses shifts by six and four instead. The eight-byte extent-key allocation uses SUBQ and ADDQ."
+    },
+    {
+      "location": "Later dispatch and manual-eject code",
+      "change": "Omitted the later CheckRemount, MtCheck, and BMChk vectors and manual-eject handling. Retained direct bodies and the original cleanup and B-tree access routines.",
+      "evidence": "The ROM enters those bodies directly. The source dates BMChk dispatch to October 27, 1986, the other vectors to February 19, 1987, and manual-eject code to August 3, 1993."
+    },
+    {
+      "location": "Cleanup labels",
+      "change": "Used DsposVCB at 0x40336e and DsposVBlks at 0x4033a2 according to the source and routine bodies.",
+      "evidence": "The exported Ghidra symbols swap those names. The first routine closes working directories, dequeues the VCB, clears default-volume state, and calls DisposPtr. The second calls TrashVBlks for the three shared caches. Source calls and bodies assemble exactly under the corrected names."
+    },
+    {
+      "location": "Source form and provenance",
+      "change": "Preserved applicable source comments and history, copied only required equates, and marked restored bodies and inferred labels. Made PC-relative operands explicit and encoded the two trap variants without invocation options.",
+      "evidence": "NewPtr uses opcode 0xa71e for SYS,CLEAR and CmpString uses 0xa63c for MARKS,CASE. The original VCBWrProt assertion remains as a comment; its value is seven in the included definition. The shared verifier checks instructions emitted from this source."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "FSQueueSync",
+      "address": "0x4028a6"
+    },
+    {
+      "name": "GetVCBDrv",
+      "address": "0x402cc0"
+    },
+    {
+      "name": "FindDrive",
+      "address": "0x403414"
+    },
+    {
+      "name": "EnqueueTrap",
+      "address": "0x4019ca"
+    },
+    {
+      "name": "GetVCBRfn",
+      "address": "0x402ca6"
+    },
+    {
+      "name": "GetBlock",
+      "address": "0x4077b0"
+    },
+    {
+      "name": "RelBlock",
+      "address": "0x407a0a"
+    },
+    {
+      "name": "TFSVCBTst",
+      "address": "0x404ec6"
+    },
+    {
+      "name": "MV_GetMFSMap",
+      "address": "0x403daa"
+    },
+    {
+      "name": "DivUp",
+      "address": "0x402c50"
+    },
+    {
+      "name": "FXMKeyCmp",
+      "address": "0x405cde"
+    },
+    {
+      "name": "CMKeyCmp",
+      "address": "0x40663a"
+    },
+    {
+      "name": "Gt1stFCB",
+      "address": "0x403ff2"
+    },
+    {
+      "name": "GtNxtFCB",
+      "address": "0x403ffa"
+    },
+    {
+      "name": "MFSDirRead",
+      "address": "0x40511c"
+    },
+    {
+      "name": "GtNxEntry",
+      "address": "0x40438a"
+    },
+    {
+      "name": "CMGetCN",
+      "address": "0x406238"
+    },
+    {
+      "name": "DumpCaches",
+      "address": "0x403442"
+    },
+    {
+      "name": "DequeueTrap",
+      "address": "0x4019f0"
+    },
+    {
+      "name": "MarkVCBDirty",
+      "address": "0x402d28"
+    },
+    {
+      "name": "FlushMDB",
+      "address": "0x402d2e"
+    },
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "CMRenameCN",
+      "address": "0x406462"
+    },
+    {
+      "name": "BTGetRecord",
+      "address": "0x406928"
+    },
+    {
+      "name": "BTSearch",
+      "address": "0x406d4a"
+    },
+    {
+      "name": "UpdateFree",
+      "address": "0x4059d2"
+    },
+    {
+      "name": "CVFlgs",
+      "address": "0x403a76"
+    },
+    {
+      "name": "BlkChk",
+      "address": "0x405978"
+    },
+    {
+      "name": "Gt1stWDVMatch",
+      "address": "0x4043b0"
+    },
+    {
+      "name": "GtNxtWDVMatch",
+      "address": "0x4043b8"
+    },
+    {
+      "name": "TrashVBlks",
+      "address": "0x407a5c"
+    },
+    {
+      "name": "BTOpen",
+      "address": "0x406c8a"
+    }
+  ],
+  "remaining_work": {
+    "source_path": "OS/HFS/TFSVOL.a",
+    "line_range": [
+      888,
+      2731
+    ],
+    "start": "0x403414",
+    "description": "FindDrive and the subsequent volume routines remain outside this reconstruction. They include offline and eject handling, volume information, volume selection, and working-directory operations. Their complete ROM boundary has not been established here."
+  },
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x402de6, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "00e8fd89ce7fafcf09f40e10669fff2317f141d1ba8210a9529230b8ab853cc8",
+    "assembled_length": 1582,
+    "matched_bytes": 1582,
+    "entry_points_checked": 33,
+    "result": "exact",
+    "limits": [
+      "This evidence covers the complete leading mount group through AccessBT, rather than the full surviving TFSVOL source. External calls include routines from the remaining volume code.",
+      "The comparison proves emitted bytes and label positions. It does not execute mounts, memory recovery, remounts, disk checks, or asynchronous operations.",
+      "The original Mac Plus source and historical assembler output remain unavailable. The retry and CheckRemount instructions come from the ROM; their helper names and comments are reconstruction work.",
+      "External routine and trap targets are outside this span. Their referenced addresses and opcodes are checked here, but their implementations are not."
+    ]
+  }
+}

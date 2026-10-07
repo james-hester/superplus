@@ -1,0 +1,2986 @@
+{
+  "module": "OS/CursorCore.a",
+  "source_path": "Reconstruction/Source/OS/CursorCore.a",
+  "source_sha256": "de98ad9465e2f883c92c59c8d6be7a0eebc29d11ed92b72c65567fbde5f3e075",
+  "upstream_sources": [
+    {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "sha256": "18ba00f320b95b734f820cf88b11844bf3c7263a5ebcf0d9a29e01388d5e5313"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      1,
+      4
+    ],
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      7,
+      9
+    ],
+    [
+      "QuickDraw/Classic/CrsrCore.a",
+      98,
+      139
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x401c8a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        186,
+        187,
+        188
+      ]
+    },
+    "0x401c9a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        200,
+        201,
+        202,
+        203,
+        204,
+        205,
+        206,
+        207
+      ]
+    },
+    "0x401ca8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        221,
+        222,
+        223,
+        224,
+        225,
+        226
+      ]
+    },
+    "0x401cec": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304
+      ]
+    },
+    "0x401cfa": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        318,
+        319,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325
+      ]
+    },
+    "0x401dc8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        722,
+        723,
+        724,
+        725,
+        726,
+        727,
+        728,
+        729,
+        730,
+        731,
+        732
+      ]
+    },
+    "0x401e0a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        777,
+        778,
+        779,
+        780,
+        781,
+        782,
+        783,
+        784,
+        785,
+        786,
+        787
+      ]
+    },
+    "0x401e5a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        858,
+        859,
+        860,
+        861,
+        862
+      ]
+    },
+    "0x401e62": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        867,
+        868,
+        869,
+        870,
+        871,
+        872,
+        873
+      ]
+    },
+    "0x401e72": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        882,
+        883,
+        884,
+        885,
+        886,
+        887
+      ]
+    },
+    "0x401e86": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        904
+      ]
+    },
+    "0x401f0a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1084,
+        1085,
+        1086,
+        1087
+      ]
+    },
+    "0x401f38": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1113,
+        1114,
+        1115,
+        1116
+      ]
+    }
+  },
+  "retained_body_comments": {
+    "0x401d10": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        338,
+        339,
+        340
+      ]
+    },
+    "0x401d22": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        349
+      ]
+    },
+    "0x401d32": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        358,
+        359
+      ]
+    },
+    "0x401d56": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        383
+      ]
+    },
+    "0x401d8a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        412,
+        413
+      ]
+    },
+    "0x401dc2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        442
+      ]
+    },
+    "0x401dc8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        740
+      ]
+    },
+    "0x401e04": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        771
+      ]
+    },
+    "0x401e28": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        821
+      ]
+    },
+    "0x401e46": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        840
+      ]
+    },
+    "0x401e92": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        924
+      ]
+    },
+    "0x401ece": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1042
+      ]
+    },
+    "0x401ed8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1047
+      ]
+    },
+    "0x401ee0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1050
+      ]
+    },
+    "0x401ef2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1057
+      ]
+    },
+    "0x401efc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1062
+      ]
+    },
+    "0x401f08": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1066
+      ]
+    },
+    "0x401f14": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1093
+      ]
+    },
+    "0x401f20": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1098
+      ]
+    },
+    "0x401f28": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1103
+      ]
+    },
+    "0x401f34": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1108
+      ]
+    },
+    "0x401f40": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "lines": [
+        1120
+      ]
+    }
+  },
+  "equate_sources": [
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+      "copied_lines": [
+        161,
+        162,
+        172,
+        173,
+        174,
+        175,
+        191,
+        192,
+        193
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        457,
+        458,
+        1227,
+        1229,
+        1230,
+        1231,
+        1232,
+        1233,
+        1234,
+        1235,
+        1236,
+        1237,
+        1238,
+        1239,
+        1252,
+        1253,
+        1254,
+        1255,
+        1256,
+        1257
+      ]
+    },
+    {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "sha256": "18ba00f320b95b734f820cf88b11844bf3c7263a5ebcf0d9a29e01388d5e5313",
+      "copied_lines": [
+        734,
+        735,
+        736,
+        737
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401c8a",
+      "end_address_exclusive": "0x401f4a",
+      "rom_offset": "0x1c8a",
+      "length": 704,
+      "sha256": "ddaeb868a696f4a7afcba8a908ab4103f47cee6c10bdfeb3596ef495e423eda7"
+    }
+  ],
+  "manifest_entry": {
+    "name": "cursor-core",
+    "source": "Reconstruction/Source/OS/CursorCore.a",
+    "start": "0x401c8a",
+    "end_exclusive": "0x401f4a",
+    "entry_points": {
+      "InitCrTable": "0x401c8a",
+      "ObscureCursor": "0x401c9a",
+      "HideCursor": "0x401ca8",
+      "InitCursor": "0x401cec",
+      "ShowCursor": "0x401cfa",
+      "ShieldCursor": "0x401dc8",
+      "SetCursor": "0x401e0a",
+      "ScrnAddress": "0x401e5a",
+      "ScrnSize": "0x401e62",
+      "ScrnBitMap": "0x401e72",
+      "CrsrVBLTask": "0x401e86",
+      "PinGuts": "0x401f0a",
+      "PinRect": "0x401f38",
+      "ERASLP": "0x401cd2",
+      "DRKXLPLYTKC": "0x401cda",
+      "NOHIDE": "0x401ce2",
+      "DoneHide": "0x401ce6",
+      "DONESHOW": "0x401dc2",
+      "SECT": "0x401df6",
+      "NOSECT": "0x401dfc",
+      "ShieldDone": "0x401e00",
+      "SetCurLoop": "0x401e16",
+      "ScrnCmn": "0x401e6c",
+      "AbslXl": "0x401ea6",
+      "DoPin": "0x401ec6",
+      "SkipPin": "0x401eee",
+      "Repaint": "0x401ef2",
+      "Unpainted": "0x401efc",
+      "TrackDone": "0x401f08",
+      "CC_401D46": "0x401d46",
+      "CC_401D56": "0x401d56",
+      "CC_401D6C": "0x401d6c",
+      "CC_401D78": "0x401d78",
+      "CC_401DB4": "0x401db4",
+      "CC_401D9E": "0x401d9e",
+      "CC_401E1E": "0x401e1e",
+      "CC_401E30": "0x401e30",
+      "CC_401E38": "0x401e38",
+      "CC_401E46": "0x401e46",
+      "CC_401E52": "0x401e52",
+      "CC_401EB4": "0x401eb4",
+      "CC_401EB6": "0x401eb6",
+      "CC_401F14": "0x401f14",
+      "CC_401F20": "0x401f20",
+      "CC_401F28": "0x401f28",
+      "CC_401F34": "0x401f34"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "cursor-core",
+      "source": "Reconstruction/Source/OS/CursorCore.a",
+      "start": "0x401c8a",
+      "end_exclusive": "0x401f4a",
+      "entry_points": {
+        "InitCrTable": "0x401c8a",
+        "ObscureCursor": "0x401c9a",
+        "HideCursor": "0x401ca8",
+        "InitCursor": "0x401cec",
+        "ShowCursor": "0x401cfa",
+        "ShieldCursor": "0x401dc8",
+        "SetCursor": "0x401e0a",
+        "ScrnAddress": "0x401e5a",
+        "ScrnSize": "0x401e62",
+        "ScrnBitMap": "0x401e72",
+        "CrsrVBLTask": "0x401e86",
+        "PinGuts": "0x401f0a",
+        "PinRect": "0x401f38",
+        "ERASLP": "0x401cd2",
+        "DRKXLPLYTKC": "0x401cda",
+        "NOHIDE": "0x401ce2",
+        "DoneHide": "0x401ce6",
+        "DONESHOW": "0x401dc2",
+        "SECT": "0x401df6",
+        "NOSECT": "0x401dfc",
+        "ShieldDone": "0x401e00",
+        "SetCurLoop": "0x401e16",
+        "ScrnCmn": "0x401e6c",
+        "AbslXl": "0x401ea6",
+        "DoPin": "0x401ec6",
+        "SkipPin": "0x401eee",
+        "Repaint": "0x401ef2",
+        "Unpainted": "0x401efc",
+        "TrackDone": "0x401f08",
+        "CC_401D46": "0x401d46",
+        "CC_401D56": "0x401d56",
+        "CC_401D6C": "0x401d6c",
+        "CC_401D78": "0x401d78",
+        "CC_401DB4": "0x401db4",
+        "CC_401D9E": "0x401d9e",
+        "CC_401E1E": "0x401e1e",
+        "CC_401E30": "0x401e30",
+        "CC_401E38": "0x401e38",
+        "CC_401E46": "0x401e46",
+        "CC_401E52": "0x401e52",
+        "CC_401EB4": "0x401eb4",
+        "CC_401EB6": "0x401eb6",
+        "CC_401F14": "0x401f14",
+        "CC_401F20": "0x401f20",
+        "CC_401F28": "0x401f28",
+        "CC_401F34": "0x401f34"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "InitCrTable starts at $401C8A after VRemove. Its eight word offsets point to cursor and screen entry points in this module.",
+    "end": "PinRect ends with JMP (A0) at $401F48. The trap dispatcher begins at $401F4A."
+  },
+  "edits": [
+    {
+      "kind": "source_restoration",
+      "description": "Restored the monochrome cursor core from QuickDraw/Classic/CrsrCore.a. The evidence records 210 matching released operations and 31 ROM-only operations, plus the original 16-byte initialization table."
+    },
+    {
+      "kind": "fixed_screen_geometry",
+      "description": "Restored the fixed 512-by-342 screen geometry and 64-byte row size in drawing, hiding, shielding, and screen query routines. The later source uses screen dimension globals."
+    },
+    {
+      "kind": "original_mouse_scaling",
+      "description": "Restored the original CrsrScale and CrsrThresh acceleration rule. The ROM adds absolute coordinate changes and doubles both changes when the enabled threshold is reached. The released source replaces this with sample history and a scaling table."
+    },
+    {
+      "kind": "cursor_state",
+      "description": "Omitted the later obscure-hide-show state fix. Preserved the original hotspot bounds, cursor save area, pinning behavior, and initialization table expressed as label differences."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained the original author, copyright, early history, routine descriptions, and matching body and instruction comments. Omitted color cursor bodies and comments attached to later behavior."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x401c9a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 210,
+      "original_code": "MOVE.B\t#1,CRSRBUSY",
+      "comment": "flag the cursor as busy",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#1,CRSRBUSY",
+      "inline_comment_retained": true
+    },
+    "0x401ca0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 215,
+      "original_code": "BSET\t#0,CRSROBSCURE",
+      "comment": "mark it as obscured",
+      "preceding_comments": [],
+      "op": "BSET",
+      "operand": "#0,CRSROBSCURE",
+      "inline_comment_retained": true
+    },
+    "0x401ca6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 216,
+      "original_code": "BNE.S\tDoneHide",
+      "comment": "if already obscured, skip hide",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "DoneHide",
+      "inline_comment_retained": true
+    },
+    "0x401cb2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 231,
+      "original_code": "BEQ.S\tNOHIDE",
+      "comment": "NO, DON'T TRY TO REMOVE IT",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "NOHIDE",
+      "inline_comment_retained": true
+    },
+    "0x401cb4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 232,
+      "original_code": "MOVEM.L D0-D1/A0-A1,-(SP)",
+      "comment": "SAVE REGS USED",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "D0-D1/A0-A1,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401cb8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 234,
+      "original_code": "LEA \tCrsrRect,A1",
+      "comment": " point to rect for fun",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "CrsrRect,A1",
+      "inline_comment_retained": true
+    },
+    "0x401cbc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 235,
+      "original_code": "MOVE\t(A1),D1",
+      "comment": "GET BOTTOM OF SAVED BITS",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "(A1),D1",
+      "inline_comment_retained": true
+    },
+    "0x401cbe": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 236,
+      "original_code": "CLR.L\t(A1)+",
+      "comment": "RESET topleft to 0",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x401cc0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 237,
+      "original_code": "SUB \t(A1),D1",
+      "comment": "CALC HEIGHT COUNT",
+      "preceding_comments": [],
+      "op": "SUB",
+      "operand": "(A1),D1",
+      "inline_comment_retained": true
+    },
+    "0x401cc2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 238,
+      "original_code": "CLR.L\t(A1)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A1)"
+    },
+    "0x401cc4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 239,
+      "original_code": "NEG \tD1",
+      "comment": " D1 contained top-bottom so invert",
+      "preceding_comments": [],
+      "op": "NEG",
+      "operand": "D1",
+      "inline_comment_retained": true
+    },
+    "0x401cc6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 240,
+      "original_code": "BEQ.S\tDRKXLPLYTKC",
+      "comment": " INVISIBLE CURSOR? DON'T BLIT ANYTHING  <05Nov85> ELR",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "DRKXLPLYTKC",
+      "inline_comment_retained": true
+    },
+    "0x401cc8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 242,
+      "original_code": "MOVE.L\tCRSRADDR,A1",
+      "comment": "POINT TO WHERE WE LAST SAVED FROM",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "CRSRADDR,A1",
+      "inline_comment_retained": true
+    },
+    "0x401ccc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 243,
+      "original_code": "LEA \tCRSRSAVE,A0",
+      "comment": "POINT TO THE SAVED DATA",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "CRSRSAVE,A0",
+      "inline_comment_retained": true
+    },
+    "0x401cd2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 246,
+      "original_code": "ERASLP\tMOVE.L\t(A0)+,(A1)",
+      "comment": "RESTORE BITS UNDER CURSOR",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A0)+,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401cd4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 247,
+      "original_code": "ADD \tD0,A1",
+      "comment": "BUMP DSTPTR TO NEXT ROW",
+      "preceding_comments": [],
+      "op": "ADD",
+      "operand": "D0,A1",
+      "inline_comment_retained": true
+    },
+    "0x401cd6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 248,
+      "original_code": "SUBQ\t#1,D1",
+      "comment": "DEC LOOP COUNT",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#1,D1",
+      "inline_comment_retained": true
+    },
+    "0x401cd8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 249,
+      "original_code": "BGT.S\tERASLP",
+      "comment": "ERASE ALL ROWS -- was BNE.S\t\t<05Nov85  JTC4ELR>",
+      "preceding_comments": [],
+      "op": "BGT.S",
+      "operand": "ERASLP",
+      "inline_comment_retained": true
+    },
+    "0x401cda": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 252,
+      "original_code": "CLR.B\tCRSRVIS",
+      "comment": "MARK IT AS INVISIBLE",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "CRSRVIS",
+      "inline_comment_retained": true
+    },
+    "0x401cde": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 253,
+      "original_code": "MOVEM.L (SP)+,D0-D1/A0-A1",
+      "comment": "RESTORE REGS USED",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0-D1/A0-A1",
+      "inline_comment_retained": true
+    },
+    "0x401ce2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 254,
+      "original_code": "NOHIDE\tSUB \t#1,CRSRSTATE",
+      "comment": "CURSOR HIDDEN ONE DEEPER",
+      "preceding_comments": [],
+      "op": "SUB",
+      "operand": "#1,CRSRSTATE",
+      "inline_comment_retained": true
+    },
+    "0x401ce6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 257,
+      "original_code": "CLR.B\tCRSRBUSY",
+      "comment": "CHANGE COMPLETE",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "CRSRBUSY",
+      "inline_comment_retained": true
+    },
+    "0x401cea": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 258,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401cec": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 307,
+      "original_code": "MOVE.B\t#1,CrsrBusy",
+      "comment": "mark it busy",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#1,CrsrBusy",
+      "inline_comment_retained": true
+    },
+    "0x401cf2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 312,
+      "original_code": "CLR.B\tCrsrObscure",
+      "comment": "we wont be obscure no more",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "CrsrObscure",
+      "inline_comment_retained": true
+    },
+    "0x401cf6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 313,
+      "original_code": "CLR \tCrsrState",
+      "comment": "reset state to 0",
+      "preceding_comments": [],
+      "op": "CLR",
+      "operand": "CrsrState",
+      "inline_comment_retained": true
+    },
+    "0x401cfa": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 329,
+      "original_code": "MOVE.B\t#1,CRSRBUSY",
+      "comment": "MARK CHANGE IN PROGRESS",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#1,CRSRBUSY",
+      "inline_comment_retained": true
+    },
+    "0x401d00": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 330,
+      "original_code": "ADDQ\t#1,CRSRSTATE",
+      "comment": "CURSOR HIDDEN ONE LESS DEEP",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#1,CRSRSTATE",
+      "inline_comment_retained": true
+    },
+    "0x401d04": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 331,
+      "original_code": "BLT.S\tDoneHide",
+      "comment": "QUIT IF STILL HIDDEN",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "DoneHide",
+      "inline_comment_retained": true
+    },
+    "0x401d06": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 335,
+      "original_code": "CLR \tCRSRSTATE",
+      "comment": "DON'T LET CRSRSTATE GET > 0",
+      "preceding_comments": [],
+      "op": "CLR",
+      "operand": "CRSRSTATE",
+      "inline_comment_retained": true
+    },
+    "0x401d0a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 336,
+      "original_code": "TST.B\tCRSRVIS",
+      "comment": "IS CURSOR ALREADY VISIBLE?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "CRSRVIS",
+      "inline_comment_retained": true
+    },
+    "0x401d0e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 337,
+      "original_code": "BNE.S\tDoneHide",
+      "comment": "YES, DON'T TRY TO REDRAW",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "DoneHide",
+      "inline_comment_retained": true
+    },
+    "0x401d10": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 342,
+      "original_code": "MOVEM.L D0-D5/A0-A3,-(SP)",
+      "comment": " save registers",
+      "preceding_comments": [
+        [
+          338,
+          ";"
+        ],
+        [
+          339,
+          "; the following code is adapted from Rick Meyer's SmallTalk cursor routines"
+        ],
+        [
+          340,
+          ";"
+        ]
+      ],
+      "op": "MOVEM.L",
+      "operand": "D0-D5/A0-A3,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401d14": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 343,
+      "original_code": "MOVEQ\t#16,D5",
+      "comment": " constant used below; good until @4",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#16,D5",
+      "inline_comment_retained": true
+    },
+    "0x401d16": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 345,
+      "original_code": "LEA \tCrsrSave,A0",
+      "comment": " saved data address",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "CrsrSave,A0",
+      "inline_comment_retained": true
+    },
+    "0x401d1a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 346,
+      "original_code": "LEA \tTheCrsr+Data,A2",
+      "comment": " cursor data bitmap address",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "TheCrsr+Data,A2",
+      "inline_comment_retained": true
+    },
+    "0x401d1e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 347,
+      "original_code": "LEA \tTheCrsr+Mask,A3",
+      "comment": " cursor mask bitmap address",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "TheCrsr+Mask,A3",
+      "inline_comment_retained": true
+    },
+    "0x401d22": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 351,
+      "original_code": "MOVE.W\tMouse+H,D0",
+      "comment": " cursor X-coordinate",
+      "preceding_comments": [
+        [
+          349,
+          ";\tCompute and bounds check the X-coordinate of the data under the cursor."
+        ]
+      ],
+      "op": "MOVE.W",
+      "operand": "Mouse+H,D0",
+      "inline_comment_retained": true
+    },
+    "0x401d26": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 352,
+      "original_code": "SUB.W\tTheCrsr+HotSpot+H,D0",
+      "comment": "  - cursor hotspot X-coordinate",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "TheCrsr+HotSpot+H,D0",
+      "inline_comment_retained": true
+    },
+    "0x401d2a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 353,
+      "original_code": "MOVEQ\t#$F,D2",
+      "comment": " upper left X-coordinate",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#$F,D2",
+      "inline_comment_retained": true
+    },
+    "0x401d2c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 354,
+      "original_code": "AND.W\tD0,D2",
+      "comment": " bit offset within word",
+      "preceding_comments": [],
+      "op": "AND.W",
+      "operand": "D0,D2",
+      "inline_comment_retained": true
+    },
+    "0x401d2e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 355,
+      "original_code": "NEG.W\tD2",
+      "comment": " negated and converted to",
+      "preceding_comments": [],
+      "op": "NEG.W",
+      "operand": "D2",
+      "inline_comment_retained": true
+    },
+    "0x401d30": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 356,
+      "original_code": "ADD.W\tD5,D2",
+      "comment": " left shift count",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D5,D2",
+      "inline_comment_retained": true
+    },
+    "0x401d32": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 361,
+      "original_code": "MOVEQ\t#0 ,D3",
+      "comment": " all ones into D3",
+      "preceding_comments": [
+        [
+          358,
+          "; work around crummy assembler -- what we want is \"MOVE.L #$0000FFFF,D3\""
+        ],
+        [
+          359,
+          "; but the assembler screws it up"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#0 ,D3",
+      "inline_comment_retained": true
+    },
+    "0x401d34": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 362,
+      "original_code": "SUBQ.W\t#1,D3",
+      "comment": " get 0000FFFF into D3",
+      "preceding_comments": [],
+      "op": "SUBQ.W",
+      "operand": "#1,D3",
+      "inline_comment_retained": true
+    },
+    "0x401d36": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 363,
+      "original_code": "LSL.L\tD2,D3",
+      "comment": "  shifted into position",
+      "preceding_comments": [],
+      "op": "LSL.L",
+      "operand": "D2,D3",
+      "inline_comment_retained": true
+    },
+    "0x401d38": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 365,
+      "original_code": "AND.W\t#$FFF0,D0",
+      "comment": " upper left X-coord rounded down",
+      "preceding_comments": [],
+      "op": "AND.W",
+      "operand": "#$FFF0,D0",
+      "inline_comment_retained": true
+    },
+    "0x401d3c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 366,
+      "original_code": "BGE.S\t@1",
+      "comment": " branch if >= 0",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x401d3e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 368,
+      "original_code": "MOVEQ\t#0,D0",
+      "comment": " minimum upper left X-coord of 0",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "inline_comment_retained": true
+    },
+    "0x401d40": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 369,
+      "original_code": "SWAP\tD3",
+      "comment": " adjust 32-bit mask",
+      "preceding_comments": [],
+      "op": "SWAP",
+      "operand": "D3"
+    },
+    "0x401d42": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 370,
+      "original_code": "SUB \tD3,D3",
+      "comment": " LSL #16,D3",
+      "preceding_comments": [],
+      "op": "SUB",
+      "operand": "D3,D3",
+      "inline_comment_retained": true
+    },
+    "0x401d44": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 371,
+      "original_code": "ADD.W\tD5,D2",
+      "comment": " adjust left shift count",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D5,D2",
+      "inline_comment_retained": true
+    },
+    "0x401d4a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 376,
+      "original_code": "BLE.S\t@2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@2"
+    },
+    "0x401d50": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 379,
+      "original_code": "SUB \tD3,D3",
+      "comment": " LSR #16,D3",
+      "preceding_comments": [],
+      "op": "SUB",
+      "operand": "D3,D3",
+      "inline_comment_retained": true
+    },
+    "0x401d52": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 380,
+      "original_code": "SWAP\tD3",
+      "comment": " adjust 32-bit mask",
+      "preceding_comments": [],
+      "op": "SWAP",
+      "operand": "D3"
+    },
+    "0x401d54": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 381,
+      "original_code": "ADD.W\tD5,D2",
+      "comment": " adjust left shift count",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D5,D2",
+      "inline_comment_retained": true
+    },
+    "0x401d56": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 385,
+      "original_code": "@2\t\tMOVE.W\tD5,D4",
+      "comment": " rows of saved data",
+      "preceding_comments": [
+        [
+          383,
+          ";\tCompute and bounds check the Y-coordinate of the data under the cursor."
+        ]
+      ],
+      "op": "MOVE.W",
+      "operand": "D5,D4",
+      "inline_comment_retained": true
+    },
+    "0x401d58": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 386,
+      "original_code": "MOVE.W\tMouse+V,D1",
+      "comment": " cursor Y-coordinate",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "Mouse+V,D1",
+      "inline_comment_retained": true
+    },
+    "0x401d5c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 387,
+      "original_code": "SUB.W\tTheCrsr+HotSpot+V,D1",
+      "comment": "  - cursor hotspot Y-coordinate",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "TheCrsr+HotSpot+V,D1",
+      "inline_comment_retained": true
+    },
+    "0x401d60": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 388,
+      "original_code": "BGE.S\t@3",
+      "comment": " branch if upper left Y >= 0",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x401d62": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 390,
+      "original_code": "ADD.W\tD1,D4",
+      "comment": " decrease rows of saved data",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D1,D4",
+      "inline_comment_retained": true
+    },
+    "0x401d64": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 391,
+      "original_code": "ADD.W\tD1,D1",
+      "comment": " double for byte count",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D1,D1",
+      "inline_comment_retained": true
+    },
+    "0x401d66": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 392,
+      "original_code": "SUB.W\tD1,A2",
+      "comment": " increase cursor data address",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "D1,A2",
+      "inline_comment_retained": true
+    },
+    "0x401d68": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 393,
+      "original_code": "SUB.W\tD1,A3",
+      "comment": " increase cursor mask address",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "D1,A3",
+      "inline_comment_retained": true
+    },
+    "0x401d6a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 394,
+      "original_code": "MOVEQ\t#0,D1",
+      "comment": " minimum upper left Y of 0",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D1",
+      "inline_comment_retained": true
+    },
+    "0x401d70": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 399,
+      "original_code": "BLE.S\t@4",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "@4"
+    },
+    "0x401d76": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 402,
+      "original_code": "SUB.W\tD1,D4",
+      "comment": " adjust rows of saved data",
+      "preceding_comments": [],
+      "op": "SUB.W",
+      "operand": "D1,D4",
+      "inline_comment_retained": true
+    },
+    "0x401d78": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 404,
+      "original_code": "@4\t\tLEA \tCrsrRect,A1",
+      "comment": " set up crsrrect",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "CrsrRect,A1",
+      "inline_comment_retained": true
+    },
+    "0x401d7c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 405,
+      "original_code": "MOVE\tD1,(A1)+",
+      "comment": " top",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "D1,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x401d7e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 406,
+      "original_code": "MOVE\tD0,(A1)+",
+      "comment": " left",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "D0,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x401d80": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 407,
+      "original_code": "MOVE\tD1,(A1)",
+      "comment": " bottom",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "D1,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401d82": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 408,
+      "original_code": "ADD \tD4,(A1)+",
+      "comment": " = top + D4(# rows)",
+      "preceding_comments": [],
+      "op": "ADD",
+      "operand": "D4,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x401d84": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 409,
+      "original_code": "MOVE\tD0,(A1)",
+      "comment": " right = left + 32",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "D0,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401d86": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 410,
+      "original_code": "ADD \t#32,(A1)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "ADD",
+      "operand": "#32,(A1)"
+    },
+    "0x401d8a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 415,
+      "original_code": "MOVE.L\tScrnBase,A1",
+      "comment": " screen memory address",
+      "preceding_comments": [
+        [
+          412,
+          ";\tDisplay the cursor on the screen."
+        ],
+        [
+          413,
+          ";\tD5 IS 16 UNTIL NOW and used above"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "ScrnBase,A1",
+      "inline_comment_retained": true
+    },
+    "0x401d8e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 416,
+      "original_code": "LSR.W\t#3,D0",
+      "comment": " convert X-coord to bytes",
+      "preceding_comments": [],
+      "op": "LSR.W",
+      "operand": "#3,D0",
+      "inline_comment_retained": true
+    },
+    "0x401d90": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 417,
+      "original_code": "ADD.W\tD0,A1",
+      "comment": "  and add to screen address",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D0,A1",
+      "inline_comment_retained": true
+    },
+    "0x401d94": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 420,
+      "original_code": "MULU\tD5,D1",
+      "comment": "  * Y-coord",
+      "preceding_comments": [],
+      "op": "MULU",
+      "operand": "D5,D1",
+      "inline_comment_retained": true
+    },
+    "0x401d96": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 421,
+      "original_code": "ADD.L\tD1,A1",
+      "comment": "  added to screen address",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,A1",
+      "inline_comment_retained": true
+    },
+    "0x401d98": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 422,
+      "original_code": "MOVE.L\tA1,CrsrAddr",
+      "comment": " saved data screen address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,CrsrAddr",
+      "inline_comment_retained": true
+    },
+    "0x401d9c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 424,
+      "original_code": "BRA.S\t@6",
+      "comment": " test for rows=0",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@6",
+      "inline_comment_retained": true
+    },
+    "0x401d9e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 426,
+      "original_code": "@5\t\tMOVE.W\t(A2)+,D0",
+      "comment": " cursor data",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A2)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401da0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 427,
+      "original_code": "ROL.L\tD2,D0",
+      "comment": " shift to proper bit position",
+      "preceding_comments": [],
+      "op": "ROL.L",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401da2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 428,
+      "original_code": "AND.L\tD3,D0",
+      "comment": " eliminate unwanted bits",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "D3,D0",
+      "inline_comment_retained": true
+    },
+    "0x401da4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 429,
+      "original_code": "MOVE.W\t(A3)+,D1",
+      "comment": " cursor mask",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(A3)+,D1",
+      "inline_comment_retained": true
+    },
+    "0x401da6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 430,
+      "original_code": "ROL.L\tD2,D1",
+      "comment": " shift to proper bit position",
+      "preceding_comments": [],
+      "op": "ROL.L",
+      "operand": "D2,D1",
+      "inline_comment_retained": true
+    },
+    "0x401da8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 431,
+      "original_code": "AND.L\tD3,D1",
+      "comment": " eliminate unwanted bits",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "D3,D1",
+      "inline_comment_retained": true
+    },
+    "0x401daa": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 432,
+      "original_code": "NOT.L\tD1",
+      "comment": " invert cursor mask",
+      "preceding_comments": [],
+      "op": "NOT.L",
+      "operand": "D1",
+      "inline_comment_retained": true
+    },
+    "0x401dac": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 434,
+      "original_code": "MOVE.L\t(A1),(A0)+",
+      "comment": " from screen to saved data",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A1),(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401dae": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 435,
+      "original_code": "AND.L\tD1,(A1)",
+      "comment": " screen and (not mask)",
+      "preceding_comments": [],
+      "op": "AND.L",
+      "operand": "D1,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401db0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 436,
+      "original_code": "EOR.L\tD0,(A1)",
+      "comment": "  xor cursor data",
+      "preceding_comments": [],
+      "op": "EOR.L",
+      "operand": "D0,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401db2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 437,
+      "original_code": "ADD.W\tD5,A1",
+      "comment": " screen address of next row",
+      "preceding_comments": [],
+      "op": "ADD.W",
+      "operand": "D5,A1",
+      "inline_comment_retained": true
+    },
+    "0x401db8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 440,
+      "original_code": "MOVE.B\t#1,CrsrVis",
+      "comment": " cursor visible",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#1,CrsrVis",
+      "inline_comment_retained": true
+    },
+    "0x401dbe": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 441,
+      "original_code": "MOVEM.L (SP)+,D0-D5/A0-A3",
+      "comment": " restore registers\t\t\t\t\t\t\t\t<C1/15Apr86>",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0-D5/A0-A3"
+    },
+    "0x401dc2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 443,
+      "original_code": "DONESHOW CLR.B\tCRSRBUSY",
+      "comment": "CHANGE COMPLETE",
+      "preceding_comments": [
+        [
+          442,
+          ";"
+        ]
+      ],
+      "op": "CLR.B",
+      "operand": "CRSRBUSY",
+      "inline_comment_retained": true
+    },
+    "0x401dc8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 741,
+      "original_code": "MOVEM.L D0/A0,-(SP)",
+      "comment": "SAVE REGISTERS",
+      "preceding_comments": [
+        [
+          740,
+          ";\t\t LINK\t A6,#0\t\t\t\t\t\t\t;NO LOCAL VARS"
+        ]
+      ],
+      "op": "MOVEM.L",
+      "operand": "D0/A0,-(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401dcc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 743,
+      "original_code": "LEA \tCrsrRect,A0",
+      "comment": " point to crsr rect",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "CrsrRect,A0",
+      "inline_comment_retained": true
+    },
+    "0x401dd0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 745,
+      "original_code": "MOVE\tShieldBottom(SP),D0",
+      "comment": "GET SHIELD BOTTOM",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "ShieldBottom(SP),D0",
+      "inline_comment_retained": true
+    },
+    "0x401dd4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 746,
+      "original_code": "CMP \t(A0)+,D0",
+      "comment": "IS SHIELDBOTTOM < SAVETOP ?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401dd6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 747,
+      "original_code": "BLT.S\tNOSECT",
+      "comment": "YES, NO INTERSECTION",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "NOSECT",
+      "inline_comment_retained": true
+    },
+    "0x401dde": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 754,
+      "original_code": "MOVE\tShieldRight(SP),D0",
+      "comment": "GET SHIELD RIGHT",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "ShieldRight(SP),D0",
+      "inline_comment_retained": true
+    },
+    "0x401de2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 755,
+      "original_code": "CMP \t(A0)+,D0",
+      "comment": "IS SHIELDRIGHT <= SAVELEFT ?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401de4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 756,
+      "original_code": "BLE.S\tNOSECT",
+      "comment": "YES, NO INTERSECTION",
+      "preceding_comments": [],
+      "op": "BLE.S",
+      "operand": "NOSECT",
+      "inline_comment_retained": true
+    },
+    "0x401de6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 758,
+      "original_code": "MOVE\tShieldTop(SP),D0",
+      "comment": "GET SHIELD TOP",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "ShieldTop(SP),D0",
+      "inline_comment_retained": true
+    },
+    "0x401dea": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 759,
+      "original_code": "CMP \t(A0)+,D0",
+      "comment": "IS SHIELDTOP >= SAVEBOTTOM ?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401dec": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 760,
+      "original_code": "BGE.S\tNOSECT",
+      "comment": "YES, NO INTERSECTION",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "NOSECT",
+      "inline_comment_retained": true
+    },
+    "0x401dee": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 762,
+      "original_code": "MOVE\tShieldLeft(SP),D0",
+      "comment": "GET SHIELD LEFT",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "ShieldLeft(SP),D0",
+      "inline_comment_retained": true
+    },
+    "0x401df2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 763,
+      "original_code": "CMP \t(A0),D0",
+      "comment": "IS SHIELDLEFT >= SAVERIGHT ?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401df4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 764,
+      "original_code": "BGE.S\tNOSECT",
+      "comment": "YES, NO INTERSECTION",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "NOSECT",
+      "inline_comment_retained": true
+    },
+    "0x401df6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 766,
+      "original_code": "SECT\tBSR \tHIDECURSOR",
+      "comment": "IT DOES INTERSECT, REMOVE IT",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "HIDECURSOR",
+      "inline_comment_retained": true
+    },
+    "0x401dfa": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 767,
+      "original_code": "BRA.S\tDONE",
+      "comment": "CONTINUE",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "DONE",
+      "inline_comment_retained": true
+    },
+    "0x401dfc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 769,
+      "original_code": "NOSECT\tSUB \t#1,CRSRSTATE",
+      "comment": "MARK AS HIDDEN ONE DEEPER",
+      "preceding_comments": [],
+      "op": "SUB",
+      "operand": "#1,CRSRSTATE",
+      "inline_comment_retained": true
+    },
+    "0x401e00": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 770,
+      "original_code": "DONE\tMOVEM.L (SP)+,D0/A0",
+      "comment": "RESTORE REGISTERS",
+      "preceding_comments": [],
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D0/A0",
+      "inline_comment_retained": true
+    },
+    "0x401e04": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 772,
+      "original_code": "MOVE.L\t(SP)+,(SP)",
+      "comment": "STRIP 8 bytes of PARAMETERS, MOVING",
+      "preceding_comments": [
+        [
+          771,
+          ";\t\t UNLK\t A6"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "(SP)+,(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401e06": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 773,
+      "original_code": "MOVE.L\t(SP)+,(SP)",
+      "comment": "RETURN ADDR UP ON STACK",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401e08": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 774,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401e0a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 789,
+      "original_code": "MOVE.L\t8(SP),A0",
+      "comment": "get address of data mask",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "8(SP),A0",
+      "inline_comment_retained": true
+    },
+    "0x401e0e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 807,
+      "original_code": "LEA \tTHECRSR,A1",
+      "comment": "point to system cursor buffer",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "THECRSR,A1",
+      "inline_comment_retained": true
+    },
+    "0x401e12": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 808,
+      "original_code": "MOVEQ\t#15,D2",
+      "comment": "have 16 longs to move",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#15,D2",
+      "inline_comment_retained": true
+    },
+    "0x401e14": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 809,
+      "original_code": "MOVEQ\t#0,D1",
+      "comment": "flag that its not different",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,D1",
+      "inline_comment_retained": true
+    },
+    "0x401e16": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 812,
+      "original_code": "MOVE.L\t(A0)+,D0",
+      "comment": "get next longWord of new cursor",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A0)+,D0",
+      "inline_comment_retained": true
+    },
+    "0x401e18": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 813,
+      "original_code": "CMP.L\t(A1),D0",
+      "comment": "is it the same as what's there",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "(A1),D0",
+      "inline_comment_retained": true
+    },
+    "0x401e1a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 814,
+      "original_code": "BEQ.S\t@1",
+      "comment": "if so, skip",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x401e1c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 815,
+      "original_code": "ADDQ\t#1,D1",
+      "comment": "flag that its different",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#1,D1",
+      "inline_comment_retained": true
+    },
+    "0x401e1e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 816,
+      "original_code": "@1\t\tMOVE.L\tD0,(A1)+",
+      "comment": "move it into the cursor buffer",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(A1)+",
+      "inline_comment_retained": true
+    },
+    "0x401e20": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 817,
+      "original_code": "DBRA\tD2,SetCurLoop",
+      "comment": "move all 64 bytes",
+      "preceding_comments": [],
+      "op": "DBRA",
+      "operand": "D2,SetCurLoop",
+      "inline_comment_retained": true
+    },
+    "0x401e24": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 819,
+      "original_code": "MOVE.L\t14(SP),D0",
+      "comment": "get the alleged hotspot\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "14(SP),D0",
+      "inline_comment_retained": true
+    },
+    "0x401e28": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 822,
+      "original_code": "MOVEQ\t#16,D2",
+      "comment": " VERY handy temp, from loop above\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [
+        [
+          821,
+          "\t\t; Clean up the two coordinates to lie between 0 and 16. \t\t\t\t\t\t\t<23Apr85>"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#16,D2",
+      "inline_comment_retained": true
+    },
+    "0x401e2a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 823,
+      "original_code": "CMP.W\tD2,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401e2c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 824,
+      "original_code": "BLS.S\t@31",
+      "comment": " D0 LowerorSame as 16 is ok\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "BLS.S",
+      "operand": "@31",
+      "inline_comment_retained": true
+    },
+    "0x401e2e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 825,
+      "original_code": "MOVE.W\tD2,D0",
+      "comment": "pin it at 16\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401e30": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 827,
+      "original_code": "SWAP\tD0",
+      "comment": "align the high-order coord \t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "SWAP",
+      "operand": "D0",
+      "inline_comment_retained": true
+    },
+    "0x401e32": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 828,
+      "original_code": "CMP.W\tD2,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "CMP.W",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401e34": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 829,
+      "original_code": "BLS.S\t@33",
+      "comment": " D0 LowerorSame as 16 is ok\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "BLS.S",
+      "operand": "@33",
+      "inline_comment_retained": true
+    },
+    "0x401e36": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 830,
+      "original_code": "MOVE.W\tD2,D0",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D2,D0",
+      "inline_comment_retained": true
+    },
+    "0x401e38": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 832,
+      "original_code": "SWAP\tD0",
+      "comment": "realign coords \t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "SWAP",
+      "operand": "D0",
+      "inline_comment_retained": true
+    },
+    "0x401e3a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 834,
+      "original_code": "CMP.L\tTheCrsr+HotSpot,D0",
+      "comment": "is it new? \t\t\t\t\t\t\t\t\t\t<05Apr85>",
+      "preceding_comments": [],
+      "op": "CMP.L",
+      "operand": "TheCrsr+HotSpot,D0",
+      "inline_comment_retained": true
+    },
+    "0x401e3e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 835,
+      "original_code": "BEQ.S\t@3",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t\t<05Apr85>",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x401e40": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 836,
+      "original_code": "ADDQ\t#1,D1",
+      "comment": "flag it's different                                <05Apr85>",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#1,D1",
+      "inline_comment_retained": true
+    },
+    "0x401e42": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 837,
+      "original_code": "MOVE.L\tD0,TheCrsr+HotSpot",
+      "comment": "move in the hotSpot\t\t\t\t\t\t\t\t<05Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,TheCrsr+HotSpot",
+      "inline_comment_retained": true
+    },
+    "0x401e46": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 842,
+      "original_code": "TST \tD1",
+      "comment": "did it change?",
+      "preceding_comments": [
+        [
+          840,
+          "; if the cursor changed, force it to be displayed by hiding then showing it"
+        ]
+      ],
+      "op": "TST",
+      "operand": "D1",
+      "inline_comment_retained": true
+    },
+    "0x401e48": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 843,
+      "original_code": "BEQ.S\t@2",
+      "comment": "skip if it didn't",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x401e4a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 845,
+      "original_code": "BSR \tHideCursor",
+      "comment": "hide it",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "HideCursor",
+      "inline_comment_retained": true
+    },
+    "0x401e4e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 846,
+      "original_code": "BSR \tShowCursor",
+      "comment": "then show it again to redraw it",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "ShowCursor",
+      "inline_comment_retained": true
+    },
+    "0x401e52": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 853,
+      "original_code": "MOVE.L\t(SP)+,A0",
+      "comment": "get return address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x401e54": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 854,
+      "original_code": "ADD \t#14,SP",
+      "comment": "strip parameters",
+      "preceding_comments": [],
+      "op": "ADD",
+      "operand": "#14,SP",
+      "inline_comment_retained": true
+    },
+    "0x401e58": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 855,
+      "original_code": "JMP \t(A0)",
+      "comment": "return to caller",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(A0)",
+      "inline_comment_retained": true
+    },
+    "0x401e5a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 864,
+      "original_code": "MOVE.L\tScrnBase,4(SP)",
+      "comment": "get screenBase set up by OS",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "ScrnBase,4(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401e60": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 865,
+      "original_code": "RTS",
+      "comment": "that was easy!",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401e62": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 875,
+      "original_code": "MOVE.L\t(SP)+,A1",
+      "comment": "get the return address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A1",
+      "inline_comment_retained": true
+    },
+    "0x401e64": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 876,
+      "original_code": "MOVE.L\t(SP)+,A0",
+      "comment": "get pointer to vDots",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x401e6a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 878,
+      "original_code": "MOVE.L\t(SP)+,A0",
+      "comment": "get pointer to hDots",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x401e70": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 880,
+      "original_code": "JMP \t(A1)",
+      "comment": "return to caller",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(A1)",
+      "inline_comment_retained": true
+    },
+    "0x401e72": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 889,
+      "original_code": "MOVE.L\t(SP)+,A1",
+      "comment": "get the return address \t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A1",
+      "inline_comment_retained": true
+    },
+    "0x401e74": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 890,
+      "original_code": "MOVE.L\t(SP)+,A0",
+      "comment": "get pointer to vDots\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x401e76": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 891,
+      "original_code": "MOVE.L\tScrnBase,(A0)+",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "ScrnBase,(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401e7a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 892,
+      "original_code": "MOVE.W\tScreenRow,(A0)+",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "ScreenRow,(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401e7e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 893,
+      "original_code": "CLR.L\t(A0)+",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A0)+",
+      "inline_comment_retained": true
+    },
+    "0x401e84": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 895,
+      "original_code": "BRA.S\tScrnCmn",
+      "comment": "share common ending\t\t\t\t\t<23Apr85>",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "ScrnCmn",
+      "inline_comment_retained": true
+    },
+    "0x401e86": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 920,
+      "original_code": "TST.B\tCrsrNew",
+      "comment": " Mouse changed?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "CrsrNew",
+      "inline_comment_retained": true
+    },
+    "0x401e8a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 921,
+      "original_code": "BEQ\t\tTrackDone",
+      "comment": " No \u2026 return",
+      "preceding_comments": [],
+      "op": "BEQ",
+      "operand": "TrackDone",
+      "inline_comment_retained": true
+    },
+    "0x401e8c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 922,
+      "original_code": "TST.B\tCrsrBusy",
+      "comment": " Cursor locked?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "CrsrBusy",
+      "inline_comment_retained": true
+    },
+    "0x401e90": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 923,
+      "original_code": "BNE\t\tTrackDone",
+      "comment": " Yes \u2026 return",
+      "preceding_comments": [],
+      "op": "BNE",
+      "operand": "TrackDone",
+      "inline_comment_retained": true
+    },
+    "0x401e92": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 925,
+      "original_code": "TST.B\tCrsrCouple",
+      "comment": " Cursor coupled to mouse?",
+      "preceding_comments": [
+        [
+          924,
+          ";"
+        ]
+      ],
+      "op": "TST.B",
+      "operand": "CrsrCouple",
+      "inline_comment_retained": true
+    },
+    "0x401e96": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 926,
+      "original_code": "BEQ\t\tNoComp",
+      "comment": " No \u2026 skip computation\t<DSV>",
+      "preceding_comments": [],
+      "op": "BEQ",
+      "operand": "NoComp",
+      "inline_comment_retained": true
+    },
+    "0x401ea0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 934,
+      "original_code": "MOVE.W\tD0,D2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,D2"
+    },
+    "0x401ea2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 935,
+      "original_code": "BGE.S\tAbslXl",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "AbslXl"
+    },
+    "0x401ea4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 936,
+      "original_code": "NEG.W\tD2",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "NEG.W",
+      "operand": "D2"
+    },
+    "0x401eae": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 940,
+      "original_code": "BGE.S\tAbslYl",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "AbslYl"
+    },
+    "0x401eb2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 954,
+      "original_code": "BRA\t\t\tDoPin",
+      "comment": " Update the cursor\t\t\t\t\t<c856/26May87>",
+      "preceding_comments": [],
+      "op": "BRA",
+      "operand": "DoPin"
+    },
+    "0x401ece": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1044,
+      "original_code": "LEA\tCrsrPin,A0",
+      "comment": " Bounding rect for cursor",
+      "preceding_comments": [
+        [
+          1042,
+          ";"
+        ]
+      ],
+      "op": "LEA",
+      "operand": "CrsrPin,A0",
+      "inline_comment_retained": true
+    },
+    "0x401ed2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1045,
+      "original_code": "MOVE.L\tRawMouse,D0",
+      "comment": " Pin mouse inside rect",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "RawMouse,D0",
+      "inline_comment_retained": true
+    },
+    "0x401ed6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1046,
+      "original_code": "BSR.S\tPinGuts",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "PinGuts"
+    },
+    "0x401ed8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1048,
+      "original_code": "MOVE.L\tD0,RawMouse",
+      "comment": " Update cursor locations",
+      "preceding_comments": [
+        [
+          1047,
+          ";"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "D0,RawMouse",
+      "inline_comment_retained": true
+    },
+    "0x401edc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1049,
+      "original_code": "MOVE.L\tD0,MTemp",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,MTemp"
+    },
+    "0x401ee0": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1051,
+      "original_code": "AND.L\tMouseMask,D0",
+      "comment": " Do jerky masking to drop low bits",
+      "preceding_comments": [
+        [
+          1050,
+          ";"
+        ]
+      ],
+      "op": "AND.L",
+      "operand": "MouseMask,D0",
+      "inline_comment_retained": true
+    },
+    "0x401ee4": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1052,
+      "original_code": "MOVE.L\tMouseOffset,D1",
+      "comment": " Get the offset",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "MouseOffset,D1",
+      "inline_comment_retained": true
+    },
+    "0x401ee8": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1053,
+      "original_code": "BEQ.S\tSkipPin",
+      "comment": " Skip 2nd pin if not",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "SkipPin",
+      "inline_comment_retained": true
+    },
+    "0x401eea": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1054,
+      "original_code": "ADD.L\tD1,D0",
+      "comment": " Do jerky offset",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "D1,D0",
+      "inline_comment_retained": true
+    },
+    "0x401eec": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1055,
+      "original_code": "BSR.S\tPinGuts",
+      "comment": " Pin mouse inside rect again",
+      "preceding_comments": [],
+      "op": "BSR.S",
+      "operand": "PinGuts",
+      "inline_comment_retained": true
+    },
+    "0x401eee": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1056,
+      "original_code": "SkipPin\tMOVE.L\tD0,Mouse",
+      "comment": " Actual mouse location",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,Mouse",
+      "inline_comment_retained": true
+    },
+    "0x401ef2": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1058,
+      "original_code": "Repaint\tTST.B\tCrsrObscure",
+      "comment": " Unpaint the cursor",
+      "preceding_comments": [
+        [
+          1057,
+          ";"
+        ]
+      ],
+      "op": "TST.B",
+      "operand": "CrsrObscure",
+      "inline_comment_retained": true
+    },
+    "0x401ef6": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1059,
+      "original_code": "BNE.S\tUnpainted",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "Unpainted"
+    },
+    "0x401efc": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1063,
+      "original_code": "CLR.B\tCrsrNew",
+      "comment": " Cursor is fresh",
+      "preceding_comments": [
+        [
+          1062,
+          ";"
+        ]
+      ],
+      "op": "CLR.B",
+      "operand": "CrsrNew",
+      "inline_comment_retained": true
+    },
+    "0x401f00": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1064,
+      "original_code": "CLR.B\tCrsrObscure",
+      "comment": " Cursor is not obscured",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "CrsrObscure",
+      "inline_comment_retained": true
+    },
+    "0x401f08": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1067,
+      "original_code": "RTS",
+      "comment": " Goodbye",
+      "preceding_comments": [
+        [
+          1066,
+          ";"
+        ]
+      ],
+      "op": "RTS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x401f0a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1090,
+      "original_code": "CMP \tLEFT(A0),D0",
+      "comment": "less than left?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "LEFT(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f0e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1091,
+      "original_code": "BGE.S\t@1",
+      "comment": "if not, no problem",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "@1",
+      "inline_comment_retained": true
+    },
+    "0x401f10": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1092,
+      "original_code": "MOVE\tLEFT(A0),D0",
+      "comment": "pin to the left",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "LEFT(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f14": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1094,
+      "original_code": "@1\t\t\t\tCMP \tRIGHT(A0),D0",
+      "comment": "greater than right?",
+      "preceding_comments": [
+        [
+          1093,
+          ";"
+        ]
+      ],
+      "op": "CMP",
+      "operand": "RIGHT(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f18": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1095,
+      "original_code": "BLT.S\t@2",
+      "comment": "if not, no problem  WAS BLE!!\t\t\t<05Apr85>",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "@2",
+      "inline_comment_retained": true
+    },
+    "0x401f1a": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1096,
+      "original_code": "MOVE\tRIGHT(A0),D0",
+      "comment": "pin to the right",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "RIGHT(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f1e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1097,
+      "original_code": "SUBQ\t#1,D0",
+      "comment": "really want one less",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#1,D0",
+      "inline_comment_retained": true
+    },
+    "0x401f20": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1099,
+      "original_code": "@2\t\t\t\tSWAP\tD0",
+      "comment": "consider y",
+      "preceding_comments": [
+        [
+          1098,
+          ";"
+        ]
+      ],
+      "op": "SWAP",
+      "operand": "D0",
+      "inline_comment_retained": true
+    },
+    "0x401f22": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1100,
+      "original_code": "CMP \tTOP(A0),D0",
+      "comment": "less than top?",
+      "preceding_comments": [],
+      "op": "CMP",
+      "operand": "TOP(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f24": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1101,
+      "original_code": "BGE.S\t@3",
+      "comment": "if not, no problem",
+      "preceding_comments": [],
+      "op": "BGE.S",
+      "operand": "@3",
+      "inline_comment_retained": true
+    },
+    "0x401f26": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1102,
+      "original_code": "MOVE\tTOP(A0),D0",
+      "comment": "pin to the top",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "TOP(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f28": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1104,
+      "original_code": "@3\t\t\t\tCMP \tBOTTOM(A0),D0",
+      "comment": "greater than bottom?",
+      "preceding_comments": [
+        [
+          1103,
+          ";"
+        ]
+      ],
+      "op": "CMP",
+      "operand": "BOTTOM(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f2c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1105,
+      "original_code": "BLT.S\t@4",
+      "comment": "if not, no problem  WAS BLT!!\t\t\t<05Apr85>",
+      "preceding_comments": [],
+      "op": "BLT.S",
+      "operand": "@4",
+      "inline_comment_retained": true
+    },
+    "0x401f2e": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1106,
+      "original_code": "MOVE\tBOTTOM(A0),D0",
+      "comment": "pin to the bottom",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "BOTTOM(A0),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f32": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1107,
+      "original_code": "SUBQ\t#1,D0",
+      "comment": "really want one less",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#1,D0",
+      "inline_comment_retained": true
+    },
+    "0x401f34": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1109,
+      "original_code": "@4\t\t\t\tSWAP\tD0",
+      "comment": "",
+      "preceding_comments": [
+        [
+          1108,
+          ";"
+        ]
+      ],
+      "op": "SWAP",
+      "operand": "D0"
+    },
+    "0x401f36": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1111,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x401f38": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1118,
+      "original_code": "MOVE.L\t4(SP),D0",
+      "comment": "get the point",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "4(SP),D0",
+      "inline_comment_retained": true
+    },
+    "0x401f3c": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1119,
+      "original_code": "MOVE.L\t8(SP),A0",
+      "comment": "get the rect ptr",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "8(SP),A0",
+      "inline_comment_retained": true
+    },
+    "0x401f40": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1121,
+      "original_code": "BSR.S\tPinGuts",
+      "comment": " go pin it",
+      "preceding_comments": [
+        [
+          1120,
+          ";"
+        ]
+      ],
+      "op": "BSR.S",
+      "operand": "PinGuts",
+      "inline_comment_retained": true
+    },
+    "0x401f42": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1123,
+      "original_code": "MOVE.L\t(SP)+,A0",
+      "comment": "get return address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "inline_comment_retained": true
+    },
+    "0x401f44": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1124,
+      "original_code": "ADDQ\t#8,SP",
+      "comment": "strip parameters",
+      "preceding_comments": [],
+      "op": "ADDQ",
+      "operand": "#8,SP",
+      "inline_comment_retained": true
+    },
+    "0x401f46": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1125,
+      "original_code": "MOVE.L\tD0,(SP)",
+      "comment": "return pinned pt as result",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "D0,(SP)",
+      "inline_comment_retained": true
+    },
+    "0x401f48": {
+      "path": "QuickDraw/Classic/CrsrCore.a",
+      "line": 1126,
+      "original_code": "JMP \t(A0)",
+      "comment": "return to caller",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(A0)",
+      "inline_comment_retained": true
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4201640,
+      "op": "MOVE.B",
+      "operand": "#1,CrsrBusy",
+      "bytes": "11fc000108cd",
+      "rom_instruction": "moveb #1,0x8cd"
+    },
+    {
+      "address": 4201646,
+      "op": "TST.B",
+      "operand": "CrsrVis",
+      "bytes": "4a3808cc",
+      "rom_instruction": "tstb 0x8cc"
+    },
+    {
+      "address": 4201680,
+      "op": "MOVEQ",
+      "operand": "#64,D0",
+      "bytes": "7040",
+      "rom_instruction": "moveq #64,%d0"
+    },
+    {
+      "address": 4201798,
+      "op": "CMPI.W",
+      "operand": "#512-32,D0",
+      "bytes": "0c4001e0",
+      "rom_instruction": "cmpiw #480,%d0"
+    },
+    {
+      "address": 4201804,
+      "op": "MOVE.W",
+      "operand": "#512-32,D0",
+      "bytes": "303c01e0",
+      "rom_instruction": "movew #480,%d0"
+    },
+    {
+      "address": 4201836,
+      "op": "CMPI.W",
+      "operand": "#342-16,D1",
+      "bytes": "0c410146",
+      "rom_instruction": "cmpiw #326,%d1"
+    },
+    {
+      "address": 4201842,
+      "op": "MOVE.W",
+      "operand": "#342,D4",
+      "bytes": "383c0156",
+      "rom_instruction": "movew #342,%d4"
+    },
+    {
+      "address": 4201874,
+      "op": "MOVEQ",
+      "operand": "#64,D5",
+      "bytes": "7a40",
+      "rom_instruction": "moveq #64,%d5"
+    },
+    {
+      "address": 4201908,
+      "op": "DBRA",
+      "operand": "D4,CC_401D9E",
+      "bytes": "51ccffe8",
+      "rom_instruction": "dbf %d4,0x401d9e"
+    },
+    {
+      "address": 4201926,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4201944,
+      "op": "CMPI.W",
+      "operand": "#512-16,(A0)",
+      "bytes": "0c5001f0",
+      "rom_instruction": "cmpiw #496,%a0@"
+    },
+    {
+      "address": 4201948,
+      "op": "BGE.S",
+      "operand": "SECT",
+      "bytes": "6c18",
+      "rom_instruction": "bges 0x401df6"
+    },
+    {
+      "address": 4202086,
+      "op": "MOVE.W",
+      "operand": "#342,(A0)",
+      "bytes": "30bc0156",
+      "rom_instruction": "movew #342,%a0@"
+    },
+    {
+      "address": 4202092,
+      "op": "MOVE.W",
+      "operand": "#512,(A0)",
+      "bytes": "30bc0200",
+      "rom_instruction": "movew #512,%a0@"
+    },
+    {
+      "address": 4202112,
+      "op": "MOVE.W",
+      "operand": "#342,(A0)+",
+      "bytes": "30fc0156",
+      "rom_instruction": "movew #342,%a0@+"
+    },
+    {
+      "address": 4202136,
+      "op": "MOVE.W",
+      "operand": "MTemp+V,D0",
+      "bytes": "30380828",
+      "rom_instruction": "movew 0x828,%d0"
+    },
+    {
+      "address": 4202140,
+      "op": "SUB.W",
+      "operand": "RawMouse+V,D0",
+      "bytes": "9078082c",
+      "rom_instruction": "subw 0x82c,%d0"
+    },
+    {
+      "address": 4202150,
+      "op": "MOVE.W",
+      "operand": "MTemp+H,D1",
+      "bytes": "3238082a",
+      "rom_instruction": "movew 0x82a,%d1"
+    },
+    {
+      "address": 4202154,
+      "op": "SUB.W",
+      "operand": "RawMouse+H,D1",
+      "bytes": "9278082e",
+      "rom_instruction": "subw 0x82e,%d1"
+    },
+    {
+      "address": 4202160,
+      "op": "SUB.W",
+      "operand": "D1,D2",
+      "bytes": "9441",
+      "rom_instruction": "subw %d1,%d2"
+    },
+    {
+      "address": 4202164,
+      "op": "ADD.W",
+      "operand": "D1,D2",
+      "bytes": "d441",
+      "rom_instruction": "addw %d1,%d2"
+    },
+    {
+      "address": 4202166,
+      "op": "TST.B",
+      "operand": "CrsrScale",
+      "bytes": "4a3808d3",
+      "rom_instruction": "tstb 0x8d3"
+    },
+    {
+      "address": 4202170,
+      "op": "BEQ.S",
+      "operand": "DoPin",
+      "bytes": "670a",
+      "rom_instruction": "beqs 0x401ec6"
+    },
+    {
+      "address": 4202172,
+      "op": "CMP.W",
+      "operand": "CrsrThresh,D2",
+      "bytes": "b47808ec",
+      "rom_instruction": "cmpw 0x8ec,%d2"
+    },
+    {
+      "address": 4202176,
+      "op": "BLT.S",
+      "operand": "DoPin",
+      "bytes": "6d04",
+      "rom_instruction": "blts 0x401ec6"
+    },
+    {
+      "address": 4202178,
+      "op": "ADD.W",
+      "operand": "D1,D1",
+      "bytes": "d241",
+      "rom_instruction": "addw %d1,%d1"
+    },
+    {
+      "address": 4202180,
+      "op": "ADD.W",
+      "operand": "D0,D0",
+      "bytes": "d040",
+      "rom_instruction": "addw %d0,%d0"
+    },
+    {
+      "address": 4202182,
+      "op": "ADD.W",
+      "operand": "D1,RawMouse+H",
+      "bytes": "d378082e",
+      "rom_instruction": "addw %d1,0x82e"
+    },
+    {
+      "address": 4202186,
+      "op": "ADD.W",
+      "operand": "D0,RawMouse+V",
+      "bytes": "d178082c",
+      "rom_instruction": "addw %d0,0x82c"
+    },
+    {
+      "address": 4202232,
+      "op": "BSR.W",
+      "operand": "HideCursor",
+      "bytes": "6100fdae",
+      "rom_instruction": "bsrw 0x401ca8"
+    },
+    {
+      "address": 4202244,
+      "op": "BSR.W",
+      "operand": "ShowCursor",
+      "bytes": "6100fdf4",
+      "rom_instruction": "bsrw 0x401cfa"
+    }
+  ],
+  "restored_equates": {},
+  "restored_symbolic_operands": {
+    "4201680": "#64,D0",
+    "4201798": "#512-32,D0",
+    "4201804": "#512-32,D0",
+    "4201836": "#342-16,D1",
+    "4201842": "#342,D4",
+    "4201944": "#512-16,(A0)",
+    "4202136": "MTemp+V,D0",
+    "4202140": "RawMouse+V,D0",
+    "4202150": "MTemp+H,D1",
+    "4202154": "RawMouse+H,D1",
+    "4202182": "D1,RawMouse+H",
+    "4202186": "D0,RawMouse+V"
+  },
+  "retained_data": {
+    "4201610": {
+      "length": 16,
+      "text": "\t\t\t\tDC.W\tHideCursor-InitCrTable\n\t\t\t\tDC.W\tShowCursor-InitCrTable\n\t\t\t\tDC.W\tShieldCursor-InitCrTable\n\t\t\t\tDC.W\tScrnAddress-InitCrTable\n\t\t\t\tDC.W\tScrnSize-InitCrTable\n\t\t\t\tDC.W\tInitCursor-InitCrTable\n\t\t\t\tDC.W\tSetCursor-InitCrTable\n\t\t\t\tDC.W\tObscureCursor-InitCrTable"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 704,
+    "checked_entry_points": 46,
+    "instruction_count": 241,
+    "source_operation_matches": 210,
+    "rom_only_operation_count": 31,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-cursor-core-verify",
+    "source_sha256": "de98ad9465e2f883c92c59c8d6be7a0eebc29d11ed92b72c65567fbde5f3e075",
+    "assembled_sha256": "ddaeb868a696f4a7afcba8a908ab4103f47cee6c10bdfeb3596ef495e423eda7",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

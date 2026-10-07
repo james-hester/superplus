@@ -1,0 +1,25 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/InternalOnlyEqu.a
+;
+;	File:		InternalOnlyEqu.a
+;
+;	Contains:	Internal Only Equates
+;
+;	Written by:	Everybody and their Mother
+;
+;	Copyright:	© 1990-1993 by Apple Computer, Inc., all rights reserved.
+;
+
+tagBC24 		EQU 		0 						; Tag and Byte Count field [long]				<v1.7>
+handle24		EQU 		4 						; back pointer to master pointer [pointer]		<v1.7>
+blkData24   	EQU 		8 						; data starts here								<v1.7>
+minFree   		EQU 		12    					; (minimum block size) for old MemManager		<v2.0>
+minFree24   	EQU 		12    					; (minimum block size) for 24 bit MemManager	<v2.0>
+nRelTag   		EQU 		$40000000 				; Tag for Non-Relocatable block
+dfltMasters   	EQU 		32    					; Default to 32 master pointers
+TimeVars  		EQU 		$B30  					; the low memory pointer to the variable struct
+TTInt 			EQU 		0 						; time of this interrupt cycle [long]
+TTAppoint 		EQU 		4 						; pointer to next appointment in MSQueue [long]
+MSQueue   		EQU 		8 						; queue header for MS Queue [10 bytes]

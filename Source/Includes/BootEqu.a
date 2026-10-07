@@ -1,0 +1,13 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/BootEqu.a
+;
+;	File:		BootEqu.a
+;
+;	Contains:	equates for the boot time environment
+;
+;	Copyright:	© 1989-1994 by Apple Computer, Inc., all rights reserved.
+;
+
+debuggerGlobalSize		equ 	1*1024		; size above BufPtr needed by MacsBug

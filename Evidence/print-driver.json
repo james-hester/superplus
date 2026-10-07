@@ -1,0 +1,135 @@
+{
+  "module": "print-driver",
+  "source": "Reconstruction/Source/Resources/PrintDriver.a",
+  "source_sha256": "7f230450627f1b1af9226305da0b2918d275d40834f74992fda5f0fb44fbe47f",
+  "originals": [
+    {
+      "path": "Toolbox/Printing/PrintDriver.a",
+      "sha256": "7208b560d51469d14eb875c69549ef6fcc71359b439c5ae8d385ffc7c4c7bc24",
+      "declaration_lines": []
+    },
+    {
+      "path": "Libs/InterfaceSrcs/PrGlue.a",
+      "sha256": "3b005143a1d4a95f67b4f4565680fa9d16e1cc4b8c8ebb8702a40c6360802202",
+      "declaration_lines": []
+    },
+    {
+      "path": "Interfaces/AIncludes/PrPrivate.a",
+      "sha256": "28be21bde5e03f270dc02dfc261bd0fe6833df75a83d3ba87faec09fb7b7874d",
+      "declaration_lines": [
+        189
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "declaration_lines": [
+        1008,
+        678,
+        679,
+        655,
+        1419,
+        1417,
+        1415,
+        1416,
+        1418,
+        733,
+        795,
+        796,
+        794,
+        704
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "declaration_lines": [
+        339,
+        338
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "declaration_lines": [
+        166,
+        169,
+        168,
+        164,
+        163
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "declaration_lines": [
+        879,
+        884,
+        895,
+        922,
+        945,
+        955,
+        1069,
+        1070
+      ]
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 99,
+  "rom": {
+    "start": "0x417844",
+    "end_exclusive": "0x4179b8",
+    "bytes": 372,
+    "sha256": "95857aa6463a15c5d6a479ccd900c3b8a2d30c52ab559a8bb2f9fddf236b3048"
+  },
+  "changes": [
+    "The ROM retains the generic printer shell described by the 1984\u20131985 history. The released PrintDriver.a body was replaced by the MultiFinder version in April 1990, so the removed loader is restored from ROM instructions. The original header, applicable history, entry-stub comments, and version data remain.",
+    "The loader fetches STR -8192, changes to the boot volume, opens the printer resource file, restores the volume, and fetches DRVR -8192. It detaches the loaded driver and replaces the system map entry for DRVR 2. It sets the DCE RAM-based flag and returns into the selected driver routine with the original A0 and A1.",
+    "The ROM uses direct master-pointer bit-seven locks, predating the September 1986 HLock changes. It does not check the GetString handle, set the detached handle resource bit, close the resource file, or release the ROM stub. GetResource returning nil reaches ErrorZ with D0 equal to zero; that historical path is preserved.",
+    "GetDefDrive and GoSetVol retain the released PrGlue.a instructions and comments. GetDrvrEntry restores the removed map lookup through RsrcMapEntry, with ResLoad disabled during lookup and restored by MOVEM without changing the result condition codes.",
+    "The eight-byte resource block header is expressed using the final label and the master-pointer offset from the ROM resource catalog. The complete block matches the ROM."
+  ],
+  "verification": {
+    "name": "print-driver",
+    "source": "Reconstruction/Source/Resources/PrintDriver.a",
+    "source_sha256": "7f230450627f1b1af9226305da0b2918d275d40834f74992fda5f0fb44fbe47f",
+    "start": "0x417844",
+    "end_exclusive": "0x4179b8",
+    "bytes": 372,
+    "sha256": "95857aa6463a15c5d6a479ccd900c3b8a2d30c52ab559a8bb2f9fddf236b3048",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/Resources/PrintDriver.a",
+        "sha256": "7f230450627f1b1af9226305da0b2918d275d40834f74992fda5f0fb44fbe47f"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "print-driver",
+    "source": "Reconstruction/Source/Resources/PrintDriver.a",
+    "start": "0x417844",
+    "end_exclusive": "0x4179b8",
+    "entry_points": {
+      "PrintResourceBlock": "0x417844",
+      "PrintHeader": "0x41784c",
+      "PrintOpen": "0x417870",
+      "PrintResourceEnd": "0x4179b8",
+      "completelydone": "0x41794e",
+      "entrydone": "0x4179aa",
+      "errorz": "0x41793c",
+      "getdefdrive": "0x41795c",
+      "getdrvr": "0x417884",
+      "getdrvrentry": "0x41797a",
+      "gosetvol": "0x41795e",
+      "openfailed": "0x417932",
+      "ornentry": "0x41784c",
+      "printclose": "0x417880",
+      "printcontrol": "0x417878",
+      "printprime": "0x417874",
+      "printstatus": "0x41787c",
+      "replacedriver": "0x417900",
+      "return": "0x41795a"
+    }
+  },
+  "historical_limits": "Exact assembly verifies the emitted bytes. It does not recover lost source spelling or test the driver against real devices."
+}

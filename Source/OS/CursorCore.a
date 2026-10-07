@@ -1,0 +1,566 @@
+;
+;	File:		CrsrCore.a
+;
+;	Contains:	xxx put contents here (or delete the whole line) xxx
+;
+;	Copyright:	© 1981-1990 by Apple Computer, Inc., all rights reserved.
+;
+; FILE: CRSRCORE.TEXT
+;_______________________________________________________________________
+;
+; CRSRCORE - System cursor/mouse routines.	Contains the
+;			 mouse interrupt receivers and cursor drawing
+;			 and hiding routines.
+;
+; Written by: Bud Tribble		2-Oct-81
+;
+; MODIFICATION HISTORY:
+;
+;  19-oct-81  bmw	fixed a bug andy found in getscreen
+;  31-Oct-81  AJH	Hardwired the CRSR task into the VBL manager
+;  09-Apr-82  AJH	Changed SHOWCURSOR to clip ala Rick Meyer's Lisa routines
+;  04-May-82  LAK	Updated MV1INT, MH1INT for SCC hardware
+;  05-Aug-82  LAK	modified for INTHND change (no need to modify A0-1 for
+;					  SCC port A) or read status reg.
+;  03-Jul-81  AJH	Installed "ObscureCursror" entry point and support
+;  26-Aug-82  LAK	updated for 512-dots
+;  05-Sep-82  LAK	IntHnd now handles ext/sts interrupt resetting
+;  16-Oct-82  LAK	Modified for new LisaGraf cursor interface
+;  07-Nov-82  AJH	Made ObscureCursor unbusy cursor if already obscured
+;  13-Jan-83  SC	Decouple and scaled Cursor stuff
+;  28-Jan-83  AJH	made SetCursor display it if its different
+;  28-Apr-83  AJH	moved PinRect into crsrCore
+;  20-Jul-83  SC	Cleaned up after code review
+;  18-Aug-83  LAK	Changed name of CrsrTask to CrsrVBLTask (but why?).
+;  20-Aug-83  LAK	Just uses CrsrThresh for scaling params.
+;-----------------------------------------------------------------------
+; 23 Jan 83  LAK  Adapted for new equate files.
+; 05 Apr 85  JTC  Fix discontinuity in PinGuts; mask hotSpot with $000F000F in SetCursor;
+;					add ScreenAddress and ScreenSize to SysDef traplist; fix 'changed' test in
+;					SetCursor.	Punted on desired
+;					call to get Cursor ID ... see Change note for details.
+; 23 Apr 85  JTC  Change to PIN hotSpot between 0 and 16, not 15.					<23Apr85>
+; 23 Apr 85  LAK/BDA/AJH  Added ScrnBitMap proc.  Changed all						<23Apr85>
+;					Screen names to Scrn for consistency and to avoid
+;					ScreenBits conflict.
+; <23Jul85>  RDC  Moved mouse interrupt routines to IntHnd.Text
+; <25Jul85>  RDC  Added include for HWequ file
+; <05Nov85>  JTC for ELR (on telephone)  Fix loop termination condition in HideCursor that killed
+;					MacPaint, e.g.
+
+*R This file restores the Mac Plus cursor core,
+*R including its eight-entry initialization table and PinRect.
+*R The ROM uses a 512-by-342 screen with 64 bytes per row.
+*R Matching released operations retain their applicable comments.
+*R Evidence/cursor-core.json records provenance and exact checks.
+
+        MACHINE MC68000
+        STRING ASIS
+        BLANKS ON
+
+BOTTOM			EQU    4				;INTEGER
+		INCLUDE 'SysEqu.a'
+
+DATA			EQU 	0				;16 WORDS
+H			EQU 	2				;WORD
+HOTSPOT 		EQU 	64				;POINT
+LEFT			EQU    2				;INTEGER
+MASK			EQU 	32				;16 WORDS
+RIGHT			EQU    6				;INTEGER
+ShieldBottom	EQU   12
+ShieldLeft		EQU   18
+ShieldRight 	EQU   14
+ShieldTop		EQU   16
+TOP				EQU    0				;INTEGER
+V			EQU 	0				;WORD
+
+CursorCore PROC ;]
+        EXPORT InitCrTable
+        EXPORT ScrnAddress
+        EXPORT ScrnSize
+        EXPORT ScrnBitMap
+        EXPORT CrsrVBLTask
+        EXPORT PinRect
+
+;
+; offset table for jump table initialization
+;
+
+InitCrTable
+				DC.W	HideCursor-InitCrTable
+				DC.W	ShowCursor-InitCrTable
+				DC.W	ShieldCursor-InitCrTable
+				DC.W	ScrnAddress-InitCrTable
+				DC.W	ScrnSize-InitCrTable
+				DC.W	InitCursor-InitCrTable
+				DC.W	SetCursor-InitCrTable
+				DC.W	ObscureCursor-InitCrTable
+
+;_______________________________________________________________________
+;
+;	 PROCEDURE ObscureCursor -- called via the jump table
+;
+;	 Removes the cursor from the screen without hiding it, so the next
+;	 time the mouse moves, it will show up again. This falls through into HideCursor
+;
+;_______________________________________________________________________
+
+ObscureCursor
+        MOVE.B    #1,CRSRBUSY	;flag the cursor as busy
+        BSET      #0,CRSROBSCURE	;mark it as obscured
+        BNE.S     DoneHide	;if already obscured, skip hide
+
+;
+;  HIDECURSOR - is called from CrsrVBLTask, CURSHIELD, and via jump table.
+;
+;  Subtracts 1 from crsrstate and hides the cursor if visible.
+;
+;
+
+HideCursor
+        MOVE.B    #1,CrsrBusy
+        TST.B     CrsrVis
+        BEQ.S     NOHIDE	;NO, DON'T TRY TO REMOVE IT
+        MOVEM.L   D0-D1/A0-A1,-(SP)	;SAVE REGS USED
+        LEA       CrsrRect,A1	; point to rect for fun
+        MOVE.W    (A1),D1	;GET BOTTOM OF SAVED BITS
+        CLR.L     (A1)+	;RESET topleft to 0
+        SUB.W     (A1),D1	;CALC HEIGHT COUNT
+        CLR.L     (A1)
+        NEG.W     D1	; D1 contained top-bottom so invert
+        BEQ.S     DRKXLPLYTKC	; INVISIBLE CURSOR? DON'T BLIT ANYTHING  <05Nov85> ELR
+        MOVE.L    CRSRADDR,A1	;POINT TO WHERE WE LAST SAVED FROM
+        LEA       CRSRSAVE,A0	;POINT TO THE SAVED DATA
+        MOVEQ     #64,D0
+
+ERASLP
+        MOVE.L    (A0)+,(A1)	;RESTORE BITS UNDER CURSOR
+        ADD.W     D0,A1	;BUMP DSTPTR TO NEXT ROW
+        SUBQ.W    #1,D1	;DEC LOOP COUNT
+        BGT.S     ERASLP	;ERASE ALL ROWS -- was BNE.S		<05Nov85  JTC4ELR>
+
+DRKXLPLYTKC
+        CLR.B     CRSRVIS	;MARK IT AS INVISIBLE
+        MOVEM.L   (SP)+,D0-D1/A0-A1	;RESTORE REGS USED
+
+NOHIDE
+        SUBQ.W    #1,CRSRSTATE	;CURSOR HIDDEN ONE DEEPER
+
+DoneHide
+        CLR.B     CRSRBUSY	;CHANGE COMPLETE
+        RTS       
+
+;
+;_______________________________________________________________________
+;
+;  PROCEDURE InitCursor;
+;
+;  Definately redisplay the cursor, independent of previous calls to
+;  HideCursor, ShieldCursor and ObscureCursor.	It falls into showCursor.
+
+InitCursor
+        MOVE.B    #1,CrsrBusy	;mark it busy
+        CLR.B     CrsrObscure	;we wont be obscure no more
+        CLR.W     CrsrState	;reset state to 0
+
+;_______________________________________________________________________
+;
+;  SHOWCURSOR  - Called from CrsrVBLTask and via Jump Table.
+;
+;  Adds 1 to CRSRSTATE and paints cursor if zero and cursor is
+;  not already visible.
+;
+;
+
+*R The ROM uses the original ShowCursor state checks. The later obscure-hide-show fix is absent.
+
+ShowCursor
+        MOVE.B    #1,CRSRBUSY	;MARK CHANGE IN PROGRESS
+        ADDQ.W    #1,CRSRSTATE	;CURSOR HIDDEN ONE LESS DEEP
+        BLT.S     DoneHide	;QUIT IF STILL HIDDEN
+        CLR.W     CRSRSTATE	;DON'T LET CRSRSTATE GET > 0
+        TST.B     CRSRVIS	;IS CURSOR ALREADY VISIBLE?
+        BNE.S     DoneHide	;YES, DON'T TRY TO REDRAW
+;
+; the following code is adapted from Rick Meyer's SmallTalk cursor routines
+;
+        MOVEM.L   D0-D5/A0-A3,-(SP)	; save registers
+        MOVEQ     #16,D5	; constant used below; good until @4
+        LEA       CrsrSave,A0	; saved data address
+        LEA       TheCrsr+Data,A2	; cursor data bitmap address
+        LEA       TheCrsr+Mask,A3	; cursor mask bitmap address
+;	Compute and bounds check the X-coordinate of the data under the cursor.
+        MOVE.W    Mouse+H,D0	; cursor X-coordinate
+        SUB.W     TheCrsr+HotSpot+H,D0	;  - cursor hotspot X-coordinate
+        MOVEQ     #$F,D2	; upper left X-coordinate
+        AND.W     D0,D2	; bit offset within word
+        NEG.W     D2	; negated and converted to
+        ADD.W     D5,D2	; left shift count
+; work around crummy assembler -- what we want is "MOVE.L #$0000FFFF,D3"
+; but the assembler screws it up
+        MOVEQ     #0 ,D3	; all ones into D3
+        SUBQ.W    #1,D3	; get 0000FFFF into D3
+        LSL.L     D2,D3	;  shifted into position
+        ANDI.W    #$FFF0,D0	; upper left X-coord rounded down
+; branch if >= 0
+        BGE.S     CC_401D46 ;]
+        MOVEQ     #0,D0	; minimum upper left X-coord of 0
+        SWAP      D3
+        SUB.W     D3,D3	; LSL #16,D3
+        ADD.W     D5,D2	; adjust left shift count
+
+CC_401D46 ;]
+        CMPI.W    #512-32,D0 ;]
+        BLE.S     CC_401D56 ;]
+        MOVE.W    #512-32,D0 ;]
+        SUB.W     D3,D3	; LSR #16,D3
+        SWAP      D3
+        ADD.W     D5,D2	; adjust left shift count
+
+CC_401D56 ;]
+;	Compute and bounds check the Y-coordinate of the data under the cursor.
+        MOVE.W    D5,D4	; rows of saved data
+        MOVE.W    Mouse+V,D1	; cursor Y-coordinate
+        SUB.W     TheCrsr+HotSpot+V,D1	;  - cursor hotspot Y-coordinate
+; branch if upper left Y >= 0
+        BGE.S     CC_401D6C ;]
+        ADD.W     D1,D4	; decrease rows of saved data
+        ADD.W     D1,D1	; double for byte count
+        SUB.W     D1,A2	; increase cursor data address
+        SUB.W     D1,A3	; increase cursor mask address
+        MOVEQ     #0,D1	; minimum upper left Y of 0
+
+CC_401D6C ;]
+        CMPI.W    #342-16,D1 ;]
+        BLE.S     CC_401D78 ;]
+        MOVE.W    #342,D4 ;]
+        SUB.W     D1,D4	; adjust rows of saved data
+
+CC_401D78 ;]
+        LEA       CrsrRect,A1	; set up crsrrect
+        MOVE.W    D1,(A1)+	; top
+        MOVE.W    D0,(A1)+	; left
+        MOVE.W    D1,(A1)	; bottom
+        ADD.W     D4,(A1)+	; = top + D4(# rows)
+        MOVE.W    D0,(A1)	; right = left + 32
+        ADDI.W    #32,(A1)
+;	Display the cursor on the screen.
+;	D5 IS 16 UNTIL NOW and used above
+        MOVE.L    ScrnBase,A1	; screen memory address
+        LSR.W     #3,D0	; convert X-coord to bytes
+        ADD.W     D0,A1	;  and add to screen address
+        MOVEQ     #64,D5 ;]
+        MULU.W    D5,D1	;  * Y-coord
+        ADD.L     D1,A1	;  added to screen address
+        MOVE.L    A1,CrsrAddr	; saved data screen address
+; test for rows=0
+        BRA.S     CC_401DB4 ;]
+
+CC_401D9E ;]
+        MOVE.W    (A2)+,D0	; cursor data
+        ROL.L     D2,D0	; shift to proper bit position
+        AND.L     D3,D0	; eliminate unwanted bits
+        MOVE.W    (A3)+,D1	; cursor mask
+        ROL.L     D2,D1	; shift to proper bit position
+        AND.L     D3,D1	; eliminate unwanted bits
+        NOT.L     D1	; invert cursor mask
+        MOVE.L    (A1),(A0)+	; from screen to saved data
+        AND.L     D1,(A1)	; screen and (not mask)
+        EOR.L     D0,(A1)	;  xor cursor data
+        ADD.W     D5,A1	; screen address of next row
+
+CC_401DB4 ;]
+        DBRA      D4,CC_401D9E ;]
+        MOVE.B    #1,CrsrVis	; cursor visible
+        MOVEM.L   (SP)+,D0-D5/A0-A3
+
+DONESHOW
+;
+        CLR.B     CRSRBUSY	;CHANGE COMPLETE
+        RTS       
+
+;_______________________________________________________________________
+;
+;  CURSHIELD  - Called via Jump Table
+;
+;  PROCEDURE ShieldCursor(left,top,right,bottom: INTEGER);
+;
+;  Subtracts 1 from CRSRSTATE, hides cursor only if it intersects SHIELDRECT.
+;  left,top,right bottom is the shieldRect in global coordinates
+;
+;  ALL REGISTERS RESTORED.
+;
+
+ShieldCursor
+;		 LINK	 A6,#0							;NO LOCAL VARS
+        MOVEM.L   D0/A0,-(SP)	;SAVE REGISTERS
+        LEA       CrsrRect,A0	; point to crsr rect
+        MOVE.W    ShieldBottom(SP),D0	;GET SHIELD BOTTOM
+        CMP.W     (A0)+,D0	;IS SHIELDBOTTOM < SAVETOP ?
+        BLT.S     NOSECT	;YES, NO INTERSECTION
+        CMPI.W    #512-16,(A0) ;]
+        BGE.S     SECT ;]
+        MOVE.W    ShieldRight(SP),D0	;GET SHIELD RIGHT
+        CMP.W     (A0)+,D0	;IS SHIELDRIGHT <= SAVELEFT ?
+        BLE.S     NOSECT	;YES, NO INTERSECTION
+        MOVE.W    ShieldTop(SP),D0	;GET SHIELD TOP
+        CMP.W     (A0)+,D0	;IS SHIELDTOP >= SAVEBOTTOM ?
+        BGE.S     NOSECT	;YES, NO INTERSECTION
+        MOVE.W    ShieldLeft(SP),D0	;GET SHIELD LEFT
+        CMP.W     (A0),D0	;IS SHIELDLEFT >= SAVERIGHT ?
+        BGE.S     NOSECT	;YES, NO INTERSECTION
+
+SECT
+        BSR.W     HideCursor	;IT DOES INTERSECT, REMOVE IT
+;CONTINUE
+        BRA.S     ShieldDone ;]
+
+NOSECT
+        SUBQ.W    #1,CRSRSTATE	;MARK AS HIDDEN ONE DEEPER
+
+ShieldDone ;]
+        MOVEM.L   (SP)+,D0/A0	;RESTORE REGISTERS
+;		 UNLK	 A6
+        MOVE.L    (SP)+,(SP)	;STRIP 8 bytes of PARAMETERS, MOVING
+        MOVE.L    (SP)+,(SP)	;RETURN ADDR UP ON STACK
+        RTS       
+
+;_______________________________________________________________________
+;
+; PROCEDURE SetCursor(hotSpot: Point; height: INTEGER; data: Ptr; mask:Ptr);
+;
+; This procedure sets THECRSR pointer in the system global area.
+; A reasonable hotSpot is ENFORCED!  Also fix bug to note changed when only hotspot does.  <05Apr85>
+;
+;  WARNING: to save code, this routine really doesn't use the above interface.
+;  It ignores the height and mask parameters.  It assumes that the mask immediately
+;  follows the data (as it does when called from LisaGraf)
+;
+
+SetCursor
+        MOVE.L    8(SP),A0	;get address of data mask
+        LEA       THECRSR,A1	;point to system cursor buffer
+        MOVEQ     #15,D2	;have 16 longs to move
+        MOVEQ     #0,D1	;flag that its not different
+
+SetCurLoop
+        MOVE.L    (A0)+,D0	;get next longWord of new cursor
+        CMP.L     (A1),D0	;is it the same as what's there
+;if so, skip
+        BEQ.S     CC_401E1E ;]
+        ADDQ.W    #1,D1	;flag that its different
+
+CC_401E1E ;]
+        MOVE.L    D0,(A1)+	;move it into the cursor buffer
+        DBRA      D2,SetCurLoop	;move all 64 bytes
+        MOVE.L    14(SP),D0	;get the alleged hotspot							<23Apr85>
+		; Clean up the two coordinates to lie between 0 and 16. 							<23Apr85>
+        MOVEQ     #16,D2	; VERY handy temp, from loop above					<23Apr85>
+        CMP.W     D2,D0	;													<23Apr85>
+; D0 LowerorSame as 16 is ok						<23Apr85>
+        BLS.S     CC_401E30 ;]
+        MOVE.W    D2,D0	;pin it at 16										<23Apr85>
+
+CC_401E30 ;]
+        SWAP      D0	;align the high-order coord 						<23Apr85>
+        CMP.W     D2,D0	;													<23Apr85>
+; D0 LowerorSame as 16 is ok						<23Apr85>
+        BLS.S     CC_401E38 ;]
+        MOVE.W    D2,D0	;													<23Apr85>
+
+CC_401E38 ;]
+        SWAP      D0	;realign coords 									<23Apr85>
+        CMP.L     TheCrsr+HotSpot,D0	;is it new? 										<05Apr85>
+;													<05Apr85>
+        BEQ.S     CC_401E46 ;]
+        ADDQ.W    #1,D1	;flag it's different                                <05Apr85>
+        MOVE.L    D0,TheCrsr+HotSpot	;move in the hotSpot								<05Apr85>
+
+CC_401E46 ;]
+; if the cursor changed, force it to be displayed by hiding then showing it
+        TST.W     D1	;did it change?
+;skip if it didn't
+        BEQ.S     CC_401E52 ;]
+        BSR.W     HideCursor	;hide it
+        BSR.W     ShowCursor	;then show it again to redraw it
+
+CC_401E52 ;]
+        MOVE.L    (SP)+,A0	;get return address
+        ADD.W     #14,SP	;strip parameters
+        JMP       (A0)	;return to caller
+
+;
+;  FUNCTION ScrnAddress:Ptr;
+;
+;	return a pointer to the start of the bit-map display
+;
+
+ScrnAddress
+        MOVE.L    ScrnBase,4(SP)	;get screenBase set up by OS
+        RTS       	;that was easy!
+
+;
+;_______________________________________________________________________
+;
+;  PROCEDURE ScrnSize(VAR hDots,vDots: INTEGER);
+;
+;  return the size of the screen in pixels
+;
+
+ScrnSize
+        MOVE.L    (SP)+,A1	;get the return address
+        MOVE.L    (SP)+,A0	;get pointer to vDots
+        MOVE.W    #342,(A0) ;]
+        MOVE.L    (SP)+,A0	;get pointer to hDots
+
+ScrnCmn
+        MOVE.W    #512,(A0) ;]
+        JMP       (A1)	;return to caller
+
+;_______________________________________________________________________
+;
+;  PROCEDURE ScrnBitMap(VAR x: BitMap);
+;
+;  return the screen bitmap
+;
+
+ScrnBitMap
+        MOVE.L    (SP)+,A1	;get the return address 				<23Apr85>
+        MOVE.L    (SP)+,A0	;get pointer to vDots					<23Apr85>
+        MOVE.L    ScrnBase,(A0)+	;										<23Apr85>
+        MOVE.W    ScreenRow,(A0)+	;										<23Apr85>
+        CLR.L     (A0)+	;										<23Apr85>
+        MOVE.W    #342,(A0)+ ;]
+        BRA.S     ScrnCmn	;share common ending					<23Apr85>
+
+; CrsrVBLTask - executed once each vertical retrace
+
+*R The ROM computes the sum of the absolute coordinate changes. When scaling is enabled and this sum reaches CrsrThresh, it doubles both changes. It then pins and updates the mouse and cursor positions.
+
+CrsrVBLTask
+        TST.B     CrsrNew	; Mouse changed?
+        BEQ.S     TrackDone	; No … return
+        TST.B     CrsrBusy	; Cursor locked?
+        BNE.S     TrackDone	; Yes … return
+;
+        TST.B     CrsrCouple	; Cursor coupled to mouse?
+; No … skip computation	<DSV>
+        BEQ.S     Repaint ;]
+        MOVE.W    MTemp+V,D0 ;]
+        SUB.W     RawMouse+V,D0
+        MOVE.W    D0,D2
+        BGE.S     AbslXl
+        NEG.W     D2
+
+AbslXl
+        MOVE.W    MTemp+H,D1 ;]
+        SUB.W     RawMouse+H,D1 ;]
+        BGE.S     CC_401EB4 ;]
+        SUB.W     D1,D2
+        BRA.S     CC_401EB6 ;]
+
+CC_401EB4 ;]
+        ADD.W     D1,D2
+
+CC_401EB6 ;]
+        TST.B     CrsrScale ;]
+        BEQ.S     DoPin ;]
+        CMP.W     CrsrThresh,D2 ;]
+        BLT.S     DoPin ;]
+        ADD.W     D1,D1
+        ADD.W     D0,D0
+
+DoPin
+        ADD.W     D1,RawMouse+H ;]
+        ADD.W     D0,RawMouse+V ;]
+;
+        LEA       CrsrPin,A0	; Bounding rect for cursor
+        MOVE.L    RawMouse,D0	; Pin mouse inside rect
+        BSR.S     PinGuts
+;
+        MOVE.L    D0,RawMouse	; Update cursor locations
+        MOVE.L    D0,MTemp
+;
+        AND.L     MouseMask,D0	; Do jerky masking to drop low bits
+        MOVE.L    MouseOffset,D1	; Get the offset
+        BEQ.S     SkipPin	; Skip 2nd pin if not
+        ADD.L     D1,D0	; Do jerky offset
+        BSR.S     PinGuts	; Pin mouse inside rect again
+
+SkipPin
+        MOVE.L    D0,Mouse	; Actual mouse location
+
+Repaint
+;
+        TST.B     CrsrObscure	; Unpaint the cursor
+        BNE.S     Unpainted
+        BSR.W     HideCursor
+
+Unpainted
+;
+        CLR.B     CrsrNew	; Cursor is fresh
+        CLR.B     CrsrObscure	; Cursor is not obscured
+        BSR.W     ShowCursor
+
+TrackDone
+;
+        RTS       	; Goodbye
+
+; This routine is used by the pinrect routine below and is also called directly
+; by CrsrVBLTask above to save time
+; A0 should be pinning rect and D0 is the point to be pinned
+; Fixed to avoid discontinuity on right and bottom. 									<05Apr85>
+
+PinGuts
+        CMP.W     LEFT(A0),D0	;less than left?
+;if not, no problem
+        BGE.S     CC_401F14 ;]
+        MOVE.W    LEFT(A0),D0	;pin to the left
+
+CC_401F14 ;]
+;
+        CMP.W     RIGHT(A0),D0	;greater than right?
+;if not, no problem  WAS BLE!!			<05Apr85>
+        BLT.S     CC_401F20 ;]
+        MOVE.W    RIGHT(A0),D0	;pin to the right
+        SUBQ.W    #1,D0	;really want one less
+
+CC_401F20 ;]
+;
+        SWAP      D0	;consider y
+        CMP.W     TOP(A0),D0	;less than top?
+;if not, no problem
+        BGE.S     CC_401F28 ;]
+        MOVE.W    TOP(A0),D0	;pin to the top
+
+CC_401F28 ;]
+;
+        CMP.W     BOTTOM(A0),D0	;greater than bottom?
+;if not, no problem  WAS BLT!!			<05Apr85>
+        BLT.S     CC_401F34 ;]
+        MOVE.W    BOTTOM(A0),D0	;pin to the bottom
+        SUBQ.W    #1,D0	;really want one less
+
+CC_401F34 ;]
+;
+        SWAP      D0
+        RTS       
+
+; Utility  FUNCTION PinRect(theRect: Rect; thePt: Point): Point;
+;
+;	 given a rectangle and a point, pin the point inside the rectangle
+;
+
+PinRect
+        MOVE.L    4(SP),D0	;get the point
+        MOVE.L    8(SP),A0	;get the rect ptr
+;
+        BSR.S     PinGuts	; go pin it
+        MOVE.L    (SP)+,A0	;get return address
+        ADDQ.W    #8,SP	;strip parameters
+        MOVE.L    D0,(SP)	;return pinned pt as result
+        JMP       (A0)	;return to caller
+
+CursorCoreEnd ;]
+        ENDPROC
+        END

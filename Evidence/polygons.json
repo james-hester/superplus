@@ -1,0 +1,232 @@
+{
+  "module": "Polygons",
+  "source": "Reconstruction/Source/QuickDraw/Polygons.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/Polygons.m.a",
+      "sha256": "28196acf35fef537fbe83ec988bad7c44aa3fc217f89c27d2c3e36d65e7c598f",
+      "line_ranges": [
+        [
+          18,
+          30
+        ],
+        [
+          79,
+          436
+        ],
+        [
+          1360,
+          1398
+        ]
+      ],
+      "role": "The surviving source supplies the polygon entry points and retains the earlier region-based DrawPoly procedure."
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+      "line_ranges": [
+        [
+          443,
+          487
+        ],
+        [
+          502,
+          535
+        ]
+      ],
+      "role": "QuickDraw equate names and the UNLINK macro interface."
+    },
+    {
+      "path": "Interfaces/AIncludes/QuickDraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "line_ranges": [
+        [
+          229,
+          267
+        ]
+      ],
+      "role": "Polygon, region, and GrafPort offsets."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40b982",
+      "end_exclusive": "0x40bbf6",
+      "rom_offset": "0xb982",
+      "length": 628,
+      "sha256": "4ac12d9a1c9c628f406c3d1ccf86c0c6380a1dff57bf3b1968e9f056612f5a98",
+      "start_label": "StdPoly",
+      "end_label": "PolygonsEnd",
+      "boundary_evidence": "The exported StdPoly symbol begins at 0x40b982. The final DrawPoly return ends at 0x40bbf6, where StdRgn begins."
+    }
+  ],
+  "entry_points": {
+    "StdPoly": "0x40b982",
+    "FramePoly": "0x40b9f8",
+    "PaintPoly": "0x40b9fc",
+    "ErasePoly": "0x40ba00",
+    "InvertPoly": "0x40ba04",
+    "FillPoly": "0x40ba08",
+    "CallPoly": "0x40ba1e",
+    "OpenPoly": "0x40ba3e",
+    "ClosePoly": "0x40ba72",
+    "KillPoly": "0x40bae0",
+    "OffsetPoly": "0x40bae8",
+    "MapPoly": "0x40bb04",
+    "FrPoly": "0x40bb60",
+    "DrawPoly": "0x40bba0",
+    "PolygonsEnd": "0x40bbf6"
+  },
+  "changes": [
+    {
+      "location": "DrawPoly",
+      "change": "Selected the original DrawPoly retained beneath the QuickPolys conditional. Removed the later vector structures and QuickPolys procedures.",
+      "evidence": "The ROM frames the polygon into a temporary region, then calls DrawRgn. The retained earlier source reproduces every instruction.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "FillPoly",
+      "rom_address": "0x40ba1c",
+      "change": "Replaced the branch to the following CallPoly label with NOP.",
+      "evidence": "The ROM contains 4e71 at this address. A short branch with zero displacement is not the encoding used here.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "FrPoly",
+      "rom_address": "0x40bb80",
+      "change": "Wrote MOVEQ #14,D6 explicitly in place of MOVE.L #14,D6.",
+      "evidence": "The ROM contains 7c0e. This spelling preserves the selected instruction without depending on assembler optimization.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Build dependencies and returns",
+      "change": "Restored the 68000 UNLINK macro, made PC-relative calls explicit, and supplied local equates for used offsets and ROM addresses.",
+      "evidence": "The complete assembled span matches all return sequences, displacements, and trap words.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "Comments and history",
+      "change": "Preserved the polygon heading and applicable original procedure and instruction comments. Omitted history for the later QuickPolys patch and marked the reconstruction choices in a new note.",
+      "evidence": "The original source hash and selected line ranges are recorded above.",
+      "confidence": "source provenance recorded"
+    }
+  ],
+  "external_references": [
+    {
+      "name": "CheckPic",
+      "address": "0x40e448",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "PutPicVerb",
+      "address": "0x40e34a",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "DPutPicByte",
+      "address": "0x40e2a4",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "PutPicRgn",
+      "address": "0x40e32c",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "RSect",
+      "address": "0x40a110",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "PushVerb",
+      "address": "0x409ee0",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "HidePen",
+      "address": "0x4097c0",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "ShowPen",
+      "address": "0x4097c4",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "NewHandle",
+      "address": "0x408784",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "SetHSize",
+      "address": "0x408798",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "MapRect",
+      "address": "0x40e5cc",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "MapPt",
+      "address": "0x40e56a",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "MoveTo",
+      "address": "0x409728",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "DoLine",
+      "address": "0x409748",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "OpenRgn",
+      "address": "0x40bd7a",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "NewRgn",
+      "address": "0x40bd4e",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "CloseRgn",
+      "address": "0x40bda8",
+      "evidence": "ROM target of the corresponding source call."
+    },
+    {
+      "name": "DrawRgn",
+      "address": "0x40bca2",
+      "evidence": "ROM target of the corresponding source call."
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py expanded the source macro, assembled for the 68000, linked at 0x40b982, and compared every emitted byte against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "ce19eafd99e13c96f5157aaf1c60c841744c98cfa123f4bd1869939aa4459117",
+    "assembled_length": 628,
+    "matched_bytes": 628,
+    "entry_points_checked": 15,
+    "result": "exact",
+    "limits": [
+      "The original Mac Plus source and historical assembler output remain unavailable. The ROM proves instruction encoding for this span; some historical source spelling and build dependencies remain inferred.",
+      "External calls use recorded ROM addresses. This module does not verify their implementations.",
+      "The zero-parameter case of the retained UNLINK macro emits no bytes in this module."
+    ]
+  }
+}

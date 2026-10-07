@@ -1,0 +1,2047 @@
+*R Mac Plus v3 embedded MPP driver, version 19.
+*R The complete MPP, LAP, DDP, and NBP implementation sources were not found.
+*R The ROM establishes the code; surviving interfaces establish public fields.
+*R vardefs2.a and LAPvars2.a preserve most names and relationships in the private layout.
+*R Their later table sizes and added fields have been restored to the ROM layout.
+*R Other routine names and private fields are reconstruction identifiers.
+*R The original VBLDeferCnt interrupt race remains.
+*R Resource lengths, driver entries, and dispatch tables use label differences.
+
+*R Surviving interface definitions and restored private layout.
+		EXPORT MPPDriver ;]
+
+		INCLUDE 'AppleTalk.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+ControlFirst EQU LookupReply-1 ;]
+; List of active protocols
+Protocols EQU ATPVars+4 ;]
+; Size of LAP protocol handler table (even)
+LAPTblSz EQU 4 ;]
+Handlers		EQU		Protocols+LAPTblSz 		; List of handler addresses
+LAPTblEnd		EQU		Handlers+(4*LAPTblSz)	; End of LAP table
+SocketNum		EQU		LAPTblEnd				; Socket number in socket table
+; Size of socket table (even!)
+DDPTblSz EQU 14 ;]
+SktLstnr		EQU		SocketNum+DDPTblSz		; Socket listener addr
+DDPTblEnd EQU SktLstnr+4*DDPTblSz ;]
+VBLQEl			EQU		DDPTblEnd				; A VBL queue element
+NRPtr			EQU		VBLQEl+14				; Ptr to non-resident code (and flag)
+LookupPtr		EQU		NRPtr+4					; Pointer to lookup-reply code (and flag)
+SCCLockout68000 EQU $2600 ;]
+NRVars			EQU		LookupPtr+4				; Pointer to NR local variables
+JDDPWrite		EQU		NRVars+4				; Address of DDPWrite routine
+NTQueueHd		EQU		JDDPWrite+4				; Names Table Queue Head
+LUQElPtr		EQU		NTQueueHd+4				; Ptr to lookup queue element/buffer
+; End of MPP vars (*** more in LAPvars.a ***)
+MPPVarsEnd EQU LUQElPtr+4 ;]
+WDSPtr EQU MPPVarsEnd ; (4) WDS pointer saved here on writes
+LAPWrtRtn		EQU		WDSPtr+4				; (4) LAP write return address saved here
+RandomSeed		EQU		LAPWrtRtn+4				; (2) Seed for random number generator
+DestNode		EQU		RandomSeed+2			; (1) Destination node saved here on writes
+fLAPAdrValid	EQU		DestNode+1				; (1) If node address has been validated
+fGoodCTS		EQU		fLAPAdrValid+1			; (1) If a valid CTS is received
+fAdrInUse		EQU		fGoodCTS+1				; (1) If get something from ourselves
+fSendENQ		EQU		fAdrInUse+1				; (1) Flag to AbusWrite to send ENQ (not data)
+VBLDeferCnt		EQU		fSendENQ+1				; (1) Count for VBL deferring check
+lbackOff		EQU		VBLDeferCnt+1			; (1) Local backoff mask for one send
+backoff			EQU		lbackOff+1				; (1) Global backoff mask
+collsnHistory	EQU		backoff+1				; (1) Bit history of collisions last 8 sends
+deferHistory	EQU		collsnHistory+1			; (1) Bit history of defers last 8 sends
+deferTries		EQU		deferHistory+1			; (1) Local count of defers in one send
+collsnTries		EQU		deferTries+1			; (1) Local count of collisions in one send
+BridgeTime		EQU		collsnTries+1			; (1) Timestamp since last router packet
+SCCSyncHunt EQU 4 ;]
+VAbortWait EQU BridgeTime+1 ;]
+; (8) A4 and A5 saved here on interrupt
+SaveA45 EQU VAbortWait+1 ;]
+SaveDskRtn		EQU		SaveA45+8				; (4) DskRtnAdr saved here for PollProc
+SavePS			EQU		SaveDskRtn+4			; (4) PollStack saved here for disk driver
+SaveBIn			EQU		SavePS+4				; (4) .BIN DCE saved here (for close)
+SaveBOut		EQU		SaveBIn+4				; (4) .BOUT DCE saved here (for close)
+SaveVects		EQU		SaveBOut+4				; (12) SCC interrupt vectors saved here
+SaveRegs		EQU		SaveVects+12			; (20) Registers saved here across PollProc
+VAVBufA			EQU		SaveRegs+20				; Pointer to VIA or a $FF word
+VSTData			EQU		VAVBufA+4				; Data string to SCC after send
+VDisTxRTS		EQU		VSTData+1				; This is the DisTxRTS byte
+VBL20			EQU		20						; Call VBL task every 20 ticks
+SCCRxReady EQU 0 ;]
+SCCTxReady EQU 2 ;]
+SCCData EQU 4
+STLth			EQU		6						; Size of STData area
+DataSize EQU VSTData+STLth ;]
+MacAVBufA EQU $EFFFFE ;]
+MPPVersion EQU 19 ;]
+LookupReadSize EQU $7C ;]
+NBPVarSize EQU $47 ;]
+NBPVBLQ EQU 4 ;]
+LookupBufferSize EQU $98 ;]
+NBPRetBuffer EQU $16 ;]
+NBPRetLength EQU $1A ;]
+NBPRequest EQU $12 ;]
+NBPDestNet EQU 2 ;]
+NBPDDPHeader EQU $37 ;]
+NBPHeader EQU $30 ;]
+NBPRequestID EQU 1 ;]
+NBPWDS EQU $1C ;]
+CmpStringTrap EQU $A03C ;]
+SCCReadEnable EQU $2100 ;]
+
+
+MPPResourceBlock PROC ;]
+ DC.L $C0000000+(MPPResourceEnd-MPPResourceBlock) ;]
+ DC.L $64 ;]
+
+MPPDriver ;]
+ DC.W $5C00
+ DC.W 0,0,0
+ DC.W MPPOpen-MPPDriver ;]
+ DC.W MPPPrime-MPPDriver ;]
+ DC.W MPPControl-MPPDriver ;]
+ DC.W MPPStatus-MPPDriver ;]
+ DC.W MPPClose-MPPDriver ;]
+ DC.B 4
+ DC.B '.MPP '
+
+*R This is the conventional driver-version slot; the high byte and use are unproven.
+
+MPPVersionWord ;]
+ DC.W $2813
+
+MPPControl ;]
+ MOVE.L     AtalkHk1,D3 ;]
+ BLE.S      DispatchMPP ;]
+ MOVE.L     D3,A2
+ JSR        (A2)
+
+DispatchMPP ;]
+ MOVE.L     ABusVars,A2
+ MOVE.L     A2,D0
+ BNE.S      MPPBranch_41a72c ;]
+ MOVEQ      #ControlErr,D0
+ BRA.W      GoIODone ;]
+
+MPPBranch_41a72c ;]
+ MOVE.W     CSCode(A0),D3 ;]
+ BMI.S      CloseForApplication ;]
+ SUBQ.W     #1,D3
+ BNE.S      MPPBranch_41a738 ;]
+ RTS        
+
+MPPBranch_41a738 ;]
+ MOVEQ      #ControlErr,D0
+ SUB.W      #ControlFirst,D3 ;]
+ BLT.W      GoIODone ;]
+ CMP.W      #UnloadNBP-LookupReply,D3 ;]
+ BGT.W      GoIODone ;]
+ MOVE.B     Socket(A0),D1
+ MOVE.L     WDSPointer(A0),A1 ;]
+ CMP.W      #LoadNBP-LookupReply,D3 ;]
+ BGT.S      CallNBP ;]
+ LEA        MPPControlTable,A3 ;]
+ ADD.W      D3,A3
+ ADD.W      D3,A3
+ MOVE.W     (A3),A3 ;]
+ PEA        MPPDriver ;]
+ ADD.L      (SP)+,A3 ;]
+ JMP        (A3)
+
+MPPControlTable ;]
+ DC.W DoLookupReply-MPPDriver ;]
+ DC.W DoWriteLAP-MPPDriver ;]
+ DC.W DoDetachPH-MPPDriver ;]
+ DC.W DoAttachPH-MPPDriver ;]
+ DC.W DoWriteDDP-MPPDriver ;]
+ DC.W DoCloseSkt-MPPDriver ;]
+ DC.W DoOpenSkt-MPPDriver ;]
+ DC.W NoError-MPPDriver ;]
+
+CloseForApplication ;]
+ MOVE.L     LookupPtr(A2),D1 ;]
+ BPL.S      CallNBP ;]
+ MOVE.L     D1,A3
+ JSR        2(A3) ;]
+
+CallNBP ;]
+ MOVE.L     NRPtr(A2),D2 ;]
+ BPL.S      MPPExit ;]
+ MOVE.L     D2,A3
+ JMP        (A3)
+
+DoLookupReply ;]
+ MOVE.L     LookupPtr(A2),D2 ;]
+ BPL.S      MPPExit ;]
+ MOVE.L     D2,A3
+ JMP        (A3)
+
+NoError
+ CLR.W      D0
+
+MPPExit ;]
+ BRA.W      FinishMPP ;]
+
+EnableNBP ;]
+ LEA        NBPCode,A3 ;]
+ MOVE.L     A3,NRPtr(A2) ;]
+ BSET       #7,NRPtr(A2) ;]
+ JMP        (A3)
+
+DoOpenSkt ;]
+ BSR.S      DDPOpenSocket ;]
+ MOVE.B     D1,Socket(A0) ;]
+ BRA.S      MPPBranch_41a80a ;]
+
+DDPOpenSocket
+ MOVEQ      #DDPSktErr,D0 ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ TST.B      D1
+ BEQ.S      MPPBranch_41a7ca ;]
+ BMI.S      MPPBranch_41a7f6 ;]
+ BSR.S      FindSocket ;]
+ BEQ.S      MPPBranch_41a7f6 ;]
+
+MPPBranch_41a7ca ;]
+ MOVEQ      #DDPTblSz-1,D2 ;]
+
+MPPBranch_41a7cc ;]
+ TST.B      SocketNum(A2,D2.W) ;]
+ DBEQ       D2,MPPBranch_41a7cc ;]
+ BNE.S      MPPBranch_41a7f6 ;]
+ TST.B      D1
+ BNE.S      MPPBranch_41a7ea ;]
+ BSR.W      NextRandom ;]
+ AND.B      #$F0,D0
+ OR.B       D2,D0
+ BSET       #7,D0
+ MOVE.B     D0,D1
+
+MPPBranch_41a7ea ;]
+ MOVE.B     D1,SocketNum(A2,D2.W) ;]
+ LSL.W      #2,D2
+ MOVE.L     A1,SktLstnr(A2,D2.W) ;]
+ CLR.W      D0
+
+MPPBranch_41a7f6 ;]
+ MOVE.W     (SP)+,SR
+ RTS        
+
+DoCloseSkt ;]
+ MOVEQ      #DDPSktErr,D0 ;]
+ TST.B      D1
+ BEQ.S      MPPBranch_41a80a ;]
+ BSR.S      FindSocket ;]
+ BNE.S      MPPBranch_41a80a ;]
+ CLR.B      SocketNum(A2,D2.W) ;]
+ CLR.W      D0
+
+MPPBranch_41a80a ;]
+ BRA.S      MPPExit ;]
+
+FindSocket ;]
+ MOVEQ      #DDPTblSz-1,D2 ;]
+
+MPPBranch_41a80e ;]
+ CMP.B      SocketNum(A2,D2.W),D1 ;]
+ DBEQ       D2,MPPBranch_41a80e ;]
+ RTS        
+
+DoWriteDDP ;]
+ MOVE.B     CheckSumFlag(A0),D3 ;]
+ BSR.S      DDPWrite ;]
+ BRA.S      MPPBranch_41a80a ;]
+
+DDPWrite
+ BRA.S      WriteDDPPacket ;]
+
+DDPOpenEntry ;]
+ BRA.S      DDPOpenSocket ;]
+
+WriteDDPPacket ;]
+ MOVEQ      #DDPSktErr,D0 ;]
+ TST.B      D1
+ BEQ.S      MPPBranch_41a892 ;]
+ BSR.S      FindSocket ;]
+ BNE.S      MPPBranch_41a892 ;]
+ MOVE.L     A1,-(SP)
+ ADDQ.W     #2,A1
+ MOVE.L     (A1)+,A3 ;]
+ ADDQ.W     #7,A3 ;]
+ MOVE.B     D1,7(A3) ;]
+ MOVE.W     (A3),D0
+ BEQ.S      MPPBranch_41a894 ;]
+ CMP.W      SysNetNum(A2),D0 ;]
+ BEQ.S      MPPBranch_41a894 ;]
+ MOVE.W     SysNetNum(A2),2(A3) ;]
+ MOVE.B     (A2),5(A3) ;]
+ MOVE.B     4(A3),D1 ;]
+ MOVE.L     A3,A0
+ CLR.W      -(A3)
+ TST.B      D3
+ BEQ.S      MPPBranch_41a870 ;]
+ MOVEQ      #9,D0
+ CLR.W      D3
+ BSR.S      DDPChecksum ;]
+
+MPPBranch_41a860 ;]
+ MOVE.W     (A1)+,D0
+ BEQ.S      MPPBranch_41a86a ;]
+ MOVE.L     (A1)+,A0
+ BSR.S      DDPChecksum ;]
+ BRA.S      MPPBranch_41a860 ;]
+
+MPPBranch_41a86a ;]
+ MOVE.W     D3,(A3)
+ BNE.S      MPPBranch_41a870 ;]
+ SUBQ.W     #1,(A3) ;]
+
+MPPBranch_41a870 ;]
+ MOVEQ      #2,D3
+ MOVEQ      #16,D0
+ MOVE.B     SysABridge(A2),D2 ;]
+ BNE.S      MPPBranch_41a8a4 ;]
+ MOVE.B     D1,D2
+ TST.W      SysNetNum(A2) ;]
+ BEQ.S      MPPBranch_41a8a4 ;]
+ MOVEQ      #NoBridgeErr,D0 ;]
+ ADDQ.W     #4,SP
+ RTS        
+
+DDPChecksum
+ MOVE.B     (A0)+,D2
+ ADD.W      D2,D3
+ ROL.W      #1,D3
+ SUBQ.W     #1,D0
+ BNE.S      DDPChecksum ;]
+
+MPPBranch_41a892 ;]
+ RTS        
+
+MPPBranch_41a894 ;]
+ MOVE.L     A3,A0
+ ADDQ.W     #8,A0
+ MOVE.B     (A0),(A3) ;]
+ MOVE.W     -(A0),-(A3) ;]
+ SUBQ.W     #2,A0
+ MOVE.B     (A0),D2
+ MOVEQ      #1,D3
+ MOVEQ      #8,D0
+
+MPPBranch_41a8a4 ;]
+ MOVE.L     (SP)+,A1
+ MOVE.W     D0,(A1)
+ CLR.W      D1
+ MOVE.L     A1,A0
+
+MPPBranch_41a8ac ;]
+ TST.W      (A0)
+ BEQ.S      MPPBranch_41a8b8 ;]
+ BMI.S      MPPBranch_41a8ce ;]
+ ADD.W      (A0),D1 ;]
+ ADDQ.W     #6,A0
+ BRA.S      MPPBranch_41a8ac ;]
+
+MPPBranch_41a8b8 ;]
+ MOVE.W     D1,-(A3) ;]
+ SUBQ.W     #3,(A3) ;]
+ SUB.W      D0,D1
+ CMP.W      #DDPMaxData,D1 ;]
+ BHI.S      MPPBranch_41a8ce ;]
+ MOVE.B     D3,-(A3) ;]
+ SUBQ.W     #2,A3
+ MOVE.B     D2,(A3)
+ BRA.W      AbusWrite ;]
+
+MPPBranch_41a8ce ;]
+ MOVEQ      #DDPLenErr,D0
+ BRA.S      MPPBranch_41a892 ;]
+
+ReadLongDDP ;]
+ MOVEQ      #11,D3 ;]
+ MOVE.W     SysNetNum(A2),D2
+ JSR        (A4)
+ BNE.S      MPPBranch_41a892 ;]
+ CMP.W      8(A2),D2 ;]
+ BEQ.S      DispatchDDP ;]
+ BRA.S      IgnoreDDP ;]
+
+ReadShortDDP ;]
+ MOVEQ      #3,D3
+ JSR        (A4)
+ BNE.S      MPPBranch_41a892 ;]
+*R Surviving interface contract for the socket listener called below.
+;	This socket listener is called from MPP.
+;
+;	Upon entering the socket listener, the LAP header bytes, and the
+;	appropriate DDP header bytes have been written into the RHA and the
+;	RHA's ptr will point past the last byte in the RHA.
+;
+;	A4 and A5 are usable until ReadRest 2(A4) is called.  After that,
+;	the normal interrupt conventions (A0-A3,D0-D3) apply.	D2 is
+;	preserved across ReadPacket and ReadRest.
+
+DispatchDDP ;]
+ MOVEQ      #DDPTblSz-1,D2 ;]
+ MOVE.B     -3(A3),D0 ;]
+ BEQ.S      IgnoreDDP ;]
+
+MPPBranch_41a8f2 ;]
+ CMP.B      SocketNum(A2,D2.W),D0 ;]
+ DBEQ       D2,MPPBranch_41a8f2 ;]
+ BNE.S      IgnoreDDP ;]
+ LSL.W      #2,D2
+ MOVE.L     SktLstnr(A2,D2.W),A5 ;]
+ JMP        (A5)
+
+IgnoreDDP ;]
+ JMP        2(A4)
+
+RTMPRead ;]
+ SUBQ.B     #1,-(A3) ;]
+ BNE.S      IgnoreDDP ;]
+ MOVEQ      #4,D3
+ JSR        2(A4)
+ BNE.S      MPPBranch_41a926 ;]
+ MOVE.B     -(A3),D2 ;]
+ SUBQ.B     #8,-(A3) ;]
+ BNE.S      MPPBranch_41a926 ;]
+ MOVE.B     D2,SysABridge(A2) ;]
+ ST         BridgeTime(A2) ;]
+ MOVE.W     -(A3),SysNetNum(A2) ;]
+
+MPPBranch_41a926 ;]
+ RTS        
+
+DoAttachPH
+ MOVEQ      #LAPProtErr,D0
+ TST.B      D1
+ BLE.S      MPPBranch_41a94a ;]
+ BSR.S      FindProtocol ;]
+ BEQ.S      MPPBranch_41a94a ;]
+ MOVEQ      #LAPTblSz-1,D2
+
+MPPBranch_41a934 ;]
+ LEA        Protocols(A2,D2.W),A3 ;]
+ TST.B      (A3)
+ DBMI       D2,MPPBranch_41a934 ;]
+ BPL.S      MPPBranch_41a94a ;]
+ LSL.W      #2,D2
+ MOVE.L     A1,Handlers(A2,D2.W) ;]
+ MOVE.B     D1,(A3)
+
+MPPBranch_41a948 ;]
+ CLR.W      D0
+
+MPPBranch_41a94a ;]
+ BRA.S      FinishMPP ;]
+
+FindProtocol ;]
+ MOVEQ      #LAPTblSz-1,D2
+
+MPPBranch_41a94e ;]
+ CMP.B      Protocols(A2,D2.W),D1 ;]
+ DBEQ       D2,MPPBranch_41a94e ;]
+ RTS        
+
+DoDetachPH
+ MOVEQ      #LAPProtErr,D0
+ MOVEQ      #LAPTblSz-1,D2
+
+MPPBranch_41a95c ;]
+ CMP.B      Protocols(A2,D2.W),D1 ;]
+ DBEQ       D2,MPPBranch_41a95c ;]
+ BNE.S      MPPBranch_41a94a ;]
+ ST         Protocols(A2,D2.W) ;]
+ BRA.S      MPPBranch_41a948 ;]
+
+DoWriteLAP ;]
+ MOVE.L     2(A1),A0 ;]
+ MOVEQ      #LAPProtErr,D0
+ TST.B      2(A0)
+ BLE.S      MPPBranch_41a94a ;]
+ MOVE.B     (A0),D2
+ BSR.S      AbusWrite ;]
+ BRA.S      FinishMPP ;]
+
+MPPStatus ;]
+ MOVEQ      #StatusErr,D0
+
+FinishMPP ;]
+ MOVE.L     ABusDCE,A1 ;]
+
+GoIODone
+ MOVE.L     JIODone,-(SP)
+ RTS        
+
+MPPPrime ;]
+ BCLR       #7,DCtlFlags+1(A1) ;]
+ RTS        
+
+AbusWrite ;]
+ CLR.B      fSendENQ(A2) ;]
+ MOVE.L     A1,WDSPtr(A2) ;]
+
+AbusSend ;]
+ MOVE.L     (SP)+,LAPWrtRtn(A2) ;]
+ MOVE.L     AtalkHk2,D3 ;]
+ BLE.S      MPPBranch_41a9a8 ;]
+ MOVE.L     D3,A3
+ JSR        (A3)
+
+MPPBranch_41a9a8 ;]
+ MOVE.B     D2,DestNode(A2) ;]
+ LEA        backoff(A2),A3 ;]
+ MOVE.B     (A3)+,D3
+ MOVE.B     (A3),D2
+ ADD.B      D2,(A3)+ ;]
+ BSR.S      CountHistoryBits ;]
+ BLE.S      MPPBranch_41a9da ;]
+ ADD.B      D3,D3
+ ADDQ.B     #1,D3
+ AND.W      #15,D3
+ CLR.B      -1(A3)
+ BRA.S      MPPBranch_41a9e4 ;]
+
+CountHistoryBits ;]
+ MOVEQ      #0,D0
+ MOVEQ      #7,D1
+
+MPPBranch_41a9cc ;]
+ BTST       D1,D2
+ BEQ.S      MPPBranch_41a9d2 ;]
+ ADDQ.W     #1,D0
+
+MPPBranch_41a9d2 ;]
+ DBRA       D1,MPPBranch_41a9cc ;]
+ SUBQ.B     #2,D0
+ RTS        
+
+MPPBranch_41a9da ;]
+ MOVE.B     (A3),D2
+ BSR.S      CountHistoryBits ;]
+ BGE.S      MPPBranch_41a9e4 ;]
+ LSR.B      #1,D3
+ ST         (A3) ;]
+
+MPPBranch_41a9e4 ;]
+ MOVE.B     (A3),D2
+ ADD.B      D2,(A3)+ ;]
+ MOVEQ      #32,D0
+ MOVE.B     D0,(A3)+
+ MOVE.B     D0,(A3)
+ SUBQ.W     #5,A3 ;]
+ MOVE.B     D3,(A3)+
+ MOVE.B     D3,(A3)+
+ MOVEM.L    SCCRd,A0-A1 ;]
+
+MPPBranch_41a9fa ;]
+ MOVE.W     SR,-(SP)
+
+MPPBranch_41a9fc ;]
+ MOVE.W     D0,D3
+ BTST       #SCCSyncHunt,(A0) ;]
+ BEQ.S      MPPBranch_41aa32 ;]
+ BSR.W      NextRandom ;]
+ AND.B      lbackOff(A2),D0 ;]
+ AND.W      #15,D0
+ MOVE.W     D0,D3
+ BEQ.S      MPPBranch_41aa1c ;]
+
+MPPBranch_41aa14 ;]
+ BSR.S      WaitIdleSlot ;]
+ BEQ.S      MPPBranch_41aa32 ;]
+ SUBQ.W     #1,D0
+ BNE.S      MPPBranch_41aa14 ;]
+
+MPPBranch_41aa1c ;]
+ MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.B     #14,(A1) ;]
+ MOVEQ      #3,D0
+ ADDQ.W     #3,D3 ;]
+ MOVE.B     #65,(A1) ;]
+
+MPPBranch_41aa2c ;]
+ BSR.S      WaitIdleSlot ;]
+ DBEQ       D0,MPPBranch_41aa2c ;]
+
+MPPBranch_41aa32 ;]
+ BEQ.W      MPPBranch_41aac4 ;]
+ MOVE.B     #10,(A1) ;]
+ MOVE.B     DestNode(A2),D2 ;]
+ TST.B      (A0)
+ BMI.W      MPPBranch_41aac4 ;]
+ MOVE.B     #5,(A1) ;]
+ MOVEQ      #-124,D0 ;]
+ MOVE.B     #98,(A1) ;]
+ TST.B      fSendENQ(A2) ;]
+ BEQ.S      MPPBranch_41aa56 ;]
+ MOVEQ      #-127,D0 ;]
+
+MPPBranch_41aa56 ;]
+ MOVE.B     #5,(A1) ;]
+ NOP        
+ MOVE.B     VDisTxRTS(A2),(A1) ;]
+ BSR.W      SendControlFrame ;]
+ ADDQ.B     #1,D2
+ BEQ.S      MPPBranch_41aa92 ;]
+ CLR.B      fGoodCTS(A2) ;]
+ BSR.W      GetControlFrame ;]
+ TST.B      fSendENQ(A2) ;]
+ BEQ.S      MPPBranch_41aa7e ;]
+ TST.B      fAdrInUse(A2) ;]
+ BEQ.S      Collision ;]
+ BRA.S      LAPSuccess ;]
+
+MPPBranch_41aa7e ;]
+ TST.B      fGoodCTS(A2) ;]
+ BEQ.S      Collision ;]
+ BRA.S      SendDataFrame ;]
+
+WaitIdleSlot ;]
+ MOVEQ      #60,D1
+
+MPPBranch_41aa88 ;]
+ DBRA       D1,MPPBranch_41aa88 ;]
+ BTST       #SCCSyncHunt,(A0) ;]
+ RTS        
+
+MPPBranch_41aa92 ;]
+ BSR.S      WaitIdleSlot ;]
+ BEQ.S      Collision ;]
+
+SendDataFrame ;]
+ BSR.W      WritePacket ;]
+
+LAPSuccess ;]
+ MOVEQ      #0,D0
+
+LAPReturn ;]
+ MOVE.W     (SP)+,SR
+ MOVE.L     LAPWrtRtn(A2),A0 ;]
+ JMP        (A0)
+
+Collision ;]
+ MOVE.W     (SP),SR
+ BSET       #0,collsnHistory(A2) ;]
+ MOVE.B     lbackOff(A2),D0 ;]
+ ADD.B      D0,D0
+ ADDQ.B     #1,D0
+ MOVE.B     D0,lbackOff(A2) ;]
+ MOVEQ      #ExcessCollsns,D0 ;]
+ SUBQ.B     #1,collsnTries(A2) ;]
+ BEQ.S      LAPReturn ;]
+ BRA.W      MPPBranch_41a9fc ;]
+
+MPPBranch_41aac4 ;]
+ SUB.W      D0,D3
+ SUBQ.W     #4,D3
+ BLT.S      MPPBranch_41aade ;]
+ MOVEQ      #ExcessCollsns,D0 ;]
+ SUBQ.B     #1,deferTries(A2) ;]
+ BEQ.S      LAPReturn ;]
+ BSET       #0,lbackOff(A2) ;]
+ BSET       #0,deferHistory(A2) ;]
+
+MPPBranch_41aade ;]
+ MOVE.W     #SCCLockout68000,SR ;]
+ MOVE.B     #15,(A1)
+ MOVEQ      #-120,D0
+ MOVE.B     D0,(A1)
+ ADDQ.B     #2,VBLDeferCnt(A2) ;]
+ MOVEQ      #0,D0
+ MOVE.W     (SP)+,SR
+ RTS        
+
+LAPExtInt ;]
+ MOVE.L     ABusVars,A2
+ TST.B      VBLDeferCnt(A2) ;]
+ BNE.S      ContinueDeferred ;]
+ BTST       #3,D1
+ BEQ.S      MPPBranch_41ab66 ;]
+ MOVE.L     ExtStsDT+4,A3 ;]
+ JMP        (A3)
+
+ContinueDeferred ;]
+ CLR.B      VBLDeferCnt(A2) ;]
+
+MPPBranch_41ab0e ;]
+ MOVE.B     #15,(A1)
+ MOVEQ      #8,D0
+ MOVE.B     D0,(A1)
+ MOVE.W     vSCCEnable(A2),SR ;]
+ BRA.W      MPPBranch_41a9fa ;]
+
+*R The timer tests and decrements VBLDeferCnt without masking interrupts.
+*R Historical patch diagnosis; this reconstruction retains the earlier behavior.
+; January 5, 1987
+; Alan Oppenheimer
+;
+; If we're doing a VInstall to install MPP's VBL task, change the address to
+; one in RAM, where we disable interrupts and then call the real VBL task.
+; This makes the test-and-decrement atomic, preventing VBLDeferCnt from ever
+; going negative.
+
+VBLHnd
+ MOVE.W     #VBL20,VBLCount(A0) ;]
+ MOVE.L     ABusVars,A2
+ SUBQ.B     #1,BridgeTime(A2) ;]
+ BNE.S      MPPBranch_41ab32 ;]
+ CLR.B      SysABridge(A2) ;]
+
+MPPBranch_41ab32 ;]
+ TST.B      VBLDeferCnt(A2) ;]
+ BEQ.S      MPPBranch_41ab66 ;]
+ SUBQ.B     #1,VBLDeferCnt(A2) ;]
+ BNE.S      MPPBranch_41ab66 ;]
+ MOVEM.L    SCCRd,A0-A1 ;]
+ MOVE.W     #SCCLockout68000,SR ;]
+ BSR.W      ResetReceive ;]
+ BRA.S      MPPBranch_41ab0e ;]
+
+GetControlFrame ;]
+ MOVEM.L    A0-A2,-(SP)
+ MOVEQ      #125,D1 ;]
+
+MPPBranch_41ab54 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D1,MPPBranch_41ab54 ;]
+ BEQ.S      MPPBranch_41ab62 ;]
+ BSR.W      ReadFrame ;]
+
+MPPBranch_41ab62 ;]
+ MOVEM.L    (SP)+,A0-A2
+
+MPPBranch_41ab66 ;]
+ RTS        
+
+NextRandom ;]
+ MOVE.W     RandomSeed(A2),D0 ;]
+ MULU.W     #773,D0 ;]
+ ADDQ.W     #1,D0
+ MOVE.W     D0,-(SP)
+ LSL.W      #8,D0
+ MOVE.B     (SP)+,D0
+ MOVE.W     D0,RandomSeed(A2) ;]
+ RTS        
+
+TransmitSetup ;]
+ DC.B 5,$6B,3,$D0 ;]
+
+SendByte
+ MOVEQ      #30,D1 ;]
+
+MPPBranch_41ab84 ;]
+ BTST       #SCCTxReady,(A0) ;]
+ DBNE       D1,MPPBranch_41ab84 ;]
+ BEQ.S      MPPBranch_41ab92 ;]
+ MOVE.B     D3,4(A1) ;]
+
+MPPBranch_41ab92 ;]
+ TST.W      D1
+ RTS        
+
+StartFrame ;]
+ LEA        TransmitSetup,A3 ;]
+ MOVEQ      #4,D3
+ BSR.W      WriteSCCBytes ;]
+ MOVEQ      #40,D3 ;]
+
+MPPBranch_41aba2 ;]
+ DBRA       D3,MPPBranch_41aba2 ;]
+ MOVE.B     #$80,(A1) ;]
+ RTS        
+
+WritePacket ;]
+ MOVEM.L    A0-A1/A4-A6,SaveRegs(A2) ;]
+ MOVE.L     DskRtnAdr,-(SP)
+ MOVE.L     PollStack,-(SP)
+ MOVE.L     SP,PollStack
+ MOVE.L     VAVBufA(A2),A5 ;]
+ LEA        6(A0),A6 ;]
+ MOVE.L     WDSPtr(A2),A4 ;]
+ BSR.S      StartFrame ;]
+ MOVE.W     (A4)+,D3
+ MOVE.L     (A4)+,A3
+ MOVE.B     (A3)+,4(A1) ;]
+ SUBQ.W     #1,D3
+ MOVE.B     (A2),(A3)
+
+MPPBranch_41abd8 ;]
+ MOVEQ      #30,D0
+
+MPPBranch_41abda ;]
+ BTST       #SCCTxReady,(A0) ;]
+ DBNE       D0,MPPBranch_41abda ;]
+ BNE.S      MPPBranch_41abe8 ;]
+ BSR.S      EndTransmit ;]
+ BRA.S      MPPBranch_41ac00 ;]
+
+MPPBranch_41abe8 ;]
+ MOVE.B     (A3)+,4(A1) ;]
+ TST.B      (A5)
+ BMI.S      MPPBranch_41abf2 ;]
+ MOVE.B     (A6),-(SP)
+
+MPPBranch_41abf2 ;]
+ SUBQ.W     #1,D3
+ BGT.S      MPPBranch_41abd8 ;]
+ MOVE.W     (A4)+,D3
+ BEQ.S      MPPBranch_41abfe ;]
+ MOVE.L     (A4)+,A3
+ BRA.S      MPPBranch_41abd8 ;]
+
+MPPBranch_41abfe ;]
+ BSR.S      FinishFrame ;]
+
+MPPBranch_41ac00 ;]
+ MOVE.L     PollProc,D3 ;]
+ BEQ.S      MPPBranch_41ac0e ;]
+ MOVE.L     D3,A4
+ JSR        (A4)
+ MOVE.L     ABusVars,A2
+
+MPPBranch_41ac0e ;]
+ MOVEM.L    SaveRegs(A2),A0-A1/A4-A6 ;]
+ MOVE.L     PollStack,SP
+ MOVE.L     (SP)+,PollStack
+ MOVE.L     (SP)+,DskRtnAdr
+ RTS        
+
+SendControlFrame ;]
+ BSR.W      StartFrame ;]
+ MOVE.B     D2,4(A1) ;]
+ MOVE.B     (A2),D3
+ BSR.W      SendByte
+ BEQ.S      EndTransmit ;]
+ MOVE.B     D0,D3
+ BSR.W      SendByte
+ BEQ.S      EndTransmit ;]
+
+FinishFrame ;]
+ MOVE.B     #$C0,(A1) ;]
+ LSL.W      #1,D3
+
+MPPBranch_41ac40 ;]
+ BTST       #6,(A0)
+ BEQ.S      MPPBranch_41ac40 ;]
+
+MPPBranch_41ac46 ;]
+ BTST       #SCCTxReady,(A0) ;]
+ BEQ.S      MPPBranch_41ac46 ;]
+ MOVE.B     #5,(A1) ;]
+ MOVEQ      #0,D3
+ MOVE.B     #98,(A1) ;]
+ MOVE.B     VAbortWait(A2),D3 ;]
+
+MPPBranch_41ac5a ;]
+ DBRA       D3,MPPBranch_41ac5a ;]
+
+EndTransmit ;]
+ LEA        VSTData(A2),A3 ;]
+ MOVEQ      #6,D3
+
+WriteSCCBytes ;]
+ MOVE.B     (A3)+,(A1) ;]
+ SUBQ.W     #1,D3
+ BNE.S      WriteSCCBytes ;]
+ RTS        
+
+LAPReceiveInt ;]
+ MOVE.L     ABusVars,A2
+
+ReadFrame ;]
+ LEA        ToRHA(A2),A3 ;]
+ MOVE.B     SCCData(A0),(A3)+ ;]
+ MOVEQ      #40,D1 ;]
+
+MPPBranch_41ac7a ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D1,MPPBranch_41ac7a ;]
+ BEQ.S      MPPBranch_41acca ;]
+ MOVE.B     SCCData(A0),(A3)+ ;]
+
+MPPBranch_41ac88 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D1,MPPBranch_41ac88 ;]
+ BEQ.S      MPPBranch_41acca ;]
+ MOVE.B     SCCData(A0),D0
+ MOVE.B     D0,(A3)+
+ BMI.S      ReadControlFrame ;]
+ MOVEQ      #LAPTblSz-1,D2
+
+MPPBranch_41ac9c ;]
+ CMP.B      Protocols(A2,D2.W),D0 ;]
+ DBEQ       D2,MPPBranch_41ac9c ;]
+ LSL.W      #2,D2
+ MOVEQ      #40,D0
+
+MPPBranch_41aca8 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D0,MPPBranch_41aca8 ;]
+ BEQ.S      MPPBranch_41acca ;]
+ MOVE.B     SCCData(A0),(A3) ;]
+ MOVEQ      #3,D1
+ AND.B      (A3)+,D1
+ LSL.W      #8,D1
+ MOVEM.L    A4-A5,SaveA45(A2) ;]
+
+MPPBranch_41acc2 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D0,MPPBranch_41acc2 ;]
+
+MPPBranch_41acca ;]
+ BEQ.S      LAPSpecialInt ;]
+ MOVE.B     SCCData(A0),D1 ;]
+ MOVE.B     D1,(A3)+
+ SUBQ.W     #2,D1
+ TST.W      D2
+ BMI.S      DiscardFrame ;]
+ MOVE.L     Handlers(A2,D2.W),A5 ;]
+ LEA        ReadPacket,A4 ;]
+ JMP        (A5)
+
+DiscardFrame ;]
+ MOVE.B     #1,(A1)
+ MOVEQ      #-96,D0
+ AND.B      (A0),D0
+ BNE.W      PacketError ;]
+ CLR.W      D3
+ BRA.W      ReadRest ;]
+
+ReadControlFrame ;]
+ MOVEQ      #127,D2
+ AND.B      D0,D2
+ CMP.B      #5,D2
+ BGT.S      LAPSpecialInt ;]
+ BSR.S      CheckCRC ;]
+ BNE.S      MPPBranch_41ad16 ;]
+ CMP.B      #$FF,ToRHA(A2) ;]
+ SEQ        D1
+ BEQ.S      MPPBranch_41ad18 ;]
+ TST.B      fLAPAdrValid(A2) ;]
+ BNE.S      MPPBranch_41ad18 ;]
+ ST         fAdrInUse(A2) ;]
+
+MPPBranch_41ad16 ;]
+ RTS        
+
+MPPBranch_41ad18 ;]
+ SUBQ.B     #1,D2
+ BEQ.S      ReceiveENQ ;]
+ SUBQ.B     #3,D2
+ BEQ.S      ReceiveRTS ;]
+ SUBQ.B     #1,D2
+ SEQ        fGoodCTS(A2) ;]
+ RTS        
+
+ReceiveRTS ;]
+ TST.B      D1
+ BNE.S      MPPBranch_41ad36 ;]
+ MOVEQ      #20,D0
+
+MPPBranch_41ad2e ;]
+ DBRA       D0,MPPBranch_41ad2e ;]
+ MOVEQ      #-123,D0 ;]
+ BSR.S      AnswerControlFrame ;]
+
+MPPBranch_41ad36 ;]
+ BRA.W      GetControlFrame ;]
+
+ReceiveENQ ;]
+ MOVEQ      #-126,D0 ;]
+
+AnswerControlFrame ;]
+ MOVE.B     2(A2),D2 ;]
+ BRA.W      SendControlFrame ;]
+
+LAPSpecialInt ;]
+ BSR.S      ResetReceive ;]
+ BRA.S      ResetReceive ;]
+
+CheckCRC
+ CLR.W      D0
+ MOVEQ      #16,D1
+
+MPPBranch_41ad4c ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D1,MPPBranch_41ad4c ;]
+ BEQ.S      ReadUnderrunError ;]
+ BSR.S      ReadStatus1 ;]
+ BMI.S      PacketError ;]
+ TST.B      4(A0) ;]
+ MOVEQ      #16,D1
+
+MPPBranch_41ad60 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D1,MPPBranch_41ad60 ;]
+ BEQ.S      ReadUnderrunError ;]
+ BSR.S      ReadStatus1 ;]
+ BPL.S      PacketError ;]
+ LSL.B      #1,D1
+ BMI.S      ReadCRCError ;]
+
+ResetReceive ;]
+ BSR.S      ReadStatus1 ;]
+ BTST       #5,D1
+ BEQ.S      MPPBranch_41ad80 ;]
+ BCLR       #7,IntFlag ;]
+
+MPPBranch_41ad80 ;]
+ MOVEQ      #-48,D1 ;]
+ BSR.S      WriteReceiveMode ;]
+ MOVEQ      #2,D1
+
+MPPBranch_41ad86 ;]
+ TST.B      4(A0) ;]
+ DBRA       D1,MPPBranch_41ad86 ;]
+ MOVEQ      #-35,D1 ;]
+ BSR.S      WriteReceiveMode ;]
+ MOVE.B     #48,(A1)
+ MOVE.W     (SP),(SP)
+ MOVE.B     #32,(A1) ;]
+ TST.W      D0
+ RTS        
+
+WriteReceiveMode ;]
+ MOVE.B     #3,(A1) ;]
+ NOP        
+ MOVE.B     D1,(A1)
+ RTS        
+
+ReadStatus1 ;]
+ MOVE.B     #1,(A1)
+ NOP        
+ MOVE.B     (A0),D1
+ RTS        
+
+PacketError ;]
+ BTST       #5,D1
+ BNE.S      ReadOverrunError ;]
+
+ReadLengthError ;]
+ MOVEQ      #-1,D0
+
+ReadUnderrunError ;]
+ SUBQ.W     #1,D0
+
+ReadCRCError ;]
+ SUBQ.W     #1,D0
+
+ReadOverrunError ;]
+ SUBQ.W     #1,D0
+ BRA.S      ResetReceive ;]
+
+*R A4 points to ReadPacket; 2(A4) enters ReadRest.
+
+ReadPacket ;]
+ BRA.S      ReadPacketBytes ;]
+
+ReadRest ;]
+ MOVE.L     VAVBufA(A2),A5 ;]
+ MOVE.L     SP,A4
+
+MPPBranch_41adcc ;]
+ MOVEQ      #16,D0
+ SUBQ.W     #1,D1
+ BMI.S      MPPBranch_41adf0 ;]
+
+MPPBranch_41add2 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D0,MPPBranch_41add2 ;]
+ BEQ.S      MPPBranch_41adf0 ;]
+ MOVE.B     SCCData(A0),D0
+ TST.B      (A5)
+ BMI.S      MPPBranch_41ade8 ;]
+ MOVE.B     6(A0),-(SP) ;]
+
+MPPBranch_41ade8 ;]
+ SUBQ.W     #1,D3
+ BMI.S      MPPBranch_41adcc ;]
+ MOVE.B     D0,(A3)+
+ BRA.S      MPPBranch_41adcc ;]
+
+MPPBranch_41adf0 ;]
+ BSR.W      CheckCRC ;]
+ MOVE.L     PollStack,SavePS(A2) ;]
+ MOVE.L     A4,PollStack ;]
+ MOVE.L     PollProc,D1 ;]
+ BEQ.S      MPPBranch_41ae28 ;]
+ MOVEM.L    D0/D2-D3/A3/A6,SaveRegs(A2) ;]
+ LEA        6(A0),A6 ;]
+ MOVE.L     D1,A0
+ MOVE.L     DskRtnAdr,SaveDskRtn(A2) ;]
+ JSR        (A0)
+ MOVE.L     ABusVars,A2
+ MOVE.L     SaveDskRtn(A2),DskRtnAdr ;]
+ MOVEM.L    SaveRegs(A2),D0/D2-D3/A3/A6 ;]
+
+MPPBranch_41ae28 ;]
+ MOVE.L     PollStack,SP
+ MOVE.L     SavePS(A2),PollStack ;]
+
+MPPBranch_41ae32 ;]
+ MOVEM.L    SaveA45(A2),A4-A5 ;]
+ TST.W      D0
+
+MPPBranch_41ae3a ;]
+ RTS        
+
+ReadPacketBytes ;]
+ SUB.W      D3,D1
+
+MPPBranch_41ae3e ;]
+ MOVEQ      #16,D0
+
+MPPBranch_41ae40 ;]
+ BTST       #SCCRxReady,(A0) ;]
+ DBNE       D0,MPPBranch_41ae40 ;]
+ BEQ.S      MPPBranch_41ae62 ;]
+ MOVE.B     SCCData(A0),(A3)+ ;]
+ SUBQ.W     #1,D3
+ BNE.S      MPPBranch_41ae3e ;]
+ MOVE.B     #1,(A1)
+ MOVEQ      #-96,D0
+ AND.B      (A0),D0
+ BEQ.S      MPPBranch_41ae3a ;]
+ BMI.S      MPPBranch_41ae66 ;]
+ MOVEQ      #-1,D0
+ BRA.S      MPPBranch_41ae68 ;]
+
+MPPBranch_41ae62 ;]
+ MOVEQ      #-3,D0 ;]
+ BRA.S      MPPBranch_41ae68 ;]
+
+MPPBranch_41ae66 ;]
+ MOVEQ      #-4,D0 ;]
+
+MPPBranch_41ae68 ;]
+ BSR.W      ResetReceive ;]
+ BRA.S      MPPBranch_41ae32 ;]
+
+MPPClose
+ MOVE.L     UTableBase,A4 ;]
+ ADD.W      #MPPUnitNum*4+4,A4 ;]
+ MOVE.L     ABusVars,A2
+ MOVE.L     A2,D0
+ BEQ.W      MPPBranch_41aed4 ;]
+ ST         ATPVars(A2) ;]
+ SUB.W      #IOQElSize,SP
+ MOVE.L     SP,A0
+ MOVE.W     #-ATPUnitNum-1,IORefNum(A0) ;]
+ _CLOSE     
+ ADD.W      #IOQElSize,SP
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ LEA        CloseSCCData,A0 ;]
+ BSR.S      SetSCCRegisters ;]
+ LEA        VBLQEl(A2),A0
+ _VREMOVE   
+ LEA        SaveVects(A2),A0 ;]
+ LEA        Lvl2DT+8,A3 ;]
+ MOVE.L     (A0)+,(A3)+
+ MOVE.L     (A0)+,(A3)+
+ MOVE.L     (A0)+,ExtStsDT ;]
+ MOVE.L     -(A4),A0
+ MOVE.L     SaveBOut(A2),D0 ;]
+ BEQ.S      MPPBranch_41aec4 ;]
+ MOVE.L     D0,-4(A4) ;]
+
+MPPBranch_41aec4 ;]
+ MOVE.L     SaveBIn(A2),D0 ;]
+ BEQ.S      MPPBranch_41aece ;]
+ MOVE.L     D0,-8(A4) ;]
+
+MPPBranch_41aece ;]
+ MOVE.W     (SP)+,SR
+ MOVE.L     A2,A0
+ _DISPOSEPTR 
+
+MPPBranch_41aed4 ;]
+ ST         PortBUse ;]
+
+MPPBranch_41aed8 ;]
+ RTS        
+
+SetSCCRegisters ;]
+ MOVE.L     SCCWr,A3 ;]
+
+MPPBranch_41aede ;]
+ MOVE.W     (A0)+,D0
+ BEQ.S      MPPBranch_41aed8 ;]
+ MOVE.B     D0,(A3)
+ ROR.W      #8,D0
+ MOVE.B     D0,(A3)
+ BRA.S      MPPBranch_41aede ;]
+
+CloseSCCData ;]
+ DC.B $4A,9,0,10,$10,0,8,15,1,1 ;]
+ DC.W 0
+
+MPPOpen
+ MOVEQ      #PortInUse,D0
+ TST.B      PortBUse
+ BPL.S      MPPBranch_41aed8 ;]
+ MOVEQ      #PortNotCf,D0
+ MOVE.B     SPConfig,D1
+ AND.B      #15,D1
+ SUBQ.B     #1,D1
+ BGT.S      MPPBranch_41aed8 ;]
+ CLR.L      ABusVars ;]
+ MOVE.L     #DataSize,D0
+ _NewPtr ,SYS,CLEAR 
+ BNE.S      MPPBranch_41aed8 ;]
+ MOVE.B     #1,PortBUse ;]
+ MOVE.L     A0,A2
+ MOVE.L     A2,ABusVars ;]
+ MOVE.L     A1,ABusDCE ;]
+ MOVE.L     UTableBase,A0
+ MOVE.L     32(A0),A3 ;]
+ MOVE.L     A3,D0
+ BEQ.S      MPPBranch_41af46 ;]
+ MOVE.L     (A3),A3
+ TST.B      7(A3) ;]
+ BNE.S      MPPBranch_41af46 ;]
+ MOVE.L     D0,SaveBOut(A2) ;]
+ CLR.L      32(A0) ;]
+
+MPPBranch_41af46 ;]
+ MOVE.L     28(A0),A3 ;]
+ MOVE.L     A3,D0
+ BEQ.S      MPPBranch_41af5e ;]
+ MOVE.L     (A3),A3
+ TST.B      7(A3) ;]
+ BNE.S      MPPBranch_41af5e ;]
+ MOVE.L     D0,SaveBIn(A2) ;]
+ CLR.L      28(A0) ;]
+
+MPPBranch_41af5e ;]
+ MOVEQ      #LAPTblSz-1,D0 ;]
+
+MPPBranch_41af60 ;]
+ ST         Protocols(A2,D0.W) ;]
+ DBRA       D0,MPPBranch_41af60 ;]
+ LEA        InitLAPVars,A1 ;]
+ LEA        MacAVBufA,A0 ;]
+ MOVE.L     A0,VAVBufA(A2) ;]
+ MOVE.L     (A1)+,VSTData(A2) ;]
+ MOVE.W     (A1)+,250(A2) ;]
+ MOVE.W     (A1)+,vSCCEnable(A2) ;]
+ MOVE.B     (A1)+,VAbortWait(A2) ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ LEA        Lvl2DT+8,A3 ;]
+ LEA        SaveVects(A2),A1 ;]
+ LEA        LAPReceiveInt,A0 ;]
+ MOVE.L     (A3),(A1)+
+ MOVE.L     A0,(A3)+ ;]
+ LEA        LAPSpecialInt,A0 ;]
+ MOVE.L     (A3),(A1)+
+ MOVE.L     A0,(A3)+ ;]
+ LEA        LAPExtInt,A0 ;]
+ MOVE.L     ExtStsDT,(A1) ;]
+ MOVE.L     A0,ExtStsDT ;]
+ LEA        VBLQEl(A2),A0
+ MOVE.W     #1,QType(A0)
+ LEA        VBLHnd,A1 ;]
+ MOVE.L     A1,VBLAddr(A0)
+ MOVE.W     #VBL20,VBLCount(A0) ;]
+ _VINSTALL  
+ BSR.W      InitSCC
+ MOVE.W     Ticks+2,RandomSeed(A2) ;]
+ MOVE.W     (SP)+,SR
+ MOVE.B     SPATalkB,D0 ;]
+ BGT.S      MPPBranch_41afe0 ;]
+
+MPPBranch_41afdc ;]
+ BSR.W      NextRandom ;]
+
+MPPBranch_41afe0 ;]
+ AND.W      #127,D0
+ BEQ.S      MPPBranch_41afdc ;]
+ MOVEQ      #19,D4 ;]
+ MOVE.B     D0,(A2)
+ CLR.B      fLAPAdrValid(A2) ;]
+ MOVE.L     SCCWr,A1
+ MOVE.B     #6,(A1) ;]
+ CLR.B      fAdrInUse(A2) ;]
+ MOVE.B     (A2),(A1) ;]
+
+MPPBranch_41affc ;]
+ ST         fSendENQ(A2) ;]
+ MOVE.B     (A2),D2
+ BSR.W      ProbeNode ;]
+
+MPPBranch_41b006 ;]
+ TST.B      fSendENQ(A2) ;]
+ BNE.S      MPPBranch_41b006 ;]
+ TST.B      fAdrInUse(A2) ;]
+ BNE.S      MPPBranch_41afdc ;]
+ DBRA       D4,MPPBranch_41affc ;]
+ MOVE.B     (A2),SPATalkB ;]
+ ST         fLAPAdrValid(A2) ;]
+ LEA        SPValid,A0 ;]
+ MOVEQ      #-1,D0
+ _WRITEPARAM 
+ LEA        ReadShortDDP,A3 ;]
+ LEA        SocketNum(A2),A0 ;]
+ MOVE.L     A3,-(A0) ;]
+ LEA        ReadLongDDP,A3 ;]
+ MOVE.L     A3,-(A0) ;]
+ LEA        Handlers(A2),A0 ;]
+ MOVE.B     #1,-(A0) ;]
+ MOVE.B     #2,-(A0) ;]
+ LEA        RTMPRead,A0 ;]
+ MOVE.L     A0,120(A2) ;]
+ MOVE.B     #1,67(A2) ;]
+ BSR.W      FindBridge ;]
+ LEA        DDPWrite,A0 ;]
+ MOVE.L     A0,JDDPWrite(A2) ;]
+ LEA        LookupCode,A3 ;]
+ MOVE.L     A3,LookupPtr(A2) ;]
+ SUB.W      #IOQElSize,SP
+ LEA        ATPName,A0 ;]
+ MOVE.L     A0,IOFileName(SP)
+ MOVE.L     SP,A0
+ CLR.B      IOPermssn(A0)
+ _OPEN      
+ ADD.W      #IOQElSize,SP
+ MOVEQ      #7,D3
+ BSR.W      EnableNBP ;]
+ TST.W      SysNetNum(A2) ;]
+ BNE.S      MPPBranch_41b08a ;]
+ BSR.S      FindBridge ;]
+
+MPPBranch_41b08a ;]
+ MOVE.L     ABusDCE,A1 ;]
+ MOVE.B     #MPPVersion,DCtlQueue+1(A1) ;]
+ MOVEQ      #0,D0
+ RTS        
+
+FindBridge ;]
+ CLR.W      -(SP)
+ SUBQ.W     #4,SP
+ MOVE.W     #9,-(SP) ;]
+ MOVE.L     SP,A1
+ MOVE.W     #1281,-(SP) ;]
+ MOVE.W     #257,-(SP) ;]
+ MOVE.W     #6,-(SP)
+ MOVE.W     #1,-(SP)
+ ST         D2
+ MOVE.W     D2,-(SP)
+ LEA        1(SP),A3 ;]
+ MOVE.L     A3,11(A3) ;]
+ BSR.S      BridgeWrite ;]
+
+MPPBranch_41b0c0 ;]
+ TST.B      fSendENQ(A2) ;]
+ BEQ.S      MPPBranch_41b0c0 ;]
+ ADD.W      #18,SP
+ RTS        
+
+BridgeWrite ;]
+ BSR.W      AbusWrite ;]
+ ST         fSendENQ(A2) ;]
+ RTS        
+
+ATPName
+ DC.B 4,'.ATP ' ;]
+
+ProbeNode ;]
+ BSR.W      AbusSend ;]
+ CLR.B      fSendENQ(A2) ;]
+ RTS        
+
+InitSCC
+ LEA        InitSCCData,A0 ;]
+ BSR.W      SetSCCRegisters ;]
+ LEA        EnableSCCData,A0 ;]
+ BRA.W      SetSCCRegisters ;]
+
+*R SetSCCRegisters reads value/register pairs until a zero word.
+
+InitSCCData ;]
+ DC.B $40,9,$20,4,$E0,10,0,6,$7E,7,6,12,0,13 ;]
+ DC.B $C0,14,$DD,3,0,2,8,15,9,1,$0A,9 ;]
+ DC.W 0
+
+EnableSCCData ;]
+ DC.B $70,11,$21,14,$60,5 ;]
+ DC.W 0
+
+*R Six SCC bytes, the saved status register, an abort delay, and alignment.
+
+InitLAPVars ;]
+ DC.B 5,$60,14,$41,3,$DD ;]
+ DC.W SCCReadEnable ;]
+ DC.B 70,0 ;]
+
+CopyrightText ;]
+ DC.B 'COPYRIGHT (C) APPLE COMPUTER' ;]
+
+*R The lookup-reply and command code both reside in this ROM resource.
+
+LookupCode ;]
+ BRA.S      LookupDispatch ;]
+
+LookupClose ;]
+ BRA.S      RemoveApplicationNames ;]
+
+LookupListener ;]
+ MOVE.L     LUQElPtr(A2),A3 ;]
+ TST.W      (A3)+
+ BNE.S      MPPBranch_41b188 ;]
+ MOVEQ      #LookupReadSize,D3 ;]
+ JSR        2(A4)
+ BNE.S      MPPBranch_41b186 ;]
+ MOVE.L     LUQElPtr(A2),A0 ;]
+ MOVE.B     6(A0),D0 ;]
+ CMP.B      (A2),D0
+ BNE.S      MPPBranch_41b16a ;]
+ MOVE.W     4(A0),D0
+ CMP.W      SysNetNum(A2),D0 ;]
+ BEQ.S      MPPBranch_41b186 ;]
+
+MPPBranch_41b16a ;]
+ MOVE.W     #LookupReply,(A0) ;]
+ SUB.W      #CSCode,A0 ;]
+ LEA        LookupComplete,A1 ;]
+ MOVE.L     A1,IOCompletion(A0)
+ MOVE.L     ABusDCE,A1 ;]
+ MOVE.W     DCtlRefNum(A1),IORefNum(A0) ;]
+ _Control ,ASYNC
+
+MPPBranch_41b186 ;]
+ RTS        
+
+MPPBranch_41b188 ;]
+ CLR.W      D3
+ JMP        2(A4)
+
+LookupDispatch ;]
+ BRA.S      SendLookupReply ;]
+
+RemoveApplicationNames ;]
+ LEA        NTQueueHd(A2),A3 ;]
+ MOVE.L     SysZone,A0
+
+MPPBranch_41b198 ;]
+ MOVE.L     (A3),D1
+ BEQ.S      MPPBranch_41b1b0 ;]
+ AND.L      Lo3Bytes,D1
+ MOVE.L     D1,A1
+ CMP.L      (A0),A1
+ BCS.W      MPPBranch_41b1ac ;]
+ MOVE.L     (A1),(A3)
+ BRA.S      MPPBranch_41b198 ;]
+
+MPPBranch_41b1ac ;]
+ MOVE.L     A1,A3
+ BRA.S      MPPBranch_41b198 ;]
+
+MPPBranch_41b1b0 ;]
+ RTS        
+
+SendLookupReply ;]
+ MOVE.L     NTQueueHd(A2),D2 ;]
+ BEQ.W      LookupExit ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     vSCCEnable(A2),SR ;]
+ MOVEM.L    A2/A4-A5,-(SP) ;]
+ MOVE.L     A0,A4
+ MOVE.W     CmpStringTrapWord,D0 ;]
+ _GETTRAPADDRESS 
+ MOVE.L     A0,A2
+ CLR.W      D3
+
+MPPBranch_41b1d0 ;]
+ MOVE.L     D2,A3
+ ADD.W      #NTEntity,A3 ;]
+ LEA        35(A4),A5 ;]
+ MOVE.L     A3,A1
+ MOVE.L     A5,A0
+ CMP.B      #Equals,1(A5) ;]
+ BEQ.S      MPPBranch_41b1ec ;]
+ BSR.W      ComparePStrings ;]
+ BNE.S      MPPBranch_41b20c ;]
+
+MPPBranch_41b1ec ;]
+ CLR.W      D0
+ MOVE.B     (A5)+,D0
+ ADD.W      D0,A5
+ MOVE.L     A3,A1
+ MOVE.B     (A1)+,D0
+ ADD.W      D0,A1
+ MOVE.L     A5,A0
+ CMP.B      #Equals,1(A5) ;]
+ BEQ.S      MPPBranch_41b208 ;]
+ BSR.W      ComparePStrings ;]
+ BNE.S      MPPBranch_41b20c ;]
+
+MPPBranch_41b208 ;]
+ MOVE.L     A3,-(SP)
+ ADDQ.W     #1,D3
+
+MPPBranch_41b20c ;]
+ MOVE.L     -9(A3),D2 ;]
+ BNE.S      MPPBranch_41b1d0 ;]
+ TST.W      D3
+ BEQ.W      MPPBranch_41b2a6 ;]
+ LEA        31(A4),A1 ;]
+ LEA        30(A4),A5 ;]
+ MOVE.W     (A5)+,7(A1) ;]
+ MOVE.B     (A5)+,11(A1) ;]
+ MOVE.B     (A5)+,13(A1) ;]
+ MOVE.B     #2,15(A1) ;]
+ MOVE.L     A1,50(A4) ;]
+ MOVE.L     ABusVars,A2
+
+MPPBranch_41b23a ;]
+ MOVE.B     30(A4),38(A4) ;]
+ CLR.W      D2
+ CLR.W      D1
+ LEA        54(A4),A3 ;]
+ LEA        28(A4),A1 ;]
+ MOVE.W     #2,(A3)+ ;]
+ MOVE.L     A1,(A3)+
+
+MPPBranch_41b252 ;]
+ MOVE.L     (SP),A5 ;]
+ CLR.W      D0
+ MOVE.B     (A5),D0 ;]
+ ADD.B      1(A5,D0.W),D0 ;]
+ MOVE.B     #1,2(A5,D0.W) ;]
+ MOVE.B     #Star,3(A5,D0.W) ;]
+ ADD.W      #9,D0 ;]
+ ADD.W      D0,D2
+ CMP.W      #584,D2 ;]
+ BGE.S      MPPBranch_41b28c ;]
+ ADDQ.W     #4,SP
+ MOVE.W     D0,(A3)+
+ SUBQ.W     #5,A5 ;]
+ MOVE.L     A5,(A3)+ ;]
+ MOVE.W     SysNetNum(A2),(A5) ;]
+ ADDQ.W     #1,D1
+ SUBQ.W     #1,D3
+ BEQ.S      MPPBranch_41b28c ;]
+ CMP.W      #TupleMax,D1 ;]
+ BNE.S      MPPBranch_41b252 ;]
+
+MPPBranch_41b28c ;]
+ CLR.W      (A3)+
+ ORI.W      #48,D1 ;]
+ MOVE.B     D1,(A1)
+ MOVE.W     D3,A5
+ CLR.B      47(A4) ;]
+ BSR.S      WriteLookupReply ;]
+
+MPPBranch_41b29c ;]
+ TST.B      47(A4) ;]
+ BEQ.S      MPPBranch_41b29c ;]
+ MOVE.W     A5,D3
+ BNE.S      MPPBranch_41b23a ;]
+
+MPPBranch_41b2a6 ;]
+ MOVEM.L    (SP)+,A2/A4-A5 ;]
+ MOVE.W     (SP)+,SR
+
+LookupExit ;]
+ MOVE.L     JIODone,A0
+ MOVE.L     ABusDCE,A1 ;]
+ JMP        (A0)
+
+WriteLookupReply ;]
+ MOVEQ      #2,D1
+ LEA        48(A4),A1 ;]
+ MOVE.L     JDDPWrite(A2),A0 ;]
+ CLR.B      D3
+ JSR        (A0)
+ MOVE.L     LUQElPtr(A2),A0 ;]
+ ST         21(A0) ;]
+ RTS        
+
+*R GetTrapAddress reads this trap number as data.
+
+CmpStringTrapWord ;]
+ DC.W CmpStringTrap ;]
+
+ComparePStrings ;]
+ MOVEQ      #0,D0
+ MOVE.B     (A0)+,D0
+ SWAP       D0
+ MOVE.B     (A1)+,D0
+ JSR        (A2)
+ TST.W      D0
+ RTS        
+
+LookupComplete ;]
+ CLR.W      26(A0) ;]
+ RTS        
+
+NBPCode ;]
+ SUBQ.W     #7,D3 ;]
+ BMI.S      NBPAbort ;]
+ ADD.W      D3,D3
+ LEA        NBPControlTable,A3 ;]
+ ADD.W      D3,A3
+ MOVE.W     (A3),D3
+ LEA        NBPCode,A3 ;]
+ ADD.W      D3,A3
+ MOVE.L     A3,-(SP)
+ MOVE.L     NRVars(A2),A3 ;]
+ RTS        
+
+NBPControlTable ;]
+ DC.W DoLoadNBP-NBPCode ;]
+ DC.W DoConfirmName-NBPCode ;]
+ DC.W DoLookupName-NBPCode ;]
+ DC.W DoRemoveName-NBPCode ;]
+ DC.W DoRegisterName-NBPCode ;]
+ DC.W NBPDone-NBPCode ;]
+ DC.W DoUnloadNBP-NBPCode ;]
+
+NBPAbort ;]
+ MOVE.L     NRVars(A2),A3 ;]
+
+DoUnloadNBP ;]
+ BRA.W      NBPDone ;]
+
+CloseNBPSocket ;]
+ MOVEQ      #DDPTblSz-1,D2 ;]
+
+MPPBranch_41b318 ;]
+ CMP.B      SocketNum(A2,D2.W),D0 ;]
+ DBEQ       D2,MPPBranch_41b318 ;]
+ BNE.S      MPPBranch_41b326 ;]
+ CLR.B      SocketNum(A2,D2.W) ;]
+
+MPPBranch_41b326 ;]
+ RTS        
+
+DoLoadNBP ;]
+ MOVEQ      #NBPVarSize,D0 ;]
+ BSR.S      AllocateNBP ;]
+ BNE.S      MPPBranch_41b354 ;]
+ MOVE.W     #1,NBPVBLQ+QType(A0) ;]
+ LEA        NBPTimeout,A1 ;]
+ MOVE.L     A1,NBPVBLQ+VBLAddr(A0) ;]
+ LEA        NBPRead,A1 ;]
+ MOVE.L     JDDPWrite(A2),A3 ;]
+ CLR.W      D1
+ JSR        2(A3) ;]
+ TST.W      D0
+ BNE.S      DisposeFailedNBP ;]
+ MOVE.B     D1,(A0)
+ MOVE.L     A0,NRVars(A2) ;]
+
+MPPBranch_41b354 ;]
+ RTS        
+
+DisposeFailedNBP ;]
+ MOVE.W     D0,D1
+ _DISPOSEPTR 
+ MOVE.W     D1,D0
+ RTS        
+
+AllocateNBP ;]
+ _NewPtr ,SYS,CLEAR 
+ BRA.S      MPPBranch_41b364 ;]
+
+AllocateNBPAppHeap ;]
+ _NewPtr ,CLEAR 
+
+MPPBranch_41b364 ;]
+ RTS        
+
+DoConfirmName ;]
+ MOVE.L     ConfirmAddr(A0),D2 ;]
+ BRA.W      BeginLookup ;]
+
+DoRegisterName ;]
+ MOVE.L     A0,D3
+ TST.L      LookupPtr(A2) ;]
+ BMI.S      MPPBranch_41b3ba ;]
+ NOP        
+ MOVE.L     #LookupBufferSize,D0 ;]
+ BSET       #7,LookupPtr(A2) ;]
+ BSR.S      AllocateNBP ;]
+ BNE.S      MPPBranch_41b3ce ;]
+ ADD.W      #CSCode,A0 ;]
+ MOVE.L     A0,LUQElPtr(A2) ;]
+ MOVEM.L    D1/A1/A3,-(SP) ;]
+ MOVEQ      #2,D1
+ MOVE.L     LookupPtr(A2),A1 ;]
+ ADDQ.W     #4,A1
+ MOVE.L     JDDPWrite(A2),A3 ;]
+ JSR        2(A3) ;]
+ MOVEM.L    (SP)+,D1/A1/A3 ;]
+ TST.W      D0
+ BEQ.S      MPPBranch_41b3b2 ;]
+ MOVE.W     #NBPNISErr,D0 ;]
+ BRA.S      MPPBranch_41b3ce ;]
+
+MPPBranch_41b3b2 ;]
+ BSET       #7,LookupPtr(A2) ;]
+ MOVE.L     D3,A0
+
+MPPBranch_41b3ba ;]
+ TST.B      VerifyFlag(A0) ;]
+ BEQ.S      AddName ;]
+ ADD.W      #NTEntity,A1 ;]
+ BSR.S      FindName ;]
+ BEQ.W      BeginLocalLookup ;]
+ MOVE.W     #NBPDuplicate,D0 ;]
+
+MPPBranch_41b3ce ;]
+ BRA.W      NBPExit ;]
+
+AddName
+ CLR.W      D2
+ MOVE.B     NTSocket(A1),D1 ;]
+
+MPPBranch_41b3d8 ;]
+ ADDQ.W     #1,D2
+ LEA        NTQueueHd(A2),A0 ;]
+
+MPPBranch_41b3de ;]
+ TST.L      (A0)
+ BEQ.S      MPPBranch_41b3f6 ;]
+ MOVE.L     (A0),A0
+ CMP.B      NTSocket(A0),D1 ;]
+ BNE.S      MPPBranch_41b3de ;]
+ TST.B      D2
+ BEQ.S      MPPBranch_41b3de ;]
+ CMP.B      8(A0),D2 ;]
+ BEQ.S      MPPBranch_41b3d8 ;]
+ BRA.S      MPPBranch_41b3de ;]
+
+MPPBranch_41b3f6 ;]
+ MOVE.B     (A2),6(A1) ;]
+ MOVE.B     D2,8(A1) ;]
+ CLR.L      (A1)
+ MOVE.L     A1,(A0)
+ BRA.S      MPPBranch_41b424 ;]
+
+DoRemoveName ;]
+ MOVE.W     #NBPNotFound,D0 ;]
+ BSR.S      FindName ;]
+ BEQ.S      MPPBranch_41b3ce ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ LEA        NTQueueHd(A2),A0 ;]
+
+MPPBranch_41b416 ;]
+ CMP.L      (A0),D3
+ BEQ.S      MPPBranch_41b41e ;]
+ MOVE.L     (A0),A0
+ BRA.S      MPPBranch_41b416 ;]
+
+MPPBranch_41b41e ;]
+ MOVE.L     D3,A1
+ MOVE.L     (A1),(A0)
+ MOVE.W     (SP)+,SR
+
+MPPBranch_41b424 ;]
+ BRA.W      NBPDone ;]
+
+FindName ;]
+ MOVEM.L    D0-D1/A0-A3,-(SP) ;]
+ MOVE.L     A1,A3
+ LEA        NTQueueHd(A2),A2 ;]
+ CLR.L      D3
+
+MPPBranch_41b434 ;]
+ TST.L      (A2)
+ BEQ.S      MPPBranch_41b45a ;]
+ CLR.W      D0
+ MOVE.B     (A3),D0
+ ADD.B      1(A3,D0.W),D0 ;]
+ ADDQ.W     #2,D0
+ MOVE.W     D0,D1
+ SWAP       D0
+ MOVE.W     D1,D0
+ MOVE.L     (A2),A2
+ MOVE.L     A2,A1
+ ADD.W      #NTEntity,A1 ;]
+ MOVE.L     A3,A0
+ _CMPSTRING 
+ TST.W      D0
+ BNE.S      MPPBranch_41b434 ;]
+ MOVE.L     A2,D3
+
+MPPBranch_41b45a ;]
+ MOVEM.L    (SP)+,D0-D1/A0-A3 ;]
+ RTS        
+
+DoLookupName ;]
+ CLR.W      NumGotten(A0) ;]
+ MOVE.L     RetBuffPtr(A0),NBPRetBuffer(A3) ;]
+ MOVE.W     RetBuffSize(A0),NBPRetLength(A3) ;]
+
+BeginLocalLookup ;]
+ CLR.L      D2
+
+BeginLookup ;]
+ MOVEQ      #33,D3 ;]
+ LSR.W      #8,D2
+ BNE.S      MPPBranch_41b484 ;]
+ ST         D2
+ MOVE.B     SysABridge(A2),D0 ;]
+ BEQ.S      MPPBranch_41b484 ;]
+ MOVEQ      #17,D3
+ MOVE.B     D0,D2
+
+MPPBranch_41b484 ;]
+ MOVE.L     A0,NBPRequest(A3) ;]
+ SWAP       D2
+ MOVE.W     D2,NBPDestNet(A3) ;]
+ LEA        NBPVBLQ(A3),A0 ;]
+ LSL.W      #3,D1
+ AND.W      #1023,D1 ;]
+ MOVE.W     D1,VBLCount(A0) ;]
+ _VINSTALL  
+ MOVE.L     A1,D0
+ LEA        30(A3),A1 ;]
+ LEA        NBPDDPHeader(A3),A0 ;]
+ MOVE.L     A0,(A1)+
+ MOVE.B     #NIS,LAPHdSz+DDPDstSkt(A0) ;]
+ MOVE.W     D2,7(A0) ;]
+ SWAP       D2
+ MOVE.B     D2,11(A0) ;]
+ MOVE.B     #NBP,LAPHdSz+DDPType(A0) ;]
+ MOVE.W     #7,(A1)+
+ LEA        NBPHeader(A3),A0 ;]
+ MOVE.L     A0,(A1)+
+ MOVE.B     D3,(A0)+
+ ADDQ.B     #1,NBPRequestID(A3) ;]
+ MOVE.B     NBPRequestID(A3),(A0)+ ;]
+ MOVE.W     SysNetNum(A2),(A0)+ ;]
+ MOVE.B     (A2),(A0)+ ;]
+ MOVE.B     (A3),D1
+ MOVE.B     D1,(A0)
+ MOVE.L     D0,A0
+ CLR.W      D2
+ MOVE.B     (A0),D2
+ ADD.B      1(A0,D2.W),D2 ;]
+ ADD.B      2(A0,D2.W),D2 ;]
+ ADDQ.B     #3,D2
+ MOVE.W     D2,(A1)+
+ MOVE.L     A0,(A1)+
+ CLR.W      (A1)
+
+SendNBPRequest ;]
+ LEA        NBPWDS(A3),A1 ;]
+ MOVE.L     JDDPWrite(A2),A0 ;]
+ CLR.B      D3
+ JSR        (A0)
+ RTS        
+
+NBPTimeout ;]
+ MOVE.L     ABusVars,A2
+ MOVE.L     NRVars(A2),A3 ;]
+ MOVE.L     NBPRequest(A3),A1 ;]
+ SUBQ.B     #1,Count(A1) ;]
+ BEQ.S      MPPBranch_41b52a ;]
+ CLR.W      D0
+ MOVE.B     Interval(A1),D0 ;]
+ LSL.W      #3,D0
+ MOVE.W     D0,VBLCount(A0) ;]
+ MOVE.W     NBPDestNet(A3),62(A3) ;]
+ MOVE.B     (A3),D1
+ BRA.S      SendNBPRequest ;]
+
+MPPBranch_41b52a ;]
+ MOVE.W     CSCode(A1),D0 ;]
+ MOVE.L     EntityPtr(A1),A1 ;]
+ CMP.W      #RegisterName,D0 ;]
+ BEQ.W      AddName ;]
+ CMP.W      #ConfirmName,D0 ;]
+ BNE.S      NBPDone ;]
+ MOVE.W     #NBPNoConfirm,D0 ;]
+ BRA.S      NBPExit ;]
+
+NBPDone ;]
+ CLR.W      D0
+
+NBPExit ;]
+ MOVE.W     D0,D1
+ LEA        NBPVBLQ(A3),A0 ;]
+ _VREMOVE   
+ MOVE.W     D1,D0
+ CLR.L      NBPRequest(A3) ;]
+ MOVE.L     ABusDCE,A1 ;]
+ MOVE.L     JIODone,A0
+ JMP        (A0)
+
+ReadConfirmReply ;]
+ CMP.W      #RegisterName,CSCode(A5) ;]
+ BEQ.S      ReadRegisterReply ;]
+ MOVEQ      #4,D3
+ JSR        2(A4)
+ BNE.S      NBPReadReturn ;]
+ MOVE.B     -(A3),D2 ;]
+ MOVE.L     NRVars(A2),A3 ;]
+ MOVE.L     NBPRequest(A3),A1 ;]
+ MOVE.B     D2,NewSocket(A1) ;]
+ CMP.B      37(A1),D2 ;]
+ BEQ.S      NBPDone ;]
+ MOVE.W     #NBPConfDiff,D0 ;]
+ BRA.S      NBPExit ;]
+
+ReadRegisterReply ;]
+ JSR        2(A4)
+ BNE.S      NBPReadReturn ;]
+ MOVE.L     NRVars(A2),A3 ;]
+ MOVE.W     #NBPDuplicate,D0 ;]
+ BRA.S      NBPExit ;]
+
+NBPReadReturn ;]
+ RTS        
+
+IgnoreNBP ;]
+ CLR.W      D3
+ JMP        2(A4)
+
+NBPRead ;]
+ MOVEQ      #2,D3
+ JSR        (A4)
+ BNE.S      NBPReadReturn ;]
+ MOVE.L     NRVars(A2),A5 ;]
+ MOVE.L     NBPRequest(A5),D0 ;]
+ BEQ.S      IgnoreNBP ;]
+ MOVE.B     -(A3),D2 ;]
+ CMP.B      NBPRequestID(A5),D2 ;]
+ BNE.S      IgnoreNBP ;]
+ MOVE.B     -(A3),D2 ;]
+ EXG        D0,A5 ;]
+ CMP.W      #LookupName,CSCode(A5) ;]
+ BNE.S      ReadConfirmReply ;]
+ MOVE.L     D0,A5
+ MOVE.L     NBPRetBuffer(A5),A3 ;]
+ MOVE.W     NBPRetLength(A5),D3 ;]
+ JSR        2(A4)
+ BNE.S      NBPReadReturn ;]
+ SUB.B      #48,D2 ;]
+ BLE.S      NBPReadReturn ;]
+ CMP.B      #15,D2 ;]
+ BGT.S      NBPReadReturn ;]
+ MOVE.L     A3,D1
+ MOVE.L     NRVars(A2),A3 ;]
+ CLR.W      D0
+ TST.W      D3
+ BPL.S      MergeLookupTuples ;]
+
+CountReceivedTuples ;]
+ CLR.W      D2
+ MOVE.L     NBPRetBuffer(A3),A0 ;]
+
+MPPBranch_41b5f4 ;]
+ ADDQ.W     #5,A0
+ CMP.L      A0,D1
+ BLE.S      MPPBranch_41b616 ;]
+ MOVE.B     (A0)+,D0
+ ADD.W      D0,A0
+ CMP.L      A0,D1
+ BLE.S      MPPBranch_41b616 ;]
+ MOVE.B     (A0)+,D0
+ ADD.W      D0,A0
+ CMP.L      A0,D1
+ BLE.S      MPPBranch_41b616 ;]
+ MOVE.B     (A0)+,D0
+ ADD.W      D0,A0
+ CMP.L      A0,D1
+ BLT.S      MPPBranch_41b616 ;]
+ ADDQ.W     #1,D2
+ BRA.S      MPPBranch_41b5f4 ;]
+
+MPPBranch_41b616 ;]
+ TST.W      D2
+ BEQ.S      NBPReadReturn ;]
+
+MergeLookupTuples ;]
+ MOVEM.L    A4-A6,-(SP)
+ CLR.W      D1
+ MOVE.L     NBPRequest(A3),A5 ;]
+ MOVE.L     RetBuffPtr(A5),D3 ;]
+ MOVE.L     NBPRetBuffer(A3),A5 ;]
+ MOVE.L     A5,A6
+
+MPPBranch_41b62e ;]
+ MOVE.L     D3,A4
+
+FindDuplicateTuple ;]
+ CMP.L      NBPRetBuffer(A3),A4 ;]
+ BEQ.S      AddLookupTuple ;]
+ MOVE.L     A4,A0
+ MOVE.L     A5,A1
+ CMPM.B     (A0)+,(A1)+
+ BNE.S      MPPBranch_41b64e ;]
+ CMPM.B     (A0)+,(A1)+
+ BNE.S      MPPBranch_41b64e ;]
+ CMPM.B     (A0)+,(A1)+
+ BNE.S      MPPBranch_41b64e ;]
+ CMPM.B     (A0)+,(A1)+
+ BNE.S      MPPBranch_41b64e ;]
+ CMPM.B     (A0)+,(A1)+
+ BEQ.S      SkipDuplicateTuple ;]
+
+MPPBranch_41b64e ;]
+ ADDQ.W     #5,A4 ;]
+ MOVE.B     (A4),D0
+ ADD.B      1(A4,D0.W),D0 ;]
+ ADD.B      2(A4,D0.W),D0 ;]
+ ADDQ.W     #3,D0
+ ADD.W      D0,A4
+ BRA.S      FindDuplicateTuple ;]
+
+AddLookupTuple ;]
+ MOVE.B     5(A5),D0 ;]
+ ADD.B      6(A5,D0.W),D0 ;]
+ ADD.B      7(A5,D0.W),D0 ;]
+ ADDQ.W     #8,D0
+ MOVE.L     A5,A0
+ ADD.W      D0,A5
+ CMP.L      A0,A6 ;]
+ BEQ.S      MPPBranch_41b67e ;]
+ MOVE.L     A6,A1
+ ADD.W      D0,A6
+ _BLOCKMOVE 
+ BRA.S      MPPBranch_41b680 ;]
+
+MPPBranch_41b67e ;]
+ MOVE.L     A5,A6
+
+MPPBranch_41b680 ;]
+ ADDQ.W     #1,D1
+
+MPPBranch_41b682 ;]
+ SUBQ.B     #1,D2
+ BNE.S      MPPBranch_41b62e ;]
+ MOVE.L     A6,NBPRetBuffer(A3) ;]
+ MOVE.L     NBPRequest(A3),A0 ;]
+ SUB.L      RetBuffPtr(A0),A6 ;]
+ MOVE.W     RetBuffSize(A0),D0 ;]
+ SUB.W      A6,D0 ;]
+ MOVEM.L    (SP)+,A4-A6
+ ADD.W      NumGotten(A0),D1 ;]
+ MOVE.W     D1,NumGotten(A0) ;]
+ CMP.W      MaxToGet(A0),D1 ;]
+ BPL.W      NBPDone ;]
+ MOVE.W     D0,NBPRetLength(A3) ;]
+ BEQ.W      NBPDone ;]
+ RTS        
+
+SkipDuplicateTuple ;]
+ ADDQ.W     #5,A5 ;]
+ MOVE.B     (A5),D0 ;]
+ ADD.B      1(A5,D0.W),D0 ;]
+ ADD.B      2(A5,D0.W),D0 ;]
+ ADDQ.W     #3,D0
+ ADD.W      D0,A5
+ BRA.S      MPPBranch_41b682 ;]
+
+MPPResourceEnd ;]
+ ENDP
+ END

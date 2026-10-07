@@ -1,0 +1,227 @@
+;
+;	File:		PackageMgr.a
+;
+;	Contains:	Macintosh Application Package Dispatch Interface
+;
+;	Written by:	Jerome Coonen and Andy Hertzfeld
+;
+;	Copyright:	© 1983-1992 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				 7/10/85	LAK		Added set up of ROMMapInsert for ROM resources.
+;				  5/7/85	JTC		Minor clean-up and extend to 16 packages.
+;				 4/16/85	SC		NoPack code changed and called after _LoadResource (in case the
+;									load failed)
+;				 4/16/85	SC		InitAllPacks now saves/restores resload state (directly to low
+;									memory too, no traps
+;				  3/6/85	LAK		Clear high byte of address before dispatching (to be nice . .
+;									.).
+;				 1/28/85	LAK		Uses new equates files. Changed InitMath to InitAllPacks. Added
+;									ram patches.
+;				 6/15/83	AJH		Made it use deep shit errors defined in SysErr
+;
+;
+
+; File: Packages.TEXT
+;---------------------------------------------------------------------
+;
+; Macintosh Application Package Dispatch Interface
+;
+;	 written by Jerome Coonen and Andy Hertzfeld  13-May-83
+;
+*R The API summary below was revised from the original.
+*R The ROM uses ROMMapInsert to suppress loading. It does not call SetResLoad
+*R or save resLoad on the package-manager stack. The revised summary also
+*R reflects InitAllPacks and 16 package entries.
+;
+*R ROM-based interface to packages stored as resources of type "PACK",
+*R numbered 0 through 15.
+;
+*R PROCEDURE InitPack(PackNumber : integer);
+*R InitPack finds a PACK resource without loading it and saves its handle
+*R for dispatch. The resource search includes the ROM resource map.
+*R InitPack follows the Pascal register conventions.
+;
+*R PROCEDURE InitAllPacks;
+*R InitAllPacks initializes all 16 package handles and the floating point
+*R state area.
+;
+*R Labels PACK0, PACK1, ..., PACK15 receive the respective A-line traps.
+*R They in turn transfer control to the package whose handle was saved
+*R by InitPack; they preserve ALL registers.  They must check the
+*R handle, in case GetResource failed to find the package, and then
+*R check the pointer, in case the package has been purged.
+;
+; Modification history:
+;
+;	15-Jun-83  AJH	Made it use deep shit errors defined in SysErr
+;
+;---------------------------------------------------------------------
+;
+;	28 Jan 85  LAK	Uses new equates files.  Changed InitMath to InitAllPacks.
+;					 Added ram patches.
+;	06 Mar 85  LAK	Clear high byte of address before dispatching (to
+;					 be nice . . .).
+;	16 Apr 85  SC	InitAllPacks now saves/restores resload state (directly
+;					to low memory too, no traps
+;	16 Apr 85  SC	NoPack code changed and called after _LoadResource (in case
+;					the load failed)
+;	07 May 85  JTC	Minor clean-up and extend to 16 packages.
+;	<10Jul85>  LAK	Added set up of ROMMapInsert for ROM resources.
+;---------------------------------------------------------------------
+
+
+			BLANKS	ON
+			STRING	ASIS
+
+*R Equates used by this file, from the original assembler interfaces.
+
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+MapTrue        EQU      $FFFF
+
+PackDispatcher PROC 	 EXPORT
+
+		  EXPORT	InitPack, InitAllPacks
+		  EXPORT	Pack0, Pack1, Pack2, Pack3, Pack4, Pack5, Pack6, Pack7 ;]
+		  EXPORT	Pack8, Pack9, Pack10, Pack11, Pack12, Pack13, Pack14, Pack15 ;]
+		  EXPORT	PackMgrEnd
+
+;
+;  PROCEDURE InitPack(PackNumber : integer);
+;
+; Stack: return adrs  <  PackNumber
+;
+InitPack
+			   SUBQ.L	 #4,SP			; room for handle from GetResource
+			   MOVE.L	 #'PACK',-(SP)	; resource type PACK
+
+;] Stack: "PACK" < handle slot < return adrs < PackNumber
+
+			   MOVE.W	 12(SP),-(SP)	; resource number = PackNumber			<10Jul85>
+			   MOVE.W	 #MapFalse,ROMMapInsert ; check ROM map as well 		<10Jul85>
+			   _GetResource
+
+;] Stack: handle slot < return adrs < PackNumber
+
+			   MOVE.W	 8(SP),D0	   ; PackNumber, beyond handle, ret adrs	<10Jul85>
+			   BSR.S	 GetPHand		; point A0 to the saved handle					  <07May85>
+			   MOVE.L	 (SP)+,(A0) 	; store resource handle 						  <07May85>
+
+; Stack: return adrs  <  PackNumber
+
+			   MOVEA.L	 (SP)+,A0		; return address
+			   ADDQ.L	 #2,SP			; kill PackNumber
+			   JMP		 (A0)
+
+;
+;  PROCEDURE InitAllPacks;
+;
+InitAllPacks
+			   MOVE.L	 (SP)+,A0		; get trap return
+			   MOVEQ	 #15,D0 		; 16 packages									  <07May85>
+
+@1			   MOVE.W	 D0,-(SP)		; pack to init
+			   MOVE.L	 A0,-(SP)		; where to go
+			   LEA		 InitPack,A0	; where to go from here
+			   DBRA 	 D0,@1
+			   MOVE.L	 A0,-(SP)		; push InitPack for RTS-style branch
+
+			   CLR.W	 FPState		; set default modes for arithmetic
+			   LEA		 FPException,A0
+			   MOVE.L	 A0,FPState+2	; default halt address
+			   RTS						; RTS, initing all packs
+
+;
+; Default floating point exception handler simply signals deep six alert.
+;
+FPException
+			   MOVEQ	 #DSFPErr,D0
+			   _SysError
+
+;
+; Given pack number 0..15 in D0.W, return A0 pointing to saved handle in low memory.	  <07May85>
+;
+GetPHand
+			   LEA		 App2Packs,A0	; presume it's the latter set                     <07May85>
+			   SUBQ.W	 #8,D0			; < 0 for 0-7; >= 0 for 8-15					  <07May85>
+			   BGE.S	 @1 			; Greater or Equal => App2Packs is right		  <07May85>
+			   LEA		 AppPacks,A0	;												  <07May85>
+			   ADDQ.W	 #8,D0			;												  <07May85>
+@1
+			   LSL.W	 #2,D0			; mult by four to index into longs				  <07May85>
+			   ADDA.W	 D0,A0			; point to saved handle 						  <07May85>
+			   RTS						;												  <07May85>
+
+
+;
+; Common jump routine.	Must preserve values of all registers.
+;] GetPHand selects the handle in AppPacks or App2Packs from the package
+;] number, (<return address> - Pack1) / 2.
+;
+PackCom
+			MOVEM.L	 D0/A0,-(SP)	; need two work registers
+			MOVE.L	 8(SP),D0		; get return address
+			LEA		 Pack1,A0
+			SUB.L	 A0,D0			; difference is 0,2,4,6,...,14,16,...,30		  <07May85>
+			LSR.W	 #1,D0			; back to 0,1,2,...,15							  <07May85>
+			BSR.S	 GetPHand		; point A0 to saved handle						  <07May85>
+			
+			TST.L	 (A0)
+			BEQ.S	 NoPack 		; 0 handle means GetResource failed
+			
+			MOVEA.L	 (A0),A0		; now dereference handle down to pointer
+			TST.L	 (A0)			; 0 pointer means must reload resource
+			BNE.S	 GoToPack
+			
+			MOVE.L	 A0,-(SP)		; push handle for LoadResource
+			MOVE.W	 #MapTrue,ROMMapInsert ; use ROM map as well			<10Jul85>
+			_LoadResource			; Note: preserves ALL registers.
+			
+			TST.L	 (A0)			; Did load fail?						<SC 16-Apr-85>
+			BEQ.S	 NoPack 		; if so, deep shit
+GoToPack
+			MOVE.L	 (A0),8(SP)		; pack adrs replaces old return adrs
+			MOVEM.L	 (SP)+,D0/A0		; restore work registers
+			CLR.B	 (SP)			; clear high byte of address
+			RTS						; into package
+
+; Signal deep six alert if GetResource failed
+
+NoPack
+			MOVE.L	 8(SP),D0		; get return address <SC 16-Apr-85>
+			LEA		 Pack1,A0
+			SUB.L	 A0,D0			;] difference is 0,2,4,6,...,30
+			LSR		 #1,D0			;] shift to 0,1,2,3,...,15
+			
+			ADD.W	 #DSNoPackErr,D0	; error number for this NoPack
+			_SysError
+
+;
+; Routines differ only in offset into handle table.  So compute offset from
+; the difference	<return address> - Pack1
+;
+Pack0		   BSR.S	 PackCom
+Pack1		   BSR.S	 PackCom
+Pack2		   BSR.S	 PackCom
+Pack3		   BSR.S	 PackCom
+Pack4 ;]
+		   BSR.S	 PackCom
+Pack5 ;]
+		   BSR.S	 PackCom
+Pack6		   BSR.S	 PackCom
+Pack7		   BSR.S	 PackCom
+Pack8		   BSR.S	 PackCom
+Pack9		   BSR.S	 PackCom
+Pack10		   BSR.S	 PackCom
+Pack11		   BSR.S	 PackCom
+Pack12		   BSR.S	 PackCom
+Pack13		   BSR.S	 PackCom
+Pack14		   BSR.S	 PackCom
+Pack15		   BSR.S	 PackCom
+PackMgrEnd
+			   END
+

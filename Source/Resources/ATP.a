@@ -1,0 +1,1148 @@
+*R Mac Plus v3 embedded ATP driver, version 19.
+*R No complete ATP driver source survives in this source tree.
+*R PatchPlusROM.a supplies confirmed entry names, table fields, and matching comments.
+*R AppleTalk.a supplies the public parameter and packet definitions.
+*R Other labels and private fields below are reconstruction names.
+*R The original delayed-response and GetDataArea interrupt bugs remain.
+*R The resource block header and driver offsets use assembled label differences.
+
+*R Surviving interface definitions and restored private layout.
+		EXPORT ATPDriver ;]
+
+		INCLUDE 'AppleTalk.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+VBLQEl	EQU	$CC			; VBL queue element offset
+DataArea1 EQU VBLQEl+14 ;]
+DataAreaSize EQU $68 ;]
+DataArea2 EQU DataArea1+DataAreaSize ;]
+DataArea3 EQU DataArea2+DataAreaSize ;]
+ATPVarSize EQU DataArea3+DataAreaSize ;]
+ATPVersion EQU 19 ;]
+TSktNum	EQU	0			; Socket no. request was on (offset)
+TCBE	EQU	6			; Number of entries in TCB table
+TQElPtr	EQU	TSktNum+TCBE ; Offset to qEl ptr
+TTID EQU TQElPtr+4*TCBE ;]
+TTimeout EQU TTID+2*TCBE ;]
+RSktNum EQU TTimeout+TCBE ;]
+RQElPtr EQU RSktNum+MaxATPSkts ;]
+RAddrFilter EQU RQElPtr+4*MaxATPSkts ;]
+RspCache EQU RAddrFilter+4*MaxATPSkts ;]
+RspEntrySz EQU 12 ;]
+ATPDCE EQU RspCache+MaxRsps*RspEntrySz ;]
+VBL60	EQU	60			; Call us every second (60 ticks)
+SCCLockout68000 EQU $2600 ;]
+WorkATP EQU $60 ;]
+WorkRespNo EQU WorkATP+ATPRespNo ;]
+userData  		EQU 		$12       				; User bytes
+NextTID EQU ATPDCE+4 ;]
+WorkWDS EQU $3A ;]
+WorkDDP EQU $4F ;]
+WorkRegs EQU $22 ;]
+WorkReturn EQU $36 ;]
+WorkUserData EQU WorkATP+ATPUserData ;]
+WorkTID EQU WorkATP+ATPTransID ;]
+
+
+ATPResourceBlock PROC ;]
+ DC.L $C0000000+(ATPResourceEnd-ATPResourceBlock) ;]
+ DC.L $60 ;]
+
+ATPDriver ;]
+ DC.W $4400           ; Control, Locked
+ DC.W 0,0             ; No time, no events
+ DC.W 0               ; No menu
+;
+; Entry points offset table
+;
+ DC.W ATPOpen-ATPDriver ;]
+ DC.W Nothing-ATPDriver ;]
+ DC.W ATPDoControl-ATPDriver ;]
+ DC.W Nothing-ATPDriver ;]
+ DC.W ATPClose-ATPDriver ;]
+ DC.B 4               ; driver name
+ DC.B '.ATP '
+
+ATPOpen
+ MOVE.L     ABusVars,A3 ;]
+ MOVE.L     A3,D1
+ BEQ.S      FromATP ;]
+ TST.L      ATPVars(A3) ;]
+ BNE.S      FromATP ;]
+ MOVE.W     #ATPVarSize,D0 ;]
+ _NewPtr ,SYS,CLEAR 
+ BRA.S      OpenAllocated ;]
+
+ATPOpenAppHeap ;]
+ _NewPtr ,CLEAR 
+
+OpenAllocated ;]
+ BNE.S      FromATP ;]
+ BSET       #ATPLoadedBit,PortBUse ;]
+ MOVE.L     A0,ATPVars(A3) ;]
+ CLR.B      ATPVars(A3) ;]
+ MOVE.B     #ATPVersion,DCtlQueue+1(A1) ;]
+ LEA        ATPDCE(A0),A2 ;]
+ MOVE.L     A1,(A2)+
+ MOVE.W     Ticks+2,(A2)+ ;]
+ MOVE.L     A2,A0
+ ADDQ.W     #4,A2
+ MOVE.W     #1,(A2)+
+ LEA        CheckTime,A1 ;]
+ MOVE.L     A1,(A2)+
+ MOVE.W     #VBL60,(A2)+ ;]
+ _VINSTALL  
+
+FromATP
+ RTS        
+
+ATPDoControl
+ TST.L      ABusVars
+ BNE.S      CheckControlCode ;]
+ MOVEQ      #ControlErr,D0
+
+ControlExit ;]
+ BRA.W      GoIODone ;]
+
+CheckControlCode ;]
+ MOVE.W     CSCode(A0),D2
+ BMI.S      ATPCloseControl ;]
+ SUBQ.W     #1,D2
+ BNE.S      DispatchControl ;]
+ RTS        
+
+DispatchControl ;]
+ MOVEQ      #ControlErr,D0
+ SUB.W      #NSendRequest,D2 ;]
+ BLT.S      ControlExit ;]
+ CMP.W      #7,D2
+ BGT.S      ControlExit ;]
+ ADD.W      D2,D2
+ LEA        ATPControlTable,A3 ;]
+ ADD.W      D2,A3
+ MOVE.W     (A3),A3 ;]
+ LEA        ATPDriver,A2 ;]
+ ADD.L      A2,A3
+
+IntoDispatch
+ MOVE.L     ABusVars,A2
+ MOVE.L     ATPVars(A2),A2
+ MOVE.B     ATPSocket(A0),D1 ;]
+ SUB.W      #10,D2 ;]
+ BPL.S      DispatchReady ;]
+ MOVE.W     #BadATPSkt,D0 ;]
+ TST.B      D1
+ BEQ.S      CloseControlExit ;]
+ MOVEQ      #5,D2
+
+FindListenerSocket ;]
+ CMP.B      RSktNum(A2,D2.W),D1 ;]
+ DBEQ       D2,FindListenerSocket ;]
+ BNE.S      CloseControlExit ;]
+
+DispatchReady ;]
+ MOVE.L     AddrBlock(A0),D3
+ AND.B      #FlagMask,ATPFlags(A0)
+ JMP        (A3)
+
+ATPControlTable ;]
+ DC.W DoRelRspCB-ATPDriver ;]
+ DC.W DoCloseATPSkt-ATPDriver ;]
+ DC.W DoAddResponse-ATPDriver ;]
+ DC.W DoSendResponse-ATPDriver ;]
+ DC.W DoGetRequest-ATPDriver ;]
+ DC.W DoOpenATPSkt-ATPDriver ;]
+ DC.W DoSendRequest-ATPDriver ;]
+ DC.W DoRelTCB-ATPDriver ;]
+
+ATPCloseControl ;]
+ CMP.W      #2,MemTop
+ BGT.W      GoIODone ;]
+ BSR.S      ATPClose ;]
+
+CloseControlExit ;]
+ BRA.W      ATPExit ;]
+
+ATPClose
+ MOVE.L     ABusVars,A1 ;]
+ MOVE.L     A1,D0
+ BEQ.S      CloseReturn ;]
+ MOVE.L     ATPVars(A1),A2 ;]
+ MOVE.L     A2,D0
+ BMI.S      RemoveATPVBL ;]
+
+WaitDataArea ;]
+ BSR.W      GetDataArea ;]
+ BNE.S      WaitDataArea ;]
+ MOVEQ      #6,D2
+ LEA        (A2),A0 ;]
+ BSR.S      CloseSocketTable ;]
+
+WaitRequestsClosed ;]
+ TST.W      IOResult(A3) ;]
+ BGT.S      WaitRequestsClosed ;]
+ MOVEQ      #6,D2
+ LEA        RSktNum(A2),A0 ;]
+ BSR.S      CloseSocketTable ;]
+
+WaitListenersClosed ;]
+ TST.W      IOResult(A3) ;]
+ BGT.S      WaitListenersClosed ;]
+
+RemoveATPVBL ;]
+ PEA        VBLQEl(A2) ;]
+ CLR.B      (SP)
+ MOVE.L     (SP)+,A0
+ _VREMOVE   
+ MOVE.L     A2,A0
+ _DISPOSEPTR 
+ CLR.L      ATPVars(A1) ;]
+ BCLR       #ATPLoadedBit,PortBUse ;]
+
+CloseReturn ;]
+ RTS        
+
+CloseSocketTable ;]
+ CLR.W      IOResult(A3) ;]
+
+NextSocket ;]
+ SUBQ.W     #1,D2
+ BMI.S      CloseReturn ;]
+ MOVE.B     (A0)+,D1
+ BEQ.S      NextSocket ;]
+ MOVE.W     #CloseSkt,D0
+ BSR.W      DoMPP ;]
+ BRA.S      NextSocket ;]
+
+DoOpenATPSkt ;]
+ MOVE.W     #TooManySkts,D0 ;]
+ MOVEQ      #5,D2
+
+FindFreeListener ;]
+ TST.B      RSktNum(A2,D2.W) ;]
+ DBEQ       D2,FindFreeListener ;]
+ BNE.S      ATPExit ;]
+ BSR.W      GetDataArea ;]
+ BNE.S      ATPExit ;]
+ LEA        ATPRead,A1 ;]
+ MOVE.L     A1,WDSPointer(A3) ;]
+ MOVE.W     #OpenSkt,D0
+ BSR.W      DoMPP ;]
+ MOVE.B     Socket(A3),D1
+ BSR.W      FreeDataArea
+ TST.W      D0
+ BNE.S      ATPExit ;]
+ LSL.W      #2,D2
+ CLR.L      RQElPtr(A2,D2.W) ;]
+ MOVE.L     D3,RAddrFilter(A2,D2.W) ;]
+ LSR.W      #2,D2
+ MOVE.B     D1,RSktNum(A2,D2.W) ;]
+ MOVE.B     D1,28(A0) ;]
+ BRA.S      NoError ;]
+
+DoCloseATPSkt ;]
+ BSR.W      GetDataArea ;]
+ BNE.S      ATPExit ;]
+ MOVE.W     #CloseSkt,D0
+ BSR.W      DoMPP ;]
+ BSR.W      FreeDataArea
+ TST.W      D0
+ BNE.S      ATPExit ;]
+ CLR.B      RSktNum(A2,D2.W) ;]
+ LEA        RspCache(A2),A1 ;]
+ MOVEQ      #7,D2
+
+ATPBranch_419f56 ;]
+ CMP.B      (A1),D1
+ BNE.S      ATPBranch_419f5c ;]
+ CLR.B      (A1)
+
+ATPBranch_419f5c ;]
+ ADD.W      #12,A1 ;]
+ DBRA       D2,ATPBranch_419f56 ;]
+
+NoError
+ MOVEQ      #0,D0
+
+ATPExit
+ MOVE.L     ATPDCE(A2),A1 ;]
+
+GoIODone
+ MOVE.L     JIODone,A0
+ JMP        (A0)
+
+Nothing
+ BCLR       #7,DCtlFlags+1(A1) ;]
+ RTS        
+
+DoGetRequest ;]
+ LSL.W      #2,D2
+ LEA        RQElPtr(A2,D2.W),A3 ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+
+ATPBranch_419f84 ;]
+ TST.L      (A3)
+ BEQ.S      ATPBranch_419f8c ;]
+ MOVE.L     (A3),A3
+ BRA.S      ATPBranch_419f84 ;]
+
+ATPBranch_419f8c ;]
+ MOVE.L     A0,(A3)
+
+DispatchNext ;]
+ MOVE.L     ATPDCE(A2),A1 ;]
+ BCLR       #7,5(A1) ;]
+ MOVE.L     (A0),8(A1) ;]
+ BNE.S      ATPBranch_419fa2 ;]
+ CLR.L      12(A1) ;]
+
+ATPBranch_419fa2 ;]
+ CLR.L      (A0)
+ MOVE.L     8(A1),D0
+ BEQ.S      ATPBranch_419fba ;]
+ MOVE.L     D0,A0
+ MOVEQ      #0,D0
+ BSET       #7,5(A1) ;]
+ MOVE.W     (SP)+,SR
+ BRA.W      ATPDoControl ;]
+
+ATPBranch_419fba ;]
+ MOVE.W     (SP)+,SR
+ RTS        
+
+DoSendResponse ;]
+ MOVE.L     BDSPointer(A0),A1	; A1 -> BDS from request
+ SWAP       D1	; Save socket number in high word
+ MOVE.W     #BadBuffNum,D0	; Assume invalid number of buffers
+ MOVE.B     NumOfBuffs(A0),D1	; D1 = number of buffers
+; Branch if none
+ BEQ.S      NoBuffs ;]
+ CMP.B      #ATPMaxNum,D1	; Too high?
+; Return error if so
+ BHI.S      ATPBranch_41a050 ;]
+ BSR.W      GetDataArea ;]
+
+IntoSendRsp
+ BNE.S      ATPBranch_41a050 ;]
+ ST         WorkRespNo(A3) ;]
+
+ATPBranch_419fde ;]
+ LEA        WorkATP(A3),A3 ;]
+ MOVEQ      #-128,D0
+ SUBQ.B     #1,D1
+ BNE.S      ATPBranch_419fec ;]
+ OR.B       ATPFlags(A0),D0 ;]
+
+ATPBranch_419fec ;]
+ MOVE.B     D0,(A3)+
+ ADDQ.B     #1,(A3)+ ;]
+ MOVE.W     TransID(A0),(A3)+ ;]
+ MOVE.W     (A1)+,D0
+ MOVE.L     (A1)+,D2
+ MOVE.W     #-1,(A1)+ ;]
+ MOVE.L     (A1)+,(A3)+
+ LEA        -DataAreaSize(A3),A3 ;]
+ SWAP       D1
+ BSR.W      SendPacket ;]
+ CMP.W      #DDPLenErr,D0 ;]
+ BEQ.S      ATPBranch_41a04c ;]
+ SWAP       D1
+ TST.B      D1
+ BNE.S      ATPBranch_419fde ;]
+ BSR.W      FreeDataArea
+
+NoBuffs
+ SWAP       D1
+ MOVE.B     BDSSize(A0),D2 ;]
+ SUB.B      NumOfBuffs(A0),D2 ;]
+ BEQ.S      ATPBranch_41a030 ;]
+
+ATPBranch_41a024 ;]
+ CLR.W      6(A1) ;]
+ ADD.W      #12,A1 ;]
+ SUBQ.B     #1,D2
+ BNE.S      ATPBranch_41a024 ;]
+
+ATPBranch_41a030 ;]
+ MOVE.W     TransID(A0),D0 ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ BSR.S      FindResponseCache ;]
+ BNE.W      ATPBranch_41a118 ;]
+ MOVE.L     A0,8(A1) ;]
+ CLR.B      1(A1) ;]
+ BRA.W      DispatchNext ;]
+
+ATPBranch_41a04c ;]
+ BSR.W      FreeDataArea
+
+ATPBranch_41a050 ;]
+ BRA.W      ATPExit ;]
+
+FindResponseCache ;]
+ LEA        RspCache(A2),A1 ;]
+ MOVEQ      #7,D2
+
+ATPBranch_41a05a ;]
+ CMP.B      (A1),D1
+ BNE.S      ATPBranch_41a06c ;]
+ ADDQ.W     #2,A1
+ BSR.S      CompareAddress ;]
+ SUBQ.W     #2,A1
+ BNE.S      ATPBranch_41a06c ;]
+ CMP.W      6(A1),D0
+ BEQ.S      ATPBranch_41a074 ;]
+
+ATPBranch_41a06c ;]
+ ADD.W      #12,A1 ;]
+ DBRA       D2,ATPBranch_41a05a ;]
+
+ATPBranch_41a074 ;]
+ RTS        
+
+CompareAddress ;]
+ CMP.L      (A1),D3 ;]
+ BEQ.S      ATPBranch_41a08a ;]
+ CMP.W      2(A1),D3 ;]
+ BNE.S      ATPBranch_41a08a ;]
+ TST.W      (A1)
+ BEQ.S      ATPBranch_41a08a ;]
+ MOVE.L     D3,-(SP)
+ TST.W      (SP)+
+ ADDQ.W     #2,SP
+
+ATPBranch_41a08a ;]
+ RTS        
+
+DoAddResponse ;]
+ MOVE.W     #BadBuffNum,D0
+ MOVE.B     RspNum(A0),D2 ;]
+ CMP.B      #ATPMaxNum,D2 ;]
+ BCC.S      ATPBranch_41a050 ;]
+ BSR.W      GetDataArea ;]
+ BNE.S      ATPBranch_41a050 ;]
+ MOVEQ      #DDPLenErr,D0
+ CMP.W      #ATPMaxData,ReqLength(A0)
+ BHI.S      ATPBranch_41a050 ;]
+ LEA        96(A3),A3 ;]
+ MOVEQ      #-128,D0
+ OR.B       ATPFlags(A0),D0 ;]
+ MOVE.B     D0,(A3)+
+ MOVE.B     D2,(A3)+
+ MOVE.W     TransID(A0),(A3)+ ;]
+ BSR.W      FillRequestData ;]
+ BSR.W      SendPacket ;]
+ BSR.W      FreeDataArea
+ MOVE.W     TransID(A0),D0 ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ BSR.S      FindResponseCache ;]
+ BNE.S      ATPBranch_41a118 ;]
+ MOVE.L     8(A1),A3 ;]
+ MOVE.W     #NoSendResp,D0 ;]
+ MOVE.L     A3,D2
+ BEQ.S      ATPBranch_41a11a ;]
+ MOVE.B     ATPFlags(A0),D2 ;]
+ OR.B       D2,29(A3) ;]
+ CLR.W      D2
+ MOVE.B     RspNum(A0),D2 ;]
+ LEA        44(A3),A3 ;]
+ CMP.B      (A3),D2 ;]
+ BLT.S      ATPBranch_41a0fc ;]
+ MOVE.B     D2,(A3)
+ ADDQ.B     #1,(A3)
+
+ATPBranch_41a0fc ;]
+ MOVE.L     -(A3),A3 ;]
+ MULU.W     #12,D2
+ ADD.W      D2,A3
+ MOVE.W     ReqLength(A0),(A3)+ ;]
+ MOVE.L     ReqPointer(A0),(A3)+ ;]
+ MOVE.W     #-1,(A3)+ ;]
+ MOVE.L     UserData(A0),(A3) ;]
+ CLR.B      1(A1) ;]
+
+ATPBranch_41a118 ;]
+ CLR.W      D0
+
+ATPBranch_41a11a ;]
+ MOVE.W     (SP)+,SR
+
+ATPBranch_41a11c ;]
+ BRA.W      ATPExit ;]
+
+DoSendRequest ;]
+ MOVE.W     #TooManyReqs,D0	; Assume too many concurrent requests
+ MOVEQ      #TCBE-1,D2	; D2 = offset into TCB table
+
+FindFreeRequest ;]
+; Is this entry free?
+ TST.B      TSktNum(A2,D2.W) ;]
+; Keep going until got one
+ DBEQ       D2,FindFreeRequest ;]
+; Return error if none
+ BNE.S      ATPBranch_41a11c ;]
+ MOVEQ      #DDPLenErr,D0	; Assume a length error
+ CMP.W      #ATPMaxData,ReqLength(A0)	; Check length
+; Return error if too high
+ BHI.S      ATPBranch_41a11c ;]
+ CLR.B      D1	; Indicate we want a dynamic socket
+ BSR.W      GetDataArea ;]
+
+IntoSendReq
+ BNE.S      ATPBranch_41a11c ;]
+ LEA        ATPRead,A1 ;]
+
+PastSL
+ MOVE.L     A1,WDSPointer(A3) ;]
+ MOVE.W     #OpenSkt,D0
+ BSR.W      DoMPP ;]
+ BEQ.S      ATPBranch_41a15a ;]
+ BSR.W      FreeDataArea
+ BRA.S      ATPBranch_41a11c ;]
+
+ATPBranch_41a15a ;]
+ MOVE.B     Socket(A3),D1
+ LEA        ATPFlags(A0),A1 ;]
+ BCLR       #4,(A1) ;]
+ CLR.B      -(A1)
+ MOVE.B     NumOfBuffs(A0),D0 ;]
+ BEQ.S      ATPBranch_41a176 ;]
+ SUBQ.B     #1,D0
+
+ATPBranch_41a170 ;]
+ BSET       D0,(A1) ;]
+ SUBQ.B     #1,D0
+ BPL.S      ATPBranch_41a170 ;]
+
+ATPBranch_41a176 ;]
+ CLR.B      NumOfResps(A0)
+ LSL.W      #2,D2
+ MOVE.L     A0,TQElPtr(A2,D2.W) ;]
+ LSR.W      #1,D2
+ LEA        NextTID(A2),A1
+ MOVE.W     (A1),TTID(A2,D2.W) ;]
+ MOVE.W     (A1),ReqTID(A0)
+ BSET       #TIDValid,ATPFlags(A0)
+ ADDQ.W     #1,(A1)
+ LSR.W      #1,D2
+ MOVE.B     D1,TSktNum(A2,D2.W) ;]
+ LEA        TTimeout(A2,D2.W),A1 ;]
+ CLR.B      (A1)
+ LSL.W      #1,D2
+ BSR.W      BuildRequestHeader ;]
+ BSR.S      SendPacket ;]
+ BSR.W      FreeDataArea
+ MOVE.B     TimeoutVal(A0),(A1)
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ BRA.W      DispatchNext ;]
+
+SendPacket ;]
+ MOVEM.L    A0-A1,-(SP)
+ BTST       #SendCHK,ATPFlags(A0) ;]
+ SNE        CheckSumFlag(A3) ;]
+ AND.B      #ControlMask,WorkATP(A3) ;]
+ LEA        WorkWDS(A3),A1 ;]
+ MOVE.L     A1,WDSPointer(A3) ;]
+ ADDQ.W     #2,A1
+ LEA        WorkDDP(A3),A0 ;]
+ MOVE.L     A0,(A1)+
+ MOVE.B     #ATP,LAPHdSz+DDPType(A0) ;]
+ ADDQ.W     #7,A0 ;]
+ MOVE.L     D3,(A0)+
+ MOVE.W     D3,(A0)+
+ MOVE.B     D3,(A0)
+ MOVE.W     #ATPHdSz,(A1)+ ;]
+ LEA        WorkATP(A3),A0 ;]
+ MOVE.L     A0,(A1)+
+ MOVE.W     D0,(A1)+
+ MOVE.L     D2,(A1)+
+ CLR.W      (A1)+
+ MOVEM.L    (SP)+,A0-A1
+ MOVE.W     #WriteDDP,D0
+
+DoMPP ;]
+ MOVEM.L    D1-D3/A0-A1,WorkRegs(A3) ;]
+ MOVE.L     (SP)+,WorkReturn(A3) ;]
+ LEA        MPPComplete,A0 ;]
+ MOVE.L     A0,IOCompletion(A3) ;]
+ MOVE.L     A3,A0
+ MOVE.B     D1,Socket(A0) ;]
+ MOVE.W     D0,CSCode(A0)
+ _Control ,ASYNC
+ RTS        
+
+MPPComplete ;]
+ MOVE.L     A0,A3
+ MOVE.L     WorkReturn(A0),-(SP) ;]
+ MOVEM.L    WorkRegs(A0),D1-D3/A0-A1 ;]
+ MOVE.L     ABusVars,A2
+ MOVE.L     ATPVars(A2),A2
+ TST.W      D0
+ RTS        
+
+BuildRequestHeader ;]
+ LEA        WorkATP(A3),A3 ;]
+ MOVEQ      #ATPReqCode,D0 ;]
+ OR.B       ATPFlags(A0),D0 ;]
+ BCLR       #ATPEOMBit,D0 ;]
+ MOVE.B     D0,(A3)+
+ MOVE.B     CurrBitmap(A0),(A3)+ ;]
+ MOVE.W     TTID(A2,D2.W),(A3)+ ;]
+ MOVE.L     AddrBlock(A0),D3
+
+FillRequestData ;]
+ MOVE.L     UserData(A0),(A3) ;]
+ MOVE.W     ReqLength(A0),D0 ;]
+ MOVE.L     ReqPointer(A0),D2 ;]
+ SUB.W      #WorkUserData,A3 ;]
+ RTS        
+
+*R GetDataArea runs before the interrupt mask changes.
+
+CheckTime ;]
+ MOVE.W     #VBL60,VBLCount(A0)
+ LEA        -VBLQEl(A0),A2
+ BSR.W      GetDataArea ;]
+
+IntoCheckTime
+ BNE.S      ATPBranch_41a2e2 ;]
+ MOVEQ      #6,D2
+
+ATPBranch_41a27e ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+
+ATPBranch_41a284 ;]
+ SUBQ.W     #1,D2
+ BMI.S      ATPBranch_41a2dc ;]
+ MOVE.B     TSktNum(A2,D2.W),D1 ;]
+ BEQ.S      ATPBranch_41a284 ;]
+ LEA        TTimeout(A2,D2.W),A1 ;]
+ TST.B      (A1)
+ BEQ.S      ATPBranch_41a284 ;]
+ SUBQ.B     #1,(A1) ;]
+ BNE.S      ATPBranch_41a284 ;]
+ MOVE.W     D2,D3
+ LSL.W      #2,D3
+ MOVE.L     TQElPtr(A2,D3.W),A0 ;]
+ CMP.B      #$FF,RetryCount(A0) ;]
+ BEQ.S      ATPBranch_41a2b0 ;]
+ SUBQ.B     #1,RetryCount(A0) ;]
+ BCS.S      ATPBranch_41a2c4 ;]
+
+ATPBranch_41a2b0 ;]
+ MOVE.B     TimeoutVal(A0),(A1)
+ MOVE.W     D2,A1 ;]
+ LSL.W      #1,D2
+ BSR.S      BuildRequestHeader ;]
+ MOVE.W     (SP)+,SR
+ BSR.W      SendPacket ;]
+ MOVE.W     A1,D2
+ BRA.S      ATPBranch_41a27e ;]
+
+ATPBranch_41a2c4 ;]
+ MOVE.W     (SP)+,SR
+ CLR.B      TSktNum(A2,D2.W) ;]
+ MOVE.W     #CloseSkt,D0
+ BSR.W      DoMPP ;]
+ MOVE.W     #ReqFailed,D0 ;]
+ BSR.W      CompleteRequest ;]
+ BRA.S      ATPBranch_41a27e ;]
+
+ATPBranch_41a2dc ;]
+ MOVE.W     (SP)+,SR
+ BSR.W      FreeDataArea
+
+ATPBranch_41a2e2 ;]
+ MOVE.W     SR,-(SP)
+ MOVE.W     #SCCLockout68000,SR ;]
+ MOVEQ      #MaxRsps,D2 ;]
+ LEA        RspCache(A2),A3 ;]
+
+ATPBranch_41a2ee ;]
+ SUBQ.W     #1,D2
+ BMI.S      ATPBranch_41a316 ;]
+ TST.B      (A3)+ ;]
+ BEQ.S      ATPBranch_41a310 ;]
+ ADDQ.B     #1,(A3)
+ CMP.B      #ReleaseTime,(A3) ;]
+ BNE.S      ATPBranch_41a310 ;]
+ MOVE.L     7(A3),A0 ;]
+ CLR.B      -1(A3)
+ MOVE.L     A0,D0
+ BEQ.S      ATPBranch_41a310 ;]
+ MOVE.W     #NoRelErr,D0 ;]
+ BSR.S      CompleteRequest ;]
+
+ATPBranch_41a310 ;]
+ ADD.W      #11,A3 ;]
+ BRA.S      ATPBranch_41a2ee ;]
+
+ATPBranch_41a316 ;]
+ MOVE.W     (SP)+,SR
+ RTS        
+
+CompleteRequest ;]
+ MOVE.W     D0,IOResult(A0)
+ MOVEM.L    D1-D3/A0-A3,-(SP)
+ MOVE.L     IOCompletion(A0),D1
+ BEQ.S      ATPBranch_41a32e ;]
+ MOVE.L     D1,A1
+ TST.W      D0
+ JSR        (A1)
+
+ATPBranch_41a32e ;]
+ MOVEM.L    (SP)+,D1-D3/A0-A3
+ RTS        
+
+DoRelTCB ;]
+ MOVE.W     TransID(A0),D1 ;]
+ MOVEQ      #5,D2
+
+ATPBranch_41a33a ;]
+ TST.B      TSktNum(A2,D2.W) ;]
+ BEQ.S      ATPBranch_41a35a ;]
+ MOVE.W     D2,D0
+ LSL.W      #1,D0
+ CMP.W      TTID(A2,D0.W),D1 ;]
+ BNE.S      ATPBranch_41a35a ;]
+ LSL.W      #1,D0
+ MOVE.L     TQElPtr(A2,D0.W),A0 ;]
+ LEA        AddrBlock(A0),A1 ;]
+ BSR.W      CompareAddress ;]
+ BEQ.S      ATPBranch_41a366 ;]
+
+ATPBranch_41a35a ;]
+ DBRA       D2,ATPBranch_41a33a ;]
+
+ATPBranch_41a35e ;]
+ MOVE.W     #CBNotFound,D0
+ BRA.W      ATPExit ;]
+
+ATPBranch_41a366 ;]
+ BSR.W      GetDataArea ;]
+ BNE.W      ATPExit ;]
+ MOVE.B     TSktNum(A2,D2.W),D1 ;]
+ CLR.B      TSktNum(A2,D2.W) ;]
+ MOVE.W     #CloseSkt,D0
+ BSR.W      DoMPP ;]
+ BSR.W      FreeDataArea
+ MOVE.W     #ReqAborted,D0
+ BSR.S      CompleteRequest ;]
+
+ATPBranch_41a388 ;]
+ BRA.W      NoError ;]
+
+DoRelRspCB ;]
+ MOVE.W     TransID(A0),D0 ;]
+ BSR.W      FindResponseCache ;]
+ BNE.S      ATPBranch_41a35e ;]
+ MOVE.L     8(A1),A0 ;]
+ CLR.B      (A1)
+ MOVE.L     A0,D0
+ BEQ.S      ATPBranch_41a3a6 ;]
+ CLR.W      D0
+ BSR.W      CompleteRequest ;]
+
+ATPBranch_41a3a6 ;]
+ BRA.S      ATPBranch_41a388 ;]
+
+ATPIgnore ;]
+ CLR.W      D3
+ ADDQ.W     #4,SP
+ JMP        2(A4)
+
+ReadRequest ;]
+ ADD.B      D2,D2
+ BPL.S      ATPIgnore ;]
+ MOVEQ      #5,D2
+
+ATPBranch_41a3b6 ;]
+ CMP.B      RSktNum(A5,D2.W),D0 ;]
+ DBEQ       D2,ATPBranch_41a3b6 ;]
+ BNE.S      ATPIgnore ;]
+ LSL.W      #2,D2
+ MOVE.L     RQElPtr(A5,D2.W),A5 ;]
+ MOVE.L     A5,D0
+ BEQ.S      ATPBranch_41a3d2 ;]
+ MOVE.W     ReqLength(A5),D3 ;]
+ MOVE.L     ReqPointer(A5),A3 ;]
+
+ATPBranch_41a3d2 ;]
+ JSR        2(A4)
+ BSR.W      ValidatePacket ;]
+ MOVE.L     (SP)+,A3
+ BEQ.W      HandleRequest ;]
+
+ATPBranch_41a3e0 ;]
+ RTS        
+
+ATPBranch_41a3e2 ;]
+ BRA.S      ATPIgnore ;]
+
+ReadRelease ;]
+ MOVE.B     D0,D2
+ MOVE.L     (SP)+,A3
+ JSR        2(A4)
+ BSR.W      ValidatePacket ;]
+ BNE.S      ATPBranch_41a3e0 ;]
+ MOVE.L     D1,D3
+ MOVE.W     -6(A3),D0 ;]
+ MOVE.B     D2,D1
+ MOVE.L     ATPVars(A2),A2
+ BSR.W      FindResponseCache ;]
+ BNE.S      ATPBranch_41a3e0 ;]
+ CLR.B      (A1)
+ MOVE.L     8(A1),D0
+ BEQ.S      ATPBranch_41a3e0 ;]
+ MOVE.L     D0,A0
+ MOVE.L     -(A3),18(A0) ;]
+ CLR.W      D0
+ BRA.W      CompleteRequest ;]
+
+ATPRead ;]
+ MOVEQ      #ATPHdSz,D3	; D3 = size to read
+ SUBQ.W     #1,A3	; Make A3 even
+ JSR        (A4)	; Read header into RHA
+
+ATPBranch_41a41e ;]
+; Just return if error
+ BNE.S      ATPBranch_41a3e0 ;]
+ MOVE.L     ATPVars(A2),A5	; A5 -> our local variables
+ MOVE.L     A3,-(SP)	; Save A3
+ SUBQ.W     #ATPHdSz,A3	; A3 -> start of ATP header
+ MOVE.B     DDPDstSkt-DDPType(A3),D0	; D0 = dest. socket no.
+ MOVE.B     (A3)+,D2	; D2 = control byte
+ BPL.S      ReadRequest ;]
+ ADD.B      D2,D2
+ BMI.S      ReadRelease ;]
+ MOVEQ      #TCBE-1,D2	; D2 = number to search, less one
+
+ATPBranch_41a436 ;]
+; This it?
+ CMP.B      TSktNum(A5,D2.W),D0 ;]
+; Try all we can
+ DBEQ       D2,ATPBranch_41a436 ;]
+; Ignore it if no match
+ BNE.S      ATPBranch_41a3e2 ;]
+ LSL.W      #2,D2	; D2 = offset to queue element pointer
+; A5 -> queue element
+ MOVE.L     TQElPtr(A5,D2.W),A5 ;]
+ MOVE.B     (A3),D3
+
+*R This ROM reads response data before it checks the transaction ID.
+*R Historical patch diagnosis; this reconstruction retains the earlier behavior.
+; <PMAB301>	if a delayed duplicate response came in to ATP it could overwrite a valid response
+;	before it was thrown out due to a bad TID.  Patch SendRequest to install a new socket
+;	listener which checks the TID first.
+
+ReadResp ;]
+ CMP.B      44(A5),D3 ;]
+ BCC.S      ATPBranch_41a3e2 ;]
+ ASL.W      #2,D3
+ MOVE.W     D3,D0
+ ADD.W      D0,D3
+ ADD.W      D0,D3
+ MOVE.L     40(A5),A3 ;]
+ ADD.W      D3,A3
+ MOVE.W     (A3)+,D3
+ MOVE.L     (A3)+,A3 ;]
+ JSR        2(A4)
+ BSR.W      ValidatePacket ;]
+ MOVE.L     (SP)+,A3
+ BNE.S      ATPBranch_41a41e ;]
+ MOVE.L     30(A2),A2 ;]
+ MOVE.L     6(A2,D2.W),A0 ;]
+ LEA        30(A0),A1 ;]
+ EXG        D1,D3
+ BSR.W      CompareAddress ;]
+ EXG        D1,D3
+ BNE.S      ATPBranch_41a41e ;]
+ LSR.W      #1,D2
+ MOVE.L     -(A3),D1 ;]
+ MOVE.W     -(A3),D0
+ CMP.W      TTID(A2,D2.W),D0 ;]
+ BNE.S      ATPBranch_41a41e ;]
+ MOVE.B     -(A3),D0 ;]
+ CMP.B      #7,D0
+ BHI.S      ATPBranch_41a41e ;]
+ EXT.W      D0
+ MULU.W     #12,D0
+ MOVE.L     40(A0),A1 ;]
+ ADD.W      D0,A1
+ MOVE.W     (A1),D0
+ ADDQ.W     #6,A1
+ SUB.W      D3,D0
+ MOVE.W     D0,(A1)+
+ MOVE.L     D1,(A1)+
+ LEA        ATPSocket(A0),A1 ;]
+ MOVE.B     (A3),D3
+ SUBQ.W     #1,A3
+ BCLR       D3,(A1) ;]
+ BEQ.S      ATPBranch_41a4d0 ;]
+ ADDQ.B     #1,NumOfResps(A0) ;]
+ MOVEQ      #4,D1
+ BTST       D1,(A3) ;]
+ BEQ.S      ATPBranch_41a4d0 ;]
+
+ATPBranch_41a4c2 ;]
+ BCLR       D3,(A1) ;]
+ ADDQ.B     #1,D3
+ CMP.B      #8,D3
+ BNE.S      ATPBranch_41a4c2 ;]
+ BSET       D1,ATPFlags(A0) ;]
+
+ATPBranch_41a4d0 ;]
+ MOVE.B     -2(A3),D1 ;]
+ BTST       #3,(A3) ;]
+ BEQ.S      ATPBranch_41a4f2 ;]
+ BSR.W      GetDataArea ;]
+ BNE.S      ATPBranch_41a4f2 ;]
+ MOVE.W     D2,A1 ;]
+ BSR.W      BuildRequestHeader ;]
+ BSR.S      RestoreInterrupts ;]
+ BSR.W      SendPacket ;]
+ BSR.W      FreeDataArea
+ MOVE.W     A1,D2
+
+ATPBranch_41a4f2 ;]
+ TST.B      ATPSocket(A0) ;]
+ BNE.S      ATPBranch_41a542 ;]
+ BSR.W      GetDataArea ;]
+ BNE.S      ATPBranch_41a542 ;]
+ MOVE.W     TTID(A2,D2.W),WorkTID(A3) ;]
+ LSR.W      #1,D2
+ CLR.B      TSktNum(A2,D2.W) ;]
+ BSR.S      RestoreInterrupts ;]
+ BTST       #ATPXOBit,ATPFlags(A0)
+ BEQ.S      ATPBranch_41a524 ;]
+ MOVE.L     AddrBlock(A0),D3
+ MOVE.B     #ATPRelCode,WorkATP(A3) ;]
+ CLR.W      D0
+ BSR.W      SendPacket ;]
+
+ATPBranch_41a524 ;]
+ MOVE.W     #CloseSkt,D0
+ BSR.W      DoMPP ;]
+ BSR.W      FreeDataArea
+ CLR.W      D0
+ BRA.W      CompleteRequest ;]
+
+RestoreInterrupts ;]
+ MOVE.L     A1,-(SP)
+ MOVE.L     ABusVars,A1 ;]
+ MOVE.W     vSCCEnable(A1),SR ;]
+ MOVE.L     (SP)+,A1
+
+ATPBranch_41a542 ;]
+ RTS        
+
+HandleRequest ;]
+ MOVE.L     ATPVars(A2),A2
+ MOVE.L     -(A3),A1 ;]
+ MOVE.W     -(A3),D0
+ BTST       #5,-2(A3) ;]
+ BEQ.S      ATPBranch_41a592 ;]
+ MOVEM.L    D0-D4/A1/A3,-(SP) ;]
+ MOVE.L     D1,D3
+ MOVE.B     -4(A3),D1 ;]
+ MOVE.W     D2,D4
+ BSR.W      FindResponseCache ;]
+ BEQ.S      ATPBranch_41a594 ;]
+ TST.L      RQElPtr(A2,D4.W) ;]
+ BEQ.S      ATPBranch_41a58e ;]
+ LEA        RspCache(A2),A1 ;]
+ MOVEQ      #MaxRsps-1,D2 ;]
+
+ATPBranch_41a572 ;]
+ TST.B      (A1)
+ BEQ.S      ATPBranch_41a584 ;]
+ ADD.W      #12,A1 ;]
+ DBRA       D2,ATPBranch_41a572 ;]
+ MOVEM.L    (SP)+,D0-D4/A1/A3 ;]
+ RTS        
+
+ATPBranch_41a584 ;]
+ MOVE.B     D1,(A1)+
+ CLR.B      (A1)+
+ MOVE.L     D3,(A1)+
+ MOVE.W     D0,(A1)+
+ CLR.L      (A1)+
+
+ATPBranch_41a58e ;]
+ MOVEM.L    (SP)+,D0-D4/A1/A3 ;]
+
+ATPBranch_41a592 ;]
+ BRA.S      ATPBranch_41a60a ;]
+
+ATPBranch_41a594 ;]
+ MOVE.L     A1,A0
+ MOVEM.L    (SP)+,D0-D4/A1/A3 ;]
+ MOVE.L     D1,D3
+ MOVE.B     -4(A3),D1 ;]
+ CLR.B      1(A0) ;]
+ MOVE.L     8(A0),D2
+ BEQ.S      ATPBranch_41a608 ;]
+ SWAP       D1
+ MOVE.B     -(A3),D1 ;]
+ MOVE.L     D2,A0
+ MOVE.L     BDSPointer(A0),A1
+ MOVE.W     D0,D2
+ BSR.W      GetDataArea ;]
+ BNE.S      ATPBranch_41a608 ;]
+ MOVE.B     #ATPRspCode,WorkATP(A3) ;]
+ ST         WorkRespNo(A3) ;]
+ MOVE.W     D2,WorkTID(A3) ;]
+ BSR.W      RestoreInterrupts ;]
+
+ATPBranch_41a5ce ;]
+ ADDQ.B     #1,WorkRespNo(A3) ;]
+ MOVE.B     WorkRespNo(A3),D0 ;]
+ SUB.B      NumOfBuffs(A0),D0 ;]
+ BGE.W      FreeDataArea ;]
+ ADDQ.B     #1,D0
+ BNE.S      ATPBranch_41a5ea ;]
+ MOVE.B     ATPFlags(A0),D0 ;]
+ OR.B       D0,WorkATP(A3) ;]
+
+ATPBranch_41a5ea ;]
+ MOVE.W     (A1)+,D0
+ MOVE.L     (A1)+,D2
+ ADDQ.W     #2,A1
+ MOVE.L     (A1)+,WorkUserData(A3) ;]
+ LSR.W      #1,D1
+ BCC.S      ATPBranch_41a5ce ;]
+ TST.W      -6(A1) ;]
+ BEQ.S      ATPBranch_41a5ce ;]
+ SWAP       D1
+ BSR.W      SendPacket ;]
+ SWAP       D1
+ BRA.S      ATPBranch_41a5ce ;]
+
+ATPBranch_41a608 ;]
+ RTS        
+
+ATPBranch_41a60a ;]
+ MOVE.L     RQElPtr(A2,D2.W),-(SP) ;]
+ MOVE.L     (SP)+,A0
+ BEQ.S      ATPBranch_41a608 ;]
+ MOVE.L     A1,UserData(A0) ;]
+ MOVE.B     -(A3),Bitmap(A0) ;]
+ MOVE.W     D0,TransID(A0) ;]
+ LEA        ATPFlags(A0),A1 ;]
+ MOVE.B     -(A3),(A1)+ ;]
+ MOVE.L     D1,(A1)
+ LEA        RAddrFilter(A2,D2.W),A3 ;]
+ CMPM.W     (A1)+,(A3)+ ;]
+ BEQ.S      ATPBranch_41a634 ;]
+ TST.W      -2(A3) ;]
+ BNE.S      ATPBranch_41a608 ;]
+
+ATPBranch_41a634 ;]
+ MOVEQ      #2,D0
+
+ATPBranch_41a636 ;]
+ CMPM.B     (A1)+,(A3)+
+ BEQ.S      ATPBranch_41a640 ;]
+ TST.B      -1(A3) ;]
+ BNE.S      ATPBranch_41a608 ;]
+
+ATPBranch_41a640 ;]
+ SUBQ.W     #1,D0
+ BNE.S      ATPBranch_41a636 ;]
+ SUB.W      D3,(A1) ;]
+ MOVE.L     (A0),RQElPtr(A2,D2.W) ;]
+ BRA.W      CompleteRequest ;]
+
+ValidatePacket ;]
+ BNE.S      ATPBranch_41a6aa ;]
+ MOVEQ      #0,D1
+ LEA        2(A2),A0
+ MOVE.B     7(A2),D0 ;]
+ MOVE.B     (A0)+,D1
+ SUBQ.B     #1,(A0)+ ;]
+ BEQ.S      ATPBranch_41a6a4 ;]
+ MOVEM.L    D2-D4,-(SP)
+ MOVE.W     (A0)+,D1
+ MOVE.W     (A0)+,D4
+ BEQ.S      ATPBranch_41a692 ;]
+ MOVEQ      #8,D2
+ CLR.W      D3
+ BSR.S      ChecksumLoop ;]
+ ADDQ.W     #3,D3 ;]
+ ROL.W      #1,D3
+ MOVEQ      #8,D2
+ BSR.S      ChecksumLoop ;]
+ AND.W      #1023,D1 ;]
+ SUB.W      #21,D1 ;]
+ BEQ.S      ATPBranch_41a68a ;]
+ MOVE.L     A3,A0
+ SUB.W      D1,A0 ;]
+ MOVE.W     D1,D2
+ BSR.S      ChecksumLoop ;]
+
+ATPBranch_41a68a ;]
+ TST.W      D3
+ BNE.S      ATPBranch_41a690 ;]
+ SUBQ.W     #1,D3
+
+ATPBranch_41a690 ;]
+ CMP.W      D4,D3
+
+ATPBranch_41a692 ;]
+ MOVEM.L    (SP)+,D2-D4
+ BNE.S      ATPBranch_41a6aa ;]
+ MOVE.L     10(A2),D1 ;]
+ MOVE.B     13(A2),D1 ;]
+ MOVE.B     15(A2),D0 ;]
+
+ATPBranch_41a6a4 ;]
+ LSL.W      #8,D1
+ MOVE.B     D0,D1
+ CLR.W      D0
+
+ATPBranch_41a6aa ;]
+ RTS        
+
+ChecksumLoop ;]
+ MOVE.B     (A0)+,D0
+ ADD.W      D0,D3
+ ROL.W      #1,D3
+ SUBQ.W     #1,D2
+ BNE.S      ChecksumLoop ;]
+ RTS        
+
+*R IORefNum marks each of the three packet workspaces as busy.
+
+GetDataArea
+ MOVE.L     ABusDCE,A3 ;]
+ MOVE.W     DCtlRefNum(A3),D0
+ LEA        DataArea1(A2),A3 ;]
+ TST.W      IORefNum(A3) ;]
+ BEQ.S      ClaimDataArea ;]
+ LEA        DataArea2(A2),A3 ;]
+ TST.W      IORefNum(A3) ;]
+ BEQ.S      ClaimDataArea ;]
+ LEA        DataArea3(A2),A3 ;]
+ TST.W      IORefNum(A3) ;]
+ BEQ.S      ClaimDataArea ;]
+ MOVE.W     #NoDataArea,D0 ;]
+ RTS        
+
+ClaimDataArea ;]
+ MOVE.W     D0,IORefNum(A3) ;]
+ CLR.W      D0
+ RTS        
+
+FreeDataArea ;]
+ CLR.W      IORefNum(A3) ;]
+ RTS        
+
+ATPResourceEnd ;]
+ ENDP
+ END

@@ -1,0 +1,2215 @@
+{
+  "module": "file-system dispatch and disk-switch recovery",
+  "source": "Reconstruction/Source/OS/HFS/TFS.a",
+  "source_sha256": "dd4f35548faf95a6a388096cddcf2688045bc17234273d046b4bd59c66201f7c",
+  "originals": [
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "declaration_lines": [
+        52,
+        51,
+        53,
+        54,
+        41,
+        462,
+        466,
+        464,
+        299,
+        298
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "declaration_lines": [
+        141,
+        165,
+        164,
+        523,
+        156,
+        188,
+        163,
+        152,
+        129,
+        126,
+        138,
+        151,
+        166,
+        139
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "declaration_lines": []
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "declaration_lines": [
+        297
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "declaration_lines": [
+        620,
+        1471,
+        577,
+        547,
+        660,
+        1007,
+        1362,
+        1364,
+        1009,
+        591,
+        586,
+        589,
+        585,
+        670,
+        734,
+        735,
+        822,
+        739,
+        886,
+        731,
+        736,
+        733,
+        732,
+        794,
+        1366,
+        524,
+        529,
+        1472
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "declaration_lines": [
+        750,
+        782,
+        204,
+        190,
+        324,
+        138,
+        199
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "declaration_lines": []
+    },
+    {
+      "path": "OS/HFS/TFS.a",
+      "sha256": "d73c5f139d529dbd33ba71abfbac80ba64177766690055bf61e3b73de764fdea",
+      "declaration_lines": []
+    }
+  ],
+  "retained_nonempty_comment_occurrences": 424,
+  "rom": {
+    "start": "0x402852",
+    "end_exclusive": "0x402c50",
+    "bytes": 1022,
+    "sha256": "6e3b748455ce6a6018920b394410e8543bb47a6253f12c2dfaa658ca2e02cb62"
+  },
+  "instruction_count": 325,
+  "data_bytes": 36,
+  "source_operation_matches": 237,
+  "source_correspondence": {
+    "0x402852": {
+      "line": 222,
+      "original": "\t\t\ttst.w\td0\t\t\t\t\t\t; check lower bound of selector",
+      "op": "TST.W",
+      "operand": "d0",
+      "comment": " check lower bound of selector",
+      "preceding_comments": []
+    },
+    "0x402854": {
+      "line": 223,
+      "original": "\t\t\tblt.l\tUnknownCall\t\t\t\t;  negative traps are no good",
+      "op": "BLT.L",
+      "operand": "UnknownCall",
+      "comment": "  negative traps are no good",
+      "preceding_comments": []
+    },
+    "0x402870": {
+      "line": 233,
+      "original": "\t\t\tjmp\t\t(a2)\t\t\t\t\t; jump to the routine",
+      "op": "JMP",
+      "operand": "(a2)",
+      "comment": " jump to the routine",
+      "preceding_comments": []
+    },
+    "0x402896": {
+      "line": 553,
+      "original": "\t\t\tBSR.S\tFSQueue \t\t\t; Wait out turn (sync up with FS)",
+      "op": "BSR.S",
+      "operand": "FSQueue",
+      "comment": " Wait out turn (sync up with FS)",
+      "preceding_comments": []
+    },
+    "0x402898": {
+      "line": 554,
+      "original": "\t\t\tMOVE.L\t#FSVrsn,ioFSVrsn(A0); Return the current version of TFS \t<27Aug85>",
+      "op": "MOVE.L",
+      "operand": "#FSVrsn,ioFSVrsn(A0)",
+      "comment": " Return the current version of TFS \t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x4028a0": {
+      "line": 555,
+      "original": "\t\t\tMOVEQ\t#0,D0\t\t\t\t; Indicate success",
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "comment": " Indicate success",
+      "preceding_comments": []
+    },
+    "0x4028a2": {
+      "line": 556,
+      "original": "\t\t\tBRA \tCmdDone \t\t\t; And call it a day",
+      "op": "BRA",
+      "operand": "CmdDone",
+      "comment": " And call it a day",
+      "preceding_comments": []
+    },
+    "0x4028a6": {
+      "line": 620,
+      "original": "\t\t\tBCLR\t#AsyncTrpBit,D1 \t; ensure async bit is not on",
+      "op": "BCLR",
+      "operand": "#AsyncTrpBit,D1",
+      "comment": " ensure async bit is not on",
+      "preceding_comments": []
+    },
+    "0x4028aa": {
+      "line": 660,
+      "original": "\t\t\tMOVE.L\tFSQueueHook,D2\t\t; queue hook?",
+      "op": "MOVE.L",
+      "operand": "FSQueueHook,D2",
+      "comment": " queue hook?",
+      "preceding_comments": []
+    },
+    "0x4028ae": {
+      "line": 661,
+      "original": "\t\t\tBLE.S\t@0\t\t\t\t\t; br if not . . .",
+      "op": "BLE.S",
+      "operand": "@0",
+      "comment": " br if not . . .",
+      "preceding_comments": []
+    },
+    "0x4028b0": {
+      "line": 662,
+      "original": "\t\t\tMOVE.L\tD2,A1",
+      "op": "MOVE.L",
+      "operand": "D2,A1",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x4028b2": {
+      "line": 663,
+      "original": "\t\t\tJSR \t(A1)\t\t\t\t; D2 and A1 are expendable",
+      "op": "JSR",
+      "operand": "(A1)",
+      "comment": " D2 and A1 are expendable",
+      "preceding_comments": []
+    },
+    "0x4028b4": {
+      "line": 665,
+      "original": "@0\t\t\tMOVE.W\t#1,IOResult(A0) \t; set IOResult to \"in process\"",
+      "op": "MOVE.W",
+      "operand": "#1,IOResult(A0)",
+      "comment": " set IOResult to \"in process\"",
+      "preceding_comments": []
+    },
+    "0x4028ba": {
+      "line": 666,
+      "original": "\t\t\tMOVE.W\tD1,IOTrap(A0)\t\t; save the trap number",
+      "op": "MOVE.W",
+      "operand": "D1,IOTrap(A0)",
+      "comment": " save the trap number",
+      "preceding_comments": []
+    },
+    "0x4028be": {
+      "line": 667,
+      "original": "\t\t\tCMP.B\t#$60,D1 \t\t\t; TFS trap dispatch?",
+      "op": "CMP.B",
+      "operand": "#$60,D1",
+      "comment": " TFS trap dispatch?",
+      "preceding_comments": []
+    },
+    "0x4028c2": {
+      "line": 668,
+      "original": "\t\t\tBNE.S\t@2\t\t\t\t\t; If not, leave ioTrap alone",
+      "op": "BNE.S",
+      "operand": "@2",
+      "comment": " If not, leave ioTrap alone",
+      "preceding_comments": []
+    },
+    "0x4028c4": {
+      "line": 670,
+      "original": "\t\t\tAND.B\t#$0F,ioTrap(A0) \t; Leave only modifier bits\t\t\t\t<27Aug85>",
+      "op": "AND.B",
+      "operand": "#$0F,ioTrap(A0)",
+      "comment": " Leave only modifier bits\t\t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x4028ca": {
+      "line": 671,
+      "original": "\t\t\tMOVE.B\tD0,ioTrap+1(A0) \t; Store trap index in low byte\t\t\t<27Aug85>",
+      "op": "MOVE.B",
+      "operand": "D0,ioTrap+1(A0)",
+      "comment": " Store trap index in low byte\t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x4028ce": {
+      "line": 673,
+      "original": "@2\t\t\tMOVE.L\t(SP)+,IOCmdAddr(A0) ; save address to go to when ready",
+      "op": "MOVE.L",
+      "operand": "(SP)+,IOCmdAddr(A0)",
+      "comment": " save address to go to when ready",
+      "preceding_comments": []
+    },
+    "0x4028d2": {
+      "line": 674,
+      "original": "\t\t\tMOVE.W\t#FSQType,IOType(A0) ; say its a file system queueing element",
+      "op": "MOVE.W",
+      "operand": "#FSQType,IOType(A0)",
+      "comment": " say its a file system queueing element",
+      "preceding_comments": []
+    },
+    "0x4028d8": {
+      "line": 676,
+      "original": "\t\t\tBTST\t#AsyncTrpBit,D1 \t; async bit on?",
+      "op": "BTST",
+      "operand": "#AsyncTrpBit,D1",
+      "comment": " async bit on?",
+      "preceding_comments": []
+    },
+    "0x4028dc": {
+      "line": 677,
+      "original": "\t\t\tBEQ.S\t@3\t\t\t\t\t; br if not",
+      "op": "BEQ.S",
+      "operand": "@3",
+      "comment": " br if not",
+      "preceding_comments": []
+    },
+    "0x4028de": {
+      "line": 679,
+      "original": "\t\t\tTST.B\tFrcSync \t\t\t; force it synchronous?",
+      "op": "TST.B",
+      "operand": "FrcSync",
+      "comment": " force it synchronous?",
+      "preceding_comments": []
+    },
+    "0x4028e2": {
+      "line": 680,
+      "original": "\t\t\tBEQ.S\tFSAsync \t\t\t; if not, do it async",
+      "op": "BEQ.S",
+      "operand": "FSAsync",
+      "comment": " if not, do it async",
+      "preceding_comments": []
+    },
+    "0x4028e4": {
+      "line": 681,
+      "original": "\t\t\tBRA.S\t@4",
+      "op": "BRA.S",
+      "operand": "@4",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x4028e6": {
+      "line": 683,
+      "original": "@3\t\t\tCLR.L\tIOCompletion(A0)\t; no completion routines for sync calls",
+      "op": "CLR.L",
+      "operand": "IOCompletion(A0)",
+      "comment": " no completion routines for sync calls",
+      "preceding_comments": []
+    },
+    "0x4028ea": {
+      "line": 684,
+      "original": "@4\t\t\tMOVE.L\tA0,-(SP)\t\t\t; save parameter block ptr",
+      "op": "MOVE.L",
+      "operand": "A0,-(SP)",
+      "comment": " save parameter block ptr",
+      "preceding_comments": []
+    },
+    "0x4028ec": {
+      "line": 685,
+      "original": "\t\t\tBSR.S\tFSAsync \t\t\t; queue it up (and maybe call it)",
+      "op": "BSR.S",
+      "operand": "FSAsync",
+      "comment": " queue it up (and maybe call it)",
+      "preceding_comments": []
+    },
+    "0x4028ee": {
+      "line": 686,
+      "original": "\t\t\tMOVE.L\t(SP)+,A0",
+      "op": "MOVE.L",
+      "operand": "(SP)+,A0",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x4028f8": {
+      "line": 693,
+      "original": "\t\t\tCMP.W\t#VolOffLinErr,D0\t; volume off-line error? (detected by file",
+      "op": "CMP.W",
+      "operand": "#VolOffLinErr,D0",
+      "comment": " volume off-line error? (detected by file",
+      "preceding_comments": []
+    },
+    "0x4028fc": {
+      "line": 694,
+      "original": "\t\t\tBNE.S\t@1\t\t\t\t\t;  system) br if not",
+      "op": "BNE.S",
+      "operand": "@1",
+      "comment": "  system) br if not",
+      "preceding_comments": []
+    },
+    "0x4028fe": {
+      "line": 695,
+      "original": "\t\t\tMOVE.L\tDskSwtchHook,-(SP)\t; OffLineVol points to VCB, A0 to request",
+      "op": "MOVE.L",
+      "operand": "DskSwtchHook,-(SP)",
+      "comment": " OffLineVol points to VCB, A0 to request",
+      "preceding_comments": []
+    },
+    "0x402902": {
+      "line": 696,
+      "original": "\t\t\tBGT.S\t@1\t\t\t\t\t; br if there is a hook proc",
+      "op": "BGT.S",
+      "operand": "@1",
+      "comment": " br if there is a hook proc",
+      "preceding_comments": []
+    },
+    "0x402904": {
+      "line": 697,
+      "original": "\t\t\tADDQ\t#4,SP\t\t\t\t; otherwise, just return",
+      "op": "ADDQ",
+      "operand": "#4,SP",
+      "comment": " otherwise, just return",
+      "preceding_comments": []
+    },
+    "0x402906": {
+      "line": 700,
+      "original": "\t\t\tBTST\t#7, DSAlertRect \t; already in our proc?\t\t\t\t\t<06Mar85>",
+      "op": "BTST",
+      "operand": "#7, DSAlertRect",
+      "comment": " already in our proc?\t\t\t\t\t<06Mar85>",
+      "preceding_comments": []
+    },
+    "0x40290c": {
+      "line": 701,
+      "original": "\t\t\tBNE \tDSHook\t\t\t\t; br if not \t\t\t\t\t\t\t<06Mar85>",
+      "op": "BNE",
+      "operand": "DSHook",
+      "comment": " br if not \t\t\t\t\t\t\t<06Mar85>",
+      "preceding_comments": []
+    },
+    "0x402910": {
+      "line": 704,
+      "original": "@1\t\t\tRTS \t\t\t\t\t\t; return to caller",
+      "op": "RTS",
+      "operand": "",
+      "comment": " return to caller",
+      "preceding_comments": []
+    },
+    "0x402920": {
+      "line": 712,
+      "original": "\t\t\tBSET\t#0,FSBusy\t\t\t; is a request already executing?",
+      "op": "BSET",
+      "operand": "#0,FSBusy",
+      "comment": " is a request already executing?",
+      "preceding_comments": []
+    },
+    "0x402926": {
+      "line": 713,
+      "original": "\t\t\tBEQ.S\tFSDispatch\t\t\t; if not, just call it",
+      "op": "BEQ.S",
+      "operand": "FSDispatch",
+      "comment": " if not, just call it",
+      "preceding_comments": []
+    },
+    "0x40292a": {
+      "line": 726,
+      "original": "\t\t\tMOVE\t(SP)+,SR\t\t\t; re-enable interrupts",
+      "op": "MOVE",
+      "operand": "(SP)+,SR",
+      "comment": " re-enable interrupts",
+      "preceding_comments": []
+    },
+    "0x40293c": {
+      "line": 734,
+      "original": "\t\t\tMOVEA.L PMSPPtr,A6\t\t\t; Point to the PMSP table",
+      "op": "MOVEA.L",
+      "operand": "PMSPPtr,A6",
+      "comment": " Point to the PMSP table",
+      "preceding_comments": [
+        [
+          732,
+          "; clear the Poor Man's Search Path:"
+        ]
+      ]
+    },
+    "0x402940": {
+      "line": 735,
+      "original": "\t\t\tCLR.W\tPMSPIndx(A6)\t\t; No entries used yet",
+      "op": "CLR.W",
+      "operand": "PMSPIndx(A6)",
+      "comment": " No entries used yet",
+      "preceding_comments": []
+    },
+    "0x402944": {
+      "line": 737,
+      "original": "\t\t\tBTST\t#AsyncTrpBit,ioTrap(A0) ; set the flavor for this trap\t\t<01Oct85>",
+      "op": "BTST",
+      "operand": "#AsyncTrpBit,ioTrap(A0)",
+      "comment": " set the flavor for this trap\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x40294a": {
+      "line": 741,
+      "original": "\t\t\tSNE \tFSCallAsync \t\t; if sync, we'll do our I/O synchronous <01Oct85>",
+      "op": "SNE",
+      "operand": "FSCallAsync",
+      "comment": " if sync, we'll do our I/O synchronous <01Oct85>",
+      "preceding_comments": []
+    },
+    "0x40294e": {
+      "line": 744,
+      "original": "\t\t\tMOVEA.L HFSStkTop,A6\t\t; Set up A6 for use as stack pointer",
+      "op": "MOVEA.L",
+      "operand": "HFSStkTop,A6",
+      "comment": " Set up A6 for use as stack pointer",
+      "preceding_comments": []
+    },
+    "0x402952": {
+      "line": 745,
+      "original": "\t\t\tJSR \t(A1)\t\t\t\t;",
+      "op": "JSR",
+      "operand": "(A1)",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402954": {
+      "line": 746,
+      "original": "\t\t\tMOVEM.L (SP)+,D3-D7/A2-A6\t; restore registers",
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D3-D7/A2-A6",
+      "comment": " restore registers",
+      "preceding_comments": []
+    },
+    "0x402958": {
+      "line": 747,
+      "original": "\t\t\tRTS \t\t\t\t\t\t; and return (all commands finish by",
+      "op": "RTS",
+      "operand": "",
+      "comment": " and return (all commands finish by",
+      "preceding_comments": []
+    },
+    "0x40295a": {
+      "line": 750,
+      "original": "toDSFSErr\tMOVEQ\t#DSFSErr,D0",
+      "op": "MOVEQ",
+      "operand": "#DSFSErr,D0",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x40295c": {
+      "line": 751,
+      "original": "\t\t\t_SysError",
+      "op": "_SYSERROR",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x40295e": {
+      "line": 782,
+      "original": "\t\t\tCLR.B\tCacheFlag\t\t\t; we're always clean here . . .         <05Sep85>",
+      "op": "CLR.B",
+      "operand": "CacheFlag",
+      "comment": " we're always clean here . . .         <05Sep85>",
+      "preceding_comments": []
+    },
+    "0x402962": {
+      "line": 784,
+      "original": "\t\t\tEXT.L\tD0\t\t\t\t\t; Make a long of it \t\t\t\t\t<14Jun85>",
+      "op": "EXT.L",
+      "operand": "D0",
+      "comment": " Make a long of it \t\t\t\t\t<14Jun85>",
+      "preceding_comments": []
+    },
+    "0x402964": {
+      "line": 785,
+      "original": "\t\t\tBLE.S\t@0\t\t\t\t\t; If zero or negative, we're OK         <01Oct85>",
+      "op": "BLE.S",
+      "operand": "@0",
+      "comment": " If zero or negative, we're OK         <01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402966": {
+      "line": 786,
+      "original": "\t\t\tMOVE.W\tD0,HFSDSErr \t\t; Save internal error for debug \t\t<01Oct85>",
+      "op": "MOVE.W",
+      "operand": "D0,HFSDSErr",
+      "comment": " Save internal error for debug \t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x40296a": {
+      "line": 787,
+      "original": "\t\t\tMOVEQ\t#FSDSIntErr,D0\t\t; 1-127 codes are internal errors\t\t<01Oct85>",
+      "op": "MOVEQ",
+      "operand": "#FSDSIntErr,D0",
+      "comment": " 1-127 codes are internal errors\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x40296c": {
+      "line": 789,
+      "original": "@0\t\t\tMOVE.L\tFSQHead,A0\t\t\t; A0 -> current request",
+      "op": "MOVE.L",
+      "operand": "FSQHead,A0",
+      "comment": " A0 -> current request",
+      "preceding_comments": []
+    },
+    "0x402970": {
+      "line": 790,
+      "original": "\t\t\tCMP \t#FSQType,IOType(A0) ; it better be an I/O queue element",
+      "op": "CMP",
+      "operand": "#FSQType,IOType(A0)",
+      "comment": " it better be an I/O queue element",
+      "preceding_comments": []
+    },
+    "0x402976": {
+      "line": 791,
+      "original": "\t\t\tBNE.S \ttoDSFSErr\t\t\t;  or else die",
+      "op": "BNE.S",
+      "operand": "toDSFSErr",
+      "comment": "  or else die",
+      "preceding_comments": []
+    },
+    "0x402978": {
+      "line": 793,
+      "original": "\t\t\tCMP.W\t#FNFErr,D0\t\t\t; File not found error?",
+      "op": "CMP.W",
+      "operand": "#FNFErr,D0",
+      "comment": " File not found error?",
+      "preceding_comments": []
+    },
+    "0x40297c": {
+      "line": 794,
+      "original": "\t\t\tBNE.S\tcd_CkExtFS\t\t\t; If not, we're gone.",
+      "op": "BNE.S",
+      "operand": "cd_CkExtFS",
+      "comment": " If not, we're gone.",
+      "preceding_comments": []
+    },
+    "0x40297e": {
+      "line": 795,
+      "original": "\t\t\tBTST\t#HFSBit,ioTrap(A0)\t; Use of HFSBit (=9) is OK on high byte ref.",
+      "op": "BTST",
+      "operand": "#HFSBit,ioTrap(A0)",
+      "comment": " Use of HFSBit (=9) is OK on high byte ref.",
+      "preceding_comments": []
+    },
+    "0x402984": {
+      "line": 796,
+      "original": "\t\t\tBEQ.S\t@2\t\t\t\t\t; If clear, consider the next entry on the PMSP <22Oct85>",
+      "op": "BEQ.S",
+      "operand": "@2",
+      "comment": " If clear, consider the next entry on the PMSP <22Oct85>",
+      "preceding_comments": []
+    },
+    "0x402986": {
+      "line": 797,
+      "original": "\t\t\tTST.L\tioDirID(A0) \t\t; TFS trap: was DidID specified?\t\t\t\t<22Oct85>",
+      "op": "TST.L",
+      "operand": "ioDirID(A0)",
+      "comment": " TFS trap: was DidID specified?\t\t\t\t<22Oct85>",
+      "preceding_comments": []
+    },
+    "0x40298a": {
+      "line": 798,
+      "original": "\t\t\tBNE.S\tcd_CkExtFS\t\t\t; Yes - there's no search path to consider      <22Oct85>",
+      "op": "BNE.S",
+      "operand": "cd_CkExtFS",
+      "comment": " Yes - there's no search path to consider      <22Oct85>",
+      "preceding_comments": []
+    },
+    "0x40298c": {
+      "line": 800,
+      "original": "@2\t\t\tBTST\t#NoPMSP,HFSFlags\t; PMSP disabled?\t\t\t\t\t\t\t\t<25Sep85>",
+      "op": "BTST",
+      "operand": "#NoPMSP,HFSFlags",
+      "comment": " PMSP disabled?\t\t\t\t\t\t\t\t<25Sep85>",
+      "preceding_comments": []
+    },
+    "0x402992": {
+      "line": 801,
+      "original": "\t\t\tBNE.S\tcd_CkExtFS\t\t\t; If set, don't search any other directories    <25Sep85>",
+      "op": "BNE.S",
+      "operand": "cd_CkExtFS",
+      "comment": " If set, don't search any other directories    <25Sep85>",
+      "preceding_comments": []
+    },
+    "0x402994": {
+      "line": 803,
+      "original": "\t\t\tBTST\t#SkipPMSP,HFSFlags\t; Don't bother with PMSP for this operation?    <22Aug85>",
+      "op": "BTST",
+      "operand": "#SkipPMSP,HFSFlags",
+      "comment": " Don't bother with PMSP for this operation?    <22Aug85>",
+      "preceding_comments": []
+    },
+    "0x40299a": {
+      "line": 804,
+      "original": "\t\t\tBNE.S\tcd_CkExtFS\t\t\t; If flag isn't set, give it a chance           <22Aug85>",
+      "op": "BNE.S",
+      "operand": "cd_CkExtFS",
+      "comment": " If flag isn't set, give it a chance           <22Aug85>",
+      "preceding_comments": []
+    },
+    "0x40299c": {
+      "line": 806,
+      "original": "\t\t\tMOVEA.L PMSPPtr,A1\t\t\t; Point to the search path list",
+      "op": "MOVEA.L",
+      "operand": "PMSPPtr,A1",
+      "comment": " Point to the search path list",
+      "preceding_comments": []
+    },
+    "0x4029a0": {
+      "line": 807,
+      "original": "\t\t\tMOVEM.L D1/A2,-(SP) \t\t; Save them across the offline check",
+      "op": "MOVEM.L",
+      "operand": "D1/A2,-(SP)",
+      "comment": " Save them across the offline check",
+      "preceding_comments": []
+    },
+    "0x4029a4": {
+      "line": 808,
+      "original": "\t\t\tMOVE.W\tPMSPIndx(A1),D1 \t; Pick up the index",
+      "op": "MOVE.W",
+      "operand": "PMSPIndx(A1),D1",
+      "comment": " Pick up the index",
+      "preceding_comments": []
+    },
+    "0x4029a8": {
+      "line": 810,
+      "original": "@3\t\t\tADDQ.W\t#SPEntLen,D1\t\t; Advance to the next entry",
+      "op": "ADDQ.W",
+      "operand": "#SPEntLen,D1",
+      "comment": " Advance to the next entry",
+      "preceding_comments": []
+    },
+    "0x4029aa": {
+      "line": 811,
+      "original": "\t\t\tCMP.W\t(A1),D1 \t\t\t; Index outside table yet?",
+      "op": "CMP.W",
+      "operand": "(A1),D1",
+      "comment": " Index outside table yet?",
+      "preceding_comments": []
+    },
+    "0x4029ac": {
+      "line": 812,
+      "original": "\t\t\tBGE.S\t@5\t\t\t\t\t; Yes - give up.",
+      "op": "BGE.S",
+      "operand": "@5",
+      "comment": " Yes - give up.",
+      "preceding_comments": []
+    },
+    "0x4029ae": {
+      "line": 813,
+      "original": "\t\t\tMOVE.W\tSPVRefNum(A1,D1),D0 ; Pick up the VRefNum",
+      "op": "MOVE.W",
+      "operand": "SPVRefNum(A1,D1),D0",
+      "comment": " Pick up the VRefNum",
+      "preceding_comments": []
+    },
+    "0x4029b2": {
+      "line": 814,
+      "original": "\t\t\tBEQ.S\t@5\t\t\t\t\t; If there isn't one, give up.",
+      "op": "BEQ.S",
+      "operand": "@5",
+      "comment": " If there isn't one, give up.",
+      "preceding_comments": []
+    },
+    "0x4029b4": {
+      "line": 815,
+      "original": "\t\t\tBSR \tGetVCBRfn\t\t\t; Find the VCB",
+      "op": "BSR",
+      "operand": "GetVCBRfn",
+      "comment": " Find the VCB",
+      "preceding_comments": []
+    },
+    "0x4029b8": {
+      "line": 816,
+      "original": "\t\t\tBNE.S\t@5\t\t\t\t\t; Punt on errors",
+      "op": "BNE.S",
+      "operand": "@5",
+      "comment": " Punt on errors",
+      "preceding_comments": []
+    },
+    "0x4029ba": {
+      "line": 817,
+      "original": "\t\t\tMOVE.W\tvcbDrvNum(A2),D0\t; Volume on-line?",
+      "op": "MOVE.W",
+      "operand": "vcbDrvNum(A2),D0",
+      "comment": " Volume on-line?",
+      "preceding_comments": []
+    },
+    "0x4029be": {
+      "line": 818,
+      "original": "\t\t\tBLE.S\t@3\t\t\t\t\t; No - try next entry.",
+      "op": "BLE.S",
+      "operand": "@3",
+      "comment": " No - try next entry.",
+      "preceding_comments": []
+    },
+    "0x4029c0": {
+      "line": 820,
+      "original": "@5\t\t\tMOVE.W\tD1,PMSPIndx(A1) \t; Point to this entry",
+      "op": "MOVE.W",
+      "operand": "D1,PMSPIndx(A1)",
+      "comment": " Point to this entry",
+      "preceding_comments": []
+    },
+    "0x4029c4": {
+      "line": 821,
+      "original": "\t\t\tMOVE.W\tD1,D0\t\t\t\t; Save the index",
+      "op": "MOVE.W",
+      "operand": "D1,D0",
+      "comment": " Save the index",
+      "preceding_comments": []
+    },
+    "0x4029c6": {
+      "line": 823,
+      "original": "\t\t\tMOVEM.L (SP)+,D1/A2 \t\t; Restore scratch registers",
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D1/A2",
+      "comment": " Restore scratch registers",
+      "preceding_comments": []
+    },
+    "0x4029ca": {
+      "line": 824,
+      "original": "\t\t\tCMP.W\t(A1),D0 \t\t\t; Exceeded PMSP table limits?",
+      "op": "CMP.W",
+      "operand": "(A1),D0",
+      "comment": " Exceeded PMSP table limits?",
+      "preceding_comments": []
+    },
+    "0x4029cc": {
+      "line": 825,
+      "original": "\t\t\tBGE.S\t@10 \t\t\t\t; Yes - punt.",
+      "op": "BGE.S",
+      "operand": "@10",
+      "comment": " Yes - punt.",
+      "preceding_comments": []
+    },
+    "0x4029ce": {
+      "line": 826,
+      "original": "\t\t\tTST.W\tSPVRefNum(A1,D0)\t; Was a new default volume found?",
+      "op": "TST.W",
+      "operand": "SPVRefNum(A1,D0)",
+      "comment": " Was a new default volume found?",
+      "preceding_comments": []
+    },
+    "0x4029d2": {
+      "line": 827,
+      "original": "\t\t\tBEQ.S\t@10 \t\t\t\t; Nope - give up.",
+      "op": "BEQ.S",
+      "operand": "@10",
+      "comment": " Nope - give up.",
+      "preceding_comments": []
+    },
+    "0x4029d4": {
+      "line": 828,
+      "original": "\t\t\tMOVEQ\t#0,D0\t\t\t\t; Clear high 3 bytes",
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "comment": " Clear high 3 bytes",
+      "preceding_comments": []
+    },
+    "0x4029d6": {
+      "line": 829,
+      "original": "\t\t\tMOVE.B\tioTrap+1(A0),D0 \t; Pick up the TFS trap index again, too",
+      "op": "MOVE.B",
+      "operand": "ioTrap+1(A0),D0",
+      "comment": " Pick up the TFS trap index again, too",
+      "preceding_comments": []
+    },
+    "0x4029da": {
+      "line": 830,
+      "original": "\t\t\tMOVEA.L ioCmdAddr(A0),A1\t; Pick up the CmdAddr from FSQueue",
+      "op": "MOVEA.L",
+      "operand": "ioCmdAddr(A0),A1",
+      "comment": " Pick up the CmdAddr from FSQueue",
+      "preceding_comments": []
+    },
+    "0x4029de": {
+      "line": 831,
+      "original": "\t\t\tJMP \t(A1)\t\t\t\t; Repeat the trap with a different default",
+      "op": "JMP",
+      "operand": "(A1)",
+      "comment": " Repeat the trap with a different default",
+      "preceding_comments": []
+    },
+    "0x4029e0": {
+      "line": 833,
+      "original": "@10 \t\tMOVEQ\t#FNFErr,D0\t\t\t; Restore error code",
+      "op": "MOVEQ",
+      "operand": "#FNFErr,D0",
+      "comment": " Restore error code",
+      "preceding_comments": []
+    },
+    "0x4029e2": {
+      "line": 835,
+      "original": "cd_CkExtFS\tBCLR\t#SkipPMSP,HFSFlags\t; Don't skip PMSP now that this trap's done <25Sep85>",
+      "op": "BCLR",
+      "operand": "#SkipPMSP,HFSFlags",
+      "comment": " Don't skip PMSP now that this trap's done <25Sep85>",
+      "preceding_comments": []
+    },
+    "0x4029e8": {
+      "line": 836,
+      "original": "\t\t\tMOVE.L\tExtFSHook,D2\t\t; queue hook?",
+      "op": "MOVE.L",
+      "operand": "ExtFSHook,D2",
+      "comment": " queue hook?",
+      "preceding_comments": []
+    },
+    "0x4029ec": {
+      "line": 837,
+      "original": "\t\t\tBLE.S\t@1\t\t\t\t\t; br if not . . .",
+      "op": "BLE.S",
+      "operand": "@1",
+      "comment": " br if not . . .",
+      "preceding_comments": []
+    },
+    "0x4029ee": {
+      "line": 838,
+      "original": "\t\t\tMOVE.L\tD2,A1\t\t\t\t; (external fs, debug)",
+      "op": "MOVE.L",
+      "operand": "D2,A1",
+      "comment": " (external fs, debug)",
+      "preceding_comments": []
+    },
+    "0x4029f0": {
+      "line": 839,
+      "original": "\t\t\tJSR \t(A1)\t\t\t\t; leave CmdDone address on the stack",
+      "op": "JSR",
+      "operand": "(A1)",
+      "comment": " leave CmdDone address on the stack",
+      "preceding_comments": []
+    },
+    "0x4029f8": {
+      "line": 841,
+      "original": "\t\t\tmove.l\ttoExtFS,d2\t\t\t; Any external file systems defined?\t<10Nov87>",
+      "op": "MOVE.L",
+      "operand": "toExtFS,d2",
+      "comment": " Any external file systems defined?\t<10Nov87>",
+      "preceding_comments": []
+    },
+    "0x4029fc": {
+      "line": 842,
+      "original": "\t\t\tble.s\tcd_DeQueue\t\t\t; Xfer if not...\t\t\t\t\t\t<10Nov87>",
+      "op": "BLE.S",
+      "operand": "cd_DeQueue",
+      "comment": " Xfer if not...\t\t\t\t\t\t<10Nov87>",
+      "preceding_comments": []
+    },
+    "0x4029fe": {
+      "line": 843,
+      "original": "\t\t\tmove.l\td2,a1\t\t\t\t; Else, point to first proc in chain\t<10Nov87>",
+      "op": "MOVE.L",
+      "operand": "d2,a1",
+      "comment": " Else, point to first proc in chain\t<10Nov87>",
+      "preceding_comments": []
+    },
+    "0x402a00": {
+      "line": 851,
+      "original": "\t\t\tMOVE.L\tFSQHead,A0\t\t\t; A0 -> current request",
+      "op": "MOVE.L",
+      "operand": "FSQHead,A0",
+      "comment": " A0 -> current request",
+      "preceding_comments": []
+    },
+    "0x402a04": {
+      "line": 852,
+      "original": "\t\t\tCMP \t#FSQType,IOType(A0) ; it better be an I/O queue element",
+      "op": "CMP",
+      "operand": "#FSQType,IOType(A0)",
+      "comment": " it better be an I/O queue element",
+      "preceding_comments": []
+    },
+    "0x402a0a": {
+      "line": 853,
+      "original": "\t\t\tBNE \ttoDSFSErr\t\t\t;  or else die",
+      "op": "BNE",
+      "operand": "toDSFSErr",
+      "comment": "  or else die",
+      "preceding_comments": []
+    },
+    "0x402a0e": {
+      "line": 856,
+      "original": "\t\t\tTST.W\tioTrap(A0)\t\t\t; Check trap word:",
+      "op": "TST.W",
+      "operand": "ioTrap(A0)",
+      "comment": " Check trap word:",
+      "preceding_comments": []
+    },
+    "0x402a12": {
+      "line": 857,
+      "original": "\t\t\tBLT.S\t@3\t\t\t\t\t; If it's negative ($A...), go ahead    <27Aug85>",
+      "op": "BLT.S",
+      "operand": "@3",
+      "comment": " If it's negative ($A...), go ahead    <27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a14": {
+      "line": 859,
+      "original": "\t\t\tMOVEQ\t#0,D0\t\t\t\t; Clear high 3 bytes\t\t\t\t\t<27Aug85>",
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "comment": " Clear high 3 bytes\t\t\t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a16": {
+      "line": 860,
+      "original": "\t\t\tMOVE.B\tioTrap+1(A0),D0 \t; Pick up the TFS trap index\t\t\t<27Aug85>",
+      "op": "MOVE.B",
+      "operand": "ioTrap+1(A0),D0",
+      "comment": " Pick up the TFS trap index\t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a1a": {
+      "line": 861,
+      "original": "\t\t\tCLR.B\tioTrap+1(A0)\t\t; and restore original trap \t\t\t<27Aug85>",
+      "op": "CLR.B",
+      "operand": "ioTrap+1(A0)",
+      "comment": " and restore original trap \t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a1e": {
+      "line": 862,
+      "original": "\t\t\tORI.W\t#$A060,ioTrap(A0)\t;  keeping modifier bits\t\t\t\t<27Aug85>",
+      "op": "ORI.W",
+      "operand": "#$A060,ioTrap(A0)",
+      "comment": "  keeping modifier bits\t\t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a24": {
+      "line": 864,
+      "original": "\t\t\tJSR \t(A1)\t\t\t\t; leave CmdDone address on the stack\t<25Jan85>",
+      "op": "JSR",
+      "operand": "(A1)",
+      "comment": " leave CmdDone address on the stack\t<25Jan85>",
+      "preceding_comments": []
+    },
+    "0x402a26": {
+      "line": 866,
+      "original": "cd_DeQueue\tMOVE\tSR,-(SP)\t\t\t; save interrupt state\t\t\t\t\t<27Aug85>",
+      "op": "MOVE",
+      "operand": "SR,-(SP)",
+      "comment": " save interrupt state\t\t\t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a28": {
+      "line": 867,
+      "original": "\t\t\tORI \t#HiIntMask,SR\t\t; only debug interrupts allowed",
+      "op": "ORI",
+      "operand": "#HiIntMask,SR",
+      "comment": " only debug interrupts allowed",
+      "preceding_comments": []
+    },
+    "0x402a2c": {
+      "line": 868,
+      "original": "\t\t\tCLR.W\tFSBusy\t\t\t\t; clear file system busy boolean",
+      "op": "CLR.W",
+      "operand": "FSBusy",
+      "comment": " clear file system busy boolean",
+      "preceding_comments": []
+    },
+    "0x402a30": {
+      "line": 872,
+      "original": "\t\t\tMOVE.L\tFSQHead,A0\t\t\t; A0 -> current request",
+      "op": "MOVE.L",
+      "operand": "FSQHead,A0",
+      "comment": " A0 -> current request",
+      "preceding_comments": [
+        [
+          870,
+          "; delete the current request from the queue and post any completion routines"
+        ]
+      ]
+    },
+    "0x402a34": {
+      "line": 873,
+      "original": "\t\t\tCMP \t#FSQType,IOType(A0) ; it better be an I/O queue element",
+      "op": "CMP",
+      "operand": "#FSQType,IOType(A0)",
+      "comment": " it better be an I/O queue element",
+      "preceding_comments": []
+    },
+    "0x402a3a": {
+      "line": 874,
+      "original": "\t\t\tBNE \ttoDSFSErr\t\t\t;  or else die",
+      "op": "BNE",
+      "operand": "toDSFSErr",
+      "comment": "  or else die",
+      "preceding_comments": []
+    },
+    "0x402a3e": {
+      "line": 875,
+      "original": "\t\t\tMOVE.L\tQLink(A0),FSQHead\t; get next request, if any",
+      "op": "MOVE.L",
+      "operand": "QLink(A0),FSQHead",
+      "comment": " get next request, if any",
+      "preceding_comments": []
+    },
+    "0x402a42": {
+      "line": 876,
+      "original": "\t\t\tBNE.S\tcd_CallComp \t\t; branch if queue not empty \t\t\t<27Aug85>",
+      "op": "BNE.S",
+      "operand": "cd_CallComp",
+      "comment": " branch if queue not empty \t\t\t<27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a44": {
+      "line": 877,
+      "original": "\t\t\tCLR.L\tFSQTail \t\t\t; clear tail ptr, too",
+      "op": "CLR.L",
+      "operand": "FSQTail",
+      "comment": " clear tail ptr, too",
+      "preceding_comments": []
+    },
+    "0x402a48": {
+      "line": 880,
+      "original": "\t\t\tMOVE\t(SP)+,SR\t\t\t; restore interrupt state",
+      "op": "MOVE",
+      "operand": "(SP)+,SR",
+      "comment": " restore interrupt state",
+      "preceding_comments": []
+    },
+    "0x402a4a": {
+      "line": 881,
+      "original": "\t\t\tMOVE.W\tD0,IOResult(A0) \t; post error code",
+      "op": "MOVE.W",
+      "operand": "D0,IOResult(A0)",
+      "comment": " post error code",
+      "preceding_comments": []
+    },
+    "0x402a4e": {
+      "line": 883,
+      "original": "\t\t\tMOVE.L\tIOCompletion(A0),D1 ; is there a completion routine?",
+      "op": "MOVE.L",
+      "operand": "IOCompletion(A0),D1",
+      "comment": " is there a completion routine?",
+      "preceding_comments": []
+    },
+    "0x402a52": {
+      "line": 884,
+      "original": "\t\t\tBEQ.S\tcd_DispNext \t\t; skip if there's not                   <27Aug85>",
+      "op": "BEQ.S",
+      "operand": "cd_DispNext",
+      "comment": " skip if there's not                   <27Aug85>",
+      "preceding_comments": []
+    },
+    "0x402a54": {
+      "line": 886,
+      "original": "\t\t\tMOVE.L\tD1,A1\t\t\t\t; get the completion routine address",
+      "op": "MOVE.L",
+      "operand": "D1,A1",
+      "comment": " get the completion routine address",
+      "preceding_comments": []
+    },
+    "0x402a56": {
+      "line": 887,
+      "original": "\t\t\tTST.W\tD0\t\t\t\t\t; test result code",
+      "op": "TST.W",
+      "operand": "D0",
+      "comment": " test result code",
+      "preceding_comments": []
+    },
+    "0x402a58": {
+      "line": 888,
+      "original": "\t\t\tJSR \t(A1)\t\t\t\t; call it",
+      "op": "JSR",
+      "operand": "(A1)",
+      "comment": " call it",
+      "preceding_comments": []
+    },
+    "0x402a5a": {
+      "line": 893,
+      "original": "\t\t\tMOVE\tSR,-(SP)\t\t\t; save interrupt state",
+      "op": "MOVE",
+      "operand": "SR,-(SP)",
+      "comment": " save interrupt state",
+      "preceding_comments": [
+        [
+          890,
+          "; check if there's anything else for this driver to do"
+        ]
+      ]
+    },
+    "0x402a5c": {
+      "line": 894,
+      "original": "\t\t\tORI \t#HiIntMask,SR\t\t; only debug interrupts allowed",
+      "op": "ORI",
+      "operand": "#HiIntMask,SR",
+      "comment": " only debug interrupts allowed",
+      "preceding_comments": []
+    },
+    "0x402a60": {
+      "line": 895,
+      "original": "\t\t\tTST.L\tFSQHead \t\t\t; is a command pending?",
+      "op": "TST.L",
+      "operand": "FSQHead",
+      "comment": " is a command pending?",
+      "preceding_comments": []
+    },
+    "0x402a64": {
+      "line": 896,
+      "original": "\t\t\tBNE\t\tToFSDispatch\t\t; if so, launch new command",
+      "op": "BNE",
+      "operand": "ToFSDispatch",
+      "comment": " if so, launch new command",
+      "preceding_comments": []
+    },
+    "0x402a68": {
+      "line": 897,
+      "original": "\t\t\tMOVE.W\t(SP)+,SR\t\t\t; restore rupt state and return",
+      "op": "MOVE.W",
+      "operand": "(SP)+,SR",
+      "comment": " restore rupt state and return",
+      "preceding_comments": []
+    },
+    "0x402a6a": {
+      "line": 898,
+      "original": "\t\t\tRTS",
+      "op": "RTS",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402a6c": {
+      "line": 915,
+      "original": "\t\t\tMOVE\tSR,-(SP)\t\t\t; save interrupt state",
+      "op": "MOVE",
+      "operand": "SR,-(SP)",
+      "comment": " save interrupt state",
+      "preceding_comments": []
+    },
+    "0x402a6e": {
+      "line": 916,
+      "original": "\t\t\tORI \t#HiIntMask,SR\t\t; only debug interrupts",
+      "op": "ORI",
+      "operand": "#HiIntMask,SR",
+      "comment": " only debug interrupts",
+      "preceding_comments": []
+    },
+    "0x402a72": {
+      "line": 917,
+      "original": "\t\t\tMOVE.L\tFSQHead,D0\t\t\t; any commands?",
+      "op": "MOVE.L",
+      "operand": "FSQHead,D0",
+      "comment": " any commands?",
+      "preceding_comments": []
+    },
+    "0x402a76": {
+      "line": 918,
+      "original": "\t\t\tBEQ.S\t@1\t\t\t\t\t; if not, we are done",
+      "op": "BEQ.S",
+      "operand": "@1",
+      "comment": " if not, we are done",
+      "preceding_comments": []
+    },
+    "0x402a78": {
+      "line": 919,
+      "original": "\t\t\tMOVE.L\tD0,A0\t\t\t\t; get pointer to the current routine",
+      "op": "MOVE.L",
+      "operand": "D0,A0",
+      "comment": " get pointer to the current routine",
+      "preceding_comments": []
+    },
+    "0x402a7a": {
+      "line": 920,
+      "original": "\t\t\tCLR.L\tIOLink(A0)\t\t\t; get rid of any others",
+      "op": "CLR.L",
+      "operand": "IOLink(A0)",
+      "comment": " get rid of any others",
+      "preceding_comments": []
+    },
+    "0x402a7c": {
+      "line": 921,
+      "original": "\t\t\tMOVE.L\tA0,FSQTail\t\t\t; only this one",
+      "op": "MOVE.L",
+      "operand": "A0,FSQTail",
+      "comment": " only this one",
+      "preceding_comments": []
+    },
+    "0x402a80": {
+      "line": 922,
+      "original": "@1\t\t\tMOVEQ\t#0,D0\t\t\t\t; this routine has no errors",
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "comment": " this routine has no errors",
+      "preceding_comments": []
+    },
+    "0x402a82": {
+      "line": 923,
+      "original": "\t\t\tMOVE.W\t(SP)+, SR",
+      "op": "MOVE.W",
+      "operand": "(SP)+, SR",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402a84": {
+      "line": 924,
+      "original": "\t\t\tRTS",
+      "op": "RTS",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402a86": {
+      "line": 946,
+      "original": "\t\t\tMOVEM.L A0-A3/A6/D0-D7,-(SP) ; save registers",
+      "op": "MOVEM.L",
+      "operand": "A0-A3/A6/D0-D7,-(SP)",
+      "comment": " save registers",
+      "preceding_comments": []
+    },
+    "0x402a8a": {
+      "line": 948,
+      "original": "\t\t\tLEA \tTrapAgain,A1\t\t; fill in the trap now",
+      "op": "LEA",
+      "operand": "TrapAgain,A1",
+      "comment": " fill in the trap now",
+      "preceding_comments": []
+    },
+    "0x402a8e": {
+      "line": 949,
+      "original": "\t\t\tMOVE.W\tIOTrap(A0),(A1)+\t; Set up the trap to be retried...",
+      "op": "MOVE.W",
+      "operand": "IOTrap(A0),(A1)+",
+      "comment": " Set up the trap to be retried...",
+      "preceding_comments": []
+    },
+    "0x402a92": {
+      "line": 950,
+      "original": "\t\t\tMOVE.W\t#$4E75,(A1) \t\t; Follow it with an RTS",
+      "op": "MOVE.W",
+      "operand": "#$4E75,(A1)",
+      "comment": " Follow it with an RTS",
+      "preceding_comments": []
+    },
+    "0x402a96": {
+      "line": 955,
+      "original": "\t\t\tBSR \tMakeStkPB\t\t\t; get a parameter block off the stack . .",
+      "op": "BSR",
+      "operand": "MakeStkPB",
+      "comment": " get a parameter block off the stack . .",
+      "preceding_comments": []
+    },
+    "0x402a9a": {
+      "line": 956,
+      "original": "\t\t\tMOVE.L\tA0,D7\t\t\t\t; remember it in D7",
+      "op": "MOVE.L",
+      "operand": "A0,D7",
+      "comment": " remember it in D7",
+      "preceding_comments": []
+    },
+    "0x402a9c": {
+      "line": 959,
+      "original": "\t\t\tMOVE.L\tReqstVol,A2 \t\t; VCB for requested volume",
+      "op": "MOVE.L",
+      "operand": "ReqstVol,A2",
+      "comment": " VCB for requested volume",
+      "preceding_comments": []
+    },
+    "0x402aa0": {
+      "line": 960,
+      "original": "\t\t\tMOVE.W\tVCBDRefNum(A2),D3\t; Original drive",
+      "op": "MOVE.W",
+      "operand": "VCBDRefNum(A2),D3",
+      "comment": " Original drive",
+      "preceding_comments": []
+    },
+    "0x402aa4": {
+      "line": 961,
+      "original": "\t\t\tBPL.S\tTellUser\t\t\t; br if ejected-offline",
+      "op": "BPL.S",
+      "operand": "TellUser",
+      "comment": " br if ejected-offline",
+      "preceding_comments": []
+    },
+    "0x402aa6": {
+      "line": 962,
+      "original": "\t\t\tNEG.W\tD3\t\t\t\t\t; negative means non-ejected offline",
+      "op": "NEG.W",
+      "operand": "D3",
+      "comment": " negative means non-ejected offline",
+      "preceding_comments": []
+    },
+    "0x402aa8": {
+      "line": 966,
+      "original": "\t\t\tMOVE.W\tD3,ioDrvNum(A0)\t\t; remount this drive",
+      "op": "MOVE.W",
+      "operand": "D3,ioDrvNum(A0)",
+      "comment": " remount this drive",
+      "preceding_comments": []
+    },
+    "0x402aac": {
+      "line": 969,
+      "original": "\t\t\t_MountVol",
+      "op": "_MOUNTVOL",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402aae": {
+      "line": 987,
+      "original": "\t\t\tBNE.S\tTellUser\t\t\t; ?? tell user something ?? \t\t\t<03Nov85> LAK",
+      "op": "BNE.S",
+      "operand": "TellUser",
+      "comment": " ?? tell user something ?? \t\t\t<03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402ab0": {
+      "line": 989,
+      "original": "\t\t\tMOVEQ\t#0,D3\t\t\t\t; yes, retry the fs call\t\t\t\t<03Nov85> LAK",
+      "op": "MOVEQ",
+      "operand": "#0,D3",
+      "comment": " yes, retry the fs call\t\t\t\t<03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402ab2": {
+      "line": 990,
+      "original": "\t\t\tBRA \tDSExit\t\t\t\t; exit . . .\t\t\t\t\t\t\t<03Nov85> LAK",
+      "op": "BRA",
+      "operand": "DSExit",
+      "comment": " exit . . .\t\t\t\t\t\t\t<03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402ab6": {
+      "line": 992,
+      "original": "TellUser\tMOVE.L\t#$00500078,DSAlertRect ; use alternate alert rect ",
+      "op": "MOVE.L",
+      "operand": "#$00500078,DSAlertRect",
+      "comment": " use alternate alert rect",
+      "preceding_comments": []
+    },
+    "0x402abe": {
+      "line": 993,
+      "original": "\t\t\tMOVE.L\t#$00980195,DSAlertRect+4 ;(high bit is also flag)",
+      "op": "MOVE.L",
+      "operand": "#$00980195,DSAlertRect+4",
+      "comment": "(high bit is also flag)",
+      "preceding_comments": []
+    },
+    "0x402b2c": {
+      "line": 997,
+      "original": "\t\t\tMOVEQ\t#DSReInsert,D0\t\t; ask for diskette back",
+      "op": "MOVEQ",
+      "operand": "#DSReInsert,D0",
+      "comment": " ask for diskette back",
+      "preceding_comments": [
+        [
+          995,
+          "\t\t\t; the code the saved the screen behind the dialog has been removed.\t\t<SM1>"
+        ]
+      ]
+    },
+    "0x402b2e": {
+      "line": 998,
+      "original": "\t\t\t_SysError",
+      "op": "_SYSERROR",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b30": {
+      "line": 1001,
+      "original": "\t\t\tMOVE.L\tDrvQHdr+QHead,D0\t; figure out if this drive has a disk-in-place",
+      "op": "MOVE.L",
+      "operand": "DrvQHdr+QHead,D0",
+      "comment": " figure out if this drive has a disk-in-place",
+      "preceding_comments": []
+    },
+    "0x402b34": {
+      "line": 1002,
+      "original": "@0\t\t\tBEQ.S\tWaitForDsk",
+      "op": "BEQ.S",
+      "operand": "WaitForDsk",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b36": {
+      "line": 1003,
+      "original": "\t\t\tMOVE.L\tD0,A1",
+      "op": "MOVE.L",
+      "operand": "D0,A1",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b38": {
+      "line": 1004,
+      "original": "\t\t\tCMP.W\tDQDrive(A1),D3\t\t; find queue element for this drive",
+      "op": "CMP.W",
+      "operand": "DQDrive(A1),D3",
+      "comment": " find queue element for this drive",
+      "preceding_comments": []
+    },
+    "0x402b3c": {
+      "line": 1005,
+      "original": "\t\t\tBEQ.S\t@1",
+      "op": "BEQ.S",
+      "operand": "@1",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b3e": {
+      "line": 1006,
+      "original": "\t\t\tMOVE.L\tQLink(A1),D0",
+      "op": "MOVE.L",
+      "operand": "QLink(A1),D0",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b40": {
+      "line": 1007,
+      "original": "\t\t\tBRA.S \t@0",
+      "op": "BRA.S",
+      "operand": "@0",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b42": {
+      "line": 1009,
+      "original": "@1\t\t\tMOVE.B\t-3(A1),D0\t\t\t; DiskInPlace",
+      "op": "MOVE.B",
+      "operand": "-3(A1),D0",
+      "comment": " DiskInPlace",
+      "preceding_comments": []
+    },
+    "0x402b46": {
+      "line": 1010,
+      "original": "\t\t\tCMP.B\t#1,D0\t\t\t\t;",
+      "op": "CMP.B",
+      "operand": "#1,D0",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b4a": {
+      "line": 1011,
+      "original": "\t\t\tBEQ.S\t@2",
+      "op": "BEQ.S",
+      "operand": "@2",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b4c": {
+      "line": 1012,
+      "original": "\t\t\tCMP.B\t#2,D0",
+      "op": "CMP.B",
+      "operand": "#2,D0",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b50": {
+      "line": 1013,
+      "original": "\t\t\tBNE.S\tWaitForDsk\t\t\t; just wait for disk-insert if no DIP",
+      "op": "BNE.S",
+      "operand": "WaitForDsk",
+      "comment": " just wait for disk-insert if no DIP",
+      "preceding_comments": []
+    },
+    "0x402b52": {
+      "line": 1015,
+      "original": "@2\t\t\tMOVE.W\tD3,D1\t\t\t\t; disk to eject",
+      "op": "MOVE.W",
+      "operand": "D3,D1",
+      "comment": " disk to eject",
+      "preceding_comments": []
+    },
+    "0x402b54": {
+      "line": 1018,
+      "original": "\t\t\tMOVEQ\t#2,D2\t\t\t\t; a disk-switch eject\t\t\t\t\t<03Nov85> LAK",
+      "op": "MOVEQ",
+      "operand": "#2,D2",
+      "comment": " a disk-switch eject\t\t\t\t\t<03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b56": {
+      "line": 1019,
+      "original": "\t\t\tBSR \tDoEject",
+      "op": "BSR",
+      "operand": "DoEject",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b5a": {
+      "line": 1022,
+      "original": "\t\t\tSUB \t#EvtBlkSize,SP\t\t; get event buffer space off the stack",
+      "op": "SUB",
+      "operand": "#EvtBlkSize,SP",
+      "comment": " get event buffer space off the stack",
+      "preceding_comments": []
+    },
+    "0x402b5e": {
+      "line": 1024,
+      "original": "@0\t\t\tMOVE.W\t#128+8,D0\t\t\t; only disk-inserted/key down events interest us",
+      "op": "MOVE.W",
+      "operand": "#128+8,D0",
+      "comment": " only disk-inserted/key down events interest us",
+      "preceding_comments": []
+    },
+    "0x402b62": {
+      "line": 1025,
+      "original": "\t\t\tMOVE.L\tSP,A0\t\t\t\t; event buffer",
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "comment": " event buffer",
+      "preceding_comments": []
+    },
+    "0x402b64": {
+      "line": 1026,
+      "original": "\t\t\t_GetOSEvent",
+      "op": "_GETOSEVENT",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402b66": {
+      "line": 1027,
+      "original": "\t\t\tBNE.S\t@0\t\t\t\t\t; loop until we get one . . .",
+      "op": "BNE.S",
+      "operand": "@0",
+      "comment": " loop until we get one . . .",
+      "preceding_comments": []
+    },
+    "0x402b68": {
+      "line": 1029,
+      "original": "\t\t\tMOVE.L\tevtMessage(SP),D0\t; drive number/key",
+      "op": "MOVE.L",
+      "operand": "evtMessage(SP),D0",
+      "comment": " drive number/key",
+      "preceding_comments": []
+    },
+    "0x402b6c": {
+      "line": 1030,
+      "original": "\t\t\tMOVE.W\tevtNum(SP),D3\t\t; event",
+      "op": "MOVE.W",
+      "operand": "evtNum(SP),D3",
+      "comment": " event",
+      "preceding_comments": []
+    },
+    "0x402b6e": {
+      "line": 1031,
+      "original": "\t\t\tMOVE.W\tevtMeta(SP),D1\t\t; meta keys (for command bit)",
+      "op": "MOVE.W",
+      "operand": "evtMeta(SP),D1",
+      "comment": " meta keys (for command bit)",
+      "preceding_comments": []
+    },
+    "0x402b72": {
+      "line": 1032,
+      "original": "\t\t\tADD \t#EvtBlkSize,SP\t\t; free up event buffer space",
+      "op": "ADD",
+      "operand": "#EvtBlkSize,SP",
+      "comment": " free up event buffer space",
+      "preceding_comments": []
+    },
+    "0x402b76": {
+      "line": 1034,
+      "original": "\t\t\tSUBQ\t#diskInsertEvt,D3\t; disk-insert event?",
+      "op": "SUBQ",
+      "operand": "#diskInsertEvt,D3",
+      "comment": " disk-insert event?",
+      "preceding_comments": []
+    },
+    "0x402b78": {
+      "line": 1035,
+      "original": "\t\t\tBEQ.S\t@3\t\t\t\t\t; br if so\t\t\t\t\t\t\t\t<02Nov85> LAK",
+      "op": "BEQ.S",
+      "operand": "@3",
+      "comment": " br if so\t\t\t\t\t\t\t\t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b7a": {
+      "line": 1036,
+      "original": "\t\t\tCMP.B\t#$2E,D0 \t\t\t; period?",
+      "op": "CMP.B",
+      "operand": "#$2E,D0",
+      "comment": " period?",
+      "preceding_comments": []
+    },
+    "0x402b7e": {
+      "line": 1037,
+      "original": "\t\t\tBEQ.S\t@2\t\t\t\t\t; br if so\t\t\t\t\t\t\t\t<02Nov85> LAK",
+      "op": "BEQ.S",
+      "operand": "@2",
+      "comment": " br if so\t\t\t\t\t\t\t\t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b8a": {
+      "line": 1039,
+      "original": "\t\t\tMOVEQ\t#$0B,D2 \t\t\t; seek cmd, shift, not alphaLock, and option <02Nov85> LAK",
+      "op": "MOVEQ",
+      "operand": "#$0B,D2",
+      "comment": " seek cmd, shift, not alphaLock, and option <02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b8c": {
+      "line": 1040,
+      "original": "\t\t\tLSR.W\t#8,D1\t\t\t\t; get high byte of meta-key info, clear D1.W hi byte <02Nov85> LAK",
+      "op": "LSR.W",
+      "operand": "#8,D1",
+      "comment": " get high byte of meta-key info, clear D1.W hi byte <02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b8e": {
+      "line": 1041,
+      "original": "\t\t\tAND.B\tD1,D2\t\t\t\t; high byte of meta word contains mod bits\t<02Nov85> LAK",
+      "op": "AND.B",
+      "operand": "D1,D2",
+      "comment": " high byte of meta word contains mod bits\t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b90": {
+      "line": 1042,
+      "original": "\t\t\tSUBQ.B\t#$03,D2 \t\t\t; want cmd AND shift BUT NOT option \t<02Nov85> LAK",
+      "op": "SUBQ.B",
+      "operand": "#$03,D2",
+      "comment": " want cmd AND shift BUT NOT option \t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b92": {
+      "line": 1043,
+      "original": "\t\t\tBNE.S\tWaitForDsk\t\t\t; if not so, no FKey action!\t\t\t<02Nov85> LAK",
+      "op": "BNE.S",
+      "operand": "WaitForDsk",
+      "comment": " if not so, no FKey action!\t\t\t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b94": {
+      "line": 1052,
+      "original": "@1\t\t\tmoveq\t#1,D2\t\t\t\t; flag from keyboard, \t\t\t\t<C150/10sep86>",
+      "op": "MOVEQ",
+      "operand": "#1,D2",
+      "comment": " flag from keyboard, \t\t\t\t<C150/10sep86>",
+      "preceding_comments": []
+    },
+    "0x402b9c": {
+      "line": 1055,
+      "original": "\t\t\tBRA.S\tWaitForDsk\t\t\t; keep waiting for Disk-In-Place\t\t<02Nov85> LAK",
+      "op": "BRA.S",
+      "operand": "WaitForDsk",
+      "comment": " keep waiting for Disk-In-Place\t\t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402b9e": {
+      "line": 1057,
+      "original": "@2\t\t\tBTST\t#cmdKey,D1\t\t\t; command-. for abort?\t\t\t\t\t<02Nov85> LAK",
+      "op": "BTST",
+      "operand": "#cmdKey,D1",
+      "comment": " command-. for abort?\t\t\t\t\t<02Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402ba2": {
+      "line": 1058,
+      "original": "\t\t\tBEQ.S\tWaitForDsk\t\t\t; keep waiting if not",
+      "op": "BEQ.S",
+      "operand": "WaitForDsk",
+      "comment": " keep waiting if not",
+      "preceding_comments": []
+    },
+    "0x402ba4": {
+      "line": 1059,
+      "original": "\t\t\tBRA.S\tPostUpdate\t \t\t; otherwise, let the user beware!",
+      "op": "BRA.S",
+      "operand": "PostUpdate",
+      "comment": " otherwise, let the user beware!",
+      "preceding_comments": []
+    },
+    "0x402ba6": {
+      "line": 1061,
+      "original": "@3\t\t\tMOVE.L\tD7,A0\t\t\t\t; point to the I/O block\t\t\t\t<02Nov85> LAK",
+      "op": "MOVE.L",
+      "operand": "D7,A0",
+      "comment": " point to the I/O block\t\t\t\t<02Nov85> LAK",
+      "preceding_comments": [
+        [
+          1060,
+          "\t\t\t\t\t\t\t\t\t\t; D3 non-zero denotes abort . . ."
+        ]
+      ]
+    },
+    "0x402ba8": {
+      "line": 1062,
+      "original": "\t\t\tMOVE.W\tD0,IODrvNum(A0) \t; drive to mount",
+      "op": "MOVE.W",
+      "operand": "D0,IODrvNum(A0)",
+      "comment": " drive to mount",
+      "preceding_comments": []
+    },
+    "0x402bac": {
+      "line": 1063,
+      "original": "\t\t\tMOVE.W\tD0,D1\t\t\t\t; save in case we have to eject it\t\t<03Nov85> LAK",
+      "op": "MOVE.W",
+      "operand": "D0,D1",
+      "comment": " save in case we have to eject it\t\t<03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402bae": {
+      "line": 1066,
+      "original": "\t\t\t_MountVol\t\t\t\t\t;\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<SM7>",
+      "op": "_MOUNTVOL",
+      "operand": "",
+      "comment": "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<SM7>",
+      "preceding_comments": []
+    },
+    "0x402bb0": {
+      "line": 1069,
+      "original": "\t\t\tBEQ.S\tPostUpdate\t \t\t; cruise on if ok\t\t\t\t\t\t<03Nov85> LAK",
+      "op": "BEQ.S",
+      "operand": "PostUpdate",
+      "comment": " cruise on if ok\t\t\t\t\t\t<03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402bb2": {
+      "line": 1071,
+      "original": "\t\t\tCMP.W\t#MemFullErr,D0\t\t; memory full?",
+      "op": "CMP.W",
+      "operand": "#MemFullErr,D0",
+      "comment": " memory full?",
+      "preceding_comments": []
+    },
+    "0x402bb6": {
+      "line": 1072,
+      "original": "\t\t\tBNE.S\tEjectMtDisk \t\t; br if not - eject it and wait some more <03Nov85> LAK",
+      "op": "BNE.S",
+      "operand": "EjectMtDisk",
+      "comment": " br if not - eject it and wait some more <03Nov85> LAK",
+      "preceding_comments": []
+    },
+    "0x402bb8": {
+      "line": 1074,
+      "original": "\t\t\tMOVEQ\t#-1,D3\t\t\t\t; make it an abort (avoid DS)\t\t\t<01Oct85>",
+      "op": "MOVEQ",
+      "operand": "#-1,D3",
+      "comment": " make it an abort (avoid DS)\t\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402be8": {
+      "line": 1086,
+      "original": "DSExit\t\tBSET\t#7, DSAlertRect \t; return to old DS rect (also clears exclusion) <06Mar85>",
+      "op": "BSET",
+      "operand": "#7, DSAlertRect",
+      "comment": " return to old DS rect (also clears exclusion) <06Mar85>",
+      "preceding_comments": []
+    },
+    "0x402bee": {
+      "line": 1088,
+      "original": "\t\t\tADD \t#IOVQElSize,SP\t\t; clean up stack",
+      "op": "ADD",
+      "operand": "#IOVQElSize,SP",
+      "comment": " clean up stack",
+      "preceding_comments": [
+        [
+          1087,
+          "\t\t\t\t\t\t\t\t\t\t; <removed reinstall of DskSwHook>\t\t\t\t<06Mar85>"
+        ]
+      ]
+    },
+    "0x402bf2": {
+      "line": 1089,
+      "original": "\t\t\tTST.W\tD3\t\t\t\t\t; zero for non-abort . . .\t\t\t\t<01Oct85>",
+      "op": "TST.W",
+      "operand": "D3",
+      "comment": " zero for non-abort . . .\t\t\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402bf4": {
+      "line": 1092,
+      "original": "\t\t\tMOVEM.L (SP)+,A0-A3/A6/D0-D7 ; restore registers",
+      "op": "MOVEM.L",
+      "operand": "(SP)+,A0-A3/A6/D0-D7",
+      "comment": " restore registers",
+      "preceding_comments": []
+    },
+    "0x402bf8": {
+      "line": 1093,
+      "original": "\t\t\tBEQ.S\t@1\t\t\t\t\t; br for retry\t\t\t\t\t\t\t<01Oct85>",
+      "op": "BEQ.S",
+      "operand": "@1",
+      "comment": " br for retry\t\t\t\t\t\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402bfa": {
+      "line": 1095,
+      "original": "\t\t\tMOVEQ\t#VolOffLinErr,D0\t; well, not much else to do . . .\t\t<01Oct85>",
+      "op": "MOVEQ",
+      "operand": "#VolOffLinErr,D0",
+      "comment": " well, not much else to do . . .\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402bfc": {
+      "line": 1096,
+      "original": "\t\t\tRTS \t\t\t\t\t\t;\t\t\t\t\t\t\t\t\t\t<01Oct85>",
+      "op": "RTS",
+      "operand": "",
+      "comment": "\t\t\t\t\t\t\t\t\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402bfe": {
+      "line": 1098,
+      "original": "@1\t\t\tMOVE.W\tioTrap(A0),D0\t\t; Pick up trap word again\t\t\t\t<01Oct85>",
+      "op": "MOVE.W",
+      "operand": "ioTrap(A0),D0",
+      "comment": " Pick up trap word again\t\t\t\t<01Oct85>",
+      "preceding_comments": []
+    },
+    "0x402c08": {
+      "line": 1108,
+      "original": "TFSAgain:\tOR.B\t#$A0,TrapAgain\t\t; Set up top nibble\t\t\t\t\t\t\t\t<SM1>",
+      "op": "OR.B",
+      "operand": "#$A0,TrapAgain",
+      "comment": " Set up top nibble\t\t\t\t\t\t\t\t<SM1>",
+      "preceding_comments": []
+    },
+    "0x402c0e": {
+      "line": 1109,
+      "original": "\t\t\tMOVE.B\t#$60,TrapAgain+1\t; Overwrite lower bytes w. TFS trap\t\t\t\t<SM1>",
+      "op": "MOVE.B",
+      "operand": "#$60,TrapAgain+1",
+      "comment": " Overwrite lower bytes w. TFS trap\t\t\t\t<SM1>",
+      "preceding_comments": []
+    },
+    "0x402c14": {
+      "line": 1110,
+      "original": "\t\t\tAND.W\t#$00FF,D0\t\t\t; Remove modifier bits from saved index\t\t\t<SM1>",
+      "op": "AND.W",
+      "operand": "#$00FF,D0",
+      "comment": " Remove modifier bits from saved index\t\t\t<SM1>",
+      "preceding_comments": []
+    },
+    "0x402c1c": {
+      "line": 1272,
+      "original": "\t\t\tBSR \tMakeStkPB\t\t\t; get a parameter block",
+      "op": "BSR",
+      "operand": "MakeStkPB",
+      "comment": " get a parameter block",
+      "preceding_comments": []
+    },
+    "0x402c20": {
+      "line": 1273,
+      "original": "\t\t\tMOVE.W\tD1,IODrvNum(A0)",
+      "op": "MOVE.W",
+      "operand": "D1,IODrvNum(A0)",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402c24": {
+      "line": 1275,
+      "original": "\t\t\tMOVE.L\tEjectNotify,D0\t\t; notify proc?",
+      "op": "MOVE.L",
+      "operand": "EjectNotify,D0",
+      "comment": " notify proc?",
+      "preceding_comments": []
+    },
+    "0x402c28": {
+      "line": 1276,
+      "original": "\t\t\tBLE.S\t@1\t\t\t\t\t; br if not",
+      "op": "BLE.S",
+      "operand": "@1",
+      "comment": " br if not",
+      "preceding_comments": []
+    },
+    "0x402c2a": {
+      "line": 1278,
+      "original": "\t\t\tMOVEM.L D2/A0-A2,-(SP)",
+      "op": "MOVEM.L",
+      "operand": "D2/A0-A2,-(SP)",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402c2e": {
+      "line": 1279,
+      "original": "\t\t\tCLR.W\t-(SP)",
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402c30": {
+      "line": 1280,
+      "original": "\t\t\tMOVE.W\tD1,-(SP)\t\t\t; pass eject drive",
+      "op": "MOVE.W",
+      "operand": "D1,-(SP)",
+      "comment": " pass eject drive",
+      "preceding_comments": []
+    },
+    "0x402c32": {
+      "line": 1281,
+      "original": "\t\t\tMOVE.W\tD2,-(SP)\t\t\t; 1=fkey eject, 2=ds hook eject",
+      "op": "MOVE.W",
+      "operand": "D2,-(SP)",
+      "comment": " 1=fkey eject, 2=ds hook eject",
+      "preceding_comments": []
+    },
+    "0x402c34": {
+      "line": 1282,
+      "original": "\t\t\tMOVE.L\tD0,A0\t\t\t\t; procedure pointer",
+      "op": "MOVE.L",
+      "operand": "D0,A0",
+      "comment": " procedure pointer",
+      "preceding_comments": []
+    },
+    "0x402c36": {
+      "line": 1283,
+      "original": "\t\t\tJSR \t(A0)\t\t\t\t; call it (it should preserve Pascal regs)",
+      "op": "JSR",
+      "operand": "(A0)",
+      "comment": " call it (it should preserve Pascal regs)",
+      "preceding_comments": []
+    },
+    "0x402c38": {
+      "line": 1284,
+      "original": "\t\t\tTST.B\t(SP)+\t\t\t\t; still want to eject?",
+      "op": "TST.B",
+      "operand": "(SP)+",
+      "comment": " still want to eject?",
+      "preceding_comments": []
+    },
+    "0x402c3a": {
+      "line": 1285,
+      "original": "\t\t\tMOVEM.L (SP)+,D2/A0-A2",
+      "op": "MOVEM.L",
+      "operand": "(SP)+,D2/A0-A2",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402c3e": {
+      "line": 1286,
+      "original": "\t\t\tBEQ.S\t@2\t\t\t\t\t; br if not",
+      "op": "BEQ.S",
+      "operand": "@2",
+      "comment": " br if not",
+      "preceding_comments": []
+    },
+    "0x402c40": {
+      "line": 1288,
+      "original": "@1\t\t\t_Eject\t\t\t\t\t\t; get rid of it . . .",
+      "op": "_EJECT",
+      "operand": "",
+      "comment": " get rid of it . . .",
+      "preceding_comments": []
+    },
+    "0x402c42": {
+      "line": 1289,
+      "original": "\t\t\tBEQ.S\t@2",
+      "op": "BEQ.S",
+      "operand": "@2",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402c44": {
+      "line": 1291,
+      "original": "\t\t\tMOVE.W\t\t#8,-(SP)",
+      "op": "MOVE.W",
+      "operand": "#8,-(SP)",
+      "comment": "",
+      "preceding_comments": []
+    },
+    "0x402c48": {
+      "line": 1292,
+      "original": "\t\t\t_SysBeep\t\t\t\t\t; make a beep",
+      "op": "_SYSBEEP",
+      "operand": "",
+      "comment": " make a beep",
+      "preceding_comments": []
+    },
+    "0x402c4a": {
+      "line": 1294,
+      "original": "@2\t\t\tADD \t#IOVQElSize,SP\t\t; clean up stack and return",
+      "op": "ADD",
+      "operand": "#IOVQElSize,SP",
+      "comment": " clean up stack and return",
+      "preceding_comments": []
+    },
+    "0x402c4e": {
+      "line": 1295,
+      "original": "\t\t\tRTS",
+      "op": "RTS",
+      "operand": "",
+      "comment": "",
+      "preceding_comments": []
+    }
+  },
+  "restored_equates": [
+    {
+      "name": "bounds",
+      "value": "6",
+      "line": null,
+      "path": null,
+      "text": "bounds EQU 6 ; Bitmap bounds field"
+    },
+    {
+      "name": "FSVrsn",
+      "value": "'1.2A'",
+      "line": null,
+      "path": null,
+      "text": "FSVrsn EQU '1.2A' ; Version returned by this ROM"
+    },
+    {
+      "name": "HiIntMask",
+      "value": "$0300",
+      "line": null,
+      "path": null,
+      "text": "HiIntMask EQU $0300 ; Macintosh Plus interrupt mask"
+    },
+    {
+      "name": "portSize",
+      "value": "116",
+      "line": null,
+      "path": null,
+      "text": "portSize EQU 116 ; Classic GrafPort size"
+    },
+    {
+      "name": "screenBits",
+      "value": "-122",
+      "line": null,
+      "path": null,
+      "text": "screenBits EQU -122 ; QuickDraw global bitmap offset"
+    }
+  ],
+  "dispatch_table": {
+    "OpenWD": 4209522,
+    "CloseWD": 4209694,
+    "SetDir": 4209434,
+    "GetDir": 4209486,
+    "TFMove": 4212272,
+    "CreateDir": 4211158,
+    "GetWDInfo": 4209752,
+    "GetFCBInfo": 4215730,
+    "GetCatInfo": 4213456,
+    "SetCatInfo": 4213000,
+    "SetVolInfo": 4209102,
+    "SetPMSP": 4208630,
+    "SetUpWDCB": 4210016,
+    "SetUpDef": 4210058,
+    "ReadWDCB": 4209924,
+    "LockRng": 4215910,
+    "UnLockRng": 4215910
+  },
+  "table_source_lines": [
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,
+    256,
+    257,
+    258,
+    259,
+    260
+  ],
+  "changes": [
+    "TFSDispatch restores the eighteen-entry word-offset table. It queues invalid selectors before returning paramErr. The released table retains all eighteen handler names and comments but later grew to 112 long offsets. FSControl returns the ROM version string 1.2A.",
+    "FSQueue, FSQueueSync, SyncWait, FSAsync, FSDispatch, and CmdDone retain the original queueing, asynchronous dispatch, search-path retry, and completion behavior. The ROM forwards only ExtFSErr to external file systems; the later NoMacDskErr case and error-code rewrite are absent.",
+    "The ROM queue-clearing entry FInitQueue is at $402A6C. The captured Ghidra symbols call it InitQueue and assign FInitQueue to the preceding cd_DispNext at $402A5A. The reconstruction follows the released routine bodies and records that naming difference.",
+    "DSHook retains the November 1985 mount retry, disk ejection, and command-period abort behavior. It restores the screen-saving path removed in 1992, using a 285-by-72 bitmap with 36-byte rows, a classic GrafPort, and two kilobytes of stack slop. It restores saved pixels when possible and otherwise requests a window update.",
+    "The disk-switch keyboard path compares the event character directly with one and two. It predates the ASCII conversion in the June 1989 history, so the documented keyboard-eject bug remains. The later third-drive support, manual-eject paths, allocation flags, and cache-flush call are omitted.",
+    "DoEject retains the eject notification callback, disk ejection, and error beep. Original file attribution, applicable 1984\u20131986 history, routine contracts, and matching instruction comments remain. Explicit branch sizes and PC-relative operands preserve the target encodings.",
+    "The FSCallAsync equate comment now describes the asynchronous-call flag. Its released declaration incorrectly labels the occupied byte as free. The restored FSVrsn, bitmap offsets, GrafPort size, and Macintosh Plus interrupt mask are recorded below."
+  ],
+  "verification": {
+    "name": "tfs-dispatch",
+    "source": "Reconstruction/Source/OS/HFS/TFS.a",
+    "source_sha256": "dd4f35548faf95a6a388096cddcf2688045bc17234273d046b4bd59c66201f7c",
+    "start": "0x402852",
+    "end_exclusive": "0x402c50",
+    "bytes": 1022,
+    "sha256": "6e3b748455ce6a6018920b394410e8543bb47a6253f12c2dfaa658ca2e02cb62",
+    "matches_rom": true,
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/TFS.a",
+        "sha256": "dd4f35548faf95a6a388096cddcf2688045bc17234273d046b4bd59c66201f7c"
+      }
+    ]
+  },
+  "integration_manifest": {
+    "name": "tfs-dispatch",
+    "source": "Reconstruction/Source/OS/HFS/TFS.a",
+    "start": "0x402852",
+    "end_exclusive": "0x402c50",
+    "entry_points": {
+      "TFSDispatch": "0x402852",
+      "FSControl": "0x402896",
+      "FSQueueSync": "0x4028a6",
+      "FSQueue": "0x4028aa",
+      "SyncWait": "0x4028f0",
+      "FSAsync": "0x402912",
+      "AsyncReturn": "0x402928",
+      "FSDispatch": "0x40292e",
+      "toDSFSErr": "0x40295a",
+      "CmdDone": "0x40295e",
+      "PMSPCheck": "0x402978",
+      "cd_CkExtFS": "0x4029e2",
+      "cd_DeQueue": "0x402a26",
+      "cd_CallComp": "0x402a48",
+      "cd_DispNext": "0x402a5a",
+      "FInitQueue": "0x402a6c",
+      "DSHook": "0x402a86",
+      "TellUser": "0x402ab6",
+      "EjectCurDisk": "0x402b30",
+      "EjectMtDisk": "0x402b54",
+      "WaitForDsk": "0x402b5a",
+      "RestoreDisplay": "0x402bba",
+      "DSExit": "0x402be8",
+      "TFSAgain": "0x402c08",
+      "DoEject": "0x402c1c",
+      "BadSelector": "0x40285c",
+      "ValidSelector": "0x402864",
+      "TFSTrpTbl": "0x402872",
+      "ToFSDispatch": "0x402920",
+      "DisplayAlert": "0x402b2c",
+      "CheckAbort": "0x402b9e",
+      "MountInserted": "0x402ba6",
+      "PostUpdate": "0x402bdc",
+      "RestorePort": "0x402be4",
+      "FSQueue_0": "0x4028b4",
+      "FSQueue_2": "0x4028ce",
+      "FSQueue_3": "0x4028e6",
+      "FSQueue_4": "0x4028ea",
+      "CmdDone_0": "0x40296c",
+      "PMSPCheck_2": "0x40298c",
+      "EjectCurDisk_0": "0x402b34",
+      "EjectCurDisk_1": "0x402b42",
+      "EjectCurDisk_2": "0x402b52",
+      "WaitForDsk_0": "0x402b5e",
+      "DSExit_1": "0x402bfe",
+      "DoEject_1": "0x402c40",
+      "DoEject_2": "0x402c4a",
+      "TFS_402910": "0x402910",
+      "TFS_4029C0": "0x4029c0",
+      "TFS_4029A8": "0x4029a8",
+      "TFS_4029E0": "0x4029e0",
+      "TFS_4029F2": "0x4029f2",
+      "TFS_402A24": "0x402a24",
+      "TFS_402A80": "0x402a80",
+      "TFSDispatchEnd": "0x402c50"
+    }
+  },
+  "historical_limits": "The byte comparison verifies the emitted code and data. It does not recover lost source spelling or test disk-switch behavior on hardware."
+}

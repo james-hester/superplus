@@ -1,0 +1,258 @@
+{
+  "module": "MFSDIR2",
+  "source": "Reconstruction/Source/OS/HFS/MFSDIR2.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSDIR2.a",
+      "sha256": "c1372f4ab73c47e9fa3280270ad7a5d77bb6ffcad415bb1f173dcd915b028ff5",
+      "line_ranges": [
+        [
+          1,
+          284
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/TFSDIR3.a",
+      "sha256": "bc4bb0a37c6904575c5ff2bd30774f8010404551343ee134ade7650719576c44",
+      "line_ranges": [
+        [
+          104,
+          117
+        ]
+      ],
+      "role": "SetFilType establishes the next module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          278,
+          278
+        ],
+        [
+          305,
+          305
+        ],
+        [
+          363,
+          363
+        ],
+        [
+          432,
+          432
+        ],
+        [
+          434,
+          434
+        ],
+        [
+          437,
+          438
+        ],
+        [
+          441,
+          441
+        ],
+        [
+          446,
+          447
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          101,
+          101
+        ],
+        [
+          155,
+          155
+        ],
+        [
+          526,
+          526
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          180,
+          180
+        ],
+        [
+          190,
+          190
+        ],
+        [
+          192,
+          192
+        ],
+        [
+          195,
+          195
+        ],
+        [
+          205,
+          205
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40472c",
+      "end_exclusive": "0x404852",
+      "rom_offset": "0x472c",
+      "length": 294,
+      "sha256": "e25a05a7a12fc1abb3dc31ccfba6becee42cf9f193094ad7c692a5ecbefd516d",
+      "start_label": "MFSDelete",
+      "end_label": "MFSDIR2End",
+      "boundary_evidence": "MFSDelete begins after the TFSDIR2 MvEx1 branch at 0x40472c. AdjFlPos ends with RTS at 0x404850. SetFilType begins TFSDIR3 at 0x404852."
+    }
+  ],
+  "entry_points": {
+    "MFSDelete": "0x40472c",
+    "MFDelExit": "0x404762",
+    "GtEntryLen": "0x404766",
+    "RemovEntry": "0x404776",
+    "MFSReName": "0x4047a2",
+    "SavOldNtry": "0x4047d6",
+    "MRNmExit": "0x404816",
+    "NoSpace": "0x40481a",
+    "AdjFlPos": "0x404838",
+    "MFSDIR2End": "0x404852"
+  },
+  "integration_manifest": {
+    "name": "mfsdir2",
+    "source": "Reconstruction/Source/OS/HFS/MFSDIR2.a",
+    "start": "0x40472c",
+    "end_exclusive": "0x404852",
+    "entry_points": {
+      "MFSDelete": "0x40472c",
+      "MFDelExit": "0x404762",
+      "GtEntryLen": "0x404766",
+      "RemovEntry": "0x404776",
+      "MFSReName": "0x4047a2",
+      "SavOldNtry": "0x4047d6",
+      "MRNmExit": "0x404816",
+      "NoSpace": "0x40481a",
+      "AdjFlPos": "0x404838",
+      "MFSDIR2End": "0x404852"
+    }
+  },
+  "changes": [
+    {
+      "location": "Instruction bodies",
+      "change": "Retained the surviving instruction sequence without behavioral reversions.",
+      "evidence": "MFSDelete, RemovEntry, MFSReName, and AdjFlPos reproduce all 294 ROM bytes. The ROM retains the October 1985 cache flushes, A6 stack handling, and updates to open-file directory positions."
+    },
+    {
+      "location": "NoSpace error name and source provenance",
+      "change": "Kept the surviving fsRnErr symbol and its original value. Preserved the original header, applicable history, and comments.",
+      "evidence": "The source marks the symbol spelling as a September 1986 equate update. Its value of -59 matches the immediate result at 0x404826. The code therefore needs no behavioral change."
+    },
+    {
+      "location": "Definitions and addressing",
+      "change": "Copied required original equates, supplied external routine addresses, and made PC-relative JSR operands explicit.",
+      "evidence": "The calls to TrashFBlocks and MarkBlock use PC-relative JSR instructions at 0x404758 and 0x40477c. CmpString emits 0xa03c at 0x4047b4. All ten recorded labels match the ROM."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "CkFileBusy",
+      "address": "0x4043e8"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    },
+    {
+      "name": "DAlBlks",
+      "address": "0x4057b6"
+    },
+    {
+      "name": "TrashFBlocks",
+      "address": "0x407a8a"
+    },
+    {
+      "name": "MFSCtlFlush",
+      "address": "0x404340"
+    },
+    {
+      "name": "MarkBlock",
+      "address": "0x4079f4"
+    },
+    {
+      "name": "FndFN2",
+      "address": "0x4049ca"
+    },
+    {
+      "name": "FndFilName",
+      "address": "0x404990"
+    },
+    {
+      "name": "FndFilSpc",
+      "address": "0x40434e"
+    },
+    {
+      "name": "MarkVCBTime",
+      "address": "0x402d20"
+    },
+    {
+      "name": "Gt1stMatch",
+      "address": "0x404002"
+    },
+    {
+      "name": "GtNxtMatch",
+      "address": "0x404010"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x40472c, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "1c938e1a208aac4e96fd4e78d37567d89dbe17b56f664e7705af28e82e4d4805",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/MFSDIR2.a",
+        "sha256": "1c938e1a208aac4e96fd4e78d37567d89dbe17b56f664e7705af28e82e4d4805"
+      }
+    ],
+    "assembled_length": 294,
+    "matched_bytes": 294,
+    "entry_points_checked": 10,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Interfaces/AIncludes/AppleTalk.a
+;
+;	File:		AppleTalk.a
+;
+; 	Created: Friday, October 20, 1989 at 9:11:59 PM
+; 	Version: 2.9
+;
+;	Copyright:	© 1990-1992 by Apple Computer, Inc., all rights reserved.
+;
+
+mppUnitNum		EQU 		9         				; MPP unit number
+atpUnitNum		EQU 		10        				; ATP unit number
+atpLoadedBit  	EQU 		4         				; ATP loaded bit number in PortBUse
+nbp   			EQU 		$02       				; DDP protocol type code for NBP
+nis   			EQU 		2         				; Names Information Socket (NIS) number
+tupleMax  		EQU 		15        				; Most tuples in a lookup reply
+equals			EQU 		'='       				; Wildcard symbol
+star  			EQU 		'*'       				; "This zone" symbol
+ddpDstSkt 		EQU 		10        				; Destination socket number [byte]
+ddpType   		EQU 		12        				; DDP type field [byte]
+ddpMaxData		EQU 		586       				; Maximum DDP data size
+lapHdSz   		EQU 		3         				; Size of LAP header
+lookupReply   	EQU 		242       				; This command queued to ourself
+writeDDP  		EQU 		246       				; Write out DDP packet
+closeSkt  		EQU 		247       				; Close DDP socket
+openSkt   		EQU 		248       				; Open DDP socket
+loadNBP   		EQU 		249       				; Load NBP command-executing code
+confirmName   	EQU 		250       				; Confirm name
+lookupName		EQU 		251       				; Look up name on internet
+registerName  	EQU 		253       				; Register name in Names Table
+unloadNBP 		EQU 		255       				; Unload NBP command code
+socket			EQU 		$1C       				; Offset to socket number (DDP) [byte]
+checkSumFlag  	EQU 		$1D       				; Offset to checksum flag (DDP) [byte]
+wdsPointer		EQU 		$1E       				; Offset to WDS pointer (DDP & ABLAP) [word]
+interval  		EQU 		$1C       				; Retry interval (NBP) [byte]
+count 			EQU 		$1D       				; Retry count (NBP) [byte]
+entityPtr 		EQU 		$1E       				; Entity pointer (NBP)
+confirmAddr   	EQU 		$22       				; Address to confirm at (NBP - Confirm)
+newSocket 		EQU 		$26       				; Socket no. if different (NBP - Confirm) [byte]
+verifyFlag		EQU 		$22       				; Verify name flag (NBP - Register) [byte]
+retBuffPtr		EQU 		$22       				; Return buffer pointer (NBP - Lookup)
+retBuffSize   	EQU 		$26       				; Return buffer size (NBP - Lookup) [word]
+maxToGet  		EQU 		$28       				; Max no. responses to get (NBP - Lookup) [word]
+numGotten 		EQU 		$2A       				; Number actually gotten (NBP - Lookup) [word]
+ntSocket  		EQU 		7         				; Socket number of entity [byte]
+ntEntity  		EQU 		9         				; Start of entity name within tuple
+toRHA 			EQU 		1         				; Top of RHA
+sysABridge		EQU 		$19       				; Node address of a bridge [byte]
+sysNetNum 		EQU 		$1A       				; This node's network number [word]
+vSCCEnable		EQU 		$1C       				; SR value to re-enable SCC interrupts [word]
+atpVars   		EQU 		$1E       				; ATP variable pointer (high byte is flag)
+atp   			EQU 		$3        				; ATP type code (in DDP header)
+atpRespNo 		EQU 		1         				; Response number (responses only) [byte]
+atpTransID		EQU 		2         				; Transaction ID [word]
+atpUserData   	EQU 		4         				; Start of user data [long]
+atpHdSz   		EQU 		8         				; Size of ATP header
+atpReqCode		EQU 		$40       				; Request code after masking
+atpRspCode		EQU 		$80       				; Response code after masking
+atpRelCode		EQU 		$C0       				; Release code after masking
+atpXOBit  		EQU 		5         				; Bit number of exactly-once bit
+atpEOMBit 		EQU 		4         				; Bit number of End-Of-Message bit
+flagMask  		EQU 		$3F       				; Mask for just flags
+controlMask   	EQU 		$F8       				; Mask for good control bits
+atpMaxNum 		EQU 		8         				; Max no. of responses per request
+atpMaxData		EQU 		$242      				; Maximum data size in ATP packet
+nSendRequest  	EQU 		248       				; NSendRequest code
+atpSocket 		EQU 		$1C       				; Socket number is first parameter [byte]
+atpFlags  		EQU 		$1D       				; Flag [byte]
+addrBlock 		EQU 		$1E       				; Start of address block
+reqLength 		EQU 		$22       				; Size of request buffer [word]
+reqPointer		EQU 		$24       				; Pointer to request buffer or data
+bdsPointer		EQU 		$28       				; Pointer to Buffer Data Structure (BDS)
+sendCHK   		EQU 		0         				; Bit no. of send-checksum bit in flags
+tidValid  		EQU 		1         				; Bit set when TID valid in SendRequest
+numOfBuffs		EQU 		$2C       				; No. of response buffers passed in BDS [byte]
+timeoutVal		EQU 		$2D       				; Timeout length in seconds [byte]
+numOfResps		EQU 		$2E       				; Number of responses received [byte]
+retryCount		EQU 		$2F       				; Maximum number of retries [byte]
+reqTID			EQU 		$16       				; Request's TID returned here (for RelTCB)
+currBitmap		EQU 		$1C       				; Bitmap of responses not yet received [byte]
+bitmap			EQU 		$2C       				; Offset where bitmap is returned [byte]
+transID   		EQU 		$2E       				; Transaction ID returned here [word]
+bdsSize   		EQU 		$2D
+rspNum			EQU 		$2C       				; No. of this response with transaction [byte]
+maxRsps   		EQU 		8         				; Max number of concurrent XO responses
+maxATPSkts		EQU 		6         				; Max number of concurrent responding-sockets
+releaseTime   	EQU 		30        				; Release timer value in seconds

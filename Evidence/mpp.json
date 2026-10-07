@@ -1,0 +1,1980 @@
+{
+  "module": "Resources/MPP.a",
+  "source_path": "Reconstruction/Source/Resources/MPP.a",
+  "source_sha256": "75c62f22e3521e3fee9245fc38a5c87c2858ed4c7d9800a4bb6a1f93c55e1ac4",
+  "source_status": "The complete MPP, LAP, DDP and NBP implementation sources were not found. The reconstruction uses the ROM for instructions, surviving interfaces for public fields, and later variable definitions for matching private names and relationships.",
+  "upstream_sources": [
+    {
+      "path": "Patches/PatchPlusROM.a",
+      "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470"
+    },
+    {
+      "path": "Interfaces/AIncludes/AppleTalk.a",
+      "sha256": "395dfc545d9fe42ba1abb0c276402f0ab2d7db2b6ab3138ea274f8c4b1058509"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    },
+    {
+      "path": "OS/NetBoot/ATIncludes/vardefs2.a",
+      "sha256": "50aa52ca734bf98bc3fd8855de76cb67f5aa889353046cfb5b51bc95fdc7b78d"
+    },
+    {
+      "path": "OS/NetBoot/ATIncludes/LAPvars2.a",
+      "sha256": "53a0bcbefc5e7f45ff568ea99317346507f2550ce5d4de5c7b25a9e5c26d94b0"
+    },
+    {
+      "path": "Libs/InterfaceSrcs/piDDP.a",
+      "sha256": "773708617ba34882a4360f004259bebcaf941500795d2b84e0075f8b021b0fb4"
+    },
+    {
+      "path": "OS/DeviceMgr.a",
+      "sha256": "85ca113f1d25d588a7c33ca46c2a9598ffbd4166a2a032f2e7cd1d8d6b4ca38e"
+    },
+    {
+      "path": "OS/Gestalt/GestaltFunction.a",
+      "sha256": "c1003c50059b8f7ea1dd65e8880ecf5fb323c08c8831a9e26534f0f0d7e27abb"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x41a6f2",
+      "end_address_exclusive": "0x41b6c8",
+      "rom_offset": "0x1a6f2",
+      "length": 4054,
+      "sha256": "8a380871d52c84e57a561acda1a1164a740869f16f81fb98445ff4f93d528feb",
+      "resource_header_bytes": 8,
+      "driver_header_bytes": 26,
+      "body_start": "0x41a6fa",
+      "body_length": 4046,
+      "resource_flags": "0xc0",
+      "relative_master_pointer_offset": "0x64"
+    }
+  ],
+  "data_spans": [
+    {
+      "start": "0x41a6f2",
+      "end_exclusive": "0x41a6fa",
+      "length": 8,
+      "description": "Resource header with flags, block length and relative master-pointer offset."
+    },
+    {
+      "start": "0x41a6fa",
+      "end_exclusive": "0x41a714",
+      "length": 26,
+      "description": "Driver header with flags, five entry offsets, the Pascal name and a word in the conventional version slot."
+    },
+    {
+      "start": "0x41a76a",
+      "end_exclusive": "0x41a77a",
+      "length": 16,
+      "description": "Eight control offsets for selectors 242 through 249, relative to MPPDriver."
+    },
+    {
+      "start": "0x41ab7e",
+      "end_exclusive": "0x41ab82",
+      "length": 4,
+      "description": "Four SCC register/value bytes consumed by StartFrame."
+    },
+    {
+      "start": "0x41aeea",
+      "end_exclusive": "0x41aef6",
+      "length": 12,
+      "description": "Five SCC value/register pairs and a zero-word terminator consumed by MPPClose."
+    },
+    {
+      "start": "0x41b0d6",
+      "end_exclusive": "0x41b0dc",
+      "length": 6,
+      "description": "The Pascal name .ATP, followed by a space for alignment."
+    },
+    {
+      "start": "0x41b0f6",
+      "end_exclusive": "0x41b112",
+      "length": 28,
+      "description": "Thirteen SCC value/register pairs and a zero-word terminator."
+    },
+    {
+      "start": "0x41b112",
+      "end_exclusive": "0x41b11a",
+      "length": 8,
+      "description": "Three SCC value/register pairs and a zero-word terminator."
+    },
+    {
+      "start": "0x41b11a",
+      "end_exclusive": "0x41b124",
+      "length": 10,
+      "description": "Six SCC bytes, the saved status-register value, a one-byte abort delay and one alignment byte."
+    },
+    {
+      "start": "0x41b124",
+      "end_exclusive": "0x41b140",
+      "length": 28,
+      "description": "The original 28-byte copyright text."
+    },
+    {
+      "start": "0x41b2ce",
+      "end_exclusive": "0x41b2d0",
+      "length": 2,
+      "description": "The CmpString trap number read by GetTrapAddress; this word is data."
+    },
+    {
+      "start": "0x41b300",
+      "end_exclusive": "0x41b30e",
+      "length": 14,
+      "description": "Seven NBP command offsets for selectors 249 through 255, relative to NBPCode."
+    }
+  ],
+  "boundaries": {
+    "description": "The resource block length covers the entire MPP driver, including its LAP hardware routines, lookup-reply code and NBP command code. The driver and two control tables resolve to complete entries. SkipDuplicateTuple ends with a backward branch at $41B6C6, immediately before the SERD resource header at $41B6C8.",
+    "references": [
+      "Reconstruction/Evidence/ghidra-symbols.tsv",
+      "Reconstruction/Evidence/ghidra-instructions.tsv"
+    ]
+  },
+  "symbols": {
+    "MPPResourceBlock": "0x41a6f2",
+    "MPPDriver": "0x41a6fa",
+    "MPPVersionWord": "0x41a712",
+    "MPPControl": "0x41a714",
+    "DispatchMPP": "0x41a71e",
+    "MPPControlTable": "0x41a76a",
+    "CloseForApplication": "0x41a77a",
+    "CallNBP": "0x41a786",
+    "DoLookupReply": "0x41a790",
+    "NoError": "0x41a79a",
+    "MPPExit": "0x41a79c",
+    "EnableNBP": "0x41a7a0",
+    "DoOpenSkt": "0x41a7b0",
+    "DDPOpenSocket": "0x41a7b8",
+    "DoCloseSkt": "0x41a7fa",
+    "FindSocket": "0x41a80c",
+    "DoWriteDDP": "0x41a818",
+    "DDPWrite": "0x41a820",
+    "DDPOpenEntry": "0x41a822",
+    "WriteDDPPacket": "0x41a824",
+    "DDPChecksum": "0x41a888",
+    "ReadLongDDP": "0x41a8d2",
+    "ReadShortDDP": "0x41a8e4",
+    "DispatchDDP": "0x41a8ea",
+    "IgnoreDDP": "0x41a904",
+    "RTMPRead": "0x41a908",
+    "DoAttachPH": "0x41a928",
+    "FindProtocol": "0x41a94c",
+    "DoDetachPH": "0x41a958",
+    "DoWriteLAP": "0x41a96c",
+    "MPPStatus": "0x41a97e",
+    "FinishMPP": "0x41a980",
+    "GoIODone": "0x41a984",
+    "MPPPrime": "0x41a98a",
+    "AbusWrite": "0x41a992",
+    "AbusSend": "0x41a99a",
+    "CountHistoryBits": "0x41a9c8",
+    "WaitIdleSlot": "0x41aa86",
+    "SendDataFrame": "0x41aa96",
+    "LAPSuccess": "0x41aa9a",
+    "LAPReturn": "0x41aa9c",
+    "Collision": "0x41aaa4",
+    "LAPExtInt": "0x41aaf4",
+    "ContinueDeferred": "0x41ab0a",
+    "VBLHnd": "0x41ab1e",
+    "GetControlFrame": "0x41ab4e",
+    "NextRandom": "0x41ab68",
+    "TransmitSetup": "0x41ab7e",
+    "SendByte": "0x41ab82",
+    "StartFrame": "0x41ab96",
+    "WritePacket": "0x41abac",
+    "SendControlFrame": "0x41ac22",
+    "FinishFrame": "0x41ac3a",
+    "EndTransmit": "0x41ac5e",
+    "WriteSCCBytes": "0x41ac64",
+    "LAPReceiveInt": "0x41ac6c",
+    "ReadFrame": "0x41ac70",
+    "DiscardFrame": "0x41ace2",
+    "ReadControlFrame": "0x41acf4",
+    "ReceiveRTS": "0x41ad28",
+    "ReceiveENQ": "0x41ad3a",
+    "AnswerControlFrame": "0x41ad3c",
+    "LAPSpecialInt": "0x41ad44",
+    "CheckCRC": "0x41ad48",
+    "ResetReceive": "0x41ad72",
+    "WriteReceiveMode": "0x41ada0",
+    "ReadStatus1": "0x41adaa",
+    "PacketError": "0x41adb4",
+    "ReadLengthError": "0x41adba",
+    "ReadUnderrunError": "0x41adbc",
+    "ReadCRCError": "0x41adbe",
+    "ReadOverrunError": "0x41adc0",
+    "ReadPacket": "0x41adc4",
+    "ReadRest": "0x41adc6",
+    "ReadPacketBytes": "0x41ae3c",
+    "MPPClose": "0x41ae6e",
+    "SetSCCRegisters": "0x41aeda",
+    "CloseSCCData": "0x41aeea",
+    "MPPOpen": "0x41aef6",
+    "FindBridge": "0x41b098",
+    "BridgeWrite": "0x41b0cc",
+    "ATPName": "0x41b0d6",
+    "ProbeNode": "0x41b0dc",
+    "InitSCC": "0x41b0e6",
+    "InitSCCData": "0x41b0f6",
+    "EnableSCCData": "0x41b112",
+    "InitLAPVars": "0x41b11a",
+    "CopyrightText": "0x41b124",
+    "LookupCode": "0x41b140",
+    "LookupClose": "0x41b142",
+    "LookupListener": "0x41b144",
+    "LookupDispatch": "0x41b18e",
+    "RemoveApplicationNames": "0x41b190",
+    "SendLookupReply": "0x41b1b2",
+    "LookupExit": "0x41b2ac",
+    "WriteLookupReply": "0x41b2b6",
+    "CmpStringTrapWord": "0x41b2ce",
+    "ComparePStrings": "0x41b2d0",
+    "LookupComplete": "0x41b2de",
+    "NBPCode": "0x41b2e4",
+    "NBPControlTable": "0x41b300",
+    "NBPAbort": "0x41b30e",
+    "DoUnloadNBP": "0x41b312",
+    "CloseNBPSocket": "0x41b316",
+    "DoLoadNBP": "0x41b328",
+    "DisposeFailedNBP": "0x41b356",
+    "AllocateNBP": "0x41b35e",
+    "AllocateNBPAppHeap": "0x41b362",
+    "DoConfirmName": "0x41b366",
+    "DoRegisterName": "0x41b36e",
+    "AddName": "0x41b3d2",
+    "DoRemoveName": "0x41b404",
+    "FindName": "0x41b428",
+    "DoLookupName": "0x41b460",
+    "BeginLocalLookup": "0x41b470",
+    "BeginLookup": "0x41b472",
+    "SendNBPRequest": "0x41b4f4",
+    "NBPTimeout": "0x41b502",
+    "NBPDone": "0x41b546",
+    "NBPExit": "0x41b548",
+    "ReadConfirmReply": "0x41b560",
+    "ReadRegisterReply": "0x41b58a",
+    "NBPReadReturn": "0x41b59a",
+    "IgnoreNBP": "0x41b59c",
+    "NBPRead": "0x41b5a2",
+    "CountReceivedTuples": "0x41b5ee",
+    "MergeLookupTuples": "0x41b61a",
+    "FindDuplicateTuple": "0x41b630",
+    "AddLookupTuple": "0x41b660",
+    "SkipDuplicateTuple": "0x41b6b6",
+    "MPPResourceEnd": "0x41b6c8",
+    "MPPBranch_41a72c": "0x41a72c",
+    "MPPBranch_41a738": "0x41a738",
+    "MPPBranch_41a80a": "0x41a80a",
+    "MPPBranch_41a7ca": "0x41a7ca",
+    "MPPBranch_41a7f6": "0x41a7f6",
+    "MPPBranch_41a7cc": "0x41a7cc",
+    "MPPBranch_41a7ea": "0x41a7ea",
+    "MPPBranch_41a80e": "0x41a80e",
+    "MPPBranch_41a892": "0x41a892",
+    "MPPBranch_41a894": "0x41a894",
+    "MPPBranch_41a870": "0x41a870",
+    "MPPBranch_41a86a": "0x41a86a",
+    "MPPBranch_41a860": "0x41a860",
+    "MPPBranch_41a8a4": "0x41a8a4",
+    "MPPBranch_41a8b8": "0x41a8b8",
+    "MPPBranch_41a8ce": "0x41a8ce",
+    "MPPBranch_41a8ac": "0x41a8ac",
+    "MPPBranch_41a8f2": "0x41a8f2",
+    "MPPBranch_41a926": "0x41a926",
+    "MPPBranch_41a94a": "0x41a94a",
+    "MPPBranch_41a934": "0x41a934",
+    "MPPBranch_41a94e": "0x41a94e",
+    "MPPBranch_41a95c": "0x41a95c",
+    "MPPBranch_41a948": "0x41a948",
+    "MPPBranch_41a9a8": "0x41a9a8",
+    "MPPBranch_41a9da": "0x41a9da",
+    "MPPBranch_41a9e4": "0x41a9e4",
+    "MPPBranch_41a9d2": "0x41a9d2",
+    "MPPBranch_41a9cc": "0x41a9cc",
+    "MPPBranch_41aa32": "0x41aa32",
+    "MPPBranch_41aa1c": "0x41aa1c",
+    "MPPBranch_41aa14": "0x41aa14",
+    "MPPBranch_41aa2c": "0x41aa2c",
+    "MPPBranch_41aac4": "0x41aac4",
+    "MPPBranch_41aa56": "0x41aa56",
+    "MPPBranch_41aa92": "0x41aa92",
+    "MPPBranch_41aa7e": "0x41aa7e",
+    "MPPBranch_41aa88": "0x41aa88",
+    "MPPBranch_41a9fc": "0x41a9fc",
+    "MPPBranch_41aade": "0x41aade",
+    "MPPBranch_41ab66": "0x41ab66",
+    "MPPBranch_41a9fa": "0x41a9fa",
+    "MPPBranch_41ab32": "0x41ab32",
+    "MPPBranch_41ab0e": "0x41ab0e",
+    "MPPBranch_41ab54": "0x41ab54",
+    "MPPBranch_41ab62": "0x41ab62",
+    "MPPBranch_41ab84": "0x41ab84",
+    "MPPBranch_41ab92": "0x41ab92",
+    "MPPBranch_41aba2": "0x41aba2",
+    "MPPBranch_41abda": "0x41abda",
+    "MPPBranch_41abe8": "0x41abe8",
+    "MPPBranch_41ac00": "0x41ac00",
+    "MPPBranch_41abf2": "0x41abf2",
+    "MPPBranch_41abd8": "0x41abd8",
+    "MPPBranch_41abfe": "0x41abfe",
+    "MPPBranch_41ac0e": "0x41ac0e",
+    "MPPBranch_41ac40": "0x41ac40",
+    "MPPBranch_41ac46": "0x41ac46",
+    "MPPBranch_41ac5a": "0x41ac5a",
+    "MPPBranch_41ac7a": "0x41ac7a",
+    "MPPBranch_41acca": "0x41acca",
+    "MPPBranch_41ac88": "0x41ac88",
+    "MPPBranch_41ac9c": "0x41ac9c",
+    "MPPBranch_41aca8": "0x41aca8",
+    "MPPBranch_41acc2": "0x41acc2",
+    "MPPBranch_41ad16": "0x41ad16",
+    "MPPBranch_41ad18": "0x41ad18",
+    "MPPBranch_41ad36": "0x41ad36",
+    "MPPBranch_41ad2e": "0x41ad2e",
+    "MPPBranch_41ad4c": "0x41ad4c",
+    "MPPBranch_41ad60": "0x41ad60",
+    "MPPBranch_41ad80": "0x41ad80",
+    "MPPBranch_41ad86": "0x41ad86",
+    "MPPBranch_41adf0": "0x41adf0",
+    "MPPBranch_41add2": "0x41add2",
+    "MPPBranch_41ade8": "0x41ade8",
+    "MPPBranch_41adcc": "0x41adcc",
+    "MPPBranch_41ae28": "0x41ae28",
+    "MPPBranch_41ae40": "0x41ae40",
+    "MPPBranch_41ae62": "0x41ae62",
+    "MPPBranch_41ae3e": "0x41ae3e",
+    "MPPBranch_41ae3a": "0x41ae3a",
+    "MPPBranch_41ae66": "0x41ae66",
+    "MPPBranch_41ae68": "0x41ae68",
+    "MPPBranch_41ae32": "0x41ae32",
+    "MPPBranch_41aed4": "0x41aed4",
+    "MPPBranch_41aec4": "0x41aec4",
+    "MPPBranch_41aece": "0x41aece",
+    "MPPBranch_41aed8": "0x41aed8",
+    "MPPBranch_41aede": "0x41aede",
+    "MPPBranch_41af46": "0x41af46",
+    "MPPBranch_41af5e": "0x41af5e",
+    "MPPBranch_41af60": "0x41af60",
+    "MPPBranch_41afe0": "0x41afe0",
+    "MPPBranch_41afdc": "0x41afdc",
+    "MPPBranch_41b006": "0x41b006",
+    "MPPBranch_41affc": "0x41affc",
+    "MPPBranch_41b08a": "0x41b08a",
+    "MPPBranch_41b0c0": "0x41b0c0",
+    "MPPBranch_41b188": "0x41b188",
+    "MPPBranch_41b186": "0x41b186",
+    "MPPBranch_41b16a": "0x41b16a",
+    "MPPBranch_41b1b0": "0x41b1b0",
+    "MPPBranch_41b1ac": "0x41b1ac",
+    "MPPBranch_41b198": "0x41b198",
+    "MPPBranch_41b1ec": "0x41b1ec",
+    "MPPBranch_41b20c": "0x41b20c",
+    "MPPBranch_41b208": "0x41b208",
+    "MPPBranch_41b1d0": "0x41b1d0",
+    "MPPBranch_41b2a6": "0x41b2a6",
+    "MPPBranch_41b28c": "0x41b28c",
+    "MPPBranch_41b252": "0x41b252",
+    "MPPBranch_41b29c": "0x41b29c",
+    "MPPBranch_41b23a": "0x41b23a",
+    "MPPBranch_41b318": "0x41b318",
+    "MPPBranch_41b326": "0x41b326",
+    "MPPBranch_41b354": "0x41b354",
+    "MPPBranch_41b364": "0x41b364",
+    "MPPBranch_41b3ba": "0x41b3ba",
+    "MPPBranch_41b3ce": "0x41b3ce",
+    "MPPBranch_41b3b2": "0x41b3b2",
+    "MPPBranch_41b3f6": "0x41b3f6",
+    "MPPBranch_41b3de": "0x41b3de",
+    "MPPBranch_41b3d8": "0x41b3d8",
+    "MPPBranch_41b424": "0x41b424",
+    "MPPBranch_41b41e": "0x41b41e",
+    "MPPBranch_41b416": "0x41b416",
+    "MPPBranch_41b45a": "0x41b45a",
+    "MPPBranch_41b434": "0x41b434",
+    "MPPBranch_41b484": "0x41b484",
+    "MPPBranch_41b52a": "0x41b52a",
+    "MPPBranch_41b616": "0x41b616",
+    "MPPBranch_41b5f4": "0x41b5f4",
+    "MPPBranch_41b64e": "0x41b64e",
+    "MPPBranch_41b67e": "0x41b67e",
+    "MPPBranch_41b680": "0x41b680",
+    "MPPBranch_41b62e": "0x41b62e",
+    "MPPBranch_41b682": "0x41b682"
+  },
+  "confirmed_names": {
+    "MPPControl": "0x41a714",
+    "MPPOpen": "0x41aef6",
+    "VBLHnd": "0x41ab1e"
+  },
+  "reconstruction_names": {
+    "MPPResourceBlock": "0x41a6f2",
+    "MPPDriver": "0x41a6fa",
+    "MPPVersionWord": "0x41a712",
+    "DispatchMPP": "0x41a71e",
+    "MPPControlTable": "0x41a76a",
+    "CloseForApplication": "0x41a77a",
+    "CallNBP": "0x41a786",
+    "DoLookupReply": "0x41a790",
+    "NoError": "0x41a79a",
+    "MPPExit": "0x41a79c",
+    "EnableNBP": "0x41a7a0",
+    "DoOpenSkt": "0x41a7b0",
+    "DDPOpenSocket": "0x41a7b8",
+    "DoCloseSkt": "0x41a7fa",
+    "FindSocket": "0x41a80c",
+    "DoWriteDDP": "0x41a818",
+    "DDPWrite": "0x41a820",
+    "DDPOpenEntry": "0x41a822",
+    "WriteDDPPacket": "0x41a824",
+    "DDPChecksum": "0x41a888",
+    "ReadLongDDP": "0x41a8d2",
+    "ReadShortDDP": "0x41a8e4",
+    "DispatchDDP": "0x41a8ea",
+    "IgnoreDDP": "0x41a904",
+    "RTMPRead": "0x41a908",
+    "DoAttachPH": "0x41a928",
+    "FindProtocol": "0x41a94c",
+    "DoDetachPH": "0x41a958",
+    "DoWriteLAP": "0x41a96c",
+    "MPPStatus": "0x41a97e",
+    "FinishMPP": "0x41a980",
+    "GoIODone": "0x41a984",
+    "MPPPrime": "0x41a98a",
+    "AbusWrite": "0x41a992",
+    "AbusSend": "0x41a99a",
+    "CountHistoryBits": "0x41a9c8",
+    "WaitIdleSlot": "0x41aa86",
+    "SendDataFrame": "0x41aa96",
+    "LAPSuccess": "0x41aa9a",
+    "LAPReturn": "0x41aa9c",
+    "Collision": "0x41aaa4",
+    "LAPExtInt": "0x41aaf4",
+    "ContinueDeferred": "0x41ab0a",
+    "GetControlFrame": "0x41ab4e",
+    "NextRandom": "0x41ab68",
+    "TransmitSetup": "0x41ab7e",
+    "SendByte": "0x41ab82",
+    "StartFrame": "0x41ab96",
+    "WritePacket": "0x41abac",
+    "SendControlFrame": "0x41ac22",
+    "FinishFrame": "0x41ac3a",
+    "EndTransmit": "0x41ac5e",
+    "WriteSCCBytes": "0x41ac64",
+    "LAPReceiveInt": "0x41ac6c",
+    "ReadFrame": "0x41ac70",
+    "DiscardFrame": "0x41ace2",
+    "ReadControlFrame": "0x41acf4",
+    "ReceiveRTS": "0x41ad28",
+    "ReceiveENQ": "0x41ad3a",
+    "AnswerControlFrame": "0x41ad3c",
+    "LAPSpecialInt": "0x41ad44",
+    "CheckCRC": "0x41ad48",
+    "ResetReceive": "0x41ad72",
+    "WriteReceiveMode": "0x41ada0",
+    "ReadStatus1": "0x41adaa",
+    "PacketError": "0x41adb4",
+    "ReadLengthError": "0x41adba",
+    "ReadUnderrunError": "0x41adbc",
+    "ReadCRCError": "0x41adbe",
+    "ReadOverrunError": "0x41adc0",
+    "ReadPacket": "0x41adc4",
+    "ReadRest": "0x41adc6",
+    "ReadPacketBytes": "0x41ae3c",
+    "MPPClose": "0x41ae6e",
+    "SetSCCRegisters": "0x41aeda",
+    "CloseSCCData": "0x41aeea",
+    "FindBridge": "0x41b098",
+    "BridgeWrite": "0x41b0cc",
+    "ATPName": "0x41b0d6",
+    "ProbeNode": "0x41b0dc",
+    "InitSCC": "0x41b0e6",
+    "InitSCCData": "0x41b0f6",
+    "EnableSCCData": "0x41b112",
+    "InitLAPVars": "0x41b11a",
+    "CopyrightText": "0x41b124",
+    "LookupCode": "0x41b140",
+    "LookupClose": "0x41b142",
+    "LookupListener": "0x41b144",
+    "LookupDispatch": "0x41b18e",
+    "RemoveApplicationNames": "0x41b190",
+    "SendLookupReply": "0x41b1b2",
+    "LookupExit": "0x41b2ac",
+    "WriteLookupReply": "0x41b2b6",
+    "CmpStringTrapWord": "0x41b2ce",
+    "ComparePStrings": "0x41b2d0",
+    "LookupComplete": "0x41b2de",
+    "NBPCode": "0x41b2e4",
+    "NBPControlTable": "0x41b300",
+    "NBPAbort": "0x41b30e",
+    "DoUnloadNBP": "0x41b312",
+    "CloseNBPSocket": "0x41b316",
+    "DoLoadNBP": "0x41b328",
+    "DisposeFailedNBP": "0x41b356",
+    "AllocateNBP": "0x41b35e",
+    "AllocateNBPAppHeap": "0x41b362",
+    "DoConfirmName": "0x41b366",
+    "DoRegisterName": "0x41b36e",
+    "AddName": "0x41b3d2",
+    "DoRemoveName": "0x41b404",
+    "FindName": "0x41b428",
+    "DoLookupName": "0x41b460",
+    "BeginLocalLookup": "0x41b470",
+    "BeginLookup": "0x41b472",
+    "SendNBPRequest": "0x41b4f4",
+    "NBPTimeout": "0x41b502",
+    "NBPDone": "0x41b546",
+    "NBPExit": "0x41b548",
+    "ReadConfirmReply": "0x41b560",
+    "ReadRegisterReply": "0x41b58a",
+    "NBPReadReturn": "0x41b59a",
+    "IgnoreNBP": "0x41b59c",
+    "NBPRead": "0x41b5a2",
+    "CountReceivedTuples": "0x41b5ee",
+    "MergeLookupTuples": "0x41b61a",
+    "FindDuplicateTuple": "0x41b630",
+    "AddLookupTuple": "0x41b660",
+    "SkipDuplicateTuple": "0x41b6b6",
+    "MPPResourceEnd": "0x41b6c8",
+    "MPPBranch_41a72c": "0x41a72c",
+    "MPPBranch_41a738": "0x41a738",
+    "MPPBranch_41a80a": "0x41a80a",
+    "MPPBranch_41a7ca": "0x41a7ca",
+    "MPPBranch_41a7f6": "0x41a7f6",
+    "MPPBranch_41a7cc": "0x41a7cc",
+    "MPPBranch_41a7ea": "0x41a7ea",
+    "MPPBranch_41a80e": "0x41a80e",
+    "MPPBranch_41a892": "0x41a892",
+    "MPPBranch_41a894": "0x41a894",
+    "MPPBranch_41a870": "0x41a870",
+    "MPPBranch_41a86a": "0x41a86a",
+    "MPPBranch_41a860": "0x41a860",
+    "MPPBranch_41a8a4": "0x41a8a4",
+    "MPPBranch_41a8b8": "0x41a8b8",
+    "MPPBranch_41a8ce": "0x41a8ce",
+    "MPPBranch_41a8ac": "0x41a8ac",
+    "MPPBranch_41a8f2": "0x41a8f2",
+    "MPPBranch_41a926": "0x41a926",
+    "MPPBranch_41a94a": "0x41a94a",
+    "MPPBranch_41a934": "0x41a934",
+    "MPPBranch_41a94e": "0x41a94e",
+    "MPPBranch_41a95c": "0x41a95c",
+    "MPPBranch_41a948": "0x41a948",
+    "MPPBranch_41a9a8": "0x41a9a8",
+    "MPPBranch_41a9da": "0x41a9da",
+    "MPPBranch_41a9e4": "0x41a9e4",
+    "MPPBranch_41a9d2": "0x41a9d2",
+    "MPPBranch_41a9cc": "0x41a9cc",
+    "MPPBranch_41aa32": "0x41aa32",
+    "MPPBranch_41aa1c": "0x41aa1c",
+    "MPPBranch_41aa14": "0x41aa14",
+    "MPPBranch_41aa2c": "0x41aa2c",
+    "MPPBranch_41aac4": "0x41aac4",
+    "MPPBranch_41aa56": "0x41aa56",
+    "MPPBranch_41aa92": "0x41aa92",
+    "MPPBranch_41aa7e": "0x41aa7e",
+    "MPPBranch_41aa88": "0x41aa88",
+    "MPPBranch_41a9fc": "0x41a9fc",
+    "MPPBranch_41aade": "0x41aade",
+    "MPPBranch_41ab66": "0x41ab66",
+    "MPPBranch_41a9fa": "0x41a9fa",
+    "MPPBranch_41ab32": "0x41ab32",
+    "MPPBranch_41ab0e": "0x41ab0e",
+    "MPPBranch_41ab54": "0x41ab54",
+    "MPPBranch_41ab62": "0x41ab62",
+    "MPPBranch_41ab84": "0x41ab84",
+    "MPPBranch_41ab92": "0x41ab92",
+    "MPPBranch_41aba2": "0x41aba2",
+    "MPPBranch_41abda": "0x41abda",
+    "MPPBranch_41abe8": "0x41abe8",
+    "MPPBranch_41ac00": "0x41ac00",
+    "MPPBranch_41abf2": "0x41abf2",
+    "MPPBranch_41abd8": "0x41abd8",
+    "MPPBranch_41abfe": "0x41abfe",
+    "MPPBranch_41ac0e": "0x41ac0e",
+    "MPPBranch_41ac40": "0x41ac40",
+    "MPPBranch_41ac46": "0x41ac46",
+    "MPPBranch_41ac5a": "0x41ac5a",
+    "MPPBranch_41ac7a": "0x41ac7a",
+    "MPPBranch_41acca": "0x41acca",
+    "MPPBranch_41ac88": "0x41ac88",
+    "MPPBranch_41ac9c": "0x41ac9c",
+    "MPPBranch_41aca8": "0x41aca8",
+    "MPPBranch_41acc2": "0x41acc2",
+    "MPPBranch_41ad16": "0x41ad16",
+    "MPPBranch_41ad18": "0x41ad18",
+    "MPPBranch_41ad36": "0x41ad36",
+    "MPPBranch_41ad2e": "0x41ad2e",
+    "MPPBranch_41ad4c": "0x41ad4c",
+    "MPPBranch_41ad60": "0x41ad60",
+    "MPPBranch_41ad80": "0x41ad80",
+    "MPPBranch_41ad86": "0x41ad86",
+    "MPPBranch_41adf0": "0x41adf0",
+    "MPPBranch_41add2": "0x41add2",
+    "MPPBranch_41ade8": "0x41ade8",
+    "MPPBranch_41adcc": "0x41adcc",
+    "MPPBranch_41ae28": "0x41ae28",
+    "MPPBranch_41ae40": "0x41ae40",
+    "MPPBranch_41ae62": "0x41ae62",
+    "MPPBranch_41ae3e": "0x41ae3e",
+    "MPPBranch_41ae3a": "0x41ae3a",
+    "MPPBranch_41ae66": "0x41ae66",
+    "MPPBranch_41ae68": "0x41ae68",
+    "MPPBranch_41ae32": "0x41ae32",
+    "MPPBranch_41aed4": "0x41aed4",
+    "MPPBranch_41aec4": "0x41aec4",
+    "MPPBranch_41aece": "0x41aece",
+    "MPPBranch_41aed8": "0x41aed8",
+    "MPPBranch_41aede": "0x41aede",
+    "MPPBranch_41af46": "0x41af46",
+    "MPPBranch_41af5e": "0x41af5e",
+    "MPPBranch_41af60": "0x41af60",
+    "MPPBranch_41afe0": "0x41afe0",
+    "MPPBranch_41afdc": "0x41afdc",
+    "MPPBranch_41b006": "0x41b006",
+    "MPPBranch_41affc": "0x41affc",
+    "MPPBranch_41b08a": "0x41b08a",
+    "MPPBranch_41b0c0": "0x41b0c0",
+    "MPPBranch_41b188": "0x41b188",
+    "MPPBranch_41b186": "0x41b186",
+    "MPPBranch_41b16a": "0x41b16a",
+    "MPPBranch_41b1b0": "0x41b1b0",
+    "MPPBranch_41b1ac": "0x41b1ac",
+    "MPPBranch_41b198": "0x41b198",
+    "MPPBranch_41b1ec": "0x41b1ec",
+    "MPPBranch_41b20c": "0x41b20c",
+    "MPPBranch_41b208": "0x41b208",
+    "MPPBranch_41b1d0": "0x41b1d0",
+    "MPPBranch_41b2a6": "0x41b2a6",
+    "MPPBranch_41b28c": "0x41b28c",
+    "MPPBranch_41b252": "0x41b252",
+    "MPPBranch_41b29c": "0x41b29c",
+    "MPPBranch_41b23a": "0x41b23a",
+    "MPPBranch_41b318": "0x41b318",
+    "MPPBranch_41b326": "0x41b326",
+    "MPPBranch_41b354": "0x41b354",
+    "MPPBranch_41b364": "0x41b364",
+    "MPPBranch_41b3ba": "0x41b3ba",
+    "MPPBranch_41b3ce": "0x41b3ce",
+    "MPPBranch_41b3b2": "0x41b3b2",
+    "MPPBranch_41b3f6": "0x41b3f6",
+    "MPPBranch_41b3de": "0x41b3de",
+    "MPPBranch_41b3d8": "0x41b3d8",
+    "MPPBranch_41b424": "0x41b424",
+    "MPPBranch_41b41e": "0x41b41e",
+    "MPPBranch_41b416": "0x41b416",
+    "MPPBranch_41b45a": "0x41b45a",
+    "MPPBranch_41b434": "0x41b434",
+    "MPPBranch_41b484": "0x41b484",
+    "MPPBranch_41b52a": "0x41b52a",
+    "MPPBranch_41b616": "0x41b616",
+    "MPPBranch_41b5f4": "0x41b5f4",
+    "MPPBranch_41b64e": "0x41b64e",
+    "MPPBranch_41b67e": "0x41b67e",
+    "MPPBranch_41b680": "0x41b680",
+    "MPPBranch_41b62e": "0x41b62e",
+    "MPPBranch_41b682": "0x41b682"
+  },
+  "name_provenance": {
+    "description": "The reference export names MPPControl and MPPOpen. PatchPlusROM confirms VBLHnd at $41AB1E. AppleTalk.a and piDDP.a document the ReadPacket/ReadRest calling convention; their two entries are identified from the A4 assignment and two-byte branch. Other routine and branch names are descriptive reconstructions."
+  },
+  "changes": [
+    {
+      "description": "Restored the four protocol handlers and fourteen socket listeners without the later dynamic-socket array. Retained the surviving table names and their applicable comments. The MPP variables end at $A2."
+    },
+    {
+      "description": "Restored the original LAP variable layout through $FC. Backoff, collision and defer fields retain their later names and relationships. The original one-byte abort delay replaces the later timing-word array. Saved registers and SCC setup bytes retain their source names."
+    },
+    {
+      "description": "Retained the original low-memory and public packet equates. Restored private NBP offsets describe its 71-byte state block and 152-byte lookup buffer; their exact original names are unavailable."
+    },
+    {
+      "description": "Restored direct SCC polling, collision backoff, node probing, bridge discovery, frame checks and disk-driver polling. Preserved instruction ordering, register saves and delay operations."
+    },
+    {
+      "description": "Restored the two branch entries for ReadPacket and ReadRest. Preserved the surviving socket-listener contract about header storage, A4/A5 use and D2 preservation."
+    },
+    {
+      "description": "Retained the resident lookup-reply and NBP command code. NRPtr and LookupPtr still carry their source names and state flags even though the code is embedded in the ROM."
+    },
+    {
+      "description": "Expressed the resource and dispatch lengths with label differences. Represented SCC tables, names, copyright text and the trap-number constant as data. Every reachable instruction uses an assembly mnemonic or named trap."
+    },
+    {
+      "description": "Excluded later comments that describe a separate dynamic-socket table, a two-byte abort delay or statistics storage. Their corresponding offsets were restored to the smaller ROM layout. Other borrowed comments remain exact."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x41ab32",
+      "description": "The VBL task tests VBLDeferCnt and decrements it without masking interrupts. PatchPlusROM documents the January 1987 fix that prevents the counter from becoming negative. This source preserves the earlier operations and the patch diagnosis."
+    },
+    {
+      "address": "0x41b362",
+      "description": "AllocateNBP retains the application-heap allocation trap skipped by the preceding short branch during the ordinary system-heap path."
+    },
+    {
+      "address": "0x41ad96",
+      "description": "ResetReceive retains MOVE.W (SP),(SP) between SCC writes. The source does not remove or replace this delay operation."
+    }
+  ],
+  "uncertain_header_word": {
+    "address": "0x41a712",
+    "value": "0x2813",
+    "source_label": "MPPVersionWord",
+    "representation": "DC.W $2813",
+    "description": "The word immediately follows the aligned driver name and precedes the Control entry. OS/DeviceMgr.a lines 848 through 851 calculate this location as a driver-version field. No entry or direct reference to this word was found in the ROM code. Its high byte and use by this ROM remain unproven.",
+    "separate_runtime_version": {
+      "address": "0x41b08e",
+      "value": 19,
+      "description": "MPPOpen writes 19 to DCtlQueue+1. OS/Gestalt/GestaltFunction.a lines 865 through 884 read that DCE byte for the AppleTalk version; they do not read MPPVersionWord."
+    },
+    "classification_limit": "The slot convention supports treating this word as header data. It does not establish that the full value $2813 was a version number or that the Mac Plus Device Manager used it."
+  },
+  "source_mapping": {
+    "equates": [
+      {
+        "symbol": "AtalkHk1",
+        "file": "Interfaces/AIncludes/Private.a",
+        "line": 300
+      },
+      {
+        "symbol": "ABusVars",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1378
+      },
+      {
+        "symbol": "ControlErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 156
+      },
+      {
+        "symbol": "CSCode",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 956
+      },
+      {
+        "symbol": "LookupReply",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 144
+      },
+      {
+        "symbol": "ControlFirst",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "UnloadNBP",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 158
+      },
+      {
+        "symbol": "Socket",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 167
+      },
+      {
+        "symbol": "WDSPointer",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 171
+      },
+      {
+        "symbol": "LoadNBP",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 151
+      },
+      {
+        "symbol": "ATPVars",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 209
+      },
+      {
+        "symbol": "Protocols",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "LAPTblSz",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "Handlers",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 62
+      },
+      {
+        "symbol": "LAPTblEnd",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 63
+      },
+      {
+        "symbol": "SocketNum",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 79
+      },
+      {
+        "symbol": "DDPTblSz",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "SktLstnr",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 80
+      },
+      {
+        "symbol": "DDPTblEnd",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "VBLQEl",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 100
+      },
+      {
+        "symbol": "NRPtr",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 111
+      },
+      {
+        "symbol": "LookupPtr",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 112
+      },
+      {
+        "symbol": "DDPSktErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 542
+      },
+      {
+        "symbol": "SCCLockout68000",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "CheckSumFlag",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 168
+      },
+      {
+        "symbol": "SysNetNum",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 207
+      },
+      {
+        "symbol": "SysABridge",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 206
+      },
+      {
+        "symbol": "NoBridgeErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 544
+      },
+      {
+        "symbol": "DDPMaxData",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 119
+      },
+      {
+        "symbol": "DDPLenErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 543
+      },
+      {
+        "symbol": "NRVars",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 113
+      },
+      {
+        "symbol": "JDDPWrite",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 114
+      },
+      {
+        "symbol": "NTQueueHd",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 115
+      },
+      {
+        "symbol": "LUQElPtr",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 116
+      },
+      {
+        "symbol": "MPPVarsEnd",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "WDSPtr",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "LAPWrtRtn",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 51
+      },
+      {
+        "symbol": "RandomSeed",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 52
+      },
+      {
+        "symbol": "DestNode",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 53
+      },
+      {
+        "symbol": "fLAPAdrValid",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 54
+      },
+      {
+        "symbol": "fGoodCTS",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 55
+      },
+      {
+        "symbol": "fAdrInUse",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 56
+      },
+      {
+        "symbol": "fSendENQ",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 57
+      },
+      {
+        "symbol": "VBLDeferCnt",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 58
+      },
+      {
+        "symbol": "lbackOff",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 59
+      },
+      {
+        "symbol": "backoff",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 60
+      },
+      {
+        "symbol": "collsnHistory",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 61
+      },
+      {
+        "symbol": "deferHistory",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 62
+      },
+      {
+        "symbol": "deferTries",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 63
+      },
+      {
+        "symbol": "collsnTries",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 64
+      },
+      {
+        "symbol": "BridgeTime",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 65
+      },
+      {
+        "symbol": "LAPProtErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 545
+      },
+      {
+        "symbol": "StatusErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 157
+      },
+      {
+        "symbol": "ABusDCE",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1379
+      },
+      {
+        "symbol": "JIODone",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 704
+      },
+      {
+        "symbol": "DCtlFlags",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 679
+      },
+      {
+        "symbol": "AtalkHk2",
+        "file": "Interfaces/AIncludes/Private.a",
+        "line": 301
+      },
+      {
+        "symbol": "SCCRd",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 477
+      },
+      {
+        "symbol": "SCCSyncHunt",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "VAbortWait",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "SaveA45",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "SaveDskRtn",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 81
+      },
+      {
+        "symbol": "SavePS",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 82
+      },
+      {
+        "symbol": "SaveBIn",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 83
+      },
+      {
+        "symbol": "SaveBOut",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 84
+      },
+      {
+        "symbol": "SaveVects",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 85
+      },
+      {
+        "symbol": "SaveRegs",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 86
+      },
+      {
+        "symbol": "VAVBufA",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 91
+      },
+      {
+        "symbol": "VSTData",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 94
+      },
+      {
+        "symbol": "VDisTxRTS",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 95
+      },
+      {
+        "symbol": "ExcessCollsns",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 546
+      },
+      {
+        "symbol": "ExtStsDT",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1205
+      },
+      {
+        "symbol": "vSCCEnable",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 208
+      },
+      {
+        "symbol": "VBL20",
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 102
+      },
+      {
+        "symbol": "VBLCount",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1273
+      },
+      {
+        "symbol": "SCCRxReady",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "SCCTxReady",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "DskRtnAdr",
+        "file": "Interfaces/AIncludes/Private.a",
+        "line": 206
+      },
+      {
+        "symbol": "PollStack",
+        "file": "Interfaces/AIncludes/Private.a",
+        "line": 209
+      },
+      {
+        "symbol": "PollProc",
+        "file": "Interfaces/AIncludes/Private.a",
+        "line": 210
+      },
+      {
+        "symbol": "ToRHA",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 205
+      },
+      {
+        "symbol": "SCCData",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "IntFlag",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1373
+      },
+      {
+        "symbol": "UTableBase",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 700
+      },
+      {
+        "symbol": "MPPUnitNum",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 39
+      },
+      {
+        "symbol": "IOQElSize",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 730
+      },
+      {
+        "symbol": "ATPUnitNum",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 40
+      },
+      {
+        "symbol": "IORefNum",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 740
+      },
+      {
+        "symbol": "Lvl2DT",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1204
+      },
+      {
+        "symbol": "PortBUse",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1383
+      },
+      {
+        "symbol": "SCCWr",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 478
+      },
+      {
+        "symbol": "PortInUse",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 547
+      },
+      {
+        "symbol": "PortNotCf",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 548
+      },
+      {
+        "symbol": "SPConfig",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 471
+      },
+      {
+        "symbol": "STLth",
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 93
+      },
+      {
+        "symbol": "DataSize",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "MacAVBufA",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "QType",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 530
+      },
+      {
+        "symbol": "VBLAddr",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1272
+      },
+      {
+        "symbol": "Ticks",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 498
+      },
+      {
+        "symbol": "SPATalkB",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1213
+      },
+      {
+        "symbol": "SPValid",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1211
+      },
+      {
+        "symbol": "IOFileName",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 737
+      },
+      {
+        "symbol": "IOPermssn",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 759
+      },
+      {
+        "symbol": "MPPVersion",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "DCtlQueue",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 680
+      },
+      {
+        "symbol": "LookupReadSize",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "IOCompletion",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 735
+      },
+      {
+        "symbol": "DCtlRefNum",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 685
+      },
+      {
+        "symbol": "SysZone",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 619
+      },
+      {
+        "symbol": "Lo3Bytes",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1042
+      },
+      {
+        "symbol": "NTEntity",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 200
+      },
+      {
+        "symbol": "Equals",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 74
+      },
+      {
+        "symbol": "Star",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 75
+      },
+      {
+        "symbol": "TupleMax",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 73
+      },
+      {
+        "symbol": "NBPVarSize",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPVBLQ",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ConfirmAddr",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 180
+      },
+      {
+        "symbol": "LookupBufferSize",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPNISErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 557
+      },
+      {
+        "symbol": "VerifyFlag",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 183
+      },
+      {
+        "symbol": "NBPDuplicate",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 555
+      },
+      {
+        "symbol": "NTSocket",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 199
+      },
+      {
+        "symbol": "NBPNotFound",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 556
+      },
+      {
+        "symbol": "NumGotten",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 188
+      },
+      {
+        "symbol": "RetBuffPtr",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 185
+      },
+      {
+        "symbol": "NBPRetBuffer",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "RetBuffSize",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 186
+      },
+      {
+        "symbol": "NBPRetLength",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPRequest",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPDestNet",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPDDPHeader",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NIS",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 72
+      },
+      {
+        "symbol": "LAPHdSz",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 128
+      },
+      {
+        "symbol": "DDPDstSkt",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 102
+      },
+      {
+        "symbol": "NBP",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 48
+      },
+      {
+        "symbol": "DDPType",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 104
+      },
+      {
+        "symbol": "NBPHeader",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPRequestID",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "NBPWDS",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "Count",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 177
+      },
+      {
+        "symbol": "Interval",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 176
+      },
+      {
+        "symbol": "EntityPtr",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 178
+      },
+      {
+        "symbol": "RegisterName",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 156
+      },
+      {
+        "symbol": "ConfirmName",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 153
+      },
+      {
+        "symbol": "NBPNoConfirm",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 553
+      },
+      {
+        "symbol": "NewSocket",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 181
+      },
+      {
+        "symbol": "NBPConfDiff",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 554
+      },
+      {
+        "symbol": "LookupName",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 154
+      },
+      {
+        "symbol": "MaxToGet",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 187
+      },
+      {
+        "symbol": "CmpStringTrap",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "SCCReadEnable",
+        "file": "reconstruction",
+        "line": 0
+      }
+    ],
+    "restored_equates": {
+      "LAPTBLSZ": {
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 59,
+        "original": "LAPTblSz\t\tEQU\t\tPHs\t\t\t\t\t\t; Size of LAP protocol handler table (even)",
+        "restored": "LAPTblSz EQU 4 ; Size of LAP protocol handler table (even)"
+      },
+      "DDPTBLSZ": {
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 77,
+        "original": "DDPTblSz\t\tEQU\t\tSASs\t\t\t\t\t; Size of socket table (even!)",
+        "restored": "DDPTblSz EQU 14 ; Size of socket table (even!)"
+      },
+      "PROTOCOLS": {
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 61,
+        "original": "Protocols\t\tEQU\t\tNumOfSkts+1\t\t\t\t; List of active protocols",
+        "restored": "Protocols EQU ATPVars+4 ; List of active protocols"
+      },
+      "DDPTBLEND": {
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 94,
+        "original": "DDPTblEnd\t\tEQU\t\tBigSktListen+(4*(MaxBigSkt-DDPMaxWKS))\t; End of DAS table",
+        "restored": "DDPTblEnd EQU SktLstnr+4*DDPTblSz"
+      },
+      "MPPVARSEND": {
+        "file": "OS/NetBoot/ATIncludes/vardefs2.a",
+        "line": 118,
+        "original": "MPPVarsEnd\t\tEQU\t\tSelfSend+2\t\t\t\t; End of MPP vars (*** more in LAPvars.a ***)",
+        "restored": "MPPVarsEnd EQU LUQElPtr+4 ; End of MPP vars (*** more in LAPvars.a ***)"
+      },
+      "WDSPTR": {
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 46,
+        "original": "WDSPtr\t\t\tEQU\t\tOurVars.MPPVarsEnd\t\t; (4) WDS pointer saved here on writes",
+        "restored": "WDSPtr EQU MPPVarsEnd ; (4) WDS pointer saved here on writes"
+      },
+      "VABORTWAIT": {
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 68,
+        "original": "VAbortWait\t\tEQU\t\tFirstVWord\t\t\t\t; (2) Constant for sending abort bits (3.2B)",
+        "restored": "VAbortWait EQU BridgeTime+1"
+      },
+      "SAVEA45": {
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 80,
+        "original": "SaveA45\t\t\tEQU\t\tVWordsEnd\t\t\t\t; (8) A4 and A5 saved here on interrupt",
+        "restored": "SaveA45 EQU VAbortWait+1 ; (8) A4 and A5 saved here on interrupt"
+      },
+      "DATASIZE": {
+        "file": "OS/NetBoot/ATIncludes/LAPvars2.a",
+        "line": 179,
+        "original": "DataSize\t\tEQU\t\tStatsEnd\t\t\t\t; Size of our data with stats",
+        "restored": "DataSize EQU VSTData+STLth"
+      }
+    },
+    "instructions": 1342,
+    "code_spans": [
+      [
+        4302612,
+        4302698
+      ],
+      [
+        4302714,
+        4303742
+      ],
+      [
+        4303746,
+        4304618
+      ],
+      [
+        4304630,
+        4305110
+      ],
+      [
+        4305116,
+        4305142
+      ],
+      [
+        4305216,
+        4305614
+      ],
+      [
+        4305616,
+        4305664
+      ],
+      [
+        4305678,
+        4306632
+      ]
+    ],
+    "private_field_values": {
+      "SysLAPAddr": "0x0",
+      "ToRHA": "0x1",
+      "SysABridge": "0x19",
+      "SysNetNum": "0x1a",
+      "vSCCEnable": "0x1c",
+      "ATPVars": "0x1e",
+      "Protocols": "0x22",
+      "Handlers": "0x26",
+      "SocketNum": "0x36",
+      "SktLstnr": "0x44",
+      "VBLQEl": "0x7c",
+      "NRPtr": "0x8a",
+      "LookupPtr": "0x8e",
+      "NRVars": "0x92",
+      "JDDPWrite": "0x96",
+      "NTQueueHd": "0x9a",
+      "LUQElPtr": "0x9e",
+      "WDSPtr": "0xa2",
+      "LAPWrtRtn": "0xa6",
+      "RandomSeed": "0xaa",
+      "DestNode": "0xac",
+      "fLAPAdrValid": "0xad",
+      "fGoodCTS": "0xae",
+      "fAdrInUse": "0xaf",
+      "fSendENQ": "0xb0",
+      "VBLDeferCnt": "0xb1",
+      "lbackOff": "0xb2",
+      "backoff": "0xb3",
+      "collsnHistory": "0xb4",
+      "deferHistory": "0xb5",
+      "deferTries": "0xb6",
+      "collsnTries": "0xb7",
+      "BridgeTime": "0xb8",
+      "VAbortWait": "0xb9",
+      "SaveA45": "0xba",
+      "SaveDskRtn": "0xc2",
+      "SavePS": "0xc6",
+      "SaveBIn": "0xca",
+      "SaveBOut": "0xce",
+      "SaveVects": "0xd2",
+      "SaveRegs": "0xde",
+      "VAVBufA": "0xf2",
+      "VSTData": "0xf6",
+      "VDisTxRTS": "0xf7"
+    }
+  },
+  "limitations": [
+    "The original module headers, full histories and most implementation comments are unavailable. The reconstruction does not claim to recover their exact spelling or source-file boundaries.",
+    "Several private field offsets changed after the Mac Plus. The evidence records restored declarations and their original lines separately.",
+    "The full meaning of MPPVersionWord remains uncertain. Its two bytes match the ROM and are outside every known code entry.",
+    "Verification establishes assembled bytes, data boundaries and label addresses. It does not exercise LocalTalk hardware timing, disk polling, network traffic or interrupt races."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-mpp.py",
+    "method": "Translated the final MPW source, assembled for the 68000, linked at $41A6F2, rejected unresolved relocations and compared every byte with the ROM. Checked every recorded code and data label.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 4054,
+    "instruction_count": 1342,
+    "data_bytes": 162,
+    "entry_points_checked": 269,
+    "preserved_original_comment_occurrences": 143,
+    "authored_comment_lines": 18,
+    "ghidra_records_compared": 869,
+    "ghidra_unsupported_trap_records": 8,
+    "result": {
+      "name": "mpp",
+      "source": "Reconstruction/Source/Resources/MPP.a",
+      "source_sha256": "75c62f22e3521e3fee9245fc38a5c87c2858ed4c7d9800a4bb6a1f93c55e1ac4",
+      "start": "0x41a6f2",
+      "end_exclusive": "0x41b6c8",
+      "bytes": 4054,
+      "sha256": "8a380871d52c84e57a561acda1a1164a740869f16f81fb98445ff4f93d528feb",
+      "matches_rom": true,
+      "source_dependencies": [
+        {
+          "path": "Reconstruction/Source/Resources/MPP.a",
+          "sha256": "75c62f22e3521e3fee9245fc38a5c87c2858ed4c7d9800a4bb6a1f93c55e1ac4"
+        }
+      ]
+    },
+    "prose_lint": {
+      "command": "vale /tmp/mpp-authored.md",
+      "config": "/Users/james/.vale.ini",
+      "result": "0 errors, 0 warnings, 0 suggestions",
+      "scope": "Authored source comments and evidence prose. Preserved original comments were excluded."
+    }
+  },
+  "integration_manifest": {
+    "name": "mpp",
+    "source": "Reconstruction/Source/Resources/MPP.a",
+    "start": "0x41a6f2",
+    "end_exclusive": "0x41b6c8",
+    "entry_points": {
+      "MPPResourceBlock": "0x41a6f2",
+      "MPPDriver": "0x41a6fa",
+      "MPPVersionWord": "0x41a712",
+      "MPPControl": "0x41a714",
+      "DispatchMPP": "0x41a71e",
+      "MPPControlTable": "0x41a76a",
+      "CloseForApplication": "0x41a77a",
+      "CallNBP": "0x41a786",
+      "DoLookupReply": "0x41a790",
+      "NoError": "0x41a79a",
+      "MPPExit": "0x41a79c",
+      "EnableNBP": "0x41a7a0",
+      "DoOpenSkt": "0x41a7b0",
+      "DDPOpenSocket": "0x41a7b8",
+      "DoCloseSkt": "0x41a7fa",
+      "FindSocket": "0x41a80c",
+      "DoWriteDDP": "0x41a818",
+      "DDPWrite": "0x41a820",
+      "DDPOpenEntry": "0x41a822",
+      "WriteDDPPacket": "0x41a824",
+      "DDPChecksum": "0x41a888",
+      "ReadLongDDP": "0x41a8d2",
+      "ReadShortDDP": "0x41a8e4",
+      "DispatchDDP": "0x41a8ea",
+      "IgnoreDDP": "0x41a904",
+      "RTMPRead": "0x41a908",
+      "DoAttachPH": "0x41a928",
+      "FindProtocol": "0x41a94c",
+      "DoDetachPH": "0x41a958",
+      "DoWriteLAP": "0x41a96c",
+      "MPPStatus": "0x41a97e",
+      "FinishMPP": "0x41a980",
+      "GoIODone": "0x41a984",
+      "MPPPrime": "0x41a98a",
+      "AbusWrite": "0x41a992",
+      "AbusSend": "0x41a99a",
+      "CountHistoryBits": "0x41a9c8",
+      "WaitIdleSlot": "0x41aa86",
+      "SendDataFrame": "0x41aa96",
+      "LAPSuccess": "0x41aa9a",
+      "LAPReturn": "0x41aa9c",
+      "Collision": "0x41aaa4",
+      "LAPExtInt": "0x41aaf4",
+      "ContinueDeferred": "0x41ab0a",
+      "VBLHnd": "0x41ab1e",
+      "GetControlFrame": "0x41ab4e",
+      "NextRandom": "0x41ab68",
+      "TransmitSetup": "0x41ab7e",
+      "SendByte": "0x41ab82",
+      "StartFrame": "0x41ab96",
+      "WritePacket": "0x41abac",
+      "SendControlFrame": "0x41ac22",
+      "FinishFrame": "0x41ac3a",
+      "EndTransmit": "0x41ac5e",
+      "WriteSCCBytes": "0x41ac64",
+      "LAPReceiveInt": "0x41ac6c",
+      "ReadFrame": "0x41ac70",
+      "DiscardFrame": "0x41ace2",
+      "ReadControlFrame": "0x41acf4",
+      "ReceiveRTS": "0x41ad28",
+      "ReceiveENQ": "0x41ad3a",
+      "AnswerControlFrame": "0x41ad3c",
+      "LAPSpecialInt": "0x41ad44",
+      "CheckCRC": "0x41ad48",
+      "ResetReceive": "0x41ad72",
+      "WriteReceiveMode": "0x41ada0",
+      "ReadStatus1": "0x41adaa",
+      "PacketError": "0x41adb4",
+      "ReadLengthError": "0x41adba",
+      "ReadUnderrunError": "0x41adbc",
+      "ReadCRCError": "0x41adbe",
+      "ReadOverrunError": "0x41adc0",
+      "ReadPacket": "0x41adc4",
+      "ReadRest": "0x41adc6",
+      "ReadPacketBytes": "0x41ae3c",
+      "MPPClose": "0x41ae6e",
+      "SetSCCRegisters": "0x41aeda",
+      "CloseSCCData": "0x41aeea",
+      "MPPOpen": "0x41aef6",
+      "FindBridge": "0x41b098",
+      "BridgeWrite": "0x41b0cc",
+      "ATPName": "0x41b0d6",
+      "ProbeNode": "0x41b0dc",
+      "InitSCC": "0x41b0e6",
+      "InitSCCData": "0x41b0f6",
+      "EnableSCCData": "0x41b112",
+      "InitLAPVars": "0x41b11a",
+      "CopyrightText": "0x41b124",
+      "LookupCode": "0x41b140",
+      "LookupClose": "0x41b142",
+      "LookupListener": "0x41b144",
+      "LookupDispatch": "0x41b18e",
+      "RemoveApplicationNames": "0x41b190",
+      "SendLookupReply": "0x41b1b2",
+      "LookupExit": "0x41b2ac",
+      "WriteLookupReply": "0x41b2b6",
+      "CmpStringTrapWord": "0x41b2ce",
+      "ComparePStrings": "0x41b2d0",
+      "LookupComplete": "0x41b2de",
+      "NBPCode": "0x41b2e4",
+      "NBPControlTable": "0x41b300",
+      "NBPAbort": "0x41b30e",
+      "DoUnloadNBP": "0x41b312",
+      "CloseNBPSocket": "0x41b316",
+      "DoLoadNBP": "0x41b328",
+      "DisposeFailedNBP": "0x41b356",
+      "AllocateNBP": "0x41b35e",
+      "AllocateNBPAppHeap": "0x41b362",
+      "DoConfirmName": "0x41b366",
+      "DoRegisterName": "0x41b36e",
+      "AddName": "0x41b3d2",
+      "DoRemoveName": "0x41b404",
+      "FindName": "0x41b428",
+      "DoLookupName": "0x41b460",
+      "BeginLocalLookup": "0x41b470",
+      "BeginLookup": "0x41b472",
+      "SendNBPRequest": "0x41b4f4",
+      "NBPTimeout": "0x41b502",
+      "NBPDone": "0x41b546",
+      "NBPExit": "0x41b548",
+      "ReadConfirmReply": "0x41b560",
+      "ReadRegisterReply": "0x41b58a",
+      "NBPReadReturn": "0x41b59a",
+      "IgnoreNBP": "0x41b59c",
+      "NBPRead": "0x41b5a2",
+      "CountReceivedTuples": "0x41b5ee",
+      "MergeLookupTuples": "0x41b61a",
+      "FindDuplicateTuple": "0x41b630",
+      "AddLookupTuple": "0x41b660",
+      "SkipDuplicateTuple": "0x41b6b6",
+      "MPPResourceEnd": "0x41b6c8",
+      "MPPBranch_41a72c": "0x41a72c",
+      "MPPBranch_41a738": "0x41a738",
+      "MPPBranch_41a80a": "0x41a80a",
+      "MPPBranch_41a7ca": "0x41a7ca",
+      "MPPBranch_41a7f6": "0x41a7f6",
+      "MPPBranch_41a7cc": "0x41a7cc",
+      "MPPBranch_41a7ea": "0x41a7ea",
+      "MPPBranch_41a80e": "0x41a80e",
+      "MPPBranch_41a892": "0x41a892",
+      "MPPBranch_41a894": "0x41a894",
+      "MPPBranch_41a870": "0x41a870",
+      "MPPBranch_41a86a": "0x41a86a",
+      "MPPBranch_41a860": "0x41a860",
+      "MPPBranch_41a8a4": "0x41a8a4",
+      "MPPBranch_41a8b8": "0x41a8b8",
+      "MPPBranch_41a8ce": "0x41a8ce",
+      "MPPBranch_41a8ac": "0x41a8ac",
+      "MPPBranch_41a8f2": "0x41a8f2",
+      "MPPBranch_41a926": "0x41a926",
+      "MPPBranch_41a94a": "0x41a94a",
+      "MPPBranch_41a934": "0x41a934",
+      "MPPBranch_41a94e": "0x41a94e",
+      "MPPBranch_41a95c": "0x41a95c",
+      "MPPBranch_41a948": "0x41a948",
+      "MPPBranch_41a9a8": "0x41a9a8",
+      "MPPBranch_41a9da": "0x41a9da",
+      "MPPBranch_41a9e4": "0x41a9e4",
+      "MPPBranch_41a9d2": "0x41a9d2",
+      "MPPBranch_41a9cc": "0x41a9cc",
+      "MPPBranch_41aa32": "0x41aa32",
+      "MPPBranch_41aa1c": "0x41aa1c",
+      "MPPBranch_41aa14": "0x41aa14",
+      "MPPBranch_41aa2c": "0x41aa2c",
+      "MPPBranch_41aac4": "0x41aac4",
+      "MPPBranch_41aa56": "0x41aa56",
+      "MPPBranch_41aa92": "0x41aa92",
+      "MPPBranch_41aa7e": "0x41aa7e",
+      "MPPBranch_41aa88": "0x41aa88",
+      "MPPBranch_41a9fc": "0x41a9fc",
+      "MPPBranch_41aade": "0x41aade",
+      "MPPBranch_41ab66": "0x41ab66",
+      "MPPBranch_41a9fa": "0x41a9fa",
+      "MPPBranch_41ab32": "0x41ab32",
+      "MPPBranch_41ab0e": "0x41ab0e",
+      "MPPBranch_41ab54": "0x41ab54",
+      "MPPBranch_41ab62": "0x41ab62",
+      "MPPBranch_41ab84": "0x41ab84",
+      "MPPBranch_41ab92": "0x41ab92",
+      "MPPBranch_41aba2": "0x41aba2",
+      "MPPBranch_41abda": "0x41abda",
+      "MPPBranch_41abe8": "0x41abe8",
+      "MPPBranch_41ac00": "0x41ac00",
+      "MPPBranch_41abf2": "0x41abf2",
+      "MPPBranch_41abd8": "0x41abd8",
+      "MPPBranch_41abfe": "0x41abfe",
+      "MPPBranch_41ac0e": "0x41ac0e",
+      "MPPBranch_41ac40": "0x41ac40",
+      "MPPBranch_41ac46": "0x41ac46",
+      "MPPBranch_41ac5a": "0x41ac5a",
+      "MPPBranch_41ac7a": "0x41ac7a",
+      "MPPBranch_41acca": "0x41acca",
+      "MPPBranch_41ac88": "0x41ac88",
+      "MPPBranch_41ac9c": "0x41ac9c",
+      "MPPBranch_41aca8": "0x41aca8",
+      "MPPBranch_41acc2": "0x41acc2",
+      "MPPBranch_41ad16": "0x41ad16",
+      "MPPBranch_41ad18": "0x41ad18",
+      "MPPBranch_41ad36": "0x41ad36",
+      "MPPBranch_41ad2e": "0x41ad2e",
+      "MPPBranch_41ad4c": "0x41ad4c",
+      "MPPBranch_41ad60": "0x41ad60",
+      "MPPBranch_41ad80": "0x41ad80",
+      "MPPBranch_41ad86": "0x41ad86",
+      "MPPBranch_41adf0": "0x41adf0",
+      "MPPBranch_41add2": "0x41add2",
+      "MPPBranch_41ade8": "0x41ade8",
+      "MPPBranch_41adcc": "0x41adcc",
+      "MPPBranch_41ae28": "0x41ae28",
+      "MPPBranch_41ae40": "0x41ae40",
+      "MPPBranch_41ae62": "0x41ae62",
+      "MPPBranch_41ae3e": "0x41ae3e",
+      "MPPBranch_41ae3a": "0x41ae3a",
+      "MPPBranch_41ae66": "0x41ae66",
+      "MPPBranch_41ae68": "0x41ae68",
+      "MPPBranch_41ae32": "0x41ae32",
+      "MPPBranch_41aed4": "0x41aed4",
+      "MPPBranch_41aec4": "0x41aec4",
+      "MPPBranch_41aece": "0x41aece",
+      "MPPBranch_41aed8": "0x41aed8",
+      "MPPBranch_41aede": "0x41aede",
+      "MPPBranch_41af46": "0x41af46",
+      "MPPBranch_41af5e": "0x41af5e",
+      "MPPBranch_41af60": "0x41af60",
+      "MPPBranch_41afe0": "0x41afe0",
+      "MPPBranch_41afdc": "0x41afdc",
+      "MPPBranch_41b006": "0x41b006",
+      "MPPBranch_41affc": "0x41affc",
+      "MPPBranch_41b08a": "0x41b08a",
+      "MPPBranch_41b0c0": "0x41b0c0",
+      "MPPBranch_41b188": "0x41b188",
+      "MPPBranch_41b186": "0x41b186",
+      "MPPBranch_41b16a": "0x41b16a",
+      "MPPBranch_41b1b0": "0x41b1b0",
+      "MPPBranch_41b1ac": "0x41b1ac",
+      "MPPBranch_41b198": "0x41b198",
+      "MPPBranch_41b1ec": "0x41b1ec",
+      "MPPBranch_41b20c": "0x41b20c",
+      "MPPBranch_41b208": "0x41b208",
+      "MPPBranch_41b1d0": "0x41b1d0",
+      "MPPBranch_41b2a6": "0x41b2a6",
+      "MPPBranch_41b28c": "0x41b28c",
+      "MPPBranch_41b252": "0x41b252",
+      "MPPBranch_41b29c": "0x41b29c",
+      "MPPBranch_41b23a": "0x41b23a",
+      "MPPBranch_41b318": "0x41b318",
+      "MPPBranch_41b326": "0x41b326",
+      "MPPBranch_41b354": "0x41b354",
+      "MPPBranch_41b364": "0x41b364",
+      "MPPBranch_41b3ba": "0x41b3ba",
+      "MPPBranch_41b3ce": "0x41b3ce",
+      "MPPBranch_41b3b2": "0x41b3b2",
+      "MPPBranch_41b3f6": "0x41b3f6",
+      "MPPBranch_41b3de": "0x41b3de",
+      "MPPBranch_41b3d8": "0x41b3d8",
+      "MPPBranch_41b424": "0x41b424",
+      "MPPBranch_41b41e": "0x41b41e",
+      "MPPBranch_41b416": "0x41b416",
+      "MPPBranch_41b45a": "0x41b45a",
+      "MPPBranch_41b434": "0x41b434",
+      "MPPBranch_41b484": "0x41b484",
+      "MPPBranch_41b52a": "0x41b52a",
+      "MPPBranch_41b616": "0x41b616",
+      "MPPBranch_41b5f4": "0x41b5f4",
+      "MPPBranch_41b64e": "0x41b64e",
+      "MPPBranch_41b67e": "0x41b67e",
+      "MPPBranch_41b680": "0x41b680",
+      "MPPBranch_41b62e": "0x41b62e",
+      "MPPBranch_41b682": "0x41b682"
+    }
+  }
+}

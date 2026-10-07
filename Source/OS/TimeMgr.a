@@ -1,0 +1,171 @@
+*R Mac Plus v3 Time Manager, $4175D2 through $4176F7.
+*R The surviving TimeMgr.a says the 1988 rewrite replaced all old code and comments.
+*R This reconstruction uses ROM instructions and the surviving interface equates.
+*R The header excerpt below describes the 1988 rewrite.
+*R It does not establish who wrote this ROM implementation.
+*R Reschedule follows the name used in PatchPlusROM.a history.
+*R StartTimer and the loop labels are descriptive reconstruction names.
+*R The original timer register order, return values and scheduling behavior remain.
+*R See Evidence/timemgr.json for the source history and verification.
+;
+*R Original source header excerpt:
+;
+;	File:		TimeMgr.a
+;
+;	Contains:	The Macintosh OS Time Manager
+;
+;	Written by:	Gary G. Davidian
+;
+;	Copyright:	© 1988-1993 by Apple Computer, Inc., all rights reserved.
+;
+;				 7/26/88	GGD		Completely re-wrote the Time Manager, replacing all of the code
+;									and comments from the old version. This version fixes numerous
+;									bugs, and adds several new features.
+;
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'InternalOnlyEqu.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'Timer.a'
+		INCLUDE 'Traps.a'
+
+
+T2IntBit        EQU     5                       ; VIER/VIFR bit num for VIA Timer 2
+
+*R these constants name the values in the ROM instructions.
+ROMTicksPerMS   EQU     780 ;]
+MaxTimerMS      EQU     84 ;]
+
+
+TimeMgr         PROC    EXPORT
+; Install Time Manager Task
+                EXPORT  InsTime ;]
+; Remove Time Manager Task
+                EXPORT  RmvTime ;]
+; Initiate Time Manager Task Delay
+                EXPORT  PrimeTime ;]
+
+InsTime
+                move.l  TimeVars,a1 ;]
+                lea     MSQueue(a1),a1 ;]
+                _Enqueue
+                moveq.l #0,d0
+                rts
+
+RmvTime
+                move.l  TimeVars,a1 ;]
+                lea     MSQueue(a1),a1 ;]
+                _Dequeue
+                move.l  TimeVars,a1 ;]
+                move.l  TTAppoint(a1),d0 ;]
+                cmp.l   a0,d0
+                bne.s   RmvTimeExit ;]
+                bsr.s   Reschedule ;]
+RmvTimeExit ;]
+                rts
+
+PrimeTime
+                move.l  d0,tmCount(a0)
+                move.l  TimeVars,a0
+                move.w  sr,-(sp)                 ; save interrupt level
+                move.w  #$2700,sr
+                move.l  TTAppoint(a0),d1 ;]
+                beq.s   PrimeReschedule ;]
+                move.l  d1,a1
+                cmp.l   tmCount(a1),d0 ;]
+                bge.s   PrimeTimeExit ;]
+                moveq.l #0,d1
+                move.l  VIA,a1
+                move.b  vT2CH(a1),d1
+                ror.w   #8,d1
+                move.b  d1,vT2C(a1)
+                divu.w  #ROMTicksPerMS,d1 ;]
+                ext.l   d1
+                sub.l   d1,TTInt(a0) ;]
+                bsr.w   Timer2Int ;]
+                bra.s   PrimeTimeExit ;]
+PrimeReschedule ;]
+                bsr.s   Reschedule ;]
+PrimeTimeExit ;]
+                move.w  (sp)+,sr                 ; restore interrupt level
+                rts
+
+Reschedule ;]
+                move.l  VIA,a1
+                move.b  #1<<T2IntBit,vIER(a1) ;]
+                move.l  d2,-(sp)
+                moveq.l #-1,d2
+                bclr    #31,d2 ;]
+                moveq.l #0,d1
+                move.l  TimeVars,a1 ;]
+                move.l  MSQueue+qHead(a1),d0 ;]
+                beq.s   FoundNext ;]
+SearchTasks ;]
+                move.l  d0,a0
+                tst.l   tmCount(a0)
+                beq.s   NextTask ;]
+                cmp.l   tmCount(a0),d2 ;]
+                blt.s   NextTask ;]
+                move.l  tmCount(a0),d2 ;]
+                move.l  a0,d1
+NextTask ;]
+                move.l  qLink(a0),d0
+                bne.s   SearchTasks ;]
+FoundNext ;]
+                move.l  d1,TTAppoint(a1) ;]
+                move.l  (sp)+,d2
+                bsr.s   StartTimer
+                rts
+
+StartTimer
+                tst.l   d1
+                beq.s   StartTimerExit ;]
+                move.l  d1,a1
+                move.l  tmCount(a1),d1
+                moveq.l #MaxTimerMS,d0 ;]
+                cmp.l   d0,d1
+                ble.s   LoadTimer ;]
+                move.l  d0,d1
+LoadTimer ;]
+                move.l  TimeVars,a1 ;]
+                move.l  d1,TTInt(a1) ;]
+                mulu.w  #ROMTicksPerMS,d1 ;]
+                move.l  VIA,a1
+                ror.w   #8,d1
+                move.b  d1,vT2CH(a1) ;]
+                ror.w   #8,d1
+                move.b  d1,vT2C(a1)
+                move.b  #$80+(1<<T2IntBit),vIER(a1) ;]
+                lea     Timer2Int,a0 ;]
+                move.l  a0,Lvl1DT+(T2IntBit*4)
+StartTimerExit ;]
+                rts
+
+Timer2Int
+                movem.l d0-d1/a0-a1,-(sp)
+                move.l  TimeVars,a1 ;]
+                move.l  MSQueue+qHead(a1),d0 ;]
+                beq.s   Timer2IntExit ;]
+                move.l  TTInt(a1),d1 ;]
+AdjustTasks ;]
+                move.l  d0,a0
+                tst.l   tmCount(a0)
+                beq.s   NextAdjustment ;]
+                sub.l   d1,tmCount(a0) ;]
+NextAdjustment ;]
+                move.l  qLink(a0),d0
+                bne.s   AdjustTasks ;]
+                move.l  TTAppoint(a1),a0 ;]
+                move.l  a0,-(sp)
+                bsr.w   Reschedule ;]
+                move.l  (sp)+,a0
+                tst.l   tmCount(a0)
+                bgt.s   Timer2IntExit ;]
+                clr.l   tmCount(a0)
+                move.l  tmAddr(a0),a0 ;]
+                jsr     (a0)
+Timer2IntExit ;]
+                movem.l (sp)+,d0-d1/a0-a1
+                rts
+
+                END

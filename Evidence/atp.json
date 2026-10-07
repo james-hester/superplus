@@ -1,0 +1,1229 @@
+{
+  "module": "Resources/ATP.a",
+  "source_path": "Reconstruction/Source/Resources/ATP.a",
+  "source_sha256": "66417cb0f1879f750919f14dc80e87e01529a0345c0f093767a28c0940f62f3b",
+  "source_status": "The complete original ATP driver was not found. This reconstruction derives instructions from the ROM and uses surviving patch names, matching patch comments and public interface definitions.",
+  "upstream_sources": [
+    {
+      "path": "Patches/PatchPlusROM.a",
+      "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470"
+    },
+    {
+      "path": "Interfaces/AIncludes/AppleTalk.a",
+      "sha256": "395dfc545d9fe42ba1abb0c276402f0ab2d7db2b6ab3138ea274f8c4b1058509"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x419d98",
+      "end_address_exclusive": "0x41a6f2",
+      "rom_offset": "0x19d98",
+      "length": 2394,
+      "sha256": "4beecb93d4541ed60697efacf34ab4cfaa68d519540088067f913509fadb9a42",
+      "resource_header_bytes": 8,
+      "driver_header_bytes": 24,
+      "body_start": "0x419da0",
+      "body_length": 2386,
+      "resource_flags": "0xc0",
+      "relative_master_pointer_offset": "0x60"
+    }
+  ],
+  "data_spans": [
+    {
+      "start": "0x419d98",
+      "end_exclusive": "0x419da0",
+      "description": "Resource header: flags, assembled block length and relative master-pointer offset."
+    },
+    {
+      "start": "0x419da0",
+      "end_exclusive": "0x419db8",
+      "description": "Driver header: flags, delay, event mask, menu, five relative entry offsets and Pascal name."
+    },
+    {
+      "start": "0x419e6e",
+      "end_exclusive": "0x419e7e",
+      "description": "Eight control offsets for selectors 249 through 256, each relative to ATPDriver."
+    }
+  ],
+  "boundaries": {
+    "description": "The embedded resource map gives the block size and body. The driver header resolves Open, Control, Close and the shared Prime/Status return. The eight control offsets resolve to complete routines. FreeDataArea ends with RTS at $41A6F0; the next resource header begins at $41A6F2.",
+    "reference": "Reconstruction/Evidence/ghidra-symbols.tsv"
+  },
+  "symbols": {
+    "ATPResourceBlock": "0x419d98",
+    "ATPDriver": "0x419da0",
+    "ATPOpen": "0x419db8",
+    "ATPOpenAppHeap": "0x419dce",
+    "OpenAllocated": "0x419dd0",
+    "FromATP": "0x419e04",
+    "ATPDoControl": "0x419e06",
+    "ControlExit": "0x419e0e",
+    "CheckControlCode": "0x419e12",
+    "DispatchControl": "0x419e1e",
+    "IntoDispatch": "0x419e3c",
+    "FindListenerSocket": "0x419e58",
+    "DispatchReady": "0x419e62",
+    "ATPControlTable": "0x419e6e",
+    "ATPCloseControl": "0x419e7e",
+    "CloseControlExit": "0x419e8a",
+    "ATPClose": "0x419e8e",
+    "WaitDataArea": "0x419e9e",
+    "WaitRequestsClosed": "0x419eaa",
+    "WaitListenersClosed": "0x419eb8",
+    "RemoveATPVBL": "0x419ebe",
+    "CloseReturn": "0x419ed6",
+    "CloseSocketTable": "0x419ed8",
+    "NextSocket": "0x419edc",
+    "DoOpenATPSkt": "0x419eee",
+    "FindFreeListener": "0x419ef4",
+    "DoCloseATPSkt": "0x419f36",
+    "NoError": "0x419f64",
+    "ATPExit": "0x419f66",
+    "GoIODone": "0x419f6a",
+    "Nothing": "0x419f70",
+    "DoGetRequest": "0x419f78",
+    "DispatchNext": "0x419f8e",
+    "DoSendResponse": "0x419fbe",
+    "IntoSendRsp": "0x419fd8",
+    "NoBuffs": "0x41a018",
+    "FindResponseCache": "0x41a054",
+    "CompareAddress": "0x41a076",
+    "DoAddResponse": "0x41a08c",
+    "DoSendRequest": "0x41a120",
+    "FindFreeRequest": "0x41a126",
+    "IntoSendReq": "0x41a140",
+    "PastSL": "0x41a146",
+    "SendPacket": "0x41a1bc",
+    "DoMPP": "0x41a206",
+    "MPPComplete": "0x41a226",
+    "BuildRequestHeader": "0x41a23e",
+    "FillRequestData": "0x41a25a",
+    "CheckTime": "0x41a26c",
+    "IntoCheckTime": "0x41a27a",
+    "CompleteRequest": "0x41a31a",
+    "DoRelTCB": "0x41a334",
+    "DoRelRspCB": "0x41a38c",
+    "ATPIgnore": "0x41a3a8",
+    "ReadRequest": "0x41a3b0",
+    "ReadRelease": "0x41a3e4",
+    "ATPRead": "0x41a418",
+    "ReadResp": "0x41a448",
+    "RestoreInterrupts": "0x41a536",
+    "HandleRequest": "0x41a544",
+    "ValidatePacket": "0x41a64e",
+    "ChecksumLoop": "0x41a6ac",
+    "GetDataArea": "0x41a6b8",
+    "ClaimDataArea": "0x41a6e4",
+    "FreeDataArea": "0x41a6ec",
+    "ATPResourceEnd": "0x41a6f2",
+    "ATPBranch_419f5c": "0x419f5c",
+    "ATPBranch_419f56": "0x419f56",
+    "ATPBranch_419f8c": "0x419f8c",
+    "ATPBranch_419f84": "0x419f84",
+    "ATPBranch_419fa2": "0x419fa2",
+    "ATPBranch_419fba": "0x419fba",
+    "ATPBranch_41a050": "0x41a050",
+    "ATPBranch_419fec": "0x419fec",
+    "ATPBranch_41a04c": "0x41a04c",
+    "ATPBranch_419fde": "0x419fde",
+    "ATPBranch_41a030": "0x41a030",
+    "ATPBranch_41a024": "0x41a024",
+    "ATPBranch_41a118": "0x41a118",
+    "ATPBranch_41a06c": "0x41a06c",
+    "ATPBranch_41a074": "0x41a074",
+    "ATPBranch_41a05a": "0x41a05a",
+    "ATPBranch_41a08a": "0x41a08a",
+    "ATPBranch_41a11a": "0x41a11a",
+    "ATPBranch_41a0fc": "0x41a0fc",
+    "ATPBranch_41a11c": "0x41a11c",
+    "ATPBranch_41a15a": "0x41a15a",
+    "ATPBranch_41a176": "0x41a176",
+    "ATPBranch_41a170": "0x41a170",
+    "ATPBranch_41a2e2": "0x41a2e2",
+    "ATPBranch_41a2dc": "0x41a2dc",
+    "ATPBranch_41a284": "0x41a284",
+    "ATPBranch_41a2b0": "0x41a2b0",
+    "ATPBranch_41a2c4": "0x41a2c4",
+    "ATPBranch_41a27e": "0x41a27e",
+    "ATPBranch_41a316": "0x41a316",
+    "ATPBranch_41a310": "0x41a310",
+    "ATPBranch_41a2ee": "0x41a2ee",
+    "ATPBranch_41a32e": "0x41a32e",
+    "ATPBranch_41a35a": "0x41a35a",
+    "ATPBranch_41a366": "0x41a366",
+    "ATPBranch_41a33a": "0x41a33a",
+    "ATPBranch_41a35e": "0x41a35e",
+    "ATPBranch_41a3a6": "0x41a3a6",
+    "ATPBranch_41a388": "0x41a388",
+    "ATPBranch_41a3b6": "0x41a3b6",
+    "ATPBranch_41a3d2": "0x41a3d2",
+    "ATPBranch_41a3e0": "0x41a3e0",
+    "ATPBranch_41a436": "0x41a436",
+    "ATPBranch_41a3e2": "0x41a3e2",
+    "ATPBranch_41a41e": "0x41a41e",
+    "ATPBranch_41a4d0": "0x41a4d0",
+    "ATPBranch_41a4c2": "0x41a4c2",
+    "ATPBranch_41a4f2": "0x41a4f2",
+    "ATPBranch_41a542": "0x41a542",
+    "ATPBranch_41a524": "0x41a524",
+    "ATPBranch_41a592": "0x41a592",
+    "ATPBranch_41a594": "0x41a594",
+    "ATPBranch_41a58e": "0x41a58e",
+    "ATPBranch_41a584": "0x41a584",
+    "ATPBranch_41a572": "0x41a572",
+    "ATPBranch_41a60a": "0x41a60a",
+    "ATPBranch_41a608": "0x41a608",
+    "ATPBranch_41a5ea": "0x41a5ea",
+    "ATPBranch_41a5ce": "0x41a5ce",
+    "ATPBranch_41a634": "0x41a634",
+    "ATPBranch_41a640": "0x41a640",
+    "ATPBranch_41a636": "0x41a636",
+    "ATPBranch_41a6aa": "0x41a6aa",
+    "ATPBranch_41a6a4": "0x41a6a4",
+    "ATPBranch_41a692": "0x41a692",
+    "ATPBranch_41a68a": "0x41a68a",
+    "ATPBranch_41a690": "0x41a690"
+  },
+  "confirmed_patch_names": {
+    "ATPOpen": "0x419db8",
+    "FromATP": "0x419e04",
+    "ATPDoControl": "0x419e06",
+    "IntoDispatch": "0x419e3c",
+    "ATPClose": "0x419e8e",
+    "ATPExit": "0x419f66",
+    "IntoSendRsp": "0x419fd8",
+    "NoBuffs": "0x41a018",
+    "IntoSendReq": "0x41a140",
+    "PastSL": "0x41a146",
+    "IntoCheckTime": "0x41a27a",
+    "GetDataArea": "0x41a6b8",
+    "ATPIgnore": "0x41a3a8",
+    "ReadResp": "0x41a448"
+  },
+  "reconstruction_names": {
+    "ATPResourceBlock": "0x419d98",
+    "ATPDriver": "0x419da0",
+    "ATPOpenAppHeap": "0x419dce",
+    "OpenAllocated": "0x419dd0",
+    "ControlExit": "0x419e0e",
+    "CheckControlCode": "0x419e12",
+    "DispatchControl": "0x419e1e",
+    "FindListenerSocket": "0x419e58",
+    "DispatchReady": "0x419e62",
+    "ATPControlTable": "0x419e6e",
+    "ATPCloseControl": "0x419e7e",
+    "CloseControlExit": "0x419e8a",
+    "WaitDataArea": "0x419e9e",
+    "WaitRequestsClosed": "0x419eaa",
+    "WaitListenersClosed": "0x419eb8",
+    "RemoveATPVBL": "0x419ebe",
+    "CloseReturn": "0x419ed6",
+    "CloseSocketTable": "0x419ed8",
+    "NextSocket": "0x419edc",
+    "DoOpenATPSkt": "0x419eee",
+    "FindFreeListener": "0x419ef4",
+    "DoCloseATPSkt": "0x419f36",
+    "NoError": "0x419f64",
+    "GoIODone": "0x419f6a",
+    "Nothing": "0x419f70",
+    "DoGetRequest": "0x419f78",
+    "DispatchNext": "0x419f8e",
+    "DoSendResponse": "0x419fbe",
+    "FindResponseCache": "0x41a054",
+    "CompareAddress": "0x41a076",
+    "DoAddResponse": "0x41a08c",
+    "DoSendRequest": "0x41a120",
+    "FindFreeRequest": "0x41a126",
+    "SendPacket": "0x41a1bc",
+    "DoMPP": "0x41a206",
+    "MPPComplete": "0x41a226",
+    "BuildRequestHeader": "0x41a23e",
+    "FillRequestData": "0x41a25a",
+    "CheckTime": "0x41a26c",
+    "CompleteRequest": "0x41a31a",
+    "DoRelTCB": "0x41a334",
+    "DoRelRspCB": "0x41a38c",
+    "ReadRequest": "0x41a3b0",
+    "ReadRelease": "0x41a3e4",
+    "ATPRead": "0x41a418",
+    "RestoreInterrupts": "0x41a536",
+    "HandleRequest": "0x41a544",
+    "ValidatePacket": "0x41a64e",
+    "ChecksumLoop": "0x41a6ac",
+    "ClaimDataArea": "0x41a6e4",
+    "FreeDataArea": "0x41a6ec",
+    "ATPResourceEnd": "0x41a6f2",
+    "ATPBranch_419f5c": "0x419f5c",
+    "ATPBranch_419f56": "0x419f56",
+    "ATPBranch_419f8c": "0x419f8c",
+    "ATPBranch_419f84": "0x419f84",
+    "ATPBranch_419fa2": "0x419fa2",
+    "ATPBranch_419fba": "0x419fba",
+    "ATPBranch_41a050": "0x41a050",
+    "ATPBranch_419fec": "0x419fec",
+    "ATPBranch_41a04c": "0x41a04c",
+    "ATPBranch_419fde": "0x419fde",
+    "ATPBranch_41a030": "0x41a030",
+    "ATPBranch_41a024": "0x41a024",
+    "ATPBranch_41a118": "0x41a118",
+    "ATPBranch_41a06c": "0x41a06c",
+    "ATPBranch_41a074": "0x41a074",
+    "ATPBranch_41a05a": "0x41a05a",
+    "ATPBranch_41a08a": "0x41a08a",
+    "ATPBranch_41a11a": "0x41a11a",
+    "ATPBranch_41a0fc": "0x41a0fc",
+    "ATPBranch_41a11c": "0x41a11c",
+    "ATPBranch_41a15a": "0x41a15a",
+    "ATPBranch_41a176": "0x41a176",
+    "ATPBranch_41a170": "0x41a170",
+    "ATPBranch_41a2e2": "0x41a2e2",
+    "ATPBranch_41a2dc": "0x41a2dc",
+    "ATPBranch_41a284": "0x41a284",
+    "ATPBranch_41a2b0": "0x41a2b0",
+    "ATPBranch_41a2c4": "0x41a2c4",
+    "ATPBranch_41a27e": "0x41a27e",
+    "ATPBranch_41a316": "0x41a316",
+    "ATPBranch_41a310": "0x41a310",
+    "ATPBranch_41a2ee": "0x41a2ee",
+    "ATPBranch_41a32e": "0x41a32e",
+    "ATPBranch_41a35a": "0x41a35a",
+    "ATPBranch_41a366": "0x41a366",
+    "ATPBranch_41a33a": "0x41a33a",
+    "ATPBranch_41a35e": "0x41a35e",
+    "ATPBranch_41a3a6": "0x41a3a6",
+    "ATPBranch_41a388": "0x41a388",
+    "ATPBranch_41a3b6": "0x41a3b6",
+    "ATPBranch_41a3d2": "0x41a3d2",
+    "ATPBranch_41a3e0": "0x41a3e0",
+    "ATPBranch_41a436": "0x41a436",
+    "ATPBranch_41a3e2": "0x41a3e2",
+    "ATPBranch_41a41e": "0x41a41e",
+    "ATPBranch_41a4d0": "0x41a4d0",
+    "ATPBranch_41a4c2": "0x41a4c2",
+    "ATPBranch_41a4f2": "0x41a4f2",
+    "ATPBranch_41a542": "0x41a542",
+    "ATPBranch_41a524": "0x41a524",
+    "ATPBranch_41a592": "0x41a592",
+    "ATPBranch_41a594": "0x41a594",
+    "ATPBranch_41a58e": "0x41a58e",
+    "ATPBranch_41a584": "0x41a584",
+    "ATPBranch_41a572": "0x41a572",
+    "ATPBranch_41a60a": "0x41a60a",
+    "ATPBranch_41a608": "0x41a608",
+    "ATPBranch_41a5ea": "0x41a5ea",
+    "ATPBranch_41a5ce": "0x41a5ce",
+    "ATPBranch_41a634": "0x41a634",
+    "ATPBranch_41a640": "0x41a640",
+    "ATPBranch_41a636": "0x41a636",
+    "ATPBranch_41a6aa": "0x41a6aa",
+    "ATPBranch_41a6a4": "0x41a6a4",
+    "ATPBranch_41a692": "0x41a692",
+    "ATPBranch_41a68a": "0x41a68a",
+    "ATPBranch_41a690": "0x41a690"
+  },
+  "changes": [
+    {
+      "description": "Retained the fake-header comments from PatchPlusROM because its flags, name and entry roles match this ROM. Restored the actual code offsets with label differences."
+    },
+    {
+      "description": "Retained the unchanged SendRequest, SendResponse and ATPRead comments from the patch. Excluded comments that describe new listeners, interrupt guards or transaction checks absent from the ROM."
+    },
+    {
+      "description": "Restored six outgoing request slots, six listening sockets and eight cached responses. The patch supplies TCBE, TSktNum, TQElPtr, VBLQEl and VBL60; the other private fields have descriptive reconstruction names."
+    },
+    {
+      "description": "Restored three packet workspaces of 104 bytes. Each workspace contains an MPP parameter block, saved registers, return address, write-data structure and packet headers. IORefNum marks each workspace as busy."
+    },
+    {
+      "description": "Retained the alternate application-heap allocation trap at $419DCE, although the preceding branch skips it during the ordinary Open path."
+    },
+    {
+      "description": "Used named traps and symbolic packet, parameter, error and low-memory fields. Explicit instruction widths and PC modes preserve the ROM encoding. All data declarations belong to the resource header, driver header or dispatch table."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x41a276",
+      "description": "CheckTime calls GetDataArea before masking interrupts. PatchPlusROM describes its December 1986 fix with a dummy driver header and a guarded workspace call. The ROM retains the unguarded call."
+    },
+    {
+      "address": "0x41a448",
+      "description": "ReadResp reads a response into the caller buffer before validating its transaction ID. PatchPlusROM identifies delayed duplicate responses as able to overwrite valid response data. The source preserves this sequence and the original patch diagnosis."
+    },
+    {
+      "address": "0x41a2a2",
+      "description": "A retry count of $FF means repeated retries. CMP.B uses the positive immediate $FF so the unused high byte of its immediate word remains zero, as in the ROM."
+    }
+  ],
+  "source_mapping": {
+    "comments": {
+      "0x41a120": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1512
+      },
+      "0x41a124": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1513
+      },
+      "0x41a126": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1514
+      },
+      "0x41a12a": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1515
+      },
+      "0x41a12e": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1516
+      },
+      "0x41a130": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1517
+      },
+      "0x41a132": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1518
+      },
+      "0x41a138": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1519
+      },
+      "0x41a13a": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1520
+      },
+      "0x419fbe": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1533
+      },
+      "0x419fc2": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1534
+      },
+      "0x419fc4": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1535
+      },
+      "0x419fc8": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1536
+      },
+      "0x419fcc": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1537
+      },
+      "0x419fce": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1538
+      },
+      "0x419fd2": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1539
+      },
+      "0x41a418": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1549
+      },
+      "0x41a41a": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1550
+      },
+      "0x41a41c": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1551
+      },
+      "0x41a41e": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1552
+      },
+      "0x41a420": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1553
+      },
+      "0x41a424": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1554
+      },
+      "0x41a426": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1555
+      },
+      "0x41a428": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1556
+      },
+      "0x41a42c": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1557
+      },
+      "0x41a434": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1564
+      },
+      "0x41a436": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1565
+      },
+      "0x41a43a": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1566
+      },
+      "0x41a43e": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1567
+      },
+      "0x41a440": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1568
+      },
+      "0x41a442": {
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1569
+      }
+    },
+    "equates": [
+      {
+        "symbol": "ABusVars",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1378
+      },
+      {
+        "symbol": "ATPVars",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 209
+      },
+      {
+        "symbol": "VBLQEl",
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1383
+      },
+      {
+        "symbol": "DataArea1",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "DataAreaSize",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "DataArea2",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "DataArea3",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ATPVarSize",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ATPLoadedBit",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 43
+      },
+      {
+        "symbol": "PortBUse",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1383
+      },
+      {
+        "symbol": "ATPVersion",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "DCtlQueue",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 680
+      },
+      {
+        "symbol": "TSktNum",
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1385
+      },
+      {
+        "symbol": "TCBE",
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1384
+      },
+      {
+        "symbol": "TQElPtr",
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1386
+      },
+      {
+        "symbol": "TTID",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "TTimeout",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "RSktNum",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "MaxATPSkts",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 327
+      },
+      {
+        "symbol": "RQElPtr",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "RAddrFilter",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "RspCache",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "MaxRsps",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 326
+      },
+      {
+        "symbol": "RspEntrySz",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ATPDCE",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "Ticks",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 498
+      },
+      {
+        "symbol": "VBL60",
+        "file": "Patches/PatchPlusROM.a",
+        "line": 1382
+      },
+      {
+        "symbol": "ControlErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 156
+      },
+      {
+        "symbol": "CSCode",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 956
+      },
+      {
+        "symbol": "NSendRequest",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 266
+      },
+      {
+        "symbol": "ATPSocket",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 284
+      },
+      {
+        "symbol": "BadATPSkt",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 577
+      },
+      {
+        "symbol": "AddrBlock",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 286
+      },
+      {
+        "symbol": "FlagMask",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 256
+      },
+      {
+        "symbol": "ATPFlags",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 285
+      },
+      {
+        "symbol": "MemTop",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1349
+      },
+      {
+        "symbol": "IOResult",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 736
+      },
+      {
+        "symbol": "CloseSkt",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 149
+      },
+      {
+        "symbol": "TooManySkts",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 576
+      },
+      {
+        "symbol": "WDSPointer",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 171
+      },
+      {
+        "symbol": "OpenSkt",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 150
+      },
+      {
+        "symbol": "Socket",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 167
+      },
+      {
+        "symbol": "JIODone",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 704
+      },
+      {
+        "symbol": "DCtlFlags",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 679
+      },
+      {
+        "symbol": "SCCLockout68000",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "BDSPointer",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 289
+      },
+      {
+        "symbol": "BadBuffNum",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 578
+      },
+      {
+        "symbol": "NumOfBuffs",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 300
+      },
+      {
+        "symbol": "ATPMaxNum",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 261
+      },
+      {
+        "symbol": "WorkATP",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ATPRespNo",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 243
+      },
+      {
+        "symbol": "WorkRespNo",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "TransID",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 311
+      },
+      {
+        "symbol": "DDPLenErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 543
+      },
+      {
+        "symbol": "BDSSize",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 315
+      },
+      {
+        "symbol": "RspNum",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 319
+      },
+      {
+        "symbol": "ATPMaxData",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 262
+      },
+      {
+        "symbol": "ReqLength",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 287
+      },
+      {
+        "symbol": "NoSendResp",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 581
+      },
+      {
+        "symbol": "ReqPointer",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 288
+      },
+      {
+        "symbol": "UserData",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 291
+      },
+      {
+        "symbol": "TooManyReqs",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 575
+      },
+      {
+        "symbol": "NumOfResps",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 302
+      },
+      {
+        "symbol": "NextTID",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ReqTID",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 305
+      },
+      {
+        "symbol": "TIDValid",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 296
+      },
+      {
+        "symbol": "TimeoutVal",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 301
+      },
+      {
+        "symbol": "SendCHK",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 295
+      },
+      {
+        "symbol": "CheckSumFlag",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 168
+      },
+      {
+        "symbol": "ControlMask",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 257
+      },
+      {
+        "symbol": "WorkWDS",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "WorkDDP",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ATP",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 237
+      },
+      {
+        "symbol": "LAPHdSz",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 128
+      },
+      {
+        "symbol": "DDPType",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 104
+      },
+      {
+        "symbol": "ATPHdSz",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 246
+      },
+      {
+        "symbol": "WriteDDP",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 148
+      },
+      {
+        "symbol": "WorkRegs",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "WorkReturn",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "IOCompletion",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 735
+      },
+      {
+        "symbol": "ATPReqCode",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 250
+      },
+      {
+        "symbol": "ATPEOMBit",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 254
+      },
+      {
+        "symbol": "CurrBitmap",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 306
+      },
+      {
+        "symbol": "ATPUserData",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 245
+      },
+      {
+        "symbol": "WorkUserData",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "VBLCount",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1273
+      },
+      {
+        "symbol": "RetryCount",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 303
+      },
+      {
+        "symbol": "ReqFailed",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 574
+      },
+      {
+        "symbol": "ReleaseTime",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 328
+      },
+      {
+        "symbol": "NoRelErr",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 579
+      },
+      {
+        "symbol": "CBNotFound",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 580
+      },
+      {
+        "symbol": "ReqAborted",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 583
+      },
+      {
+        "symbol": "DDPDstSkt",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 102
+      },
+      {
+        "symbol": "ATPTransID",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 244
+      },
+      {
+        "symbol": "WorkTID",
+        "file": "reconstruction",
+        "line": 0
+      },
+      {
+        "symbol": "ATPXOBit",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 253
+      },
+      {
+        "symbol": "ATPRelCode",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 252
+      },
+      {
+        "symbol": "vSCCEnable",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 208
+      },
+      {
+        "symbol": "ATPRspCode",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 251
+      },
+      {
+        "symbol": "Bitmap",
+        "file": "Interfaces/AIncludes/AppleTalk.a",
+        "line": 310
+      },
+      {
+        "symbol": "ABusDCE",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 1379
+      },
+      {
+        "symbol": "DCtlRefNum",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 685
+      },
+      {
+        "symbol": "IORefNum",
+        "file": "Interfaces/AIncludes/SysEqu.a",
+        "line": 740
+      },
+      {
+        "symbol": "NoDataArea",
+        "file": "Interfaces/AIncludes/SysErr.a",
+        "line": 582
+      }
+    ],
+    "instructions": 789,
+    "code_spans": [
+      [
+        4300216,
+        4300398
+      ],
+      [
+        4300414,
+        4302578
+      ]
+    ]
+  },
+  "limitations": [
+    "The original module header, full history, private names and most comments are unavailable. Names not confirmed by the patch are reconstruction identifiers.",
+    "The later AppleTalk interface defines SCCLockout as an interrupt mask. This ROM uses the full status-register value $2600, so SCCLockout68000 names that older value without changing the surviving interface.",
+    "Verification establishes every assembled byte and label address. It does not execute AppleTalk traffic, callbacks, timeout races or duplicate-response behavior."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-atp.py",
+    "method": "Translated the final MPW source, assembled for the 68000, linked at $419D98, rejected unresolved relocations and compared every byte with the ROM. Checked every recorded code and data label.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 2394,
+    "instruction_count": 789,
+    "data_bytes": 48,
+    "entry_points_checked": 133,
+    "preserved_original_comment_occurrences": 120,
+    "authored_comment_lines": 12,
+    "ghidra_records_compared": 728,
+    "ghidra_unsupported_trap_records": 4,
+    "result": {
+      "name": "atp",
+      "source": "Reconstruction/Source/Resources/ATP.a",
+      "source_sha256": "66417cb0f1879f750919f14dc80e87e01529a0345c0f093767a28c0940f62f3b",
+      "start": "0x419d98",
+      "end_exclusive": "0x41a6f2",
+      "bytes": 2394,
+      "sha256": "4beecb93d4541ed60697efacf34ab4cfaa68d519540088067f913509fadb9a42",
+      "matches_rom": true,
+      "source_dependencies": [
+        {
+          "path": "Reconstruction/Source/Resources/ATP.a",
+          "sha256": "66417cb0f1879f750919f14dc80e87e01529a0345c0f093767a28c0940f62f3b"
+        }
+      ]
+    },
+    "prose_lint": {
+      "command": "vale /tmp/atp-authored.md",
+      "config": "/Users/james/.vale.ini",
+      "result": "0 errors, 0 warnings, 0 suggestions",
+      "scope": "Authored source comments and evidence prose. Preserved original comments were excluded."
+    }
+  },
+  "integration_manifest": {
+    "name": "atp",
+    "source": "Reconstruction/Source/Resources/ATP.a",
+    "start": "0x419d98",
+    "end_exclusive": "0x41a6f2",
+    "entry_points": {
+      "ATPResourceBlock": "0x419d98",
+      "ATPDriver": "0x419da0",
+      "ATPOpen": "0x419db8",
+      "ATPOpenAppHeap": "0x419dce",
+      "OpenAllocated": "0x419dd0",
+      "FromATP": "0x419e04",
+      "ATPDoControl": "0x419e06",
+      "ControlExit": "0x419e0e",
+      "CheckControlCode": "0x419e12",
+      "DispatchControl": "0x419e1e",
+      "IntoDispatch": "0x419e3c",
+      "FindListenerSocket": "0x419e58",
+      "DispatchReady": "0x419e62",
+      "ATPControlTable": "0x419e6e",
+      "ATPCloseControl": "0x419e7e",
+      "CloseControlExit": "0x419e8a",
+      "ATPClose": "0x419e8e",
+      "WaitDataArea": "0x419e9e",
+      "WaitRequestsClosed": "0x419eaa",
+      "WaitListenersClosed": "0x419eb8",
+      "RemoveATPVBL": "0x419ebe",
+      "CloseReturn": "0x419ed6",
+      "CloseSocketTable": "0x419ed8",
+      "NextSocket": "0x419edc",
+      "DoOpenATPSkt": "0x419eee",
+      "FindFreeListener": "0x419ef4",
+      "DoCloseATPSkt": "0x419f36",
+      "NoError": "0x419f64",
+      "ATPExit": "0x419f66",
+      "GoIODone": "0x419f6a",
+      "Nothing": "0x419f70",
+      "DoGetRequest": "0x419f78",
+      "DispatchNext": "0x419f8e",
+      "DoSendResponse": "0x419fbe",
+      "IntoSendRsp": "0x419fd8",
+      "NoBuffs": "0x41a018",
+      "FindResponseCache": "0x41a054",
+      "CompareAddress": "0x41a076",
+      "DoAddResponse": "0x41a08c",
+      "DoSendRequest": "0x41a120",
+      "FindFreeRequest": "0x41a126",
+      "IntoSendReq": "0x41a140",
+      "PastSL": "0x41a146",
+      "SendPacket": "0x41a1bc",
+      "DoMPP": "0x41a206",
+      "MPPComplete": "0x41a226",
+      "BuildRequestHeader": "0x41a23e",
+      "FillRequestData": "0x41a25a",
+      "CheckTime": "0x41a26c",
+      "IntoCheckTime": "0x41a27a",
+      "CompleteRequest": "0x41a31a",
+      "DoRelTCB": "0x41a334",
+      "DoRelRspCB": "0x41a38c",
+      "ATPIgnore": "0x41a3a8",
+      "ReadRequest": "0x41a3b0",
+      "ReadRelease": "0x41a3e4",
+      "ATPRead": "0x41a418",
+      "ReadResp": "0x41a448",
+      "RestoreInterrupts": "0x41a536",
+      "HandleRequest": "0x41a544",
+      "ValidatePacket": "0x41a64e",
+      "ChecksumLoop": "0x41a6ac",
+      "GetDataArea": "0x41a6b8",
+      "ClaimDataArea": "0x41a6e4",
+      "FreeDataArea": "0x41a6ec",
+      "ATPResourceEnd": "0x41a6f2",
+      "ATPBranch_419f5c": "0x419f5c",
+      "ATPBranch_419f56": "0x419f56",
+      "ATPBranch_419f8c": "0x419f8c",
+      "ATPBranch_419f84": "0x419f84",
+      "ATPBranch_419fa2": "0x419fa2",
+      "ATPBranch_419fba": "0x419fba",
+      "ATPBranch_41a050": "0x41a050",
+      "ATPBranch_419fec": "0x419fec",
+      "ATPBranch_41a04c": "0x41a04c",
+      "ATPBranch_419fde": "0x419fde",
+      "ATPBranch_41a030": "0x41a030",
+      "ATPBranch_41a024": "0x41a024",
+      "ATPBranch_41a118": "0x41a118",
+      "ATPBranch_41a06c": "0x41a06c",
+      "ATPBranch_41a074": "0x41a074",
+      "ATPBranch_41a05a": "0x41a05a",
+      "ATPBranch_41a08a": "0x41a08a",
+      "ATPBranch_41a11a": "0x41a11a",
+      "ATPBranch_41a0fc": "0x41a0fc",
+      "ATPBranch_41a11c": "0x41a11c",
+      "ATPBranch_41a15a": "0x41a15a",
+      "ATPBranch_41a176": "0x41a176",
+      "ATPBranch_41a170": "0x41a170",
+      "ATPBranch_41a2e2": "0x41a2e2",
+      "ATPBranch_41a2dc": "0x41a2dc",
+      "ATPBranch_41a284": "0x41a284",
+      "ATPBranch_41a2b0": "0x41a2b0",
+      "ATPBranch_41a2c4": "0x41a2c4",
+      "ATPBranch_41a27e": "0x41a27e",
+      "ATPBranch_41a316": "0x41a316",
+      "ATPBranch_41a310": "0x41a310",
+      "ATPBranch_41a2ee": "0x41a2ee",
+      "ATPBranch_41a32e": "0x41a32e",
+      "ATPBranch_41a35a": "0x41a35a",
+      "ATPBranch_41a366": "0x41a366",
+      "ATPBranch_41a33a": "0x41a33a",
+      "ATPBranch_41a35e": "0x41a35e",
+      "ATPBranch_41a3a6": "0x41a3a6",
+      "ATPBranch_41a388": "0x41a388",
+      "ATPBranch_41a3b6": "0x41a3b6",
+      "ATPBranch_41a3d2": "0x41a3d2",
+      "ATPBranch_41a3e0": "0x41a3e0",
+      "ATPBranch_41a436": "0x41a436",
+      "ATPBranch_41a3e2": "0x41a3e2",
+      "ATPBranch_41a41e": "0x41a41e",
+      "ATPBranch_41a4d0": "0x41a4d0",
+      "ATPBranch_41a4c2": "0x41a4c2",
+      "ATPBranch_41a4f2": "0x41a4f2",
+      "ATPBranch_41a542": "0x41a542",
+      "ATPBranch_41a524": "0x41a524",
+      "ATPBranch_41a592": "0x41a592",
+      "ATPBranch_41a594": "0x41a594",
+      "ATPBranch_41a58e": "0x41a58e",
+      "ATPBranch_41a584": "0x41a584",
+      "ATPBranch_41a572": "0x41a572",
+      "ATPBranch_41a60a": "0x41a60a",
+      "ATPBranch_41a608": "0x41a608",
+      "ATPBranch_41a5ea": "0x41a5ea",
+      "ATPBranch_41a5ce": "0x41a5ce",
+      "ATPBranch_41a634": "0x41a634",
+      "ATPBranch_41a640": "0x41a640",
+      "ATPBranch_41a636": "0x41a636",
+      "ATPBranch_41a6aa": "0x41a6aa",
+      "ATPBranch_41a6a4": "0x41a6a4",
+      "ATPBranch_41a692": "0x41a692",
+      "ATPBranch_41a68a": "0x41a68a",
+      "ATPBranch_41a690": "0x41a690"
+    }
+  }
+}

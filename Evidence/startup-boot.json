@@ -1,0 +1,2409 @@
+{
+  "module": "OS/StartMgr/StartupBoot.a",
+  "source_path": "Reconstruction/Source/OS/StartMgr/StartupBoot.a",
+  "source_sha256": "befad1bbf7656c437182e8b7b3afafa960ed07885e9bc72fbe8492666f7088de",
+  "upstream_sources": [
+    {
+      "path": "OS/StartMgr/StartBoot.a",
+      "sha256": "ec961ac857235f45f5a72dae581ea669ee4f12662c5084464f2ecfe1e948835d"
+    },
+    {
+      "path": "OS/StartMgr/Boot1.a",
+      "sha256": "52530d242c7830ef5cf8a6721bb134d845982653db10883df4ab6888b76fe934"
+    },
+    {
+      "path": "OS/StartMgr/Boot3.a",
+      "sha256": "1e71461d2f5adde1e602c02f6de6e804704d62b29703946528f729ef30c007a8"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "OS/StartMgr/StartBoot.a",
+      1,
+      13
+    ],
+    [
+      "OS/StartMgr/Boot1.a",
+      1,
+      22
+    ],
+    [
+      "OS/StartMgr/Boot1.a",
+      54,
+      95
+    ],
+    [
+      "OS/StartMgr/Boot3.a",
+      1,
+      4
+    ],
+    [
+      "OS/StartMgr/Boot3.a",
+      20,
+      23
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x400986": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "lines": [
+        338,
+        339,
+        340
+      ]
+    },
+    "0x400b82": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "lines": [
+        358,
+        359,
+        360
+      ]
+    },
+    "0x400bb2": {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2663,
+        2664,
+        2666
+      ]
+    },
+    "0x400bda": {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2687
+      ]
+    },
+    "0x400bdc": {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2700
+      ]
+    }
+  },
+  "retained_body_comments": {
+    "0x400a7a": {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2610,
+        2611,
+        2612,
+        2613,
+        2614
+      ]
+    },
+    "0x400a90": {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2632,
+        2633,
+        2634,
+        2635
+      ]
+    },
+    "0x400aa2": {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2650
+      ]
+    }
+  },
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "copied_lines": [
+        170,
+        171,
+        592,
+        593
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "copied_lines": [
+        299,
+        311,
+        312,
+        455,
+        456,
+        457,
+        458,
+        459,
+        460,
+        461,
+        462,
+        463,
+        464,
+        465,
+        466,
+        467,
+        469,
+        495,
+        496
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        458,
+        615,
+        617,
+        619,
+        715,
+        723,
+        737,
+        739,
+        740,
+        741,
+        746,
+        748,
+        749,
+        797,
+        814,
+        859,
+        880,
+        882,
+        956,
+        1008,
+        1042,
+        1044,
+        1146,
+        1349,
+        1361,
+        1505,
+        1514
+      ]
+    },
+    {
+      "path": "Internal/Asm/BootEqu.a",
+      "sha256": "81e8f335ec5a0ffdb218a2ad24b0e13c1e7e0f2036ea57a80bfe850ee432229b",
+      "copied_lines": [
+        111
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "copied_lines": [
+        753,
+        798,
+        799,
+        807
+      ]
+    },
+    {
+      "path": "OS/StartMgr/StartBoot.a",
+      "sha256": "ec961ac857235f45f5a72dae581ea669ee4f12662c5084464f2ecfe1e948835d",
+      "copied_lines": [
+        251
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0",
+      "opcode_reference_lines": {
+        "0xa87d": 417,
+        "0xa8ec": 574,
+        "0xa8fe": 639,
+        "0xa992": 879,
+        "0xa995": 882,
+        "0xa9a0": 895,
+        "0xa9a3": 922,
+        "0xa9c9": 963,
+        "0xa9f2": 986,
+        "0xa9ff": 1001,
+        "0xa000": 1045,
+        "0xa001": 1046,
+        "0xa002": 1047,
+        "0xa004": 1049,
+        "0xa00c": 1060,
+        "0xa00f": 1064,
+        "0xa011": 1066,
+        "0xa014": 1069,
+        "0xa015": 1070,
+        "0xa207": 1081,
+        "0xa260": 1097,
+        "0xa11e": 1556,
+        "0xa02c": 1761,
+        "0xa02e": 1765,
+        "0xa04f": 1865,
+        "0xa057": 2124,
+        "0xa06c": 2111,
+        "0xa06d": 2112,
+        "0xa722": null,
+        "0xa44d": null
+      }
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x400986",
+      "end_address_exclusive": "0x400c76",
+      "rom_offset": "0x986",
+      "length": 752,
+      "sha256": "5ef9d626b7ef2dcdc72e55581a7939bceecf98e7da303ffc13cbad167f86a171"
+    }
+  ],
+  "manifest_entry": {
+    "name": "startup-boot",
+    "source": "Reconstruction/Source/OS/StartMgr/StartupBoot.a",
+    "start": "0x400986",
+    "end_exclusive": "0x400c76",
+    "entry_points": {
+      "TheBoot": "0x400986",
+      "SizeBootHeap": "0x400992",
+      "InitializeEventManager": "0x4009c0",
+      "MountStartupDisk": "0x4009cc",
+      "FindBlessedFolder": "0x4009da",
+      "SetSystemName": "0x4009f2",
+      "ShowStartupScreen": "0x4009fe",
+      "InitializeResourceManager": "0x400a36",
+      "AfterInitResources": "0x400a44",
+      "InitializeFonts": "0x400a5c",
+      "ReservePage2": "0x400a64",
+      "LoadDebugger": "0x400a7a",
+      "LoadSystemData": "0x400aa8",
+      "PrepareBootINITs": "0x400ab8",
+      "BootINITLoop": "0x400ad0",
+      "NextBootINIT": "0x400af6",
+      "FinishBootINITs": "0x400b04",
+      "SetScrapName": "0x400b28",
+      "SetFinderName": "0x400b38",
+      "FindStartupApplication": "0x400b4e",
+      "LaunchStartupApplication": "0x400b5e",
+      "NoBootApplication": "0x400b76",
+      "MissingBootINIT": "0x400b7c",
+      "ReBoot": "0x400b82",
+      "NoDSAT": "0x400bac",
+      "BootAlert": "0x400bb2",
+      "NoDebugger": "0x400bba",
+      "CheckBootFile": "0x400bc6",
+      "LoadBelowBufPtr": "0x400bda",
+      "LoadBelowBufPtrCommon": "0x400bdc",
+      "LoadStartupScreen": "0x400c36",
+      "LoadSystemCode": "0x400c40",
+      "SetDefaultFolder": "0x400c4c",
+      "GetBootHeapSize": "0x4009a2",
+      "SetBootHeapSize": "0x4009b2",
+      "ReserveSecondPage": "0x400a76",
+      "BootAlertDone": "0x400bb8",
+      "RetryBoot": "0x400ba8",
+      "ReadBootFile": "0x400c12",
+      "CloseBootFile": "0x400c2c",
+      "LoadBootFileDone": "0x400c32",
+      "SetDefaultFolderDone": "0x400c74"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "startup-boot",
+      "source": "Reconstruction/Source/OS/StartMgr/StartupBoot.a",
+      "start": "0x400986",
+      "end_exclusive": "0x400c76",
+      "entry_points": {
+        "TheBoot": "0x400986",
+        "SizeBootHeap": "0x400992",
+        "InitializeEventManager": "0x4009c0",
+        "MountStartupDisk": "0x4009cc",
+        "FindBlessedFolder": "0x4009da",
+        "SetSystemName": "0x4009f2",
+        "ShowStartupScreen": "0x4009fe",
+        "InitializeResourceManager": "0x400a36",
+        "AfterInitResources": "0x400a44",
+        "InitializeFonts": "0x400a5c",
+        "ReservePage2": "0x400a64",
+        "LoadDebugger": "0x400a7a",
+        "LoadSystemData": "0x400aa8",
+        "PrepareBootINITs": "0x400ab8",
+        "BootINITLoop": "0x400ad0",
+        "NextBootINIT": "0x400af6",
+        "FinishBootINITs": "0x400b04",
+        "SetScrapName": "0x400b28",
+        "SetFinderName": "0x400b38",
+        "FindStartupApplication": "0x400b4e",
+        "LaunchStartupApplication": "0x400b5e",
+        "NoBootApplication": "0x400b76",
+        "MissingBootINIT": "0x400b7c",
+        "ReBoot": "0x400b82",
+        "NoDSAT": "0x400bac",
+        "BootAlert": "0x400bb2",
+        "NoDebugger": "0x400bba",
+        "CheckBootFile": "0x400bc6",
+        "LoadBelowBufPtr": "0x400bda",
+        "LoadBelowBufPtrCommon": "0x400bdc",
+        "LoadStartupScreen": "0x400c36",
+        "LoadSystemCode": "0x400c40",
+        "SetDefaultFolder": "0x400c4c",
+        "GetBootHeapSize": "0x4009a2",
+        "SetBootHeapSize": "0x4009b2",
+        "ReserveSecondPage": "0x400a76",
+        "BootAlertDone": "0x400bb8",
+        "RetryBoot": "0x400ba8",
+        "ReadBootFile": "0x400c12",
+        "CloseBootFile": "0x400c2c",
+        "LoadBootFileDone": "0x400c32",
+        "SetDefaultFolderDone": "0x400c74"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "TheBoot starts at $400986 with the executable boot-block version test. It follows system initialization owned by the adjacent startup module.",
+    "end": "SetDefaultFolder ends with RTS at $400C74. The next span starts at $400C76 with the file-system initialization entry.",
+    "released_offsets": "Boot1.a lines 219 through 237 retain the Mac Plus AfterInitResources offset $0A44 and ReBoot offset $0B82. Both match this module."
+  },
+  "edits": [
+    {
+      "kind": "source_restoration",
+      "description": "Restored the Mac Plus boot flow from TheBoot through SetDefaultFolder. The evidence records 60 matching released operations and 185 ROM-only operations. All 752 emitted bytes are instructions."
+    },
+    {
+      "kind": "boot_policy",
+      "description": "Restored the older executable boot-block version test, heap selection, startup bitmap, DSAT resource zero, second-page reservation, debugger loading, INIT IDs zero through 35, and startup application fallback."
+    },
+    {
+      "kind": "loader_restoration",
+      "description": "Restored the older loader interface: D3 selects the destination and header handling, A1 returns the loaded address, D4 holds the byte count, and D0 returns status. Positive mode loads the entire file at $800(A6), zero mode skips 512 bytes and loads below BufPtr, and negative mode skips 512 bytes and allocates a pointer."
+    },
+    {
+      "kind": "preserved_behavior",
+      "description": "Retained the write to ioRefNum(SP) at $400B14. Also retained the negative loader mode behavior that leaves D2 zero after a successful NewPtr: a later read error still returns success."
+    },
+    {
+      "kind": "trap_names",
+      "description": "Used the released trap names for their exact opcodes, including InitApplZone at $A02C and RDrvrInstall at $A04F. NewHandleSysClear and PurgeMemSys add the documented system-heap and clear flags to their base trap words."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained released headers, early boot history, matching operation comments, loader comments, boot register interface, and the MacsBug six-byte return adjustment contract. Omitted the later claim that boot alert numbers must be negative and the obsolete claim that bb128KSHeap is unused. The source identifies restored bodies as reconstruction notes."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x40098c": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 351,
+      "original_code": "BNE.S\t@NoExec",
+      "comment": " If not, don't execute them",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@NoExec",
+      "inline_comment_retained": true
+    },
+    "0x40098e": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 355,
+      "original_code": "JSR \tBBEntry(A6)",
+      "comment": " Execute the boot blocks",
+      "preceding_comments": [],
+      "op": "JSR",
+      "operand": "BBEntry(A6)",
+      "inline_comment_retained": true
+    },
+    "0x4009c4": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 274,
+      "original_code": "_InitEvents",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_INITEVENTS",
+      "operand": ""
+    },
+    "0x4009ca": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 281,
+      "original_code": "_InitFS",
+      "comment": " note to future generations: InitFS trashes A2!",
+      "preceding_comments": [],
+      "op": "_INITFS",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4009ce": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 288,
+      "original_code": "move.w\tBootDrive,ioDrvNum(a0)",
+      "comment": " set up drive number",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "BootDrive,ioDrvNum(a0)",
+      "inline_comment_retained": true
+    },
+    "0x4009d4": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 289,
+      "original_code": "_MountVol",
+      "comment": " mount startup disk",
+      "preceding_comments": [],
+      "op": "_MOUNTVOL",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4009da": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 296,
+      "original_code": "clr.l\tioFileName(a0)",
+      "comment": " we don\u2019t want the disk\u2019s name",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "ioFileName(a0)",
+      "inline_comment_retained": true
+    },
+    "0x4009de": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 297,
+      "original_code": "clr.w\tioVolIndex(a0)",
+      "comment": " use the vRefNum left over from MountVol",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "ioVolIndex(a0)",
+      "inline_comment_retained": true
+    },
+    "0x4009e2": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 298,
+      "original_code": "_HGetVInfo",
+      "comment": " see if there is a system folder",
+      "preceding_comments": [],
+      "op": "_HGETVINFO",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x4009e6": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 300,
+      "original_code": "move.l\tioVFndrInfo+4(a0),a4",
+      "comment": " save dirID of startup app. in a4 for pre-7.0 systems",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "ioVFndrInfo+4(a0),a4",
+      "inline_comment_retained": true
+    },
+    "0x400a0c": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 657,
+      "original_code": "move.l\t#((342<<16)+512),-(sp)",
+      "comment": " put a rect the size of the original Mac screen",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#((342<<16)+512),-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x400a12": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 658,
+      "original_code": "clr.l\t-(sp)",
+      "comment": " on the stack (0,0,342,512) as bounds for a bitMap",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x400a20": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 663,
+      "original_code": "move.l\tsp,-(sp)",
+      "comment": " srcBits is here",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "sp,-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x400a2c": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 667,
+      "original_code": "clr.w\t-(sp)",
+      "comment": " srcCopy mode",
+      "preceding_comments": [],
+      "op": "CLR.W",
+      "operand": "-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x400a2e": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 668,
+      "original_code": "clr.l\t-(sp)",
+      "comment": " no maskRgn",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "-(sp)",
+      "inline_comment_retained": true
+    },
+    "0x400a30": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 669,
+      "original_code": "_CopyBits",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_COPYBITS",
+      "operand": ""
+    },
+    "0x400a36": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 313,
+      "original_code": "subq\t#2,sp",
+      "comment": " make room for function result",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#2,sp",
+      "inline_comment_retained": true
+    },
+    "0x400a3c": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 314,
+      "original_code": "_InitResources",
+      "comment": " open that system file",
+      "preceding_comments": [],
+      "op": "_INITRESOURCES",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x400a3e": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 315,
+      "original_code": "tst.w\t(sp)+",
+      "comment": " did we get it?",
+      "preceding_comments": [],
+      "op": "TST.W",
+      "operand": "(sp)+",
+      "inline_comment_retained": true
+    },
+    "0x400a40": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 316,
+      "original_code": "bmi.s\tInitResourcesFailed",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BMI.S",
+      "operand": "InitResourcesFailed"
+    },
+    "0x400a44": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 1856,
+      "original_code": "subq\t#4,sp",
+      "comment": " room for returned handle",
+      "preceding_comments": [],
+      "op": "SUBQ",
+      "operand": "#4,sp",
+      "inline_comment_retained": true
+    },
+    "0x400a46": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 1857,
+      "original_code": "MOVE.L\t#'DSAT',-(SP)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#'DSAT',-(SP)"
+    },
+    "0x400a4e": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 1859,
+      "original_code": "_GetResource",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_GETRESOURCE",
+      "operand": ""
+    },
+    "0x400a58": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 1863,
+      "original_code": "move.l\t(a0),DSAlertTab",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(a0),DSAlertTab"
+    },
+    "0x400a5e": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 679,
+      "original_code": "moveq\t#dsGreeting,d0",
+      "comment": " put up the greeting",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#dsGreeting,d0",
+      "inline_comment_retained": true
+    },
+    "0x400a7a": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2616,
+      "original_code": "SUB.L\t#debuggerGlobalSize,BufPtr",
+      "comment": " leave space for MacsBug globals",
+      "preceding_comments": [
+        [
+          2610,
+          "; Load the MacsBug debugger, and optionally the other debug thing (Disassembler)."
+        ],
+        [
+          2611,
+          "; If there is no MacsBug, no attempt is made to load Disassmbler."
+        ],
+        [
+          2612,
+          "; Before loading MacsBug (below BufPtr), 1024 bytes of globals are reserved."
+        ],
+        [
+          2613,
+          "; MacsBug and the Disassembler are responsible for lowering BufPtr themselves after being loaded."
+        ],
+        [
+          2614,
+          "; If they don\u2019t, they will be overwritten by the stack and globals of the first application."
+        ]
+      ],
+      "op": "SUB.L",
+      "operand": "#debuggerGlobalSize,BufPtr",
+      "inline_comment_retained": true
+    },
+    "0x400a90": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2637,
+      "original_code": "MOVEQ\t#dsMacsBugInstalled,D0",
+      "comment": " alert saying we got MacsBug",
+      "preceding_comments": [
+        [
+          2632,
+          "; NOTE: the following code must not change in length - MacsBug depends upon it (blegh!)"
+        ],
+        [
+          2633,
+          "; If MacsBug punts, it adds the magic offset 6 (bytes, that is) to the return address"
+        ],
+        [
+          2634,
+          "; to skip over this code.  Ideally, the interface should allow the debugger to return"
+        ],
+        [
+          2635,
+          "; an error code (in, say, D0?) to allow happy bypassing of this message."
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#dsMacsBugInstalled,D0",
+      "inline_comment_retained": true
+    },
+    "0x400a92": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2638,
+      "original_code": "bsr\t\tBootAlert",
+      "comment": " display it if we should\t\t\t\t\t\t\t<42>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "BootAlert"
+    },
+    "0x400a9e": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2644,
+      "original_code": "BNE.S\t@done",
+      "comment": " branch if there\u2019s no disassembler",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@done",
+      "inline_comment_retained": true
+    },
+    "0x400aa2": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2652,
+      "original_code": "MOVEQ\t#dsDisassemblerInstalled,D0",
+      "comment": " alert saying we got the disassembler",
+      "preceding_comments": [
+        [
+          2650,
+          "; see above NOTE for MacsBug: the disassembler works the same way"
+        ]
+      ],
+      "op": "MOVEQ",
+      "operand": "#dsDisassemblerInstalled,D0",
+      "inline_comment_retained": true
+    },
+    "0x400aa4": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2653,
+      "original_code": "bsr\t\tBootAlert",
+      "comment": " display it if we should\t\t\t\t\t\t\t<42>",
+      "preceding_comments": [],
+      "op": "BSR",
+      "operand": "BootAlert"
+    },
+    "0x400b82": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 370,
+      "original_code": "LEA \tMyIOPBA6(A6),A0",
+      "comment": " use stack parameter block",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "inline_comment_retained": true
+    },
+    "0x400b86": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 371,
+      "original_code": "MOVE.W\tBtDskRfN,IORefNum(A0)",
+      "comment": " driver refnum",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "BtDskRfN,IORefNum(A0)",
+      "inline_comment_retained": true
+    },
+    "0x400b8c": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 372,
+      "original_code": "MOVE.W\t#EjectCode,CSCode(A0)",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "#EjectCode,CSCode(A0)"
+    },
+    "0x400b92": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 362,
+      "original_code": "ReBoot\t\tmove.w\tBootDrive,D3",
+      "comment": " Get current boot drive number",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "BootDrive,D3",
+      "inline_comment_retained": true
+    },
+    "0x400b96": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 373,
+      "original_code": "MOVE.W\tD3,IODrvNum(A0)",
+      "comment": " d3 = BootDrive, must be a drive# here!",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D3,IODrvNum(A0)",
+      "inline_comment_retained": true
+    },
+    "0x400b9a": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 374,
+      "original_code": "_Control",
+      "comment": " eject the bad diskette",
+      "preceding_comments": [],
+      "op": "_CONTROL",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x400b9e": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 387,
+      "original_code": "MOVE.W\tBootMask,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "BootMask,D0"
+    },
+    "0x400ba2": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 388,
+      "original_code": "BCLR\tD3,D0",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BCLR",
+      "operand": "D3,D0"
+    },
+    "0x400ba4": {
+      "path": "OS/StartMgr/StartBoot.a",
+      "line": 389,
+      "original_code": "MOVE.W\tD0,BootMask",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "D0,BootMask"
+    },
+    "0x400bb2": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2668,
+      "original_code": "tst.b\td7",
+      "comment": " did we get a startup screen?",
+      "preceding_comments": [],
+      "op": "TST.B",
+      "operand": "d7",
+      "inline_comment_retained": true
+    },
+    "0x400bb6": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2670,
+      "original_code": "_SysError",
+      "comment": " post the alert",
+      "preceding_comments": [],
+      "op": "_SYSERROR",
+      "operand": "",
+      "inline_comment_retained": true
+    },
+    "0x400bb8": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2672,
+      "original_code": "rts",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x400bba": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2624,
+      "original_code": "ADD.L\t#debuggerGlobalSize,BufPtr",
+      "comment": " otherwise, dealloc MacsBug globals",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "#debuggerGlobalSize,BufPtr",
+      "inline_comment_retained": true
+    },
+    "0x400bc2": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2625,
+      "original_code": "BRA.S\t@done",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "@done"
+    },
+    "0x400be2": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2713,
+      "original_code": "LEA \tioFileName(A0),A2",
+      "comment": " point to params we use",
+      "preceding_comments": [],
+      "op": "LEA",
+      "operand": "ioFileName(A0),A2",
+      "inline_comment_retained": true
+    },
+    "0x400be6": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2714,
+      "original_code": "MOVE.L\tA1,(A2)+",
+      "comment": " ioFileName(A0)",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x400be8": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2715,
+      "original_code": "CLR.L\t(A2)+",
+      "comment": " ioDrvNum(A0), ioRefNum(A0) use default drive?",
+      "preceding_comments": [],
+      "op": "CLR.L",
+      "operand": "(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x400bea": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2716,
+      "original_code": "CLR.B\t(A2)+",
+      "comment": " ioFileType(A0) type 0",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x400bec": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2717,
+      "original_code": "MOVE.B\t#fsRdPerm,(A2)+",
+      "comment": " read-only permissions",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "#fsRdPerm,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x400bf6": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2720,
+      "original_code": "_Open",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_OPEN",
+      "operand": ""
+    },
+    "0x400bf8": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2721,
+      "original_code": "BNE.S\t@fail",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@fail"
+    },
+    "0x400bfa": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2723,
+      "original_code": "_GetEOF",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_GETEOF",
+      "operand": ""
+    },
+    "0x400bfc": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2724,
+      "original_code": "BNE.S\t@close",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@close"
+    },
+    "0x400c26": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2737,
+      "original_code": "_Read",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_READ",
+      "operand": ""
+    },
+    "0x400c28": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2738,
+      "original_code": "BNE.S\t@close",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "BNE.S",
+      "operand": "@close"
+    },
+    "0x400c30": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2741,
+      "original_code": "_Close",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "_CLOSE",
+      "operand": ""
+    },
+    "0x400c34": {
+      "path": "OS/StartMgr/Boot3.a",
+      "line": 2744,
+      "original_code": "RTS",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS",
+      "operand": ""
+    },
+    "0x400c64": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 303,
+      "original_code": "move.l\t#'ERIK',ioWDProcID(a0)",
+      "comment": " magic incantation from hell",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "#'ERIK',ioWDProcID(a0)",
+      "inline_comment_retained": true
+    },
+    "0x400c72": {
+      "path": "OS/StartMgr/Boot1.a",
+      "line": 306,
+      "original_code": "_SetVol",
+      "comment": " make blessed folder the default volume",
+      "preceding_comments": [],
+      "op": "_SETVOL",
+      "operand": "",
+      "inline_comment_retained": true
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4196742,
+      "op": "CMPI.B",
+      "operand": "#bbOldExecVers,bbVersion(A6)",
+      "bytes": "0c2e00440006",
+      "rom_instruction": "cmpib #68,%fp@(6)"
+    },
+    {
+      "address": 4196754,
+      "op": "CMPI.W",
+      "operand": "#bbOldVers,bbVersion(A6)",
+      "bytes": "0c6e00140006",
+      "rom_instruction": "cmpiw #20,%fp@(6)"
+    },
+    {
+      "address": 4196760,
+      "op": "BHI.S",
+      "operand": "GetBootHeapSize",
+      "bytes": "6208",
+      "rom_instruction": "bhis 0x4009a2"
+    },
+    {
+      "address": 4196762,
+      "op": "MOVE.L",
+      "operand": "#$B700,bb512KSHeap(A6)",
+      "bytes": "2d7c0000b700",
+      "rom_instruction": "movel #46848,%fp@(134)"
+    },
+    {
+      "address": 4196770,
+      "op": "MOVE.L",
+      "operand": "bb128KSHeap(A6),D0",
+      "bytes": "202e007e",
+      "rom_instruction": "movel %fp@(126),%d0"
+    },
+    {
+      "address": 4196774,
+      "op": "CMPI.W",
+      "operand": "#2,MemTop",
+      "bytes": "0c7800020108",
+      "rom_instruction": "cmpiw #2,0x108"
+    },
+    {
+      "address": 4196780,
+      "op": "BLE.S",
+      "operand": "SetBootHeapSize",
+      "bytes": "6f04",
+      "rom_instruction": "bles 0x4009b2"
+    },
+    {
+      "address": 4196782,
+      "op": "MOVE.L",
+      "operand": "bb512KSHeap(A6),D0",
+      "bytes": "202e0086",
+      "rom_instruction": "movel %fp@(134),%d0"
+    },
+    {
+      "address": 4196786,
+      "op": "MOVE.L",
+      "operand": "SysZone,A0",
+      "bytes": "207802a6",
+      "rom_instruction": "moveal 0x2a6,%a0"
+    },
+    {
+      "address": 4196790,
+      "op": "ADD.L",
+      "operand": "D0,A0",
+      "bytes": "d1c0",
+      "rom_instruction": "addal %d0,%a0"
+    },
+    {
+      "address": 4196792,
+      "op": "_SetAppBase",
+      "operand": "",
+      "bytes": "a057",
+      "rom_instruction": ".short 0xa057"
+    },
+    {
+      "address": 4196794,
+      "op": "MOVE.L",
+      "operand": "SysZone,TheZone",
+      "bytes": "21f802a60118",
+      "rom_instruction": "movel 0x2a6,0x118"
+    },
+    {
+      "address": 4196800,
+      "op": "MOVE.W",
+      "operand": "bbCntEvts(A6),D0",
+      "bytes": "302e007c",
+      "rom_instruction": "movew %fp@(124),%d0"
+    },
+    {
+      "address": 4196806,
+      "op": "MOVE.W",
+      "operand": "bbCntFCBs(A6),D0",
+      "bytes": "302e007a",
+      "rom_instruction": "movew %fp@(122),%d0"
+    },
+    {
+      "address": 4196812,
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "bytes": "204f",
+      "rom_instruction": "moveal %sp,%a0"
+    },
+    {
+      "address": 4196822,
+      "op": "BNE.W",
+      "operand": "ReBoot",
+      "bytes": "660001aa",
+      "rom_instruction": "bnew 0x400b82"
+    },
+    {
+      "address": 4196836,
+      "op": "BNE.S",
+      "operand": "SetSystemName",
+      "bytes": "660c",
+      "rom_instruction": "bnes 0x4009f2"
+    },
+    {
+      "address": 4196842,
+      "op": "MOVE.L",
+      "operand": "ioVFndrInfo(A0),D0",
+      "bytes": "2028005a",
+      "rom_instruction": "movel %a0@(90),%d0"
+    },
+    {
+      "address": 4196846,
+      "op": "BSR.W",
+      "operand": "SetDefaultFolder",
+      "bytes": "6100025c",
+      "rom_instruction": "bsrw 0x400c4c"
+    },
+    {
+      "address": 4196850,
+      "op": "LEA",
+      "operand": "SysResName,A1",
+      "bytes": "43f80ad8",
+      "rom_instruction": "lea 0xad8,%a1"
+    },
+    {
+      "address": 4196854,
+      "op": "LEA",
+      "operand": "bbSysName(A6),A0",
+      "bytes": "41ee000a",
+      "rom_instruction": "lea %fp@(10),%a0"
+    },
+    {
+      "address": 4196858,
+      "op": "MOVEQ",
+      "operand": "#16,D0",
+      "bytes": "7010",
+      "rom_instruction": "moveq #16,%d0"
+    },
+    {
+      "address": 4196860,
+      "op": "_BlockMove",
+      "operand": "",
+      "bytes": "a02e",
+      "rom_instruction": ".short 0xa02e"
+    },
+    {
+      "address": 4196862,
+      "op": "LEA",
+      "operand": "bbScreenName(A6),A1",
+      "bytes": "43ee004a",
+      "rom_instruction": "lea %fp@(74),%a1"
+    },
+    {
+      "address": 4196866,
+      "op": "MOVEQ",
+      "operand": "#1,D3",
+      "bytes": "7601",
+      "rom_instruction": "moveq #1,%d3"
+    },
+    {
+      "address": 4196868,
+      "op": "BSR.W",
+      "operand": "LoadBelowBufPtrCommon",
+      "bytes": "610001d6",
+      "rom_instruction": "bsrw 0x400bdc"
+    },
+    {
+      "address": 4196872,
+      "op": "SNE",
+      "operand": "D7",
+      "bytes": "56c7",
+      "rom_instruction": "sne %d7"
+    },
+    {
+      "address": 4196874,
+      "op": "BNE.S",
+      "operand": "InitializeResourceManager",
+      "bytes": "662a",
+      "rom_instruction": "bnes 0x400a36"
+    },
+    {
+      "address": 4196884,
+      "op": "MOVE.W",
+      "operand": "ScreenRow,-(SP)",
+      "bytes": "3f380106",
+      "rom_instruction": "movew 0x106,%sp@-"
+    },
+    {
+      "address": 4196888,
+      "op": "PEA",
+      "operand": "2048(A6)",
+      "bytes": "486e0800",
+      "rom_instruction": "pea %fp@(2048)"
+    },
+    {
+      "address": 4196892,
+      "op": "LEA",
+      "operand": "-510(A6),A2",
+      "bytes": "45eefe02",
+      "rom_instruction": "lea %fp@(-510),%a2"
+    },
+    {
+      "address": 4196898,
+      "op": "PEA",
+      "operand": "(A2)",
+      "bytes": "4852",
+      "rom_instruction": "pea %a2@"
+    },
+    {
+      "address": 4196900,
+      "op": "PEA",
+      "operand": "14(SP)",
+      "bytes": "486f000e",
+      "rom_instruction": "pea %sp@(14)"
+    },
+    {
+      "address": 4196904,
+      "op": "PEA",
+      "operand": "6(A2)",
+      "bytes": "486a0006",
+      "rom_instruction": "pea %a2@(6)"
+    },
+    {
+      "address": 4196914,
+      "op": "ADD.W",
+      "operand": "#14,SP",
+      "bytes": "defc000e",
+      "rom_instruction": "addaw #14,%sp"
+    },
+    {
+      "address": 4196920,
+      "op": "CLR.L",
+      "operand": "ResErrProc",
+      "bytes": "42b80af2",
+      "rom_instruction": "clrl 0xaf2"
+    },
+    {
+      "address": 4196940,
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "bytes": "4267",
+      "rom_instruction": "clrw %sp@-"
+    },
+    {
+      "address": 4196944,
+      "op": "MOVE.L",
+      "operand": "(SP)+,D5",
+      "bytes": "2a1f",
+      "rom_instruction": "movel %sp@+,%d5"
+    },
+    {
+      "address": 4196946,
+      "op": "BEQ.W",
+      "operand": "NoDSAT",
+      "bytes": "67000158",
+      "rom_instruction": "beqw 0x400bac"
+    },
+    {
+      "address": 4196950,
+      "op": "MOVE.L",
+      "operand": "D5,A0",
+      "bytes": "2045",
+      "rom_instruction": "moveal %d5,%a0"
+    },
+    {
+      "address": 4196956,
+      "op": "_InitFonts",
+      "operand": "",
+      "bytes": "a8fe",
+      "rom_instruction": ".short 0xa8fe"
+    },
+    {
+      "address": 4196960,
+      "op": "BSR.W",
+      "operand": "BootAlert",
+      "bytes": "61000150",
+      "rom_instruction": "bsrw 0x400bb2"
+    },
+    {
+      "address": 4196964,
+      "op": "MOVE.L",
+      "operand": "#1536,D0",
+      "bytes": "203c00000600",
+      "rom_instruction": "movel #1536,%d0"
+    },
+    {
+      "address": 4196970,
+      "op": "MOVE.W",
+      "operand": "bbPageFlags(A6),D1",
+      "bytes": "322e0008",
+      "rom_instruction": "movew %fp@(8),%d1"
+    },
+    {
+      "address": 4196974,
+      "op": "BEQ.S",
+      "operand": "LoadDebugger",
+      "bytes": "670a",
+      "rom_instruction": "beqs 0x400a7a"
+    },
+    {
+      "address": 4196976,
+      "op": "BPL.S",
+      "operand": "ReserveSecondPage",
+      "bytes": "6a04",
+      "rom_instruction": "bpls 0x400a76"
+    },
+    {
+      "address": 4196978,
+      "op": "MOVEQ",
+      "operand": "#1,D0",
+      "bytes": "7001",
+      "rom_instruction": "moveq #1,%d0"
+    },
+    {
+      "address": 4196980,
+      "op": "ROR.W",
+      "operand": "#1,D0",
+      "bytes": "e258",
+      "rom_instruction": "rorw #1,%d0"
+    },
+    {
+      "address": 4196982,
+      "op": "SUB.L",
+      "operand": "D0,BufPtr",
+      "bytes": "91b8010c",
+      "rom_instruction": "subl %d0,0x10c"
+    },
+    {
+      "address": 4196994,
+      "op": "LEA",
+      "operand": "bbDbg1Name(A6),A1",
+      "bytes": "43ee002a",
+      "rom_instruction": "lea %fp@(42),%a1"
+    },
+    {
+      "address": 4196998,
+      "op": "BSR.W",
+      "operand": "LoadBelowBufPtr",
+      "bytes": "61000152",
+      "rom_instruction": "bsrw 0x400bda"
+    },
+    {
+      "address": 4197002,
+      "op": "BNE.W",
+      "operand": "NoDebugger",
+      "bytes": "6600012e",
+      "rom_instruction": "bnew 0x400bba"
+    },
+    {
+      "address": 4197006,
+      "op": "JSR",
+      "operand": "(A1)",
+      "bytes": "4e91",
+      "rom_instruction": "jsr %a1@"
+    },
+    {
+      "address": 4197014,
+      "op": "LEA",
+      "operand": "bbDbg2Name(A6),A1",
+      "bytes": "43ee003a",
+      "rom_instruction": "lea %fp@(58),%a1"
+    },
+    {
+      "address": 4197018,
+      "op": "BSR.W",
+      "operand": "LoadBelowBufPtr",
+      "bytes": "6100013e",
+      "rom_instruction": "bsrw 0x400bda"
+    },
+    {
+      "address": 4197024,
+      "op": "JSR",
+      "operand": "(A1)",
+      "bytes": "4e91",
+      "rom_instruction": "jsr %a1@"
+    },
+    {
+      "address": 4197032,
+      "op": "LEA",
+      "operand": "SysResName,A1",
+      "bytes": "43f80ad8",
+      "rom_instruction": "lea 0xad8,%a1"
+    },
+    {
+      "address": 4197036,
+      "op": "MOVEQ",
+      "operand": "#-1,D3",
+      "bytes": "76ff",
+      "rom_instruction": "moveq #-1,%d3"
+    },
+    {
+      "address": 4197038,
+      "op": "BSR.W",
+      "operand": "LoadBelowBufPtrCommon",
+      "bytes": "6100012c",
+      "rom_instruction": "bsrw 0x400bdc"
+    },
+    {
+      "address": 4197042,
+      "op": "BNE.W",
+      "operand": "PrepareBootINITs",
+      "bytes": "66000004",
+      "rom_instruction": "bnew 0x400ab8"
+    },
+    {
+      "address": 4197046,
+      "op": "JSR",
+      "operand": "(A1)",
+      "bytes": "4e91",
+      "rom_instruction": "jsr %a1@"
+    },
+    {
+      "address": 4197048,
+      "op": "MOVE.L",
+      "operand": "SysZone,RAMBase",
+      "bytes": "21f802a602b2",
+      "rom_instruction": "movel 0x2a6,0x2b2"
+    },
+    {
+      "address": 4197054,
+      "op": "MOVEQ",
+      "operand": "#12,D0",
+      "bytes": "700c",
+      "rom_instruction": "moveq #12,%d0"
+    },
+    {
+      "address": 4197056,
+      "op": "_NewHandleSysClear",
+      "operand": "",
+      "bytes": "a722",
+      "rom_instruction": ".short 0xa722"
+    },
+    {
+      "address": 4197058,
+      "op": "MOVE.L",
+      "operand": "A0,AppParmHandle",
+      "bytes": "21c80aec",
+      "rom_instruction": "movel %a0,0xaec"
+    },
+    {
+      "address": 4197062,
+      "op": "_InitApplZone",
+      "operand": "",
+      "bytes": "a02c",
+      "rom_instruction": ".short 0xa02c"
+    },
+    {
+      "address": 4197064,
+      "op": "_RDrvrInstall",
+      "operand": "",
+      "bytes": "a04f",
+      "rom_instruction": ".short 0xa04f"
+    },
+    {
+      "address": 4197066,
+      "op": "MOVE.L",
+      "operand": "D5,-(SP)",
+      "bytes": "2f05",
+      "rom_instruction": "movel %d5,%sp@-"
+    },
+    {
+      "address": 4197068,
+      "op": "_ReleaseResource",
+      "operand": "",
+      "bytes": "a9a3",
+      "rom_instruction": ".short 0xa9a3"
+    },
+    {
+      "address": 4197070,
+      "op": "MOVEQ",
+      "operand": "#0,D6",
+      "bytes": "7c00",
+      "rom_instruction": "moveq #0,%d6"
+    },
+    {
+      "address": 4197072,
+      "op": "MOVEM.L",
+      "operand": "A5-A6,BootTmp8",
+      "bytes": "48f860000b36",
+      "rom_instruction": "moveml %a5-%fp,0xb36"
+    },
+    {
+      "address": 4197078,
+      "op": "SUBQ.W",
+      "operand": "#4,SP",
+      "bytes": "594f",
+      "rom_instruction": "subqw #4,%sp"
+    },
+    {
+      "address": 4197080,
+      "op": "MOVE.L",
+      "operand": "#'INIT',-(SP)",
+      "bytes": "2f3c494e4954",
+      "rom_instruction": "movel #1229867348,%sp@-"
+    },
+    {
+      "address": 4197086,
+      "op": "MOVE.W",
+      "operand": "D6,-(SP)",
+      "bytes": "3f06",
+      "rom_instruction": "movew %d6,%sp@-"
+    },
+    {
+      "address": 4197088,
+      "op": "_GetResource",
+      "operand": "",
+      "bytes": "a9a0",
+      "rom_instruction": ".short 0xa9a0"
+    },
+    {
+      "address": 4197090,
+      "op": "MOVE.L",
+      "operand": "(SP),D7",
+      "bytes": "2e17",
+      "rom_instruction": "movel %sp@,%d7"
+    },
+    {
+      "address": 4197092,
+      "op": "BEQ.W",
+      "operand": "MissingBootINIT",
+      "bytes": "67000096",
+      "rom_instruction": "beqw 0x400b7c"
+    },
+    {
+      "address": 4197096,
+      "op": "_DetachResource",
+      "operand": "",
+      "bytes": "a992",
+      "rom_instruction": ".short 0xa992"
+    },
+    {
+      "address": 4197098,
+      "op": "MOVE.L",
+      "operand": "D7,A0",
+      "bytes": "2047",
+      "rom_instruction": "moveal %d7,%a0"
+    },
+    {
+      "address": 4197100,
+      "op": "MOVE.L",
+      "operand": "(A0),D0",
+      "bytes": "2010",
+      "rom_instruction": "movel %a0@,%d0"
+    },
+    {
+      "address": 4197102,
+      "op": "AND.L",
+      "operand": "Lo3Bytes,D0",
+      "bytes": "c0b8031a",
+      "rom_instruction": "andl 0x31a,%d0"
+    },
+    {
+      "address": 4197106,
+      "op": "MOVE.L",
+      "operand": "D0,A0",
+      "bytes": "2040",
+      "rom_instruction": "moveal %d0,%a0"
+    },
+    {
+      "address": 4197108,
+      "op": "JSR",
+      "operand": "(A0)",
+      "bytes": "4e90",
+      "rom_instruction": "jsr %a0@"
+    },
+    {
+      "address": 4197110,
+      "op": "MOVEM.L",
+      "operand": "BootTmp8,A5-A6",
+      "bytes": "4cf860000b36",
+      "rom_instruction": "moveml 0xb36,%a5-%fp"
+    },
+    {
+      "address": 4197116,
+      "op": "ADDQ.W",
+      "operand": "#1,D6",
+      "bytes": "5246",
+      "rom_instruction": "addqw #1,%d6"
+    },
+    {
+      "address": 4197118,
+      "op": "CMPI.W",
+      "operand": "#36,D6",
+      "bytes": "0c460024",
+      "rom_instruction": "cmpiw #36,%d6"
+    },
+    {
+      "address": 4197122,
+      "op": "BLT.S",
+      "operand": "BootINITLoop",
+      "bytes": "6dcc",
+      "rom_instruction": "blts 0x400ad0"
+    },
+    {
+      "address": 4197124,
+      "op": "MOVEQ",
+      "operand": "#2,D0",
+      "bytes": "7002",
+      "rom_instruction": "moveq #2,%d0"
+    },
+    {
+      "address": 4197126,
+      "op": "SWAP",
+      "operand": "D0",
+      "bytes": "4840",
+      "rom_instruction": "swap %d0"
+    },
+    {
+      "address": 4197128,
+      "op": "_PurgeMemSys",
+      "operand": "",
+      "bytes": "a44d",
+      "rom_instruction": ".short 0xa44d"
+    },
+    {
+      "address": 4197130,
+      "op": "PEA",
+      "operand": "-512(A6)",
+      "bytes": "486efe00",
+      "rom_instruction": "pea %fp@(-512)"
+    },
+    {
+      "address": 4197134,
+      "op": "_ClosePort",
+      "operand": "",
+      "bytes": "a87d",
+      "rom_instruction": ".short 0xa87d"
+    },
+    {
+      "address": 4197136,
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "bytes": "41eefc00",
+      "rom_instruction": "lea %fp@(-1024),%a0"
+    },
+    {
+      "address": 4197140,
+      "op": "MOVE.W",
+      "operand": "#-5,ioRefNum(SP)",
+      "bytes": "3f7cfffb0018",
+      "rom_instruction": "movew #-5,%sp@(24)"
+    },
+    {
+      "address": 4197146,
+      "op": "MOVE.W",
+      "operand": "#9,csCode(A0)",
+      "bytes": "317c0009001a",
+      "rom_instruction": "movew #9,%a0@(26)"
+    },
+    {
+      "address": 4197152,
+      "op": "MOVE.W",
+      "operand": "#$FF01,csCode+2(A0)",
+      "bytes": "317cff01001c",
+      "rom_instruction": "movew #-255,%a0@(28)"
+    },
+    {
+      "address": 4197158,
+      "op": "_Control",
+      "operand": "",
+      "bytes": "a004",
+      "rom_instruction": ".short 0xa004"
+    },
+    {
+      "address": 4197160,
+      "op": "LEA",
+      "operand": "ScrapTag,A1",
+      "bytes": "43f80970",
+      "rom_instruction": "lea 0x970,%a1"
+    },
+    {
+      "address": 4197164,
+      "op": "MOVE.L",
+      "operand": "A1,ScrapName",
+      "bytes": "21c9096c",
+      "rom_instruction": "movel %a1,0x96c"
+    },
+    {
+      "address": 4197168,
+      "op": "LEA",
+      "operand": "bbScrapName(A6),A0",
+      "bytes": "41ee006a",
+      "rom_instruction": "lea %fp@(106),%a0"
+    },
+    {
+      "address": 4197172,
+      "op": "MOVEQ",
+      "operand": "#16,D0",
+      "bytes": "7010",
+      "rom_instruction": "moveq #16,%d0"
+    },
+    {
+      "address": 4197174,
+      "op": "_BlockMove",
+      "operand": "",
+      "bytes": "a02e",
+      "rom_instruction": ".short 0xa02e"
+    },
+    {
+      "address": 4197176,
+      "op": "LEA",
+      "operand": "bbShellName(A6),A0",
+      "bytes": "41ee001a",
+      "rom_instruction": "lea %fp@(26),%a0"
+    },
+    {
+      "address": 4197180,
+      "op": "LEA",
+      "operand": "FinderName,A1",
+      "bytes": "43f802e0",
+      "rom_instruction": "lea 0x2e0,%a1"
+    },
+    {
+      "address": 4197184,
+      "op": "MOVEQ",
+      "operand": "#16,D0",
+      "bytes": "7010",
+      "rom_instruction": "moveq #16,%d0"
+    },
+    {
+      "address": 4197186,
+      "op": "_BlockMove",
+      "operand": "",
+      "bytes": "a02e",
+      "rom_instruction": ".short 0xa02e"
+    },
+    {
+      "address": 4197188,
+      "op": "CLR.W",
+      "operand": "CurApRefNum",
+      "bytes": "42780900",
+      "rom_instruction": "clrw 0x900"
+    },
+    {
+      "address": 4197192,
+      "op": "MOVE.L",
+      "operand": "A4,D0",
+      "bytes": "200c",
+      "rom_instruction": "movel %a4,%d0"
+    },
+    {
+      "address": 4197194,
+      "op": "BSR.W",
+      "operand": "SetDefaultFolder",
+      "bytes": "61000100",
+      "rom_instruction": "bsrw 0x400c4c"
+    },
+    {
+      "address": 4197198,
+      "op": "LEA",
+      "operand": "bbHelloName(A6),A3",
+      "bytes": "47ee005a",
+      "rom_instruction": "lea %fp@(90),%a3"
+    },
+    {
+      "address": 4197202,
+      "op": "BSR.S",
+      "operand": "CheckBootFile",
+      "bytes": "6172",
+      "rom_instruction": "bsrs 0x400bc6"
+    },
+    {
+      "address": 4197204,
+      "op": "BEQ.S",
+      "operand": "LaunchStartupApplication",
+      "bytes": "6708",
+      "rom_instruction": "beqs 0x400b5e"
+    },
+    {
+      "address": 4197206,
+      "op": "LEA",
+      "operand": "bbShellName(A6),A3",
+      "bytes": "47ee001a",
+      "rom_instruction": "lea %fp@(26),%a3"
+    },
+    {
+      "address": 4197210,
+      "op": "BSR.S",
+      "operand": "CheckBootFile",
+      "bytes": "616a",
+      "rom_instruction": "bsrs 0x400bc6"
+    },
+    {
+      "address": 4197212,
+      "op": "BNE.S",
+      "operand": "NoBootApplication",
+      "bytes": "6618",
+      "rom_instruction": "bnes 0x400b76"
+    },
+    {
+      "address": 4197214,
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "bytes": "204f",
+      "rom_instruction": "moveal %sp,%a0"
+    },
+    {
+      "address": 4197216,
+      "op": "CLR.L",
+      "operand": "ioFileName(A0)",
+      "bytes": "42a80012",
+      "rom_instruction": "clrl %a0@(18)"
+    },
+    {
+      "address": 4197220,
+      "op": "_GetVol",
+      "operand": "",
+      "bytes": "a014",
+      "rom_instruction": ".short 0xa014"
+    },
+    {
+      "address": 4197222,
+      "op": "MOVE.W",
+      "operand": "ioDrvNum(A0),BootDrive",
+      "bytes": "31e800160210",
+      "rom_instruction": "movew %a0@(22),0x210"
+    },
+    {
+      "address": 4197228,
+      "op": "CLR.W",
+      "operand": "-(SP)",
+      "bytes": "4267",
+      "rom_instruction": "clrw %sp@-"
+    },
+    {
+      "address": 4197230,
+      "op": "CLR.L",
+      "operand": "-(SP)",
+      "bytes": "42a7",
+      "rom_instruction": "clrl %sp@-"
+    },
+    {
+      "address": 4197232,
+      "op": "MOVE.L",
+      "operand": "A3,-(SP)",
+      "bytes": "2f0b",
+      "rom_instruction": "movel %a3,%sp@-"
+    },
+    {
+      "address": 4197234,
+      "op": "MOVE.L",
+      "operand": "SP,A0",
+      "bytes": "204f",
+      "rom_instruction": "moveal %sp,%a0"
+    },
+    {
+      "address": 4197236,
+      "op": "_Launch",
+      "operand": "",
+      "bytes": "a9f2",
+      "rom_instruction": ".short 0xa9f2"
+    },
+    {
+      "address": 4197238,
+      "op": "MOVEQ",
+      "operand": "#dsFinderErr,D0",
+      "bytes": "7029",
+      "rom_instruction": "moveq #41,%d0"
+    },
+    {
+      "address": 4197240,
+      "op": "_SysError",
+      "operand": "",
+      "bytes": "a9c9",
+      "rom_instruction": ".short 0xa9c9"
+    },
+    {
+      "address": 4197242,
+      "op": "_Debugger",
+      "operand": "",
+      "bytes": "a9ff",
+      "rom_instruction": ".short 0xa9ff"
+    },
+    {
+      "address": 4197244,
+      "op": "ADDQ.W",
+      "operand": "#4,SP",
+      "bytes": "584f",
+      "rom_instruction": "addqw #4,%sp"
+    },
+    {
+      "address": 4197246,
+      "op": "BRA.W",
+      "operand": "NextBootINIT",
+      "bytes": "6000ff76",
+      "rom_instruction": "braw 0x400af6"
+    },
+    {
+      "address": 4197276,
+      "op": "BEQ.S",
+      "operand": "RetryBoot",
+      "bytes": "670a",
+      "rom_instruction": "beqs 0x400ba8"
+    },
+    {
+      "address": 4197288,
+      "op": "BRA.W",
+      "operand": "BootRetry",
+      "bytes": "6000f7fe",
+      "rom_instruction": "braw 0x4003a8"
+    },
+    {
+      "address": 4197292,
+      "op": "MOVEQ",
+      "operand": "#0,D7",
+      "bytes": "7e00",
+      "rom_instruction": "moveq #0,%d7"
+    },
+    {
+      "address": 4197294,
+      "op": "BRA.W",
+      "operand": "InitializeFonts",
+      "bytes": "6000feac",
+      "rom_instruction": "braw 0x400a5c"
+    },
+    {
+      "address": 4197300,
+      "op": "BEQ.S",
+      "operand": "BootAlertDone",
+      "bytes": "6702",
+      "rom_instruction": "beqs 0x400bb8"
+    },
+    {
+      "address": 4197318,
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "bytes": "41eefc00",
+      "rom_instruction": "lea %fp@(-1024),%a0"
+    },
+    {
+      "address": 4197322,
+      "op": "CLR.W",
+      "operand": "ioDrvNum(A0)",
+      "bytes": "42680016",
+      "rom_instruction": "clrw %a0@(22)"
+    },
+    {
+      "address": 4197326,
+      "op": "CLR.L",
+      "operand": "ioFileType(A0)",
+      "bytes": "42a8001a",
+      "rom_instruction": "clrl %a0@(26)"
+    },
+    {
+      "address": 4197330,
+      "op": "MOVE.L",
+      "operand": "A3,ioFileName(A0)",
+      "bytes": "214b0012",
+      "rom_instruction": "movel %a3,%a0@(18)"
+    },
+    {
+      "address": 4197334,
+      "op": "_GetFileInfo",
+      "operand": "",
+      "bytes": "a00c",
+      "rom_instruction": ".short 0xa00c"
+    },
+    {
+      "address": 4197336,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    },
+    {
+      "address": 4197338,
+      "op": "MOVEQ",
+      "operand": "#0,D3",
+      "bytes": "7600",
+      "rom_instruction": "moveq #0,%d3"
+    },
+    {
+      "address": 4197340,
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "bytes": "41eefc00",
+      "rom_instruction": "lea %fp@(-1024),%a0"
+    },
+    {
+      "address": 4197344,
+      "op": "MOVEQ",
+      "operand": "#-1,D2",
+      "bytes": "74ff",
+      "rom_instruction": "moveq #-1,%d2"
+    },
+    {
+      "address": 4197360,
+      "op": "PEA",
+      "operand": "1024(A6)",
+      "bytes": "486e0400",
+      "rom_instruction": "pea %fp@(1024)"
+    },
+    {
+      "address": 4197364,
+      "op": "MOVE.L",
+      "operand": "(SP)+,(A2)",
+      "bytes": "249f",
+      "rom_instruction": "movel %sp@+,%a2@"
+    },
+    {
+      "address": 4197374,
+      "op": "MOVE.L",
+      "operand": "(A2)+,D4",
+      "bytes": "281a",
+      "rom_instruction": "movel %a2@+,%d4"
+    },
+    {
+      "address": 4197376,
+      "op": "MOVEQ",
+      "operand": "#2,D6",
+      "bytes": "7c02",
+      "rom_instruction": "moveq #2,%d6"
+    },
+    {
+      "address": 4197378,
+      "op": "ASL.W",
+      "operand": "#8,D6",
+      "bytes": "e146",
+      "rom_instruction": "aslw #8,%d6"
+    },
+    {
+      "address": 4197380,
+      "op": "SUB.L",
+      "operand": "D6,D4",
+      "bytes": "9886",
+      "rom_instruction": "subl %d6,%d4"
+    },
+    {
+      "address": 4197382,
+      "op": "TST.W",
+      "operand": "D3",
+      "bytes": "4a43",
+      "rom_instruction": "tstw %d3"
+    },
+    {
+      "address": 4197384,
+      "op": "BMI.S",
+      "operand": "LoadSystemCode",
+      "bytes": "6b36",
+      "rom_instruction": "bmis 0x400c40"
+    },
+    {
+      "address": 4197386,
+      "op": "BNE.S",
+      "operand": "LoadStartupScreen",
+      "bytes": "662a",
+      "rom_instruction": "bnes 0x400c36"
+    },
+    {
+      "address": 4197388,
+      "op": "MOVE.L",
+      "operand": "BufPtr,A1",
+      "bytes": "2278010c",
+      "rom_instruction": "moveal 0x10c,%a1"
+    },
+    {
+      "address": 4197392,
+      "op": "SUB.L",
+      "operand": "D4,A1",
+      "bytes": "93c4",
+      "rom_instruction": "subal %d4,%a1"
+    },
+    {
+      "address": 4197394,
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "bytes": "41eefc00",
+      "rom_instruction": "lea %fp@(-1024),%a0"
+    },
+    {
+      "address": 4197398,
+      "op": "LEA",
+      "operand": "ioBuffer(A0),A2",
+      "bytes": "45e80020",
+      "rom_instruction": "lea %a0@(32),%a2"
+    },
+    {
+      "address": 4197402,
+      "op": "MOVE.L",
+      "operand": "A1,(A2)+",
+      "bytes": "24c9",
+      "rom_instruction": "movel %a1,%a2@+"
+    },
+    {
+      "address": 4197404,
+      "op": "MOVE.L",
+      "operand": "D4,(A2)+",
+      "bytes": "24c4",
+      "rom_instruction": "movel %d4,%a2@+"
+    },
+    {
+      "address": 4197406,
+      "op": "ADDQ.W",
+      "operand": "#ioPosMode-ioNumDone,A2",
+      "bytes": "584a",
+      "rom_instruction": "addqw #4,%a2"
+    },
+    {
+      "address": 4197408,
+      "op": "MOVE.W",
+      "operand": "#fsFromStart,(A2)+",
+      "bytes": "34fc0001",
+      "rom_instruction": "movew #1,%a2@+"
+    },
+    {
+      "address": 4197412,
+      "op": "MOVE.L",
+      "operand": "D6,(A2)",
+      "bytes": "2486",
+      "rom_instruction": "movel %d6,%a2@"
+    },
+    {
+      "address": 4197418,
+      "op": "MOVEQ",
+      "operand": "#0,D2",
+      "bytes": "7400",
+      "rom_instruction": "moveq #0,%d2"
+    },
+    {
+      "address": 4197420,
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "bytes": "41eefc00",
+      "rom_instruction": "lea %fp@(-1024),%a0"
+    },
+    {
+      "address": 4197426,
+      "op": "MOVE.W",
+      "operand": "D2,D0",
+      "bytes": "3002",
+      "rom_instruction": "movew %d2,%d0"
+    },
+    {
+      "address": 4197430,
+      "op": "LEA",
+      "operand": "2048(A6),A1",
+      "bytes": "43ee0800",
+      "rom_instruction": "lea %fp@(2048),%a1"
+    },
+    {
+      "address": 4197434,
+      "op": "ADD.L",
+      "operand": "D6,D4",
+      "bytes": "d886",
+      "rom_instruction": "addl %d6,%d4"
+    },
+    {
+      "address": 4197436,
+      "op": "MOVEQ",
+      "operand": "#0,D6",
+      "bytes": "7c00",
+      "rom_instruction": "moveq #0,%d6"
+    },
+    {
+      "address": 4197438,
+      "op": "BRA.S",
+      "operand": "ReadBootFile",
+      "bytes": "60d2",
+      "rom_instruction": "bras 0x400c12"
+    },
+    {
+      "address": 4197440,
+      "op": "MOVE.L",
+      "operand": "D4,D0",
+      "bytes": "2004",
+      "rom_instruction": "movel %d4,%d0"
+    },
+    {
+      "address": 4197442,
+      "op": "_NewPtr",
+      "operand": "",
+      "bytes": "a11e",
+      "rom_instruction": ".short 0xa11e"
+    },
+    {
+      "address": 4197444,
+      "op": "MOVE.W",
+      "operand": "D0,D2",
+      "bytes": "3400",
+      "rom_instruction": "movew %d0,%d2"
+    },
+    {
+      "address": 4197446,
+      "op": "BNE.S",
+      "operand": "CloseBootFile",
+      "bytes": "66e4",
+      "rom_instruction": "bnes 0x400c2c"
+    },
+    {
+      "address": 4197448,
+      "op": "MOVE.L",
+      "operand": "A0,A1",
+      "bytes": "2248",
+      "rom_instruction": "moveal %a0,%a1"
+    },
+    {
+      "address": 4197450,
+      "op": "BRA.S",
+      "operand": "ReadBootFile",
+      "bytes": "60c6",
+      "rom_instruction": "bras 0x400c12"
+    },
+    {
+      "address": 4197452,
+      "op": "TST.L",
+      "operand": "D0",
+      "bytes": "4a80",
+      "rom_instruction": "tstl %d0"
+    },
+    {
+      "address": 4197454,
+      "op": "BEQ.S",
+      "operand": "SetDefaultFolderDone",
+      "bytes": "6724",
+      "rom_instruction": "beqs 0x400c74"
+    },
+    {
+      "address": 4197456,
+      "op": "LEA",
+      "operand": "MyIOPBA6(A6),A0",
+      "bytes": "41eefc00",
+      "rom_instruction": "lea %fp@(-1024),%a0"
+    },
+    {
+      "address": 4197460,
+      "op": "CMPI.L",
+      "operand": "#fsRtDirID,D0",
+      "bytes": "0c8000000002",
+      "rom_instruction": "cmpil #2,%d0"
+    },
+    {
+      "address": 4197466,
+      "op": "BEQ.S",
+      "operand": "SetDefaultFolderDone",
+      "bytes": "6718",
+      "rom_instruction": "beqs 0x400c74"
+    },
+    {
+      "address": 4197468,
+      "op": "MOVE.L",
+      "operand": "D0,ioWDDirID(A0)",
+      "bytes": "21400030",
+      "rom_instruction": "movel %d0,%a0@(48)"
+    },
+    {
+      "address": 4197472,
+      "op": "CLR.L",
+      "operand": "ioFileName(A0)",
+      "bytes": "42a80012",
+      "rom_instruction": "clrl %a0@(18)"
+    },
+    {
+      "address": 4197484,
+      "op": "MOVEQ",
+      "operand": "#1,D0",
+      "bytes": "7001",
+      "rom_instruction": "moveq #1,%d0"
+    },
+    {
+      "address": 4197486,
+      "op": "_HFSDispatch",
+      "operand": "",
+      "bytes": "a260",
+      "rom_instruction": ".short 0xa260"
+    },
+    {
+      "address": 4197488,
+      "op": "BNE.S",
+      "operand": "SetDefaultFolderDone",
+      "bytes": "6602",
+      "rom_instruction": "bnes 0x400c74"
+    },
+    {
+      "address": 4197492,
+      "op": "RTS",
+      "operand": "",
+      "bytes": "4e75",
+      "rom_instruction": "rts "
+    }
+  ],
+  "restored_equates": {
+    "EjectCode": 7
+  },
+  "restored_symbolic_operands": {
+    "4196742": "#bbOldExecVers,bbVersion(A6)",
+    "4196750": "bbEntry(A6)",
+    "4196754": "#bbOldVers,bbVersion(A6)",
+    "4196762": "#$B700,bb512KSHeap(A6)",
+    "4196770": "bb128KSHeap(A6),D0",
+    "4196782": "bb512KSHeap(A6),D0",
+    "4196800": "bbCntEvts(A6),D0",
+    "4196806": "bbCntFCBs(A6),D0",
+    "4196842": "ioVFndrInfo(A0),D0",
+    "4196854": "bbSysName(A6),A0",
+    "4196862": "bbScreenName(A6),A1",
+    "4196876": "#((342<<16)+512),-(SP)",
+    "4196934": "#'DSAT',-(SP)",
+    "4196958": "#dsGreeting,D0",
+    "4196970": "bbPageFlags(A6),D1",
+    "4196994": "bbDbg1Name(A6),A1",
+    "4197014": "bbDbg2Name(A6),A1",
+    "4197080": "#'INIT',-(SP)",
+    "4197136": "MyIOPBA6(A6),A0",
+    "4197140": "#-5,ioRefNum(SP)",
+    "4197146": "#9,csCode(A0)",
+    "4197152": "#$FF01,csCode+2(A0)",
+    "4197168": "bbScrapName(A6),A0",
+    "4197176": "bbShellName(A6),A0",
+    "4197198": "bbHelloName(A6),A3",
+    "4197206": "bbShellName(A6),A3",
+    "4197216": "ioFileName(A0)",
+    "4197222": "ioDrvNum(A0),BootDrive",
+    "4197238": "#dsFinderErr,D0",
+    "4197318": "MyIOPBA6(A6),A0",
+    "4197322": "ioDrvNum(A0)",
+    "4197326": "ioFileType(A0)",
+    "4197330": "A3,ioFileName(A0)",
+    "4197340": "MyIOPBA6(A6),A0",
+    "4197394": "MyIOPBA6(A6),A0",
+    "4197398": "ioBuffer(A0),A2",
+    "4197406": "#ioPosMode-ioNumDone,A2",
+    "4197408": "#fsFromStart,(A2)+",
+    "4197420": "MyIOPBA6(A6),A0",
+    "4197456": "MyIOPBA6(A6),A0",
+    "4197460": "#fsRtDirID,D0",
+    "4197468": "D0,ioWDDirID(A0)",
+    "4197472": "ioFileName(A0)"
+  },
+  "retained_data": {},
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 752,
+    "checked_entry_points": 42,
+    "instruction_count": 245,
+    "source_operation_matches": 60,
+    "rom_only_operation_count": 185,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-startup-boot-verify",
+    "source_sha256": "befad1bbf7656c437182e8b7b3afafa960ed07885e9bc72fbe8492666f7088de",
+    "assembled_sha256": "5ef9d626b7ef2dcdc72e55581a7939bceecf98e7da303ffc13cbad167f86a171",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "interface_evidence": [
+    {
+      "path": "OS/StartMgr/Boot1.a",
+      "lines": [
+        219,
+        237
+      ],
+      "subject": "Published Mac Plus ROM continuation offsets."
+    },
+    {
+      "path": "OS/StartMgr/Boot3.a",
+      "lines": [
+        2632,
+        2638
+      ],
+      "subject": "MacsBug skips the six-byte boot-alert call by adjusting its return address."
+    }
+  ],
+  "omitted_equate_comment_suffixes": {
+    "bb128KSHeap": " (no longer used)"
+  },
+  "trap_flag_evidence": {
+    "path": "Interfaces/AIncludes/Traps.a",
+    "base_traps": {
+      "_NewHandle": "0xA122",
+      "_PurgeMem": "0xA04D"
+    },
+    "flags": {
+      "system_heap": "0x0400",
+      "clear_allocation": "0x0200"
+    }
+  }
+}

@@ -1,0 +1,437 @@
+;
+;	File:		OSEventMgr.a
+;
+;	Contains:	Macintosh OS Event Manager
+;
+;	Written by:	Andy Hertzfeld   02-Nov-81
+;
+;	Copyright:	© 1981-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/28/85	DLD		Changed FlushEvents to put a -1 into LastSPExtra for FontMGR
+;				 7/24/85	RDC		Changed interrupt level settings to use equate Added spearate
+;									include statement for HWequ file (no longer in systlqk.sym)
+;				  6/7/85	JTC		Make results of os routines long. <07Jun85>
+;				  3/3/85	LAK		Don't flush events masked out by FlEvtMask in FlushEvents (this
+;									is a new mask, initialized at SysInit time to $FF7F, i.e., all
+;									events except DIP events). This is an attempt to correct the
+;									problem that -1 is a common parameter given to FlushEvents at
+;									the start of a program, even though a flush of DIP is probably
+;									not intended.
+;				 1/31/85	LAK		Removed false RTE.
+;				 1/23/85	LAK		Adapted for new equate files. Added equate for NoEvtAvail
+;									(equate was deleted from SysErr.Text)
+;				 8/17/83	LAK		PostEvent now uses EvtBufCnt instead of hardwired EvtMax.
+;				 2/22/83	LAK		made all routines observe Pascal regsave conventions.
+;				  1/3/83	AJH		Got rid of update event, changed names of GetNextEvent and
+;									EventAvail
+;				10/16/82	LAK		Update events return 0 in D0 now for GetNextEvent and
+;									EventAvail.
+;				 10/1/82	LAK		A0 saved over checkupdate call now . . .
+;				 7/26/82	LAK		FLUSHEVENTS returns # of event type it stopped on, if any Added
+;									update events . . .
+;				  6/9/82	LAK		Moved keyboard auto-repeat function here
+;
+
+;
+;  This is the event manager for the MacIntosh Operating
+;  system.	It manipulates events on the system event queue.
+;  Its major routines are "PostEvent" which adds an event to the
+;  event queue, and "GetNextEvent" which returns the next event
+;  in the queue.  PostEvent may be called from an interrupt (level 1)
+;  or completion routine; all other routines in the event
+;  manager must be called from the main thread of execution.  There are
+;  two other Event Manager routines, "FlushEvents" and "EventAvail",
+;  giving a total of 4 routines.  Some of these routines call other ones,
+;  and all are accessible via operating system calls:
+;
+;		os call --> GetNextEvent		os call --> FlushEvents
+;						|
+;						v
+;		os call --> EventAvail
+;						|
+;			 (auto-key event generation)
+;						|
+;						v
+;		os call --> PostEvent
+;
+;  The Event Manager manages its own private buffer to get storage for the
+;  event queueing elements.  It does this because PostEvent runs at interrupt
+;  level and thus cannot call the standard storage allocator.
+;
+
+*R This excerpt restores PostEvent through FlushEvents.
+*R The ROM masks level 1 interrupts and uses the original word-sized KeyLast.
+*R Idle, Help Manager, Script Manager, and later InitEvents code are omitted.
+*R GetOSEvent retains the older return path, which does not preserve A0.
+*R See Evidence/oseventmgr.json for the original source and ROM comparison.
+;
+		IMPORT DEQUEUE,ENQUEUE ;]
+
+        BLANKS ON
+        STRING ASIS
+        MACHINE MC68000
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+
+
+Events PROC EXPORT
+        EXPORT PostEvent,GetOSEvent,OSEventAvail,FlushEvents ;]
+NoEvtAvail EQU -1
+EvtOffset EQU 6
+
+;_______________________________________________________________________
+;
+; Routine:		PostEvent
+;
+; Arguments:	  A0 (input)   --  event number (16-bit)
+;				  D0 (input)   --  event message (32-bit)
+;				  D0 (output)  --  result: 0=event posted, 1=not posted
+;				  A0 (output)  --  ptr to event queue element if posted (used
+;									internally by Eventavail)
+;
+; Function: 	This routine adds an event to the system event queue. The
+;				specified eventnumber and event message are logged for the
+;				event. The current time, mouse position, state of command
+;				key, option key, shift key, alpha lock key, and mouse button
+;				are additional event queueing elements included in
+;				each event.  An event is only posted if enabled by the System
+;				Event Mask; if not enabled, a result code of 1 is returned.
+;				This routine will delete the first element of the event queue
+;				(the oldest element), if the queue is full, to make room for
+;				the new event: this guarantees that an enabled event will be
+;				posted.
+;
+;				So that events of the same type are received and
+;				logged in correct time order of occurrance, the calling routine
+;				should disable further interrupts from the same source until
+;				the event has been posted.	This works since each event type
+;				typically has but one source.  All interrupts are disabled
+;				during this routine, first to guarantee the integrity of the
+;				free buffer allocation and second to enforce the time-ordering
+;				of events.	Currently, only level 1 interrupts are masked because
+;				SCC interrupts do not generate any events; if that changes (e.g.,
+;				and SCC system error event is defined), SCC interrupts would
+;				also have to be masked.
+;
+;				PostEvent can be called by EventAvail to post an auto-key event;
+;				it is never called to post an update event.
+;
+; Calling sequence: 	  MOVE.W  #eventnumber,A0
+;						  MOVE.L  #message,D0
+;						 _PostEvent
+;
+; Other:		uses D0,D1,D2,A0,A1
+;_______________________________________________________________________
+
+PostEvent
+
+
+				MOVE.W	SysEvtMask,D2		; system event mask
+				MOVE.W	A0,D1				; event number
+				BTST	D1,D2				; is this event enabled?
+				BNE.S	GetFreeOne
+				MOVEQ	#EvtNotEnb,D0		; if not, skip all this stuff
+				RTS
+
+GetFreeOne		MOVE	SR,-(SP)			; save interrupt state
+				MOVE.L	D0,-(SP)			; event message
+				MOVE.W	A0,-(SP)			; event number
+
+				MOVE.L	SysEvtBuf,A0		; get address of system event buffer
+				ADDQ.L	#EvtOffset,A0		; point to event record ($FFFF=free)
+
+				MOVEQ	#EvtQBlkSize,D0 	; for speed
+				MOVEQ	#-1,D1				; ibid
+				SUB 	D0,A0				; back pointer down one
+				MOVE.W	EvtBufCnt,D2		; event buffer count - 1
+
+; no interrupts, please
+				ORI 	#LoIntMask,SR ;]
+
+GetEbufLoop 	ADD 	D0,A0				; bump to next event queue element
+				CMP.W	EvtNum(A0),D1		; is this element free?
+				DBEQ	D2,GetEbufLoop		; loop till we get one or no more left
+
+				LEA 	EventQueue,A1		; point A1 to queue header
+				BEQ.S	GotEvtElement		; Z-flag set from CMP only
+
+; no more event buffers available.	remove first queue element for a wraparound
+; (queue elements are added at the end of the queue, so the first element
+; has been around the longest . . .); there must be >1 elements in the queue
+; since there are no free elements and given that 29 interrupting processes cannot
+; grab elements and not post them into the queue.
+
+				MOVE.L	QHead(A1),A0		; point A0 to first queue element
+				MOVE.L	QLink(A0),QHead(A1) ; special case delete: first element
+											;  of a queue of length > 1
+											; now A0 points to a free element
+				ADDQ.L	#EvtOffset,A0		; point to event record part
+
+;	We got an event queueing element, so fill in the system info and queue it up
+
+GotEvtElement	MOVE.W	(SP)+,EvtNum(A0)	; set up the event number
+				MOVE.L	(SP)+,EvtMessage(A0) ; set up the message
+				BSR.S	FillRecord			; fill out the rest of the record
+
+				SUBQ.L	#EvtOffset,A0		; and point to start of queue element
+				MOVE	#EvType,QType(A0)	; set up the q-element type field
+				JSR 	ENQUEUE	;] let queueing routines queue it up
+				MOVE	(SP)+,SR			; restore interrupt state
+				MOVEQ	#0,D0				; zero result code
+				RTS 						; and return
+
+;	FillRecord fills out the standard fields in an event record pointed to by A0
+
+FillRecord		MOVE.L	Ticks,EvtTicks(A0)	; fill in the current time
+				MOVE.L	Mouse,EvtMouse(A0)	; and the current mouse point
+
+				MOVE	KeyMap+6,D1 		; get meta-key states
+				ROL.W	#1,D1				; rotate around
+				MOVE.B	D1,EvtMeta(A0)		; update metakey field
+
+				MOVE.B	MBState,EvtMBut(A0) ; get mouse button state
+
+				RTS
+
+;_______________________________________________________________________
+;
+; Routine:		OSEventavail
+;
+; Arguments:	  A0 (input)   --  pointer to user event record (32-bit)
+;				  D0 (input)   --  set of events desired (event mask)
+;				  D0 (output)  --  0=non-null event returned, -1=null event
+;									returned
+;				  A0 (output)  --  pointer to user event record
+;				  A1 (output)  --  pointer to event queue element when D0=0
+;									(used internally by GetNextEvent)
+;
+; Function: 	This routine polls for availability of certain types of events.
+;				The user-specified event record format is identical to that of
+;				the queue element, except for the queue header fields.	If no
+;				events are available, the null event is returned along with
+;				a -1 result code in D0.
+;
+;				EventAvail is also called by GetNextEvent.
+;
+; Calling sequence: 	  MOVE.W  #EventMask,D0
+;						  LEA	  EventBuffer,A0
+;						  _EventAvail
+;
+; Other:		uses D0,D1,D2,A0,A1
+;_______________________________________________________________________
+
+OSEventAvail
+			LEA 	EventQueue,A1			; get address of event queue
+
+;	Since PostEvent could dequeue the first element at any time, the event you
+;	are on may suddenly be recycled and you may end up dequeueing a different event
+;	or suddenly find yourself at the end of the queue when you were just at the
+;	beginning. By disabling interrupts during the search, this is avoided.
+
+				MOVE	SR,-(SP)			; save interrupt state
+; no event-generating interrupts
+				ORI 	#LoIntMask,SR ;]
+				MOVE.L	QHead(A1),D1		; get address of 1st element
+				BEQ.S	TstAutoEvent		; if nil, check for auto events
+
+EventALoop		MOVE.L	D1,A1				; get pointer into A-reg
+				MOVE	EvtNum+EvtOffset(A1),D1  ; get its event number
+				BTST	D1,D0				; is it one we want?
+				BNE.S	GotEventAvail		; if so, we got one!
+				MOVE.L	QLink(A1),D1		; follow the link to the next one
+				BNE.S	EventALoop			; if we got one, check it out
+
+;	there wasn't an event in the queue for us, so check for auto events
+
+TstAutoEvent	AND.W	SysEvtMask,D0		; figure in system mask for pseudo-evts
+; key down to autorepeat?
+                TST.W   KeyLast ;]
+                BEQ.S   NoEventAvail             ; if not, return null event
+                BTST    #AutoKeyEvt,D0           ; do we want this kind?
+                BEQ.S   NoEventAvail             ; go on if not
+
+				MOVE.L	Ticks,D1			; check first threshold
+				MOVE.L	D1,D2
+				SUB.L	KeyTime,D1
+				CMP 	KeyThresh,D1
+				BLT.S	NoEventAvail		; br if not time yet
+
+				SUB.L	KeyRepTime,D2		; check second threshold
+				CMP 	KeyRepThresh,D2
+				BLT.S	NoEventAvail		; br if not time yet
+
+				MOVE.L	Ticks,KeyRepTime	; repeat it: first note the time
+				MOVE.L	A0,-(SP)			; save pointer to user's buffer
+				MOVE	#AutoKeyEvt,A0		; get event number
+				MOVEQ   #0,D0
+                MOVE.W  KeyLast,D0               ;] event message from the last key
+; go post it
+				BSR.W	PostEvent ;]
+				MOVE.L	A0,A1				; get pointer to event queue element
+				MOVE.L	(SP)+,A0			; restore pointer to user's buffer
+											; and return the event
+GotEventAvail	
+				MOVE	(SP)+,SR			; restore interrupt state
+				MOVEQ	#(EvtBlkSize/4),D0	; get size of evt record in longwords
+				MOVEM.L A0-A1,-(SP) 		; preserve regs
+; bump to record part of event element
+				ADDQ.L	#EvtOffset,A1 ;]
+				
+
+@1				MOVE.L	(A1)+,(A0)+ 		; move it into user's buffer
+				SUBQ	#1,D0
+				BNE.S	@1					; loop till done
+
+				MOVEM.L (SP)+,A0-A1 		; get regs back
+				RTS 						; D0 is zero
+
+; there wasn't any event available so return the null event in the users event
+; record and a flag in D0
+
+NoEventAvail	BSR.W	FillRecord			; fill in record for null events
+				MOVE	(SP)+,SR			; restore interrupt state
+				CLR.W	EvtNum(A0)			; return the null event
+				CLR.L	EvtMessage(A0)		; zero message for null events
+				MOVEQ	#NoEvtAvail,D0		; and D0 non-zero
+
+				RTS
+
+;_______________________________________________________________________
+;
+; Routine:		GetOSEvent
+;
+; Arguments:	  A0 (input)   --  pointer to user event buffer (32-bit)
+;				  D0 (input)   --  type of event desired (event mask)
+;				  D0 (output)  --  0=non-null event returned, -1=null event
+;									returned
+;
+; Function: 	This routine returns the next event in the system event queue.
+;				The returned event is dequeued, thereby freeing up the space
+;				which holds that queue element.  If no events of the types
+;				enabled by the mask exist, the null event is returned.
+;
+; Calling sequence: 	  MOVE.W  #EventMask,D0
+;						  LEA	  EventBuffer,A0
+;						  _GetNextEvent
+;
+; Other:		uses D0,D1,D2,A0,A1
+;_______________________________________________________________________
+	
+GetOSEvent
+; first find the event
+	BSR.W	OSEventAvail ;]
+				BNE.S	@EventDone			; don't dequeue null or update events
+				MOVE.L	A1,A0				; pointer to event queue element
+				LEA 	EventQueue,A1		; A1 points to the queue
+				BSR.S	DeleteEvt			; get rid of it
+
+				MOVEQ	#0,D0				; exit with result code 0
+
+@EventDone
+				rts
+				
+DeleteEvt
+		JSR 	DEQUEUE	;] dequeue it (D0 destroyed)
+				MOVE	#$FFFF,EvtNum+EvtOffset(A0) ; and release its storage
+				RTS
+
+;_______________________________________________________________________
+;
+; Routine:		FlushEvents
+;
+; Arguments:	  D0 (input)   --  low word: events to remove (event mask)
+;								  high word: events on which to stop (event mask)
+;				  D0 (output)  --  event type of event which terminated search
+;
+; Function: 	This routine removes events of type specified by the caller. On
+;				entry, D0 contains a long word of two 16-bit event masks. The
+;				low-order 16 bits contains a mask of events to remove, and the
+;				high-order 16 bits contains a mask of events that, once
+;				encountered, terminate the event removal process.
+;
+; Calling sequence: 	  MOVE.L  #EventMasks,D0
+;						  _FlushEvents
+;
+; Other:		uses D0,D1,D2,A0,A1
+;_______________________________________________________________________
+
+FlushEvents 	MOVE	SR,-(SP)			; save interrupt state
+				MOVEM.L D3-D4,-(SP) 		; preserve Pascal regs
+
+; put a -1 into LastSPExtra (long) for the FontMGR (fixes a bug when under Switcher).
+
+				MOVEQ	#-1,D1				;								<28-Oct-85>
+				MOVE.L	D1,LastSPExtra		;								<28-Oct-85>
+
+				MOVE.L	D0,D1
+				SWAP	D1					; mask of events to stop on
+				MOVE.W	D0,D4				; mask of events to remove
+				AND.W	FlEvtMask,D4		; only flush masked events		<03Mar85>
+				LEA 	EventQueue,A1		; A1 points to the queue
+
+;	Since PostEvent could dequeue the first element at any time, the event you
+;	are on may suddenly be recycled and you may end up dequeueing a different event
+;	or suddenly find yourself at the end of the queue when you were just at the
+;	beginning. By disabling interrupts during the search, this is avoided.
+
+; no event-generating interrupts
+				ORI 	#LoIntMask,SR ;]
+				MOVE.L	QHead(A1),D3		; get pointer to first element
+				BEQ.S	AllFlushed			; if nothing there, we're done
+
+FEventLoop		MOVE.L	D3,A0				; get pointer into A-reg
+				MOVE.L	QLink(A0),D3		; save the link
+				MOVE	EvtNum+EvtOffset(A0),D2  ; get number of current event
+				BTST	D2,D1				; is it in the stop mask?
+				BNE.S	FlushStop			; if so, stop
+				BTST	D2,D4				; is it one to delete?
+				BEQ.S	NoFlush 			; if not, skip
+				BSR.S	DeleteEvt			; otherwise, delete it (clobbers D0)
+
+NoFlush 		TST.L	D3					; any more to do?
+				BNE.S	FEventLoop			; if so, loop
+
+AllFlushed		MOVEQ	#0,D2				; exit with 0 result code
+
+FlushStop		MOVEM.L (SP)+,D3-D4 		; restore regs
+				MOVE	D2,D0				; exit with number of event we stopped
+				EXT.L	D0					; make result long								<07Jun85>
+				MOVE.W	(SP)+, SR			;  on as our result
+				RTS
+
+				END 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

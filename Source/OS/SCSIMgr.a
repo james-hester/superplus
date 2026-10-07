@@ -1,0 +1,684 @@
+;-----------------------------------------------------------
+;
+;	File:		SCSIMgrOld.a
+;
+;	Written by:	Erich Ringewald
+;
+;	Copyright:	© 1985-1993 by Apple Computer, Inc.  All rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/29/85	ELR		Added compare function to the microinterpreter.
+;				10/28/85	ELR		Lowered the wait on /SEL a little to improve boot performance.
+;				10/28/85	ELR		Added code for a SCSIStat function.
+;				10/27/85	ELR		Removed the scsibootequ because it is now in newequ.
+;				10/24/85	ELR		Added the read/write program block interpreter to make data
+;									transfer much more flexible.
+;				10/23/85	ELR		Vastly simplify data Xfer operations in anticipation of command
+;									block support
+;				 9/27/85	ELR		Now returns proper phase error on reads/writes...
+;				 9/18/85	ELR		Added support for blind reads/writes on Mac.
+;				 9/17/85	RDC		Added fix for handling > 127 block request
+;				 9/16/85	RDC		Added changes for MidMac
+;				 9/13/85	RDC		Added include of HWequ.text which now has SCSI equ's
+;				 9/10/85	ELR		Changed StdEntry/StdExit to be more code efficient.
+;				  9/9/85	ELR		Fixed Select so the bit ID selection is correct.
+;				  9/6/85	ELR		New Today.
+;
+;	To Do:
+;
+;-----------------------------------------------------------
+;
+;	SCSI Manager for the Macintosh
+;
+;	Written by Erich Ringewald
+;
+;	(C) Copyright Apple Computer, Inc. 1985, 1986, 1987
+;	All Rights Reserved.
+;
+;-----------------------------------------------------------
+
+*R Mac Plus v3 ROM, $41712C through $4175D1.
+*R The header and retained body comments come from SCSIMgrOld.a.
+*R The history above retains entries through 1985. Later changes are omitted.
+*R A3 holds the read base; A4 holds the write base; D7 holds zero.
+*R ROM instructions restore the dispatcher, transfer loops and timing constants.
+*R Preserve the SP operands in DoSCSIStat and the original TIB loop behavior.
+*R ReadCDIO, ResetDrive and DataXfer labels describe restored ROM routines.
+*R See Evidence/scsimgr.json for source references and verification.
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'SCSI.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+
+
+
+SCSIOld         PROC    EXPORT
+                EXPORT  SCSIMgr
+
+;
+;	A SCSI Function request handler. SCSI's are invoked by params on
+;	stack followed by a routine selector Int, and return address.
+;	NOTE: SCSIMgr is a Toolbox trap & follows Pascal calling conventions.
+;
+SCSIMgr
+                move.l  (sp)+,a0             ; get the return address
+                move.w  (sp)+,d0             ; function selector (word)
+                move.l  a0,-(sp)             ; push the return address
+SCSI
+                lea     JmpTable,a0 ;]
+                move.w  d0,d1                ; save a copy of selector
+                lsl.w   #2,d0
+                jmp     0(a0,d0.w) ;]
+JmpTable ;]
+                bra.w   DoSCSIReset ;]
+                bra.w   DoSCSIGet ;]
+                bra.w   DoSCSISelect ;]
+                bra.w   DoSCSICmd ;]
+                bra.w   DoSCSIComplete ;]
+                bra.w   DoSCSIRead ;]
+                bra.w   DoSCSIWrite ;]
+                bra.w   DoSCSIInstall ;]
+                bra.w   DoSCSIRead ;]
+                bra.w   DoSCSIWrite ;]
+                bra.s   DoSCSIStat ;]
+DoSCSIInstall
+                rts
+
+;--------------------------------------------------------------------------
+;
+;	FUNCTION SCSIStat: INTEGER;
+;						(8)
+;
+;	Get SCSI bus status.
+;
+DoSCSIStat
+                bsr.w   StdEntry
+; get real Bus and Status contents
+                move.b  sBSR(a3),8(sp) ;]
+; get real Current SCSI Bus Status contents
+                move.b  sCSR(a3),9(sp) ;]
+                bra.s   NoByteExit
+
+;--------------------------------------------------------------------------
+;
+;	FUNCTION SCSIReset: INTEGER;
+;						(8)
+;
+;	Hard reset the SCSI bus.
+;
+DoSCSIReset
+                bsr.w   StdEntry
+                bsr.w   ResetDrive ;]
+NoByteExit
+                moveq.l #0,d0                ; no arguments to clean up
+                bra.w   SCSIStdExit
+
+;--------------------------------------------------------------------------
+;
+;	FUNCTION SCSIGet: INTEGER;
+;						(8)
+;
+;	Arbitrate for the SCSI bus. Returns 0 for success, or error.
+;
+DoSCSIGet
+                bsr.w   StdEntry
+                bsr.w   Arbitrate
+SCARBDONE
+                move.w  d0,8(a6)             ; return code
+                bra.s   NoByteExit
+
+;--------------------------------------------------------------------------
+;
+;	FUNCTION SCSISelect(TargID:INTEGER): INTEGER;
+;						  (8) 			   (10)
+;
+;	Select the target on the bus. Returns 0 for success, or error.
+;
+DoSCSISelect
+                bsr.w   StdEntry
+                move.w  8(a6),d0             ; get the target's ID
+                bsr.w   Select              ; try it
+SCSELDONE
+                move.w  d0,10(a6)            ; return the result
+                moveq.l #2,d0                ; stack cleanup
+                bra.w   SCSIStdExit
+
+;--------------------------------------------------------------------------
+;
+;	FUNCTION SCSICmd(Buffer:Ptr, Count:INTEGER): INTEGER;
+;					  (10)		  (8)			   (14)
+;
+;  Send the target the given command. Returns 0 for success, or error.
+;
+DoSCSICmd
+                bsr.w   StdEntry
+                move.l  10(a6),a2
+                move.w  8(a6),d2
+                bsr.w   SendCMD             ; send it
+SCCOMMAND
+                move.w  d0,14(a6)            ; return the result
+                moveq.l #6,d0
+                bra.w   SCSIStdExit
+
+;
+;	SCSIRead, SCSIRBlind, SCSIWrite, SCSIWBlind
+;
+;	Called by:	Toolbox Trap Dispatcher
+;
+;	Function:	Performs TIB interpretation, and data transfers.
+;
+DoSCSIRead
+                bsr.w   StdEntry
+dataCommon
+                cmp.w   #8,d1
+                blt.s   getTIB ;]
+                bset    #15,d4
+getTIB ;]
+                move.l  8(a6),a1             ; get the TIB pointer
+@exec
+                move.w  scOpcode(a1),d0      ; get the function opcode
+                move.l  scParam1(a1),a2      ; get the generic address
+                move.l  scParam2(a1),d2      ; get the generic count
+                subq.w  #1,d0
+                beq.s   @c_inc ;]
+                subq.w  #1,d0
+                beq.s   @c_noinc ;]
+                subq.w  #1,d0
+                beq.s   @c_add ;]
+                subq.w  #1,d0
+                beq.s   @c_move ;]
+                subq.w  #1,d0
+                beq.s   @c_loop ;]
+                subq.w  #1,d0
+                beq.s   @c_nop ;]
+                subq.w  #1,d0
+                beq.s   @c_stop ;]
+                subq.w  #1,d0
+                beq.s   @c_compare ;]
+                moveq.l #scBadparmsErr,d0     ; bad opcode
+                bra.s   @data_end
+@c_inc
+                bsr.w   DataXfer
+                bne.s   @data_end            ; if error, bail out
+                add.l   d2,scParam1(a1)      ; increment the pointer
+                bra.s   @next_cmd
+@c_noinc                                    ; NOINC addr,count
+                bsr.w   DataXfer
+                bne.s   @data_end            ; if error, exit
+                bra.s   @next_cmd            ; else process next command
+@c_add                                      ; ADD addr,data
+                add.l   d2,(a2)              ; the count added to the where
+                bra.s   @next_cmd            ; process the next command
+@c_move                                     ; MOVE addr1,addr2
+                move.l  d2,a0                ; get the destination address
+                move.l  (a2),(a0)             ; simple enough
+                bra.s   @next_cmd            ; process the next command
+@c_loop                                     ; LOOP relative addr,count
+                subq.l  #1,d2                ; drop the count
+                beq.s   @c_stop ;]
+                move.l  d2,scParam2(a1)       ; put the count back for next time
+                add.l   a2,a1                ; modify the command pointer
+                bra.s   @exec                ; and process the next command
+@c_stop
+                moveq.l #noErr,d0             ; indicate no error
+                bra.s   @data_end
+@c_compare
+                move.b  #1,d4
+                bra.s   @c_inc
+@next_cmd
+@c_nop                                      ; also NOP, just skip the command
+                add.w   #scSize,a1           ; point to the next TIB instruction
+                bra.s   @exec
+@data_end
+                move.w  d0,12(a6)            ; return the result
+                moveq.l #4,d0                ; stack cleanup
+                bra.w   SCSIStdExit
+DoSCSIWrite
+                bsr.w   StdEntry
+                st      d4
+                bra.w   dataCommon
+
+;--------------------------------------------------------------------------
+;
+;	FUNCTION SCSIComplete(VAR Stat, Message: INTEGER; wait:LongInt): INTEGER;
+;							  (16)   (12) 					(8) 	   (20)
+;
+;	Complete the SCSI command. Returns 0 for success, or error.
+;
+DoSCSIComplete
+                bsr.s   StdEntry
+SCSIComplete
+                move.l  Ticks,d6
+                add.l   8(a6),d6
+chkStatus ;]
+                moveq.l #0,d2
+                bsr.w   GetStat             ; try to get the status
+; worked OK
+                beq.s   gotStatus ;]
+                cmp.b   #scPhaseErr,d0       ; phase error?
+; no, business as usual
+                bne.s   checkTime ;]
+                bsr.w   CyclePhase          ; only called for phase errors
+checkTime ;]
+                cmp.l   Ticks,d6
+                ble.s   completeDone ;]
+                bra.s   chkStatus ;]
+gotStatus ;]
+                move.l  16(a6),a1            ; get the Status ptr
+                move.w  d2,(a1)
+                bsr.w   GetMsg
+                bne.s   completeDone ;]
+                move.l  12(a6),a1            ; get the Message ptr
+                move.w  d2,(a1)              ; return the Message byte
+completeDone ;]
+                move.w  d0,20(a6)
+                moveq.l #12,d0               ; stack cleanup
+                bra.s   SCSIStdExit
+
+StdEntry
+SCSTDENT
+                move.l  (sp)+,a0
+                link    a6,#0
+                movem.l a2-a4/d2-d7,-(sp)
+                move.l  #SCSIRd,a3 ;]
+                move.l  #SCSIWr,a4 ;]
+                moveq.l #0,d7
+                moveq.l #0,d4
+                jmp     (a0)
+SCSIStdExit
+                movem.l (sp)+,a2-a4/d2-d7
+                unlk    a6
+                move.l  (sp)+,a0             ; get return address
+                add.w   d0,sp                ; fixup the stack
+                jmp     (a0)
+
+;-------------------------------------------------------------------
+;
+;	Arbitrate for the SCSI bus.
+;
+Arbitrate
+; put my ID on bus
+                move.b  #$80,sODR(a4) ;]
+                move.b  #iARB,sMR(a4)        ; tell 5380 to go into arbitration
+                btst.b  #bAIP,sICR(a3)
+                beq.w   ArbErr ;]
+                bsr.w   busdelay            ; wait for bus to settle
+                btst.b  #bLA,sICR(a3)
+                bne.w   ArbErr ;]
+                moveq.l #0,d0
+                moveq.l #0,d2
+                move.b  sCDR(a3),d0          ; read data bus to check for higher priority dev
+                move.b  #$80,d2
+                eor.b   d2,d0                ; mask myid
+                cmp.w   d0,d2
+                blt.s   ArbErr ;]
+                btst.b  #bLA,sICR(a3)
+                bne.w   ArbErr ;]
+                clr.w   d0
+                rts
+ArbErr
+                move.b  d7,sMR(a4)           ; clear arbitration bit
+                move.b  #scCommErr,d0 ;]
+                rts
+
+;----------------------------------------------------------------
+;
+;	Select Device.
+;
+Select
+                moveq.l #1,d1                ; build the select mask...
+                lsl.b   d0,d1                ; shift the bit to the appropriate spot
+; set select
+                move.b  #iSEL,sICR(a4) ;]
+                bsr.w   busdelay            ; wait for bus to settle
+                move.b  #$80,d2              ; get ready to put myID and deviceID on bus
+                move.b  d7,sTCR(a4)          ; de-assert *I/O to become an initiator
+                or.b    d2,d1                ; merge myID and target ID
+; get device select value
+                move.b  d1,sODR(a4) ;]
+                move.b  #iBSY+iSEL+iDB,sICR(a4) ;]
+                move.b  d7,sMR(a4)           ; reset *ARB
+                move.b  d7,sSER(a4)          ; clear select int. enable reg
+                move.b  #iSEL+iDB,sICR(a4) ;]
+                bsr.w   busdelay            ; wait for bus to settle
+                moveq.l #125,d1 ;]
+                bsr.w   wfbsy               ; wait for *BSY
+; no BSY
+                bne.s   SelectExit ;]
+                bsr.w   busdelay            ; wait for bus to settle
+                clr.w   d0
+SelectExit ;]
+                move.b  d7,sICR(a4)          ; release the lines
+                rts
+
+;--------------------------------------------------------------------------
+;
+;
+;		Send Command. # bytes in d2. Command block pointer is in a2.
+;
+SendCMD
+; set phase match for command, dir=write
+                move.b  #iCD,sTCR(a4) ;]
+                move.l  #$BA94,d1 ;]
+                bsr.w   wfREQ
+; never a *REQ?
+                bne.s   SendCmdRts ;]
+                bsr.w   CheckPhase          ; everything in phase?
+; out of phase
+                bne.s   SendCmdRts ;]
+                subq.w  #1,d2                ; the lovely dbra command...
+NextCmdByte ;]
+                move.l  #$BA94,d1 ;]
+; load command byte
+                move.b  (a2)+,sODR(a4) ;]
+                move.b  #iDB,sICR(a4)        ; assert the data bus
+                bsr.w   wfREQ
+; nary a *REQ...
+                bne.w   SendCmdRts ;]
+                move.b  #iACK+iDB,sICR(a4)   ; set *ACK
+                move.l  #$BA94,d1 ;]
+                bsr.w   wfnREQ
+; didn't go away
+                bne.w   SendCmdRts ;]
+                move.b  d7,sICR(a4)          ; deassert *ACK and *DB
+; do this for all the bytes
+                dbra    d2,NextCmdByte ;]
+                clr.w   d0
+SendCmdRts ;]
+                rts
+
+*R the original DataXfer predates the split into SCSIMgrHW.a.
+*R D4 bit 15 selects blind transfer. Its low byte selects read, write or compare.
+DataXfer
+                movem.l d2/a1-a2,-(sp)
+                moveq.l #iIO,d0 ;]
+                tst.b   d4
+                bpl.s   PhaseSet ;]
+                moveq.l #0,d0
+PhaseSet ;]
+                move.b  d0,sTCR(a4) ;]
+                move.l  #$17528,d1 ;]
+                bsr.w   wfREQ
+                bne.w   XferExit ;]
+                bsr.w   CheckPhase
+                bne.w   XferExit ;]
+                move.b  #iDMA,sMR(a4)
+                tst.b   d4
+                bmi.s   XferWrite ;]
+                move.b  d7,sIDMArx(a4)
+                bra.s   XferSetup ;]
+XferWrite ;]
+                move.b  #iDB,sICR(a4)
+                move.b  d7,sDMAtx(a4)
+XferSetup ;]
+                move.l  a3,a0
+                move.l  a4,a1
+                move.w  #$200,d6 ;]
+                add.w   d6,a0
+                add.w   d6,a1 ;]
+                moveq.l #0,d0
+                moveq.l #bDMAR,d3
+                tst.w   d4
+                bmi.s   BlindStart ;]
+                tst.b   d4
+                beq.s   ReadLoop ;]
+                bmi.s   WriteLoop ;]
+CompareLoop
+                btst.b  d3,sBSR(a3)
+                beq.s   CompareLoop ;]
+                move.b  (a0),d1
+                cmp.b   (a2)+,d1
+                beq.s   CompareNext ;]
+                moveq.l #scCompareErr,d0
+CompareNext ;]
+                subq.l  #1,d2
+                bne.s   CompareLoop ;]
+                bra.s   RdDone
+ReadLoop ;]
+                btst.b  d3,sBSR(a3)
+                beq.s   ReadLoop ;]
+                move.b  (a0),(a2)+
+                subq.l  #1,d2
+                bne.s   ReadLoop ;]
+                bra.s   RdDone
+WriteLoop
+                btst.b  d3,sBSR(a3)
+                beq.s   WriteLoop
+                move.b  (a2)+,(a1)
+                subq.l  #1,d2
+                bne.s   WriteLoop ;]
+                bra.s   WrDone
+BlindStart ;]
+                btst.b  d3,sBSR(a3)
+                beq.s   BlindStart ;]
+                tst.b   d4
+                beq.s   BlindRead ;]
+                bmi.s   BlindWrite ;]
+BlindCompare ;]
+                move.b  (a0),d1
+                cmp.b   (a2)+,d1
+                beq.s   BlindCompareNext ;]
+                moveq.l #scCompareErr,d0
+BlindCompareNext ;]
+                subq.l  #1,d2
+                bne.s   BlindCompare ;]
+                bra.s   RdDone
+BlindRead ;]
+                move.b  (a0),(a2)+
+                subq.l  #1,d2
+                bne.s   BlindRead ;]
+                bra.s   RdDone
+BlindWrite ;]
+                move.b  (a2)+,(a1)
+                subq.l  #1,d2
+                bne.s   BlindWrite ;]
+WrDone
+                btst.b  d3,sBSR(a3)
+                beq.s   WrDone ;]
+RdDone
+                move.b  d7,sMR(a4)
+                move.b  d7,sICR(a4)
+XferExit ;]
+                tst.w   d0
+                movem.l (sp)+,d2/a1-a2
+                rts
+
+;--------------------------------------------------------------------------
+;
+;
+;		read status into d2.
+;
+GetStat
+; set phase match for status
+                move.b  #iCD+iIO,sTCR(a4) ;]
+                move.l  #$BA94,d1 ;]
+                bsr.w   wfREQ               ; wait for *REQ
+; no req
+                bne.s   GetStatExit ;]
+                bsr.w   CheckPhase          ; everything in phase
+; oops
+                bne.s   GetStatExit ;]
+                move.b  (a3),d2              ; load status byte
+; set *ACK
+                move.b  #iACK,sICR(a4) ;]
+                move.l  #$BA94,d1 ;]
+                bsr.w   wfnREQ              ; wait for req to go away
+; REQ didn't go away
+                bne.w   GetStatExit ;]
+                move.b  d7,sICR(a4)          ; deassert *ACK
+                clr.w   d0
+GetStatExit ;]
+                rts
+
+;--------------------------------------------------------------------------
+;
+;	GetMsg - get a message byte from target
+;				- returned in d2
+;
+GetMsg
+                move.b  #iMSG+iCD+iIO,sTCR(a4) ; set match for MSG phase
+                move.l  #$BA94,d1 ;]
+                bsr.w   wfREQ               ; wait for *REQ
+                bne.w   GetMsgExit ;]
+                bsr.w   CheckPhase          ; everything in phase
+; oops
+                bne.s   GetMsgExit ;]
+                moveq.l #0,d2                ; clear upper bytes
+                move.l  #$BA94,d1 ;]
+                move.b  (a3),d2              ; load message byte
+                move.b  #iACK,sICR(a4) ;]
+                bsr.w   wfnREQ
+                bne.w   GetMsgExit ;]
+                move.b  d7,sICR(a4)
+                clr.w   d0
+GetMsgExit ;]
+                rts
+
+*R no caller or original name has been established for ReadCDIO.
+ReadCDIO ;]
+                move.b  sCSR(a3),d0
+                and.b   #aCD+aIO,d0 ;]
+                rts
+
+busdelay
+                moveq.l #48,d0 ;]
+busdelayLoop ;]
+                dbra    d0,busdelayLoop ;]
+                rts
+
+ResetDrive ;]
+SCRESETDRV
+                move.w  sr,-(sp)
+                ori.w   #$300,sr
+                move.b  #iRST,sICR(a4) ;]
+                move.w  #100,d0
+ResetAssert ;]
+                dbra    d0,ResetAssert ;]
+                move.b  d7,sICR(a4)
+                move.w  (sp)+,sr
+                move.l  #$17528,d0 ;]
+ResetWait ;]
+                subq.l  #1,d0
+                bgt.s   ResetWait ;]
+                move.b  d7,sMR(a4)
+                rts
+
+;--------------------------------------------------------------------------
+;
+;	WFBSY -- WAIT for BSY
+;
+wfbsy
+                clr.w   d0
+wfbsyLoop ;]
+                btst.b  #bBSY,sCSR(a3)       ; test for *BSY
+                bne.s   wfbsyExit ;]
+                subq.l  #1,d1
+                bne.s   wfbsyLoop ;]
+                moveq.l #scCommErr,d0        ; return comm. error (timeout)
+wfbsyExit ;]
+                tst.w   d0
+                rts
+
+wfnBSY ;]
+                clr.w   d0
+wfnBSYLoop ;]
+                btst.b  #bBSY,sCSR(a3)
+                beq.w   wfnBSYExit ;]
+                subq.l  #1,d1
+                bne.s   wfnBSYLoop ;]
+                moveq.l #scCommErr,d0
+wfnBSYExit ;]
+                tst.w   d0
+                rts
+
+;--------------------------------------------------------------------------
+;
+;	WFNREQ -- WAIT for not *REQ
+;
+wfnREQ
+                clr.w   d0
+wfnREQLoop ;]
+                btst.b  #bREQ,sCSR(a3)       ; test for *REQ
+                beq.w   wfnREQExit ;]
+                subq.l  #1,d1
+                bne.s   wfnREQLoop ;]
+                moveq.l #scCommErr,d0        ; return comm. error (timeout)
+wfnREQExit ;]
+                tst.w   d0
+                rts
+
+;--------------------------------------------------------------------------
+;
+;	WFREQ -- WAIT for *REQ
+;
+wfREQ
+                clr.w   d0
+wfREQLoop ;]
+                btst.b  #bREQ,sCSR(a3)       ; test for *REQ
+                bne.w   wfREQExit ;]
+                subq.l  #1,d1
+                bne.s   wfREQLoop ;]
+                moveq.l #scCommErr,d0        ; return comm. error (timeout)
+wfREQExit ;]
+                tst.w   d0
+                rts
+
+;----------------------------------------------------------------
+;
+;	CyclePhase -- we may have to discard data or write filler bytes to get to
+;				  the desired phase
+;
+CyclePhase
+                bsr.s   wfREQ               ; wait for *REQ
+                bne.s   CycleRts
+                btst.b  #bPM,sBSR(a3)        ; check for phase match
+                bne.s   CycleRts0 ;]
+                move.b  sTCR(a3),d3          ; save our desired phase
+                move.b  sCSR(a3),d2          ; get current phase
+                asr.l   #2,d2
+                and.b   #$07,d2
+; and match it
+                move.b  d2,sTCR(a4) ;]
+                btst.b  #bIO,sCSR(a3)        ; direction in or out?
+                beq.s   WriteFiller         ; do write
+                move.b  (a3),d2              ; else read byte
+; set *ACK
+                move.b  #iACK,sICR(a4) ;]
+                bra.s   CycleHndshk
+WriteFiller
+                move.b  #iDB,sICR(a4)        ; assert the data bus
+                move.b  #1,sODR(a4) ;]
+                move.b  #iACK+iDB,sICR(a4)   ; set *ACK
+CycleHndshk
+                bsr.s   wfnREQ              ; let the xfer happen
+                bne.s   CycleRts            ; oops
+                move.b  d7,sICR(a4)          ; deassert *ACK and *DB
+; replace original phase
+                move.b  d3,sTCR(a4) ;]
+                bsr.w   busdelay            ; wait for bus to settle
+                btst.b  #bPM,sBSR(a3)        ; look if we now have a phase match
+; loop until we do...
+                beq.s   CyclePhase ;]
+CycleRts0 ;]
+                clr.w   d0
+CycleRts
+                rts
+
+;----------------------------------------------------------
+;
+;	CheckPhase. See if the phase is correct; if not, return a
+;	phase error.
+;
+CheckPhase
+                clr.w   d0
+                btst.b  #bPM,sBSR(a3)        ; examine the phase
+; -> phase matches
+                bne.s   CheckPhaseExit ;]
+                moveq.l #scPhaseErr,d0
+CheckPhaseExit ;]
+                tst.w   d0                  ; set conditions
+                rts
+
+                END

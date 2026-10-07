@@ -1,0 +1,466 @@
+{
+  "module": "QuickDraw/Bitmaps.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Bitmaps.a",
+  "source_sha256": "c8b972749454ffa7165cde2633f562b61d0ac46deaf07985441a7fc909d3c623",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/Bitmaps.m.a",
+    "sha256": "6e0fbc99efb19d665c522d69e0af88a76996ba2af136e2a2077660fd666819f9",
+    "instruction_lines": [
+      20,
+      1067
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        184
+      ],
+      [
+        210,
+        212
+      ],
+      [
+        228,
+        237
+      ],
+      [
+        248,
+        274
+      ],
+      [
+        281,
+        290
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        529
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40c8cc",
+      "end_address_exclusive": "0x40d062",
+      "rom_offset": "0xc8cc",
+      "length": 1942,
+      "sha256": "9d03bffab08581d636d4a86bdd19c6c8cf60cdb2ced3695c038bab1ba47be15f",
+      "first_symbol": "StdBits",
+      "last_symbol": "UnpackBits"
+    }
+  ],
+  "symbols": {
+    "StdBits": "0x40c8cc",
+    "CopyBits": "0x40ca4a",
+    "CopyMask": "0x40caf0",
+    "SeedFill": "0x40cd30",
+    "CalcMask": "0x40cd38",
+    "ScrollRect": "0x40ce8e",
+    "PackBits": "0x40cf8c",
+    "DOPACK": "0x40cf8c",
+    "UnpackBits": "0x40d01c"
+  },
+  "manifest_entry": {
+    "name": "bitmaps",
+    "source": "Reconstruction/Source/QuickDraw/Bitmaps.a",
+    "start": "0x40c8cc",
+    "end_exclusive": "0x40d062",
+    "entry_points": {
+      "StdBits": "0x40c8cc",
+      "CopyBits": "0x40ca4a",
+      "CopyMask": "0x40caf0",
+      "SeedFill": "0x40cd30",
+      "CalcMask": "0x40cd38",
+      "ScrollRect": "0x40ce8e",
+      "PackBits": "0x40cf8c",
+      "DOPACK": "0x40cf8c",
+      "UnpackBits": "0x40d01c"
+    }
+  },
+  "external_routines": {
+    "CheckPic": "0x40e448",
+    "PutPicByte": "0x40e2aa",
+    "PutPicWord": "0x40e2bc",
+    "PutPicRgn": "0x40e32c",
+    "PutPicData": "0x40e28e",
+    "StretchBits": "0x40d062",
+    "ShieldCursor": "0x4082fe",
+    "HideCursor": "0x4082f2",
+    "ShowCursor": "0x4082f8",
+    "RSect": "0x40a110",
+    "InitRgn": "0x40c2c6",
+    "SeekRgn": "0x40c2fe",
+    "XorSlab": "0x408642",
+    "NewRgn": "0x40bd4e",
+    "RectRgn": "0x40beb4",
+    "SectRgn": "0x40bfde",
+    "CopyRgn": "0x40bdfe",
+    "OffsetRgn": "0x40bec2",
+    "SetEmptyRgn": "0x40be4c",
+    "DiffRgn": "0x40bfe6",
+    "RgnBlt": "0x40a732"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete Bitmaps.m.a routine set in its original order, including applicable comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ. Made short branches explicit where the ROM uses them."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "restoration",
+      "upstream_lines": [
+        924,
+        959
+      ],
+      "description": "Removed the PackBits chunk wrapper added in March 1989 and its patch comments. The ROM enters the original packing loop directly. Kept DOPACK as an alias for PackBits."
+    },
+    {
+      "kind": "restoration",
+      "upstream_line": 164,
+      "description": "Restored the direct PC-relative JSR to PackBits. The later source calls the _PackBits trap so a patch can intercept it. Removed the later patch marker from this instruction comment."
+    },
+    {
+      "kind": "configuration",
+      "description": "Selected the Mac Plus Toolbox table at $C00."
+    },
+    {
+      "kind": "traps",
+      "description": "Defined the existing _DisposHandle calls as the ROM trap word $A023."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 65,
+      "original": "JSR \tCHECKPIC",
+      "restored": "JSR\tCHECKPIC(PC)"
+    },
+    {
+      "upstream_line": 101,
+      "original": "ADD \t#7,D0",
+      "restored": "ADDQ\t#7,D0"
+    },
+    {
+      "upstream_line": 123,
+      "original": "ADD.B\t#1,(SP)",
+      "restored": "ADDQ.B\t#1,(SP)"
+    },
+    {
+      "upstream_line": 127,
+      "original": "ADD.B\t#8,(SP)",
+      "restored": "ADDQ.B\t#8,(SP)"
+    },
+    {
+      "upstream_line": 128,
+      "original": "NOPACK\tJSR \tPutPicByte",
+      "restored": "NOPACK\tJSR\tPutPicByte(PC)"
+    },
+    {
+      "upstream_line": 132,
+      "original": "JSR \tPutPicData",
+      "restored": "JSR\tPutPicData(PC)"
+    },
+    {
+      "upstream_line": 136,
+      "original": "JSR \tPutPicData",
+      "restored": "JSR\tPutPicData(PC)"
+    },
+    {
+      "upstream_line": 139,
+      "original": "JSR \tPutPicData",
+      "restored": "JSR\tPutPicData(PC)"
+    },
+    {
+      "upstream_line": 141,
+      "original": "JSR \tPutPicWord",
+      "restored": "JSR\tPutPicWord(PC)"
+    },
+    {
+      "upstream_line": 146,
+      "original": "JSR \tPutPicRgn",
+      "restored": "JSR\tPutPicRgn(PC)"
+    },
+    {
+      "upstream_line": 164,
+      "original": "_PackBits",
+      "restored": "JSR\tPackBits(PC)"
+    },
+    {
+      "upstream_line": 169,
+      "original": "JSR \tPutPicByte",
+      "restored": "JSR\tPutPicByte(PC)"
+    },
+    {
+      "upstream_line": 172,
+      "original": "JSR \tPutPicData",
+      "restored": "JSR\tPutPicData(PC)"
+    },
+    {
+      "upstream_line": 182,
+      "original": "JSR \tPutPicData",
+      "restored": "JSR\tPutPicData(PC)"
+    },
+    {
+      "upstream_line": 200,
+      "original": "MASKOK\tJSR \tSTRETCHBITS",
+      "restored": "MASKOK\tJSR\tSTRETCHBITS(PC)"
+    },
+    {
+      "upstream_line": 239,
+      "original": "JSR \tSHIELDCURSOR",
+      "restored": "JSR\tSHIELDCURSOR(PC)"
+    },
+    {
+      "upstream_line": 270,
+      "original": "MASKOK\tJSR \tSTRETCHBITS",
+      "restored": "MASKOK\tJSR\tSTRETCHBITS(PC)"
+    },
+    {
+      "upstream_line": 291,
+      "original": "JSR \tSHOWCURSOR",
+      "restored": "JSR\tSHOWCURSOR(PC)"
+    },
+    {
+      "upstream_line": 372,
+      "original": "JSR\t  RSECT",
+      "restored": "JSR\tRSECT(PC)"
+    },
+    {
+      "upstream_line": 374,
+      "original": "JSR\t  HideCursor",
+      "restored": "JSR\tHideCursor(PC)"
+    },
+    {
+      "upstream_line": 396,
+      "original": "JSR\t  INITRGN",
+      "restored": "JSR\tINITRGN(PC)"
+    },
+    {
+      "upstream_line": 410,
+      "original": "JSR\t  XorSlab",
+      "restored": "JSR\tXorSlab(PC)"
+    },
+    {
+      "upstream_line": 416,
+      "original": "BRA\t  AGAIN",
+      "restored": "BRA.S\tAGAIN"
+    },
+    {
+      "upstream_line": 510,
+      "original": "JSR\t  SEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 513,
+      "original": "JSR\t  SEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 550,
+      "original": "ADD\t  #1,D5",
+      "restored": "ADDQ\t#1,D5"
+    },
+    {
+      "upstream_line": 552,
+      "original": "BNE\t  NEXTROW",
+      "restored": "BNE.S\tNEXTROW"
+    },
+    {
+      "upstream_line": 554,
+      "original": "JSR\t  SHOWCURSOR",
+      "restored": "JSR\tSHOWCURSOR(PC)"
+    },
+    {
+      "upstream_line": 624,
+      "original": "SUB \t#1,D5",
+      "restored": "SUBQ\t#1,D5"
+    },
+    {
+      "upstream_line": 625,
+      "original": "SUB \t#1,height(A6)",
+      "restored": "SUBQ\t#1,height(A6)"
+    },
+    {
+      "upstream_line": 680,
+      "original": "ADD \t#2,A0",
+      "restored": "ADDQ\t#2,A0"
+    },
+    {
+      "upstream_line": 681,
+      "original": "ADD \t#2,A1",
+      "restored": "ADDQ\t#2,A1"
+    },
+    {
+      "upstream_line": 682,
+      "original": "ADD \t#2,A2",
+      "restored": "ADDQ\t#2,A2"
+    },
+    {
+      "upstream_line": 696,
+      "original": "BNE \tRMORE",
+      "restored": "BNE.S\tRMORE"
+    },
+    {
+      "upstream_line": 713,
+      "original": "SUB \t#2,A0",
+      "restored": "SUBQ\t#2,A0"
+    },
+    {
+      "upstream_line": 714,
+      "original": "SUB \t#2,A1",
+      "restored": "SUBQ\t#2,A1"
+    },
+    {
+      "upstream_line": 728,
+      "original": "BNE \tLMORE",
+      "restored": "BNE.S\tLMORE"
+    },
+    {
+      "upstream_line": 808,
+      "original": "JSR \tNEWRGN",
+      "restored": "JSR\tNEWRGN(PC)"
+    },
+    {
+      "upstream_line": 811,
+      "original": "JSR \tNEWRGN",
+      "restored": "JSR\tNEWRGN(PC)"
+    },
+    {
+      "upstream_line": 818,
+      "original": "JSR \tRECTRGN",
+      "restored": "JSR\tRECTRGN(PC)"
+    },
+    {
+      "upstream_line": 823,
+      "original": "JSR \tSECTRGN",
+      "restored": "JSR\tSECTRGN(PC)"
+    },
+    {
+      "upstream_line": 828,
+      "original": "JSR \tSECTRGN",
+      "restored": "JSR\tSECTRGN(PC)"
+    },
+    {
+      "upstream_line": 834,
+      "original": "JSR \tCOPYRGN",
+      "restored": "JSR\tCOPYRGN(PC)"
+    },
+    {
+      "upstream_line": 837,
+      "original": "JSR \tOFFSETRGN",
+      "restored": "JSR\tOFFSETRGN(PC)"
+    },
+    {
+      "upstream_line": 855,
+      "original": "JSR \tDIFFRGN",
+      "restored": "JSR\tDIFFRGN(PC)"
+    },
+    {
+      "upstream_line": 861,
+      "original": "JSR \tSHIELDCURSOR",
+      "restored": "JSR\tSHIELDCURSOR(PC)"
+    },
+    {
+      "upstream_line": 875,
+      "original": "JSR \tRGNBLT",
+      "restored": "JSR\tRGNBLT(PC)"
+    },
+    {
+      "upstream_line": 889,
+      "original": "JSR \tRGNBLT",
+      "restored": "JSR\tRGNBLT(PC)"
+    },
+    {
+      "upstream_line": 891,
+      "original": "JSR \tSHOWCURSOR",
+      "restored": "JSR\tSHOWCURSOR(PC)"
+    },
+    {
+      "upstream_line": 899,
+      "original": "JSR \tSETEMPTYRGN",
+      "restored": "JSR\tSETEMPTYRGN(PC)"
+    },
+    {
+      "upstream_line": 966,
+      "original": "SUB \t#1,D1",
+      "restored": "SUBQ\t#1,D1"
+    },
+    {
+      "upstream_line": 973,
+      "original": "ADD \t#1,D2",
+      "restored": "ADDQ\t#1,D2"
+    },
+    {
+      "upstream_line": 999,
+      "original": "BEQ \tDOCOPY",
+      "restored": "BEQ.S\tDOCOPY"
+    },
+    {
+      "upstream_line": 1011,
+      "original": "SUB \t#1,D1",
+      "restored": "SUBQ\t#1,D1"
+    },
+    {
+      "upstream_line": 1012,
+      "original": "BGE \tFILLOP",
+      "restored": "BGE.S\tFILLOP"
+    },
+    {
+      "upstream_line": 1015,
+      "original": "ADD \t#1,D2",
+      "restored": "ADDQ\t#1,D2"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 1942,
+    "checked_entry_points": 9,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-bitmaps-verify",
+    "temporary_verifier": "/tmp/verify-bitmaps.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "c8b972749454ffa7165cde2633f562b61d0ac46deaf07985441a7fc909d3c623",
+    "assembled_sha256": "9d03bffab08581d636d4a86bdd19c6c8cf60cdb2ced3695c038bab1ba47be15f",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

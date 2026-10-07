@@ -1,0 +1,274 @@
+{
+  "module": "Text",
+  "source": "Reconstruction/Source/QuickDraw/Text.a",
+  "originals": [
+    {
+      "path": "QuickDraw/Classic/Text.m.a",
+      "sha256": "01623e205df3a2c1e1df4c6b1890aad237a12eed75290d09d203dda9a1e337a4",
+      "line_ranges": [
+        [
+          293,
+          745
+        ],
+        [
+          747,
+          956
+        ],
+        [
+          969,
+          1194
+        ]
+      ],
+      "role": "StdText, StdTxMeas, and MeasureText comments and surviving instructions."
+    },
+    {
+      "path": "QuickDraw/Text.a",
+      "sha256": "a0cf78e47b3b81a695f62fd3adbeb4bef312795e76d3956865d524ab9ec806e8",
+      "line_ranges": [
+        [
+          925,
+          1133
+        ],
+        [
+          1360,
+          1595
+        ],
+        [
+          1648,
+          1736
+        ]
+      ],
+      "role": "Drawing and measurement entry points, the older MeasureText register layout, and GetFontInfo."
+    },
+    {
+      "path": "QuickDraw/Classic/GrafTypes.m.a",
+      "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+      "line_ranges": [
+        [
+          229,
+          239
+        ],
+        [
+          295,
+          309
+        ],
+        [
+          443,
+          465
+        ],
+        [
+          502,
+          535
+        ],
+        [
+          550,
+          573
+        ]
+      ],
+      "role": "QuickDraw equate names, picture state offsets, trap vectors, and the UNLINK macro structure."
+    },
+    {
+      "path": "QuickDraw/Classic/QuickGlue.m.a",
+      "sha256": "ec1ec758a21db5cf470c27cb8db4342f706616ab01b7de955cddc345f3110718",
+      "line_ranges": [
+        [
+          58,
+          58
+        ],
+        [
+          167,
+          170
+        ]
+      ],
+      "role": "JSwapFont address and the original Font Manager dispatch interface."
+    },
+    {
+      "path": "QuickDraw/Classic/DrawText.m.a",
+      "sha256": "4edfc5f51706df9766eda35da6c5a3df7979458bdcfd3751e4976d9d360ac569",
+      "line_ranges": [
+        [
+          44,
+          45
+        ],
+        [
+          84,
+          120
+        ],
+        [
+          122,
+          131
+        ]
+      ],
+      "role": "The following DrText procedure begins with a 196-byte stack frame and a D0-D7/A1-A4 register save, matching the boundary at 0x408f26."
+    },
+    {
+      "path": "Interfaces/AIncludes/QuickDraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106",
+      "line_ranges": [
+        [
+          229,
+          267
+        ]
+      ],
+      "role": "GrafPort, QDProcs, and Point offsets."
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "line_ranges": [
+        [
+          218,
+          218
+        ]
+      ],
+      "role": "WidthPtr at 0x0b10."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x408ab6",
+      "end_exclusive": "0x408f26",
+      "rom_offset": "0x8ab6",
+      "length": 1136,
+      "sha256": "a8f999291887a5cff55b8f6413eac284131f00c713c6bde1f359f805766d55a4",
+      "start_label": "StdText",
+      "end_label": "TextEnd",
+      "boundary_evidence": "The Ghidra export names StdText at 0x408ab6. GetFontInfo ends with its Scale helper at 0x408f24; the next instruction at 0x408f26 begins the stack frame and register save that match DrText in Classic/DrawText.m.a."
+    }
+  ],
+  "entry_points": {
+    "StdText": "0x408ab6",
+    "CallText": "0x408c42",
+    "TextFace": "0x408c62",
+    "DrawChar": "0x408c6e",
+    "CharWidth": "0x408c7c",
+    "TextFont": "0x408c94",
+    "TextMode": "0x408c98",
+    "TextSize": "0x408c9c",
+    "SpaceExtra": "0x408ca2",
+    "DrawString": "0x408cae",
+    "DrawText": "0x408cc0",
+    "StringWidth": "0x408cd8",
+    "TextWidth": "0x408ce8",
+    "StdTxMeas": "0x408d50",
+    "MeasureText": "0x408df6",
+    "GetFontInfo": "0x408e84",
+    "TextEnd": "0x408f26"
+  },
+  "changes": [
+    {
+      "location": "StdText",
+      "rom_start": "0x408ab6",
+      "rom_end_exclusive": "0x408c42",
+      "change": "Removed grayish text handling, font-name recording, PICT2 alignment calls, Script Manager layout recording, and glyph-state recording. Restored the short branches and direct PC-relative calls used by the ROM.",
+      "evidence": "The complete instruction sequence matches the ROM. Text.m.a histories <1.9>, <10>, <11>, <16>, <22>, and <30> identify additions from 1989 through 1991. The original 255-character batching loop, picture state comparisons, and four text opcodes remain.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "CallText through TextWidth",
+      "rom_start": "0x408c42",
+      "rom_end_exclusive": "0x408d50",
+      "change": "Restored the ROM entries from QuickDraw/Text.a. Removed the newer GrafPort character-spacing reset in TextSize. CharWidth calls TextWidth directly. TextWidth reads JStdTxMeas directly.",
+      "evidence": "The source preserves these entries under the forROM conditional. Its <20> comment records replacement of MOVE.L JStdTxMeas,A0 with an added level of indirection. ROM instructions at 0x408d24 and 0x408eb0 use MOVE.L from the low-memory vector.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "StdTxMeas",
+      "rom_start": "0x408d50",
+      "rom_end_exclusive": "0x408df6",
+      "change": "Restored the 16-byte FMInput stack frame, A4-only register save, direct WidthPtr access, and the loop that adds one fixed-point width per character byte. Removed later TrueType, character-spacing, double-byte, and overflow logic.",
+      "evidence": "The ROM reads the width table from 0x0b10 at 0x408dc6 and sums entries from 0x408dd2 through 0x408ddc. Surviving source instructions fill metrics, return scaling factors, and save fixTxWid. Text.m.a histories <3>, <7>, <12>, and <24> through <28> identify later additions.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "MeasureText",
+      "rom_start": "0x408df6",
+      "rom_end_exclusive": "0x408e84",
+      "change": "Restored the 16-byte frame, D3-D4/A2 save, direct JSwapFont call, and D1 width accumulator. Removed the later capture-procedure path, character-spacing and double-byte logic. The loop writes count+1 positions and then applies horizontal scaling.",
+      "evidence": "The original MeasureText history dates the capture-procedure path to October 29, 1986 and its register fix to November 5. QuickDraw/Text.a retains the D1 accumulator form. The ROM has no capture-procedure check and accesses WidthPtr directly.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "GetFontInfo",
+      "rom_start": "0x408e84",
+      "rom_end_exclusive": "0x408f26",
+      "change": "Retained the original metric adjustment and scaling code and restored the direct JStdTxMeas vector load. Added a reconstruction note beside the historical rounding comment.",
+      "evidence": "The ROM adds half the denominator before unsigned division in both scaling sequences. All metric adjustments and returns match the surviving source instructions.",
+      "confidence": "exact byte match"
+    },
+    {
+      "location": "UNLINK macro and assembler operands",
+      "change": "Retained the original macro structure and applicable comments. Replaced the later RTD_ path with the ROM sequence that pops the return address, adjusts SP, and jumps through A0. Kept the four-byte parameter case. Made PC-relative calls and word-sized width-table indexes explicit.",
+      "evidence": "The ROM uses these return sequences for parameter sizes 4, 8, 10, 14, and 18. Index extension words at 0x408dda and 0x408e58 are 0x0000, selecting D0.W. The shared verifier expands the macro body from this source.",
+      "confidence": "all emitted macro and instruction bytes match; original macro spelling is unverified"
+    },
+    {
+      "location": "Headers and comments",
+      "change": "Preserved the Text.a copyright and title, API descriptions, routine headings, stack field comments, and applicable instruction comments. Removed histories and headings that only describe omitted additions. Marked reconstructed behavior and the restored macro as reconstruction commentary.",
+      "evidence": "The contributing source paths and line ranges are recorded above. Source selection follows the ROM bytes rather than a later build configuration.",
+      "confidence": "source provenance recorded"
+    }
+  ],
+  "external_references": [
+    {
+      "name": "CheckPic",
+      "address": "0x0040e448",
+      "evidence": "Ghidra symbol export and ROM call targets."
+    },
+    {
+      "name": "DPutPicByte",
+      "address": "0x0040e2a4",
+      "evidence": "Ghidra symbol export and ROM call targets."
+    },
+    {
+      "name": "PutPicWord",
+      "address": "0x0040e2bc",
+      "evidence": "Ghidra symbol export and ROM call targets."
+    },
+    {
+      "name": "PutPicLong",
+      "address": "0x0040e2ce",
+      "evidence": "Ghidra symbol export and ROM jump target."
+    },
+    {
+      "name": "PutPicData",
+      "address": "0x0040e28e",
+      "evidence": "Ghidra symbol export and ROM call target."
+    },
+    {
+      "name": "PortWord",
+      "address": "0x00408402",
+      "evidence": "ROM jump target; the reconstructed QuickDraw Util source identifies the routine."
+    },
+    {
+      "name": "DrText",
+      "address": "0x00408f26",
+      "evidence": "ROM call target and matching next-procedure entry instructions in Classic/DrawText.m.a."
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py translated the source, expanded its UNLINK macro, assembled for the 68000, linked at 0x408ab6, and compared every emitted byte against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "63dbd2a4833703102fd53a5b7f7c6b1fda6278c2adcfcdf189fa882b86f17809",
+    "assembled_length": 1136,
+    "matched_bytes": 1136,
+    "entry_points_checked": 17,
+    "result": "exact",
+    "limits": [
+      "The original Mac Plus source and historical assembler output remain unavailable. The comparison establishes all bytes in this span; historical spelling, file boundaries, and macro definitions remain partly inferred.",
+      "Calls outside this span use recorded ROM addresses. This module does not verify the bodies of the picture routines, PortWord, DrText, or the Font Manager.",
+      "The retained zero-parameter UNLINK case comes from the later source and has no invocation in this module. The verified parameter sizes are 4, 8, 10, 14, and 18."
+    ]
+  }
+}

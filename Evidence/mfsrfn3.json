@@ -1,0 +1,223 @@
+{
+  "module": "MFSRFN3",
+  "source": "Reconstruction/Source/OS/HFS/MFSRFN3.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSRFN3.a",
+      "sha256": "5f053f555ed857bb3a7bd4d4059ec2f71931e7d6b14254ea47a0802b0740f43c",
+      "line_ranges": [
+        [
+          1,
+          458
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/VSM.a",
+      "sha256": "b51b4428c353b07d31451fbb7061c733a4a6cf2ab977bce80677130829bda409",
+      "line_ranges": [
+        [
+          1,
+          100
+        ]
+      ],
+      "role": "BlkAlloc establishes the next module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          68,
+          68
+        ],
+        [
+          183,
+          183
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          284,
+          288
+        ],
+        [
+          291,
+          291
+        ],
+        [
+          302,
+          302
+        ],
+        [
+          356,
+          356
+        ],
+        [
+          358,
+          358
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          181,
+          181
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          331,
+          331
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4055e0",
+      "end_exclusive": "0x4057d6",
+      "rom_offset": "0x55e0",
+      "length": 502,
+      "sha256": "eba9137a7d6bea062ca9abc6bd73785f352f5002491ad3fb7770d0c0df5e2f6f",
+      "start_label": "Lg2Phys",
+      "end_label": "MFSRFN3End",
+      "boundary_evidence": "Lg2Phys follows the TFSRFN3 return at 0x4055e0. DAlDone returns at 0x4057d4. BlkAlloc begins VSM at 0x4057d6."
+    }
+  ],
+  "entry_points": {
+    "Lg2Phys": "0x4055e0",
+    "vLg2Phys": "0x4055e6",
+    "L2PPrt2": "0x405628",
+    "GtNxBlk": "0x40566e",
+    "MFSAlloc": "0x40569a",
+    "AllocSt": "0x40569c",
+    "AllocXit": "0x4056b6",
+    "FigEndBlk": "0x4056bc",
+    "AlNxtBlk": "0x4056e2",
+    "AlLinkIn": "0x4056f6",
+    "AlCkDone": "0x405700",
+    "AlNtAtEnd": "0x405718",
+    "GetFreeBk": "0x40571c",
+    "Scan4Free": "0x405742",
+    "NotFree": "0x40576c",
+    "NF1": "0x405772",
+    "GtFreeXit": "0x405776",
+    "SubMrk": "0x40577e",
+    "DAlBlks": "0x4057b6",
+    "DAlDone": "0x4057d4",
+    "MFSRFN3End": "0x4057d6"
+  },
+  "integration_manifest": {
+    "name": "mfsrfn3",
+    "source": "Reconstruction/Source/OS/HFS/MFSRFN3.a",
+    "start": "0x4055e0",
+    "end_exclusive": "0x4057d6",
+    "entry_points": {
+      "Lg2Phys": "0x4055e0",
+      "vLg2Phys": "0x4055e6",
+      "L2PPrt2": "0x405628",
+      "GtNxBlk": "0x40566e",
+      "MFSAlloc": "0x40569a",
+      "AllocSt": "0x40569c",
+      "AllocXit": "0x4056b6",
+      "FigEndBlk": "0x4056bc",
+      "AlNxtBlk": "0x4056e2",
+      "AlLinkIn": "0x4056f6",
+      "AlCkDone": "0x405700",
+      "AlNtAtEnd": "0x405718",
+      "GetFreeBk": "0x40571c",
+      "Scan4Free": "0x405742",
+      "NotFree": "0x40576c",
+      "NF1": "0x405772",
+      "GtFreeXit": "0x405776",
+      "SubMrk": "0x40577e",
+      "DAlBlks": "0x4057b6",
+      "DAlDone": "0x4057d4",
+      "MFSRFN3End": "0x4057d6"
+    }
+  },
+  "changes": [
+    {
+      "location": "Mapping and allocation bodies",
+      "change": "Retained the surviving behavior for MFS block mapping, allocation, and release.",
+      "evidence": "All 502 bytes and 21 recorded labels match. The code retains the jLg2Phys vector at 0x6fc, twelve-bit allocation-map entries, the longest-free-run search, and the common MarkVCB calls after allocation or release."
+    },
+    {
+      "location": "Debug configuration and assembly spelling",
+      "change": "Retained the inactive debug trap and conditional checks as comments. Made the MapFBlock jump PC-relative and spelled the quick subtraction explicitly.",
+      "evidence": "The ROM proceeds directly from the jump at 0x4055ec to the MFS register save at 0x4055f0. It has no debug trap or alignment checks. The subtraction at 0x40561c uses SUBQ.W #2,D0."
+    },
+    {
+      "location": "Source provenance and definitions",
+      "change": "Preserved the original header, applicable history, and comments. Copied required original equates and supplied external routine addresses.",
+      "evidence": "The original mapping and allocation source matches the target after the debug configuration and instruction spelling are made explicit."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "TFSVolTst",
+      "address": "0x404ec2"
+    },
+    {
+      "name": "MapFBlock",
+      "address": "0x405d1c"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4055e0, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "b80442dcff89a182d1ad3f39f6104e8e94013b390278c998c5a667e0a3d3c24d",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/MFSRFN3.a",
+        "sha256": "b80442dcff89a182d1ad3f39f6104e8e94013b390278c998c5a667e0a3d3c24d"
+      }
+    ],
+    "assembled_length": 502,
+    "matched_bytes": 502,
+    "entry_points_checked": 21,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

@@ -1,0 +1,485 @@
+{
+  "module": "Resources/StandardWDEF.a",
+  "source_path": "Reconstruction/Source/Resources/StandardWDEF.a",
+  "source_sha256": "84a49ddc335b9404788424f91b1077ed3511b1a3eb4e7bdf5d0531f4edc8dc3f",
+  "upstream_source": {
+    "path": "Toolbox/WindowMgr/StandardWDEF.a",
+    "sha256": "f5800cdbc7cf6a176192992104c874f7a90e7d553bfc6b759c33d69daeab16bd",
+    "description": "This is the surviving standard WDEF source. Its early history, seven-message dispatch table, monochrome routines and bitmap names identify the Mac Plus implementation. Later revisions add color, rounded geometry, device handling and System 7 drawing. The reconstruction restores the earlier register assignments, stack frame, helpers and bitmap data against the complete ROM body."
+  },
+  "upstream_equates": [
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/Quickdraw.a",
+      "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x41c33e",
+      "end_address_exclusive": "0x41c9d8",
+      "rom_offset": "0x1c33e",
+      "length": 1690,
+      "sha256": "f99dd4902ad5ef5a093eebd8cb928b92dbd6486a606af24164e339de093730c3",
+      "first_symbol": "WDEFResourceBlock",
+      "last_symbol": "GrowBits"
+    }
+  ],
+  "resource": {
+    "type": "WDEF",
+    "id": 0,
+    "name": null,
+    "attributes": "0x58",
+    "offset": "0x1c346",
+    "size": 1682,
+    "end": "0x1c9d8",
+    "block_offset": "0x1c33e",
+    "block_size": 1690,
+    "block_flags": "0xc0",
+    "master_pointer_offset": 112
+  },
+  "boundary_evidence": {
+    "description": "The ROM resource map identifies WDEF 0 at offset $1C346 with 1682 body bytes. Its preceding eight-byte block starts at $1C33E and declares 1690 bytes, ending at $1C9D8. The final instructions branch from EraseGrow to PlotBoundary; the 32-byte GrowBits table follows and ends at the next resource block.",
+    "resource_reference": "Reconstruction/Evidence/rom-resources.json",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv"
+  },
+  "code_spans": [
+    {
+      "start_address": "0x41c346",
+      "end_address_exclusive": "0x41c348",
+      "length": 2
+    },
+    {
+      "start_address": "0x41c352",
+      "end_address_exclusive": "0x41c3ce",
+      "length": 124
+    },
+    {
+      "start_address": "0x41c3dc",
+      "end_address_exclusive": "0x41c5c8",
+      "length": 492
+    },
+    {
+      "start_address": "0x41c5d0",
+      "end_address_exclusive": "0x41c6d2",
+      "length": 258
+    },
+    {
+      "start_address": "0x41c752",
+      "end_address_exclusive": "0x41c9b8",
+      "length": 614
+    }
+  ],
+  "data_spans": [
+    {
+      "start_address": "0x41c33e",
+      "end_address_exclusive": "0x41c346",
+      "length": 8,
+      "description": "The resource block header combines flag byte $C0 with the derived block length, then stores relative master-pointer offset $70. The resource map separately records attributes $58."
+    },
+    {
+      "start_address": "0x41c348",
+      "end_address_exclusive": "0x41c352",
+      "length": 10,
+      "description": "The standard definition header contains flags zero, type WDEF, ID zero and version five. The entry branch skips this header."
+    },
+    {
+      "start_address": "0x41c3ce",
+      "end_address_exclusive": "0x41c3dc",
+      "length": 14,
+      "description": "Seven signed offsets dispatch messages zero through six to DrawDoc, HitDoc, CalcDoc, InitDoc, DisposeDoc, GrowDoc and DrawGIcon."
+    },
+    {
+      "start_address": "0x41c5c8",
+      "end_address_exclusive": "0x41c5d0",
+      "length": 8,
+      "description": "The title-bar highlight pattern contains four $FF00 words, unchanged from the surviving source."
+    },
+    {
+      "start_address": "0x41c6d2",
+      "end_address_exclusive": "0x41c6f2",
+      "length": 32,
+      "description": "ZoomData contains sixteen rows of bitmap pixels."
+    },
+    {
+      "start_address": "0x41c6f2",
+      "end_address_exclusive": "0x41c712",
+      "length": 32,
+      "description": "ZoomHiliteData contains sixteen rows of the mask applied with XOR to highlight the zoom box."
+    },
+    {
+      "start_address": "0x41c712",
+      "end_address_exclusive": "0x41c732",
+      "length": 32,
+      "description": "GoAwayData contains sixteen rows of bitmap pixels."
+    },
+    {
+      "start_address": "0x41c732",
+      "end_address_exclusive": "0x41c752",
+      "length": 32,
+      "description": "GoAwayHiliteData contains sixteen rows of the separate mask applied with XOR to highlight the close box."
+    },
+    {
+      "start_address": "0x41c9b8",
+      "end_address_exclusive": "0x41c9d8",
+      "length": 32,
+      "description": "GrowBits contains sixteen rows of bitmap pixels and ends the resource."
+    }
+  ],
+  "symbols": {
+    "WDEF0": "0x41c346",
+    "WDEFStart": "0x41c352",
+    "StoreTitleHeight": "0x41c384",
+    "GoDocProc": "0x41c3ce",
+    "InitDoc": "0x41c3dc",
+    "GetRect": "0x41c418",
+    "InitDone": "0x41c430",
+    "IsItSmall": "0x41c432",
+    "IsSmall": "0x41c448",
+    "NotSmall": "0x41c452",
+    "ChkPoint": "0x41c456",
+    "CheckZoom": "0x41c476",
+    "CheckZoomDone": "0x41c482",
+    "DisposeDoc": "0x41c484",
+    "DisposeDone": "0x41c48e",
+    "DrawDoc": "0x41c490",
+    "DoHilite": "0x41c4ca",
+    "RestoreTitleRight": "0x41c50c",
+    "DoZoom": "0x41c536",
+    "DrawFrame": "0x41c54a",
+    "GetStructure": "0x41c54e",
+    "DrawDropShadow": "0x41c56e",
+    "NoDrop": "0x41c572",
+    "RestoreStructure": "0x41c5be",
+    "DrawDocDone": "0x41c5c6",
+    "HilitePattern": "0x41c5c8",
+    "BuildTBarRect": "0x41c5d0",
+    "EORStuff": "0x41c5f0",
+    "PlotZoom": "0x41c600",
+    "EORGoAway": "0x41c60e",
+    "PlotGoAway": "0x41c616",
+    "PlotIt": "0x41c61c",
+    "PlotDone": "0x41c63a",
+    "DrawDBox": "0x41c63c",
+    "DoTitleString": "0x41c650",
+    "CheckTitleIndent": "0x41c66a",
+    "ApplyTitleIndent": "0x41c670",
+    "ClipTitle": "0x41c680",
+    "TitleStringDone": "0x41c6ce",
+    "ZoomData": "0x41c6d2",
+    "ZoomHiliteData": "0x41c6f2",
+    "GoAwayData": "0x41c712",
+    "GoAwayHiliteData": "0x41c732",
+    "HitDoc": "0x41c752",
+    "JustContent": "0x41c792",
+    "NotInContent": "0x41c798",
+    "HitZoom": "0x41c7ea",
+    "Zoomed": "0x41c810",
+    "ItsInDrag": "0x41c814",
+    "DoneHitDoc": "0x41c816",
+    "DoneHitDoc2": "0x41c81a",
+    "CalcDoc": "0x41c81c",
+    "CalcContent": "0x41c826",
+    "CalcCommon": "0x41c86e",
+    "CalcShadow": "0x41c87a",
+    "CalcDone": "0x41c898",
+    "DoDBoxCalc": "0x41c89a",
+    "GrowDoc": "0x41c8ae",
+    "DrawShadow": "0x41c908",
+    "PlotSymbol": "0x41c930",
+    "DrawGIcon": "0x41c95c",
+    "PlotBoundary": "0x41c98c",
+    "EraseGrow": "0x41c9b0",
+    "GrowBits": "0x41c9b8"
+  },
+  "symbol_provenance": {
+    "description": "Names shared with StandardWDEF.a identify matching routines, data and loops. Their use does not establish their exact spelling in the lost Mac Plus source revision. The reference symbol table identifies only the resource entry. The following labels describe restored paths whose original spelling is unavailable. DocProc remains an alias for the WDEF0 entry.",
+    "descriptive_labels": [
+      "StoreTitleHeight",
+      "CheckZoom",
+      "CheckZoomDone",
+      "RestoreTitleRight",
+      "DrawFrame",
+      "GetStructure",
+      "DrawDropShadow",
+      "RestoreStructure",
+      "DrawDocDone",
+      "PlotDone",
+      "DrawDBox",
+      "DoTitleString",
+      "CheckTitleIndent",
+      "ApplyTitleIndent",
+      "ClipTitle",
+      "TitleStringDone",
+      "Zoomed",
+      "CalcContent",
+      "CalcShadow",
+      "DrawShadow",
+      "EraseGrow"
+    ],
+    "resource_entry_reference": "_WDEF_0_ at 0x41c346"
+  },
+  "changes": [
+    {
+      "kind": "resource_header",
+      "description": "Added the eight-byte ROM resource block header, using WDEFResourceEnd-WDEFResourceBlock for its size. Kept the standard WDEF header inside the body and restored version five."
+    },
+    {
+      "kind": "source_history",
+      "description": "Retained the original file header and applicable modification history from August 1982 through November 3, 1985. Retained comments where their operations survive. Later inline revision tags remain exact; they identify the surviving source context and do not date the ROM instructions. Removed comments that describe later color behavior, different registers or different hit regions."
+    },
+    {
+      "kind": "dispatch_and_frame",
+      "description": "Restored the 12-byte local frame with an eight-byte font record and temporary region handle, plus 12 bytes of parameters. The entry saves the current port directly from the QuickDraw globals, installs WMgrPort, gathers parameters and uses the seven-entry offset table. It restores the saved port through SetPort. Removed message bounds checks, cached zoom state, color records, additional temporary regions and extended drawing state."
+    },
+    {
+      "kind": "title_metrics",
+      "description": "Restored title height as ascent plus descent plus four, forced to an odd value with a minimum of 19. Small fonts gain an ascent adjustment to center them in that minimum. The box offset is the title height minus 13, divided by two. Removed later icon sizing and additional title metrics."
+    },
+    {
+      "kind": "zoom_initialization",
+      "description": "Restored InitDoc to test variant bit three and ROM85 before allocating a cleared 16-byte handle. A successful allocation sets wZoom and stores two rectangles. The default standard rectangle uses the screen bounds inset by three, with the title height added twice to its top edge. The current global rectangle becomes the user state. Removed later unconditional handle allocation, menu-bar-height adjustment and bitmap conversion."
+    },
+    {
+      "kind": "zoom_helpers",
+      "description": "Restored CheckZoom to test both the variant and wZoom. IsItSmall uses an eight-byte rectangle on the stack and calls ChkPoint twice. Each corner test builds a rectangle by insetting a point by minus seven; if either test fails, IsItSmall updates the user state. Removed use of TempRect for that comparison and restored GetRect directly against portBits bounds."
+    },
+    {
+      "kind": "drawing",
+      "description": "Restored monochrome title framing, erasing, striped highlights, close-box and zoom-box plotting. DrawDoc temporarily reduces the structure-region bounds by the shadow amount and restores them after drawing. Dialog variant one uses a thick white frame and an inner black frame; variant three draws a two-pixel shadow. Removed color lookup, shaded frame pieces, rounded corners, device loops, picture resources and later narrow-window checks."
+    },
+    {
+      "kind": "title_string",
+      "description": "Restored the title indentation, temporary clipping region, direct DrawString call and six-pixel gaps around the title. The code reserves 32 pixels at the right for zoom controls and clips against the previous clip region. It obtains the string pointer from its handle without locking it. Removed later color setup, handle locking and empty-title adjustments."
+    },
+    {
+      "kind": "bitmap_data",
+      "description": "Restored the five 16-by-16 bitmap payloads from ROM data. PlotSymbol builds the source bitmap in IconBitmap with rowBytes two and bounds from D1, then calls CopyBits. Zoom and close highlighting use distinct XOR masks. The later source uses 11-by-11 zoom and close bitmaps, a shared highlight mask, a 15-by-15 grow bitmap and stored bitmap headers. Those later formats do not match this ROM."
+    },
+    {
+      "kind": "hit_testing",
+      "description": "Restored the initial PtInRgn test against contRgn, followed by document grow-area checks and title-bar, close-box and zoom-box tests. The grow area uses 14 pixels. Coordinate conversion reads portBits bounds directly. Removed the later structure-rectangle content test, dialog title-bar variants and pixmap conversion."
+    },
+    {
+      "kind": "regions_and_growing",
+      "description": "Restored rectangular content and structure regions with an offset temporary rectangle for the drop shadow. GrowDoc temporarily expands the supplied rectangle, draws the outline and scrollbar boundaries, then restores it. DrawGIcon selects the window port and draws or erases the grow bitmap before drawing the boundary lines. Removed later color state, device handling, clipping changes and offscreen coordinate adjustments."
+    },
+    {
+      "kind": "encoding",
+      "description": "Restored concrete register assignments and explicit branch and instruction sizes. Kept symbolic field offsets, dispatch targets, resource sizes and data references. Trap names use OPWORD values from Traps.a. No instruction is represented by a raw data directive."
+    }
+  ],
+  "historical_evidence": [
+    {
+      "source_lines": [
+        159,
+        160
+      ],
+      "description": "The January 1985 entry records the DocProc name, retained as an entry alias."
+    },
+    {
+      "source_lines": [
+        166,
+        178
+      ],
+      "description": "The 1985 history records the 14-pixel grow hit area, variable title height, version-five zoom support, corner tolerance, revised icon masks and the November zoom-position correction. These match the restored ROM paths."
+    },
+    {
+      "source_lines": [
+        182,
+        191
+      ],
+      "description": "The later history dates color support and bitmap conversion to 1986. Its December entry identifies locking the title handle as a fix for an old bug. The ROM retains the earlier unlocked DrawString path."
+    },
+    {
+      "source_lines": [
+        1230,
+        1247
+      ],
+      "description": "The later HitDoc explanation describes treating clicks in a dialog border or shadow as content. The ROM instead starts with PtInRgn against contRgn, so that explanation does not apply and was omitted."
+    },
+    {
+      "source_lines": [
+        2025,
+        2073
+      ],
+      "description": "The surviving IsItSmall and ChkPoint logic preserves the two successive corner tests and user-state update. The ROM uses a stack rectangle in place of the later TempRect path."
+    },
+    {
+      "source_lines": [
+        2413,
+        2415
+      ],
+      "description": "The title highlight pattern survives unchanged."
+    },
+    {
+      "source_lines": [
+        2506,
+        2576
+      ],
+      "description": "The surviving bitmap labels identify the corresponding ROM payloads, although their dimensions, pixel rows and highlight sharing changed later."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x41c3a6",
+      "description": "The dispatcher masks the variant to two bits and indexes the message table without validating the message. The reconstruction preserves that direct dispatch."
+    },
+    {
+      "address": "0x41c6b6",
+      "description": "The title pointer passes directly from the handle to DrawString without HLock or HUnlock. The later source identifies the missing lock as an old bug."
+    },
+    {
+      "address": "0x41c768",
+      "description": "The grow-variant bit test is followed by BGT rather than a direct equality branch. The reconstruction preserves this condition exactly."
+    },
+    {
+      "address": "0x41c752",
+      "description": "HitDoc tests the content region before the title bar. A click in the remaining border or shadow does not become a content hit."
+    },
+    {
+      "address": "0x41c390",
+      "description": "The entry creates a temporary region and continues without an allocation-failure branch. InitDoc separately checks the result of allocating the zoom handle."
+    }
+  ],
+  "limitations": [
+    "The exact Mac Plus source revision is unavailable. This source combines surviving operations and comments with instruction and bitmap restoration from the ROM.",
+    "The reference disassembly does not decode most of the resource body. GNU objdump decoding of separate code spans, surviving source structure and the complete assembled byte comparison establish the reconstruction.",
+    "The restored helper and local-control labels include descriptive names. The source records their addresses without claiming their historical spelling.",
+    "Verification checks every code and data byte and all recorded labels. It does not execute resource loading, window drawing or interaction."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-standard-wdef.py",
+    "method": "Translated the final source, assembled for the 68000, linked at the block address, rejected unresolved relocations and compared every emitted byte with the ROM. Checked all recorded labels.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 1690,
+    "instruction_count": 523,
+    "data_bytes": 200,
+    "entry_points_checked": 67,
+    "result": {
+      "name": "standard_wdef",
+      "source": "Reconstruction/Source/Resources/StandardWDEF.a",
+      "source_sha256": "84a49ddc335b9404788424f91b1077ed3511b1a3eb4e7bdf5d0531f4edc8dc3f",
+      "start": "0x41c33e",
+      "end_exclusive": "0x41c9d8",
+      "bytes": 1690,
+      "sha256": "f99dd4902ad5ef5a093eebd8cb928b92dbd6486a606af24164e339de093730c3",
+      "matches_rom": true,
+      "source_dependencies": [
+        {
+          "path": "Reconstruction/Source/Resources/StandardWDEF.a",
+          "sha256": "84a49ddc335b9404788424f91b1077ed3511b1a3eb4e7bdf5d0531f4edc8dc3f"
+        }
+      ]
+    },
+    "preserved_original_comment_occurrences": 453,
+    "authored_comment_lines": 15,
+    "bitmap_row_comments": 80,
+    "prose_lint": {
+      "command": "vale /tmp/standard-wdef-authored.md",
+      "config": "/Users/james/.vale.ini",
+      "result": "0 errors, 0 warnings, 0 suggestions",
+      "scope": "Authored source comments and evidence prose. Preserved original comments were excluded."
+    }
+  },
+  "integration_manifest": {
+    "name": "standard_wdef",
+    "source": "Reconstruction/Source/Resources/StandardWDEF.a",
+    "start": "0x41c33e",
+    "end_exclusive": "0x41c9d8",
+    "entry_points": {
+      "WDEF0": "0x41c346",
+      "WDEFStart": "0x41c352",
+      "StoreTitleHeight": "0x41c384",
+      "GoDocProc": "0x41c3ce",
+      "InitDoc": "0x41c3dc",
+      "GetRect": "0x41c418",
+      "InitDone": "0x41c430",
+      "IsItSmall": "0x41c432",
+      "IsSmall": "0x41c448",
+      "NotSmall": "0x41c452",
+      "ChkPoint": "0x41c456",
+      "CheckZoom": "0x41c476",
+      "CheckZoomDone": "0x41c482",
+      "DisposeDoc": "0x41c484",
+      "DisposeDone": "0x41c48e",
+      "DrawDoc": "0x41c490",
+      "DoHilite": "0x41c4ca",
+      "RestoreTitleRight": "0x41c50c",
+      "DoZoom": "0x41c536",
+      "DrawFrame": "0x41c54a",
+      "GetStructure": "0x41c54e",
+      "DrawDropShadow": "0x41c56e",
+      "NoDrop": "0x41c572",
+      "RestoreStructure": "0x41c5be",
+      "DrawDocDone": "0x41c5c6",
+      "HilitePattern": "0x41c5c8",
+      "BuildTBarRect": "0x41c5d0",
+      "EORStuff": "0x41c5f0",
+      "PlotZoom": "0x41c600",
+      "EORGoAway": "0x41c60e",
+      "PlotGoAway": "0x41c616",
+      "PlotIt": "0x41c61c",
+      "PlotDone": "0x41c63a",
+      "DrawDBox": "0x41c63c",
+      "DoTitleString": "0x41c650",
+      "CheckTitleIndent": "0x41c66a",
+      "ApplyTitleIndent": "0x41c670",
+      "ClipTitle": "0x41c680",
+      "TitleStringDone": "0x41c6ce",
+      "ZoomData": "0x41c6d2",
+      "ZoomHiliteData": "0x41c6f2",
+      "GoAwayData": "0x41c712",
+      "GoAwayHiliteData": "0x41c732",
+      "HitDoc": "0x41c752",
+      "JustContent": "0x41c792",
+      "NotInContent": "0x41c798",
+      "HitZoom": "0x41c7ea",
+      "Zoomed": "0x41c810",
+      "ItsInDrag": "0x41c814",
+      "DoneHitDoc": "0x41c816",
+      "DoneHitDoc2": "0x41c81a",
+      "CalcDoc": "0x41c81c",
+      "CalcContent": "0x41c826",
+      "CalcCommon": "0x41c86e",
+      "CalcShadow": "0x41c87a",
+      "CalcDone": "0x41c898",
+      "DoDBoxCalc": "0x41c89a",
+      "GrowDoc": "0x41c8ae",
+      "DrawShadow": "0x41c908",
+      "PlotSymbol": "0x41c930",
+      "DrawGIcon": "0x41c95c",
+      "PlotBoundary": "0x41c98c",
+      "EraseGrow": "0x41c9b0",
+      "GrowBits": "0x41c9b8",
+      "DocProc": "0x41c346",
+      "WDEFResourceBlock": "0x41c33e",
+      "WDEFResourceEnd": "0x41c9d8"
+    }
+  }
+}

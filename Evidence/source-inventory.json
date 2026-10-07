@@ -1,0 +1,3626 @@
+[
+  {
+    "path": "DeclData/DeclNet/802Equ.a",
+    "sha256": "ae0cdb17410c4c19a2a4dcfe7f98f39106ca6563ab7ee50c7a45fef811822b86"
+  },
+  {
+    "path": "DeclData/DeclNet/AtalkMacros.a",
+    "sha256": "0bfdf9a26732522ea45e7a1336bdd8f142cf5ff02a3b618993dde6a3d3e6efa5"
+  },
+  {
+    "path": "DeclData/DeclNet/ENETEqu.a",
+    "sha256": "7aba38989a74674372533f7a51727551dfd197bdbc7f221fd3b9373e628d64c5"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/Mace.a",
+    "sha256": "1c34fc2cd4380153386e232ec1270964c510920da284bf4756fc8172c0900b86"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/MaceEnet.a",
+    "sha256": "9f845c22c9be534d0e0d783600836bbd3e74910d3392fcb27d7c14d586991cc1"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/MaceEqu.a",
+    "sha256": "263a9c4ddb7e79302f9592943aa72819a65de69e7d479a046ec5ec522c80ca99"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/PDMMaceEnet/PDMMace.a",
+    "sha256": "ed9de3e5586125c1005312ee38732c642cb014762251867330f66b6def5b9792"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/PDMMaceEnet/PDMMaceEnet.a",
+    "sha256": "de20109b7abc2bdb388da1df4ed07113a93a96959441a55f46eefbe4a6f1acf0"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/PDMMaceEnet/PDMMaceEqu.a",
+    "sha256": "8b01afc678149d2763b15d224afabb286b3d627c53cf86d354ee4a06d6ab9073"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/PDMMaceEnet/VersionPDMMaceEnet.a",
+    "sha256": "78b8031c6f5243e08b99421e4f6a1c80c4b8c83075bc864e4364d2f01c0dd7db"
+  },
+  {
+    "path": "DeclData/DeclNet/Mace/VersionMaceEnet.a",
+    "sha256": "bacb6d530df8e28ddb56cf2c7e040ce0a3bf992fddc425962e85ce5130aaf471"
+  },
+  {
+    "path": "DeclData/DeclNet/SNMPLAP.a",
+    "sha256": "84aa2e39c8a21f0bcc255ab53b9db7f0d73fe3a29d84ee69bb45493ae528c72c"
+  },
+  {
+    "path": "DeclData/DeclNet/Sonic/Sonic.a",
+    "sha256": "26f8466053fa59092bc116de93b95ab24ce13cee88f6faa8a479b10e3c6317e6"
+  },
+  {
+    "path": "DeclData/DeclNet/Sonic/SonicEnet.a",
+    "sha256": "2270aaa3ff5ed1b54d219c9a22611a5f690afd8fb7f02e5cc651ece287c4fdad"
+  },
+  {
+    "path": "DeclData/DeclNet/Sonic/SonicEqu.a",
+    "sha256": "80196b323d442b3856ad4b9d3d7192181be83a5c9539c3a2f7cc0601b727f616"
+  },
+  {
+    "path": "DeclData/DeclNet/Sonic/VersionEclipse.a",
+    "sha256": "e412f7acb640d3ce5c6beb95f5edb02b9b1d312b549449fdf7f0d3d8dedaa815"
+  },
+  {
+    "path": "DeclData/DeclVideo/ATI/ATIDrvr.a",
+    "sha256": "829a11b4a5dd8df6927450b8484590bae3d527460282629115393be07b1272b8"
+  },
+  {
+    "path": "DeclData/DeclVideo/ATI/ATIHdr.a",
+    "sha256": "beda9ecd5f3f7431a44c82393d85d8f8a3237bee3a3a931cd750872351ab27c2"
+  },
+  {
+    "path": "DeclData/DeclVideo/ATI/ATIPrimaryInit.a",
+    "sha256": "d82e0e334a386f122cbb888a9ce6cfd8808db1f7941fa3808378d2a51f78f6f6"
+  },
+  {
+    "path": "DeclData/DeclVideo/Apollo/ApolloDriver.a",
+    "sha256": "8f87e552f4f85974850e0ee479dcce7fd79ce2bd09e5aceb1a4e3ed97d945951"
+  },
+  {
+    "path": "DeclData/DeclVideo/CSC/CSCDriver.a",
+    "sha256": "e664674bf9abc4311fb734337f2dfecfa9011ff27c1782743084cfd6e67f1dc7"
+  },
+  {
+    "path": "DeclData/DeclVideo/CSC/CSCPrimaryInit.a",
+    "sha256": "487b5ae83156ab48036d2a1b64903c7c473b3c7e09431170d1019103ec47e418"
+  },
+  {
+    "path": "DeclData/DeclVideo/Civic/CivicDriver.a",
+    "sha256": "6243946658d0162ae4f49c613bfb08e29f24c0d99ae85761bb7354e3665fa602"
+  },
+  {
+    "path": "DeclData/DeclVideo/Civic/CivicPict.a",
+    "sha256": "16ea02df30218fbbc2c56e45e3a61189eaa83dcb42d16c79510ce53de43fe513"
+  },
+  {
+    "path": "DeclData/DeclVideo/Civic/CivicPict2.a",
+    "sha256": "56fc2098dafea92d5a3168020a380ea1260c58556b13cb083d3926d53939fdd9"
+  },
+  {
+    "path": "DeclData/DeclVideo/Civic/CivicPrimaryInit.a",
+    "sha256": "bee674551a1bff0f4c508bdc00ec9faa8d469790cfd5c18ca2100f3a2aac464f"
+  },
+  {
+    "path": "DeclData/DeclVideo/DAFB/DAFBDriver.a",
+    "sha256": "95c9f359d5586cb21f25e77883938d4a3074ce7047c8522c4f3f5bf046551454"
+  },
+  {
+    "path": "DeclData/DeclVideo/DBLite/DBLiteDriver.a",
+    "sha256": "48e9597f86bbae094e13053130419ded5a46dcfdce8290d0c11b6818118a2b60"
+  },
+  {
+    "path": "DeclData/DeclVideo/RBV/RBVDriver.a",
+    "sha256": "2529ebec776c3a3ab4b484bfc00911cd5f5bc21189b73c348d6481b0b794f15c"
+  },
+  {
+    "path": "DeclData/DeclVideo/Sonora/SonoraDriver.a",
+    "sha256": "49647e9188c6ae9820b7929dc1f169dfb094be02045fa7c389e7921174f33f8e"
+  },
+  {
+    "path": "DeclData/DeclVideo/Sonora/SonoraPrimaryInit.a",
+    "sha256": "3639074a06b80515b0758bd43f703d7c054adf0b794d0cd0c739bee930ae7201"
+  },
+  {
+    "path": "DeclData/DeclVideo/Tim/TimDriver.a",
+    "sha256": "f016b640cf14093569d99ab974bad375799b40dfa2d2df9194fbc963c20e88db"
+  },
+  {
+    "path": "DeclData/DeclVideo/V8/V8Driver.a",
+    "sha256": "c9883133d3e808da9babc8c0e23f68be085e9cf584fcf356affbf571f55d116a"
+  },
+  {
+    "path": "DeclData/PrimaryInit.a",
+    "sha256": "a1d57213a59b68ed41723c018fe9f1e4a55b8efe82a3431525b80a2d0a45f72d"
+  },
+  {
+    "path": "DeclData/SecondaryInit.a",
+    "sha256": "e421b862e72f183ad65cade79f08b442e4d11b6a1a23a4f6ed6200c53b19a3ff"
+  },
+  {
+    "path": "DeclData/SuperInit.a",
+    "sha256": "d8ab41d33177d03ccf05a1123cf3e4b66c0b4c6b9e90947dda2a8c48783912c0"
+  },
+  {
+    "path": "DeclData/VSCDeclData/VSCDeclData.a",
+    "sha256": "6ce45bd3d4385433b240575117d298724e53012e33a2672da8956f35463b1391"
+  },
+  {
+    "path": "DeclData/VSCDeclData/VSCDockingHandler.a",
+    "sha256": "e7a7c589e0bf1824adfa33820e59df7475048b1a40c081adb8a12d8c67666e74"
+  },
+  {
+    "path": "DeclData/VSCDeclData/VSCDriver.a",
+    "sha256": "ba29b4cbbf61e434b7152ebf4559ebd2ad002d6f447f6dff275737e9e2309921"
+  },
+  {
+    "path": "DeclData/VSCDeclData/VSCEqu.a",
+    "sha256": "dbfeacee63a826ba2079900546b1277aff0e501b51a2693a0136afc0a2b3dbab"
+  },
+  {
+    "path": "DeclData/VSCDeclData/VSCPrimaryInit.a",
+    "sha256": "fa29a9e3e41d3835953412dd37d917cd11bb6f582d578ca91d5d855486f76dea"
+  },
+  {
+    "path": "DeclData/VSCDeclData/VSCSecondaryInit.a",
+    "sha256": "f0597d342680e224365850568333b09d45e14c32e1d4e6439d9287e4453bb964"
+  },
+  {
+    "path": "Drivers/Backlight/backlight.a",
+    "sha256": "6a41217749f543857f6f4510fb85d76285464328971e3b0d8f77732eef6ec7e7"
+  },
+  {
+    "path": "Drivers/Backlight/backlightequ.a",
+    "sha256": "88319e533c1350182ad66230fe384eb593bd8a9c3c6887e2823fcec3ce7d44bc"
+  },
+  {
+    "path": "Drivers/Backlight/backlightpatch.a",
+    "sha256": "464a877aa78d7ea5b5f7c9afaac0345d6dec57ecae955f38433ad78afdc6f87a"
+  },
+  {
+    "path": "Drivers/Backlight/backlightprim.a",
+    "sha256": "863533279a7f530706c50db61b7c029fc2224f692a256f8014997d3df2606614"
+  },
+  {
+    "path": "Drivers/EDisk/EDiskDriver.a",
+    "sha256": "4d43404dba4a7260d829d5979718d4631f29f47be45f936184d78959a4d68c5f"
+  },
+  {
+    "path": "Drivers/NewAge/NewAgeDrvr.a",
+    "sha256": "534b02507af8308bb1e9d47fea1cb44f73a36bdffd51d6b4aa17fa1f1a933c0a"
+  },
+  {
+    "path": "Drivers/NewAge/NewAgeEqu.a",
+    "sha256": "8c69ef6c9e265871aef2a789027ff1bfe17bd89143463e350a4c56576d755e6f"
+  },
+  {
+    "path": "Drivers/Sony/Sony.a",
+    "sha256": "8db4f8d58d5bf9aef2846acd3d2b5c0e31759be17b798e49a76b3be7f40d0f89"
+  },
+  {
+    "path": "Drivers/Sony/SonyDup.a",
+    "sha256": "5b4f0d74f42df758eb9128c78c51dad8cd565122f09940f1627035be484c387b"
+  },
+  {
+    "path": "Drivers/Sony/SonyFormat.a",
+    "sha256": "b381380a3128ac489a8607c4f6ead02e7467d8b57b99a868656440de8aea3a92"
+  },
+  {
+    "path": "Drivers/Sony/SonyHdr.a",
+    "sha256": "8d4c698ef19a252d51f04874cab24c89357598cf943de884830f49a006aa7af6"
+  },
+  {
+    "path": "Drivers/Sony/SonyIOP.a",
+    "sha256": "fc435341a56c1fefc4b1ea89783293e6d7f388485a74738ca9d3fa2a7f709159"
+  },
+  {
+    "path": "Drivers/Sony/SonyIcon.a",
+    "sha256": "88e7e34e55df23c8dbd7c0743624898ec4033901eed17733428cf5f9206c9807"
+  },
+  {
+    "path": "Drivers/Sony/SonyMFM.a",
+    "sha256": "a9e3e807dac4a33a3089788cd4e148f830a59c0e0012bf8d769a08ee245d30d2"
+  },
+  {
+    "path": "Drivers/Sony/SonyPatches.a",
+    "sha256": "b4150a4a51fe3225af524f4e50d84b6231ffe592838175ddd66c69978d97a6c7"
+  },
+  {
+    "path": "Drivers/Sony/SonyRWT.a",
+    "sha256": "7af92d8fc3661787d60a51797ef4fc750dcfec166b61085e8b0244ec2a3ef063"
+  },
+  {
+    "path": "Drivers/Sony/SonyRawTrack.a",
+    "sha256": "6e27932a037845378c65ee1ae4818c2f2c81c70c038089ea899d946a0718cbb6"
+  },
+  {
+    "path": "Drivers/Sony/SonyRead.a",
+    "sha256": "05db36c424a769589d9196f61ee5d73034e13b79fe7bf98b0f61204764a5a376"
+  },
+  {
+    "path": "Drivers/Sony/SonySWIM3.a",
+    "sha256": "59ca65aa937d3864eb5b5dcd1920208ce865e0acc3ef6c48deb67e6d646cd6b2"
+  },
+  {
+    "path": "Drivers/Sony/SonySWIM3AMIC.a",
+    "sha256": "73da84475cf83fb5561f14aad129986ce4507c0f94545e3a02ae8e41fa016d69"
+  },
+  {
+    "path": "Drivers/Sony/SonySWIM3GC.a",
+    "sha256": "b5df4c5fd0aae045e0d41322a4c885355e1215e9305a4e868ee5663e1e374b86"
+  },
+  {
+    "path": "Drivers/Sony/SonyUtil.a",
+    "sha256": "e61f11c58c6d0d57ee2c95ac49b795fd64880e06bc88bbfdee7aa2eafc8b960c"
+  },
+  {
+    "path": "Drivers/Sony/SonyWrite.a",
+    "sha256": "7ad9c70e863a9e6a5d1214a3448444053c0dcd2d87343bbceeaa80d9d4ecdce6"
+  },
+  {
+    "path": "Drivers/Video/JMFBDepVideoEqu.a",
+    "sha256": "9565f2613a9cb9923d080795ee0805533a50834831525c03a1d1febc8df2b106"
+  },
+  {
+    "path": "Drivers/Video/JMFBDriver.a",
+    "sha256": "1027ebeed16ecc2602e31a6649411c078f21ee25b0ce24d4513fa835230bb5d4"
+  },
+  {
+    "path": "Drivers/Video/JMFBPrimaryInit.a",
+    "sha256": "9e56e3c3236ffae752cef27afede9a6ac042c8e6e9a5b3cf78913ad268cd0752"
+  },
+  {
+    "path": "Drivers/Video/TFBDepVideoEqu.a",
+    "sha256": "bf1aea15cc03db4af6164fe86333fdeea1409475fd237a1cc7c690580fd128ae"
+  },
+  {
+    "path": "Drivers/Video/TFBDriver.a",
+    "sha256": "a53df30d3e71d99ade96657cfa195e43f824b6549321e47b342a3d24fd56c612"
+  },
+  {
+    "path": "Drivers/Video/TFBPrimaryInit.a",
+    "sha256": "f0ac6abf2788ae316df7332f02a9d4803da6adb24c39a9df0587eea0e36d0042"
+  },
+  {
+    "path": "Interfaces/AIncludes/Aliases.a",
+    "sha256": "140a213c93c5584e53d210c4e48659fa36f092c3bc9fa6101570b822fa605d13"
+  },
+  {
+    "path": "Interfaces/AIncludes/ApplDeskBus.a",
+    "sha256": "8b317c54981c918e112d7b986d96a9175ab082ee382ebdda741cc5d0281c5b41"
+  },
+  {
+    "path": "Interfaces/AIncludes/AppleTalk.a",
+    "sha256": "395dfc545d9fe42ba1abb0c276402f0ab2d7db2b6ab3138ea274f8c4b1058509"
+  },
+  {
+    "path": "Interfaces/AIncludes/Balloons.a",
+    "sha256": "44feacaea4d45b90e861b62fa6befd1e3e4dab9303c5c012aeb12930754215fc"
+  },
+  {
+    "path": "Interfaces/AIncludes/CRMSerialDevices.a",
+    "sha256": "770ba1508d3c4ba3e973ce64613df15288d0cd5df7b900aecf26697015f6279a"
+  },
+  {
+    "path": "Interfaces/AIncludes/CTBUtilities.a",
+    "sha256": "65abe7acb0b0576fb605d3dd7ef02839080f9f8c7967de63bd83812f413b76b5"
+  },
+  {
+    "path": "Interfaces/AIncludes/CommResources.a",
+    "sha256": "fda9c77f30b452da12f143e4fddbf98f920c44b1a5d316ea677f7c77ec4e0a4a"
+  },
+  {
+    "path": "Interfaces/AIncludes/Components.a",
+    "sha256": "429a1ee4ad63f31ee1956f6f4b8e12491da34faa4e68e3993740cda857b40002"
+  },
+  {
+    "path": "Interfaces/AIncludes/ConnectionTools.a",
+    "sha256": "19a43815a59df4d14b5aacd30bb62807f7ce7f53f58c74aa00a9ceb9e7507523"
+  },
+  {
+    "path": "Interfaces/AIncludes/Connections.a",
+    "sha256": "67fe5aeea791aa73360289d5c7d5754f918fc7b554b0172316177c038fb331de"
+  },
+  {
+    "path": "Interfaces/AIncludes/DBDMA.a",
+    "sha256": "6f20ddbeeb7611d6e5fbd0dc2da6ab6bca2d4bcb99d1538c7c4fb2e9c492c71f"
+  },
+  {
+    "path": "Interfaces/AIncludes/DDEV.a",
+    "sha256": "596cadaf6f33b0b13c6d042ee728202610037ff0e171e851511e54b8cc606534"
+  },
+  {
+    "path": "Interfaces/AIncludes/DatabaseAccess.a",
+    "sha256": "ea01e9f2239a4a328a47d20ab4867ebd73b8242f8509b95fc2ab415d1ea0635c"
+  },
+  {
+    "path": "Interfaces/AIncludes/Devices.a",
+    "sha256": "6f7e2ae2535e9dd5f737b4423a9d7d8231d1abbfb2eed441b3ec9a4ea03eea8b"
+  },
+  {
+    "path": "Interfaces/AIncludes/Dictionary.a",
+    "sha256": "bef39b1eb4228ec2de291f9d99add418e0e3c22507750a7b2d21e28a67c0b66d"
+  },
+  {
+    "path": "Interfaces/AIncludes/Displays.a",
+    "sha256": "4b8414f7fb6c84a386ee3f6af6e0912fd6a94f635e6877b41f2c55116f2b6c16"
+  },
+  {
+    "path": "Interfaces/AIncludes/EDiskEqu.a",
+    "sha256": "d8c6b66e31bdbc6e0620b4578c12d41e8cb7acf11724ca85917c25be4fa3bf54"
+  },
+  {
+    "path": "Interfaces/AIncludes/ENetEqu.a",
+    "sha256": "710ee65cdcb9554daa9f9f40d82cded0f3f0befbd2d146ff814d9ab522d1622b"
+  },
+  {
+    "path": "Interfaces/AIncludes/Editions.a",
+    "sha256": "dc5af22d8a12b7ec654fbe75dc971ee269dfc73b8b91f9e85c9a2aeff84b485d"
+  },
+  {
+    "path": "Interfaces/AIncludes/EndianAware.a",
+    "sha256": "a5e57f5a4f330eb5b5fea29207230e942f16d65420201dc4e96b2314dd75732c"
+  },
+  {
+    "path": "Interfaces/AIncludes/FSEqu.a",
+    "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b"
+  },
+  {
+    "path": "Interfaces/AIncludes/FSPrivate.a",
+    "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48"
+  },
+  {
+    "path": "Interfaces/AIncludes/FileTransferTools.a",
+    "sha256": "692e0edd2dabcfce1d9fe3e4a26e907d9a6ecfa1f241038bb4e7665b1f73c786"
+  },
+  {
+    "path": "Interfaces/AIncludes/FileTransfers.a",
+    "sha256": "06c525f8d2a8e2428c491e6b3adfaede0204934935b4f644272a4ef5fdc20647"
+  },
+  {
+    "path": "Interfaces/AIncludes/Finder.a",
+    "sha256": "6365fef9d6253a62773b1d7f5a7a58f4361553891917a6eb697dc02721614b08"
+  },
+  {
+    "path": "Interfaces/AIncludes/FixMath.a",
+    "sha256": "a0d12c3de1680747c3804f61baa233d792cf1d998d912ac109011d8d4f3bc942"
+  },
+  {
+    "path": "Interfaces/AIncludes/Folders.a",
+    "sha256": "c3a5fd5e74ce01c6cc318eef19cb011e450e8a78fb2e3cc607316349fea2d4cd"
+  },
+  {
+    "path": "Interfaces/AIncludes/GestaltEqu.a",
+    "sha256": "28f3abd4cf9af0bf8aaf0489e04d031548d80933203000817005b779bf38f2a4"
+  },
+  {
+    "path": "Interfaces/AIncludes/Graf3D.a",
+    "sha256": "4aea956de09b038ee40a5e9ed5d01a594c0042958a2ebedc5cca501e64c437cb"
+  },
+  {
+    "path": "Interfaces/AIncludes/HardwareEqu.a",
+    "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba"
+  },
+  {
+    "path": "Interfaces/AIncludes/HyperXCmd.a",
+    "sha256": "af9cc7f59849d695bb286ce32e2c0d21e09dcde0c60cbb525a3c757be17b7b2c"
+  },
+  {
+    "path": "Interfaces/AIncludes/Icons.a",
+    "sha256": "3ddbaf1081e96957cfaa8a9a53fabff72517473acba11be4c52b7e5fa6809973"
+  },
+  {
+    "path": "Interfaces/AIncludes/IntEnv.a",
+    "sha256": "2971de28660e7064f85a38447c650c8ce54e8c7bf50d394eddaae755a53cc95d"
+  },
+  {
+    "path": "Interfaces/AIncludes/IntModemMgrEqu.a",
+    "sha256": "d473db608bee69f2863d76c2886ca70135e0de00f88bbdfba31c00ad03c3c00b"
+  },
+  {
+    "path": "Interfaces/AIncludes/LAPEqu.a",
+    "sha256": "5fd4bfe53290202d794a95f4a0c3ea9010e6e8407809b9d8eccedb6d3f58b19c"
+  },
+  {
+    "path": "Interfaces/AIncludes/Language.a",
+    "sha256": "c318ebd80ed0eec322ca32ceac7a42470879e9a109b3b00e7dedee2be0cece22"
+  },
+  {
+    "path": "Interfaces/AIncludes/MIDI.a",
+    "sha256": "eb11b789f25a7aefec08c9b43334e6f82e7961f9e02f77a0843a7d48a1b48e62"
+  },
+  {
+    "path": "Interfaces/AIncludes/Menus.a",
+    "sha256": "ec0e43136b6c67239e4b2eda8715f36c7b6eb9bdba6a3a03c17023ab495487e7"
+  },
+  {
+    "path": "Interfaces/AIncludes/Notification.a",
+    "sha256": "78f6b5576b5b03f701a2ff4234feb61e9eacf4d52eb9e3d9161c1aa835fce6b7"
+  },
+  {
+    "path": "Interfaces/AIncludes/OSUtils.a",
+    "sha256": "355c98689d2cea345c7bafba60e44c5849d7715b012097cade0154d4b3759a25"
+  },
+  {
+    "path": "Interfaces/AIncludes/ObjMacros.a",
+    "sha256": "bbbff355902f7928072ee739a7dbc3ab1236c374610d0f12315e36e11a19bae5"
+  },
+  {
+    "path": "Interfaces/AIncludes/PPCToolbox.a",
+    "sha256": "ec8867f40767d69f02f1cd33b56d6cee0e344bae9c73baee5b7ce89997710de9"
+  },
+  {
+    "path": "Interfaces/AIncludes/Packages.a",
+    "sha256": "1f9da9f85c420f6972c621ca0bf0b9c0c315c9ac4e12d0ed7748f8dc510bba14"
+  },
+  {
+    "path": "Interfaces/AIncludes/Palettes.a",
+    "sha256": "1bebf330cff7c791039d5c1bf9f5e32b3ec995c795c7d958a268276e8c24503d"
+  },
+  {
+    "path": "Interfaces/AIncludes/Picker.a",
+    "sha256": "5be6a467dd736526042d354389901057d4991750aa6bf2b7b23843501449e907"
+  },
+  {
+    "path": "Interfaces/AIncludes/PictUtil.a",
+    "sha256": "d12267db6b43c069c3a411b5816eea5871821b5f7c45e32cee376c8b4e08cf5c"
+  },
+  {
+    "path": "Interfaces/AIncludes/Power.a",
+    "sha256": "4ff80714cd309a799313b811eac2b5e276b89f9687dc2a215b7aabb636db5247"
+  },
+  {
+    "path": "Interfaces/AIncludes/PowerMgrDispatchEqu.a",
+    "sha256": "8dd9ca073f7d42ff65f7dc1d9fa16701b41b4827d5a8dd43e9f1bdd9850cd2aa"
+  },
+  {
+    "path": "Interfaces/AIncludes/PrPrivate.a",
+    "sha256": "28be21bde5e03f270dc02dfc261bd0fe6833df75a83d3ba87faec09fb7b7874d"
+  },
+  {
+    "path": "Interfaces/AIncludes/PrintTrapsEqu.a",
+    "sha256": "b45da0911a9b6e96e4734c1c40db5f4ef9318dd45428a8a6a42bdd814c22f82d"
+  },
+  {
+    "path": "Interfaces/AIncludes/Printing.a",
+    "sha256": "adf85515c1414a997264db4cde504265e2129bb667047e6cbfebd1cbc164d8c5"
+  },
+  {
+    "path": "Interfaces/AIncludes/Private.a",
+    "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89"
+  },
+  {
+    "path": "Interfaces/AIncludes/Processes.a",
+    "sha256": "e912242c649a8063fe09b932dd440003797c12f8a2e1e431701e904f9c6a8466"
+  },
+  {
+    "path": "Interfaces/AIncludes/QDOffscreen.a",
+    "sha256": "3aff86bbab907d7fa88591c84769f83c21e400e3006819d80082a7af9edb1a74"
+  },
+  {
+    "path": "Interfaces/AIncludes/Quickdraw.a",
+    "sha256": "9ef7daf334891a72a4e693b20718b5dd17b343bb301e8270bdd33800bf533106"
+  },
+  {
+    "path": "Interfaces/AIncludes/ROMEqu.a",
+    "sha256": "0b4b94f36656cf498e96194bea6262a907371186e8e486d3cc07a00d6f5bdec8"
+  },
+  {
+    "path": "Interfaces/AIncludes/SANEMacs.a",
+    "sha256": "62d7338f06707342ab2b3387b322fe35274ca493db3a9c24eaad813d0b2ef06f"
+  },
+  {
+    "path": "Interfaces/AIncludes/SANEMacs881.a",
+    "sha256": "6e4b63c606ea1860764a0cf525cafa6a05b2150f0e77e62d3a2ff686f4684fb7"
+  },
+  {
+    "path": "Interfaces/AIncludes/SCSI.a",
+    "sha256": "9420495b6e83b3743419c6f7a02e40f91c26f9d92bcf3305e22684493bb15904"
+  },
+  {
+    "path": "Interfaces/AIncludes/SCSIStandard.a",
+    "sha256": "f75271dcd7dae795fdd56dd27ca5f952c698618c0756e27660315bc0363ddeb6"
+  },
+  {
+    "path": "Interfaces/AIncludes/Script.a",
+    "sha256": "03659a91df89347a21878b257f72992f6204d234022ff33864a64e18b48ff0a3"
+  },
+  {
+    "path": "Interfaces/AIncludes/ShutDown.a",
+    "sha256": "703e8a47f95f2ddf3aea39b0d230f1404e2447a027a304574e7e6373b5cfafa0"
+  },
+  {
+    "path": "Interfaces/AIncludes/Signal.a",
+    "sha256": "afcbc0289e208a3c1e6013c675f4d797e6598b3ba4adde8b9bf699ca6caf102a"
+  },
+  {
+    "path": "Interfaces/AIncludes/Slots.a",
+    "sha256": "534ce10323853a6bc775603e1df4ecefc55425cf4e073c761730cc8d3bdb3934"
+  },
+  {
+    "path": "Interfaces/AIncludes/SonyEqu.a",
+    "sha256": "a50475e8ab79e9a01cdb92877d382da56079d331fa76a411b63252ddd786029a"
+  },
+  {
+    "path": "Interfaces/AIncludes/StandardFile.a",
+    "sha256": "72f8d0ab77df25ef901efd955395e2d95a0c3c02bca2d8bb1fa97b2fcfdcfd18"
+  },
+  {
+    "path": "Interfaces/AIncludes/SysEqu.a",
+    "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+  },
+  {
+    "path": "Interfaces/AIncludes/SysErr.a",
+    "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+  },
+  {
+    "path": "Interfaces/AIncludes/TerminalTools.a",
+    "sha256": "1c86a69e2b8d811e225e3235d378434ea693a9bb5d43707df41c9c990b336dee"
+  },
+  {
+    "path": "Interfaces/AIncludes/Terminals.a",
+    "sha256": "cba33a91b3ff901201331e9bfad6675966bd03c2097375e16903f13158ebfbaa"
+  },
+  {
+    "path": "Interfaces/AIncludes/TextServices.a",
+    "sha256": "6a0d184ef58f4875e28d206b241f371e98b9ef6eba1b66c7d360eede5ce0cdcd"
+  },
+  {
+    "path": "Interfaces/AIncludes/Timer.a",
+    "sha256": "077cf97a007d8329e52a88ba27f9b73928c1bc141a3a143ea97b57b4d6b743f6"
+  },
+  {
+    "path": "Interfaces/AIncludes/ToolUtils.a",
+    "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+  },
+  {
+    "path": "Interfaces/AIncludes/Traps.a",
+    "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+  },
+  {
+    "path": "Interfaces/AIncludes/Video.a",
+    "sha256": "e6b8753d88219ec83847e886f028c9b54082eb16957ec041f5ec2944f4b3da00"
+  },
+  {
+    "path": "Interfaces/AIncludes/adsp.a",
+    "sha256": "c20401d25e4dbaa65f082a2ec5f8c24c69dcd0dc131f033ac2bff53dcab3d4b1"
+  },
+  {
+    "path": "Internal/Asm/AMICEqu.a",
+    "sha256": "a00a9332389bb5b175d91648ebeb143bb83e7f5425a41f04514aedec9f950f11"
+  },
+  {
+    "path": "Internal/Asm/AppleDeskBusPriv.a",
+    "sha256": "874c6122a6f0826c143a8c9ba2d5101d0e639b5a494499d44c9188e77c99638b"
+  },
+  {
+    "path": "Internal/Asm/AtalkPrivateEQU.a",
+    "sha256": "19cfb1ef41274026c936d273696790fdc8da69414d1d81b92a6c91fb7dabe58b"
+  },
+  {
+    "path": "Internal/Asm/BTreeEqu.a",
+    "sha256": "aebc94393cfa88e976af3637e0a6ea04e41303bf6f46befdb38e226e96cd17f3"
+  },
+  {
+    "path": "Internal/Asm/BalloonsPriv.a",
+    "sha256": "baafe4cf54006f560bc3748ae819cc616de475ec3f2ea201f656d41c19b45a56"
+  },
+  {
+    "path": "Internal/Asm/BootEqu.a",
+    "sha256": "81e8f335ec5a0ffdb218a2ad24b0e13c1e7e0f2036ea57a80bfe850ee432229b"
+  },
+  {
+    "path": "Internal/Asm/ColorEqu.a",
+    "sha256": "028ace54d87dd5711fa6a13d176e85fb4cf32b92f79ae91dc989479d1e3259ac"
+  },
+  {
+    "path": "Internal/Asm/ComVideoEqu.a",
+    "sha256": "ed96504848f1c6ce620144133d3e77b60fbc5f73f68af3e3b1d0de198779c871"
+  },
+  {
+    "path": "Internal/Asm/CommToolboxPriv.a",
+    "sha256": "9a62b281defe2f847b44e285a63be782d9f99327c0ea4519451dbc17b1030bac"
+  },
+  {
+    "path": "Internal/Asm/ConnectionsExtensions.a",
+    "sha256": "32f9faf17f37461236839226cfd9d0a11c567ed8730f006751f803f7de29d619"
+  },
+  {
+    "path": "Internal/Asm/ControlPriv.a",
+    "sha256": "6a7ba2ff54fb1ac3a13f4e620a6d1937da529bc2b389a7235af12b6b378c23be"
+  },
+  {
+    "path": "Internal/Asm/CrsrDevEqu.a",
+    "sha256": "d16f3457dce48e6f8594fab405677a0aa546b2200a0f201a0ed0e6a984d8763e"
+  },
+  {
+    "path": "Internal/Asm/DblByteCompatPriv.a",
+    "sha256": "57555b8ebd3b6e524247531963c6dac3de792f0a8f55fa25fa1fe04c895ff17d"
+  },
+  {
+    "path": "Internal/Asm/DebugMonEqu.a",
+    "sha256": "58b6ea0f8f0d9ce266b9383ba8bc88b8aa8c9d533f7417d8d7efc72e0efac435"
+  },
+  {
+    "path": "Internal/Asm/Decompression.a",
+    "sha256": "a6b17df43950b1556c77e9ab1e720c993d7713361c7d544284fce2f6d802bb4b"
+  },
+  {
+    "path": "Internal/Asm/DeferredTaskEqu.a",
+    "sha256": "06af794f239ac0d59b4b1fc5019db064265d9b788ea2dbd7140d1a87d22b9284"
+  },
+  {
+    "path": "Internal/Asm/DepVideoEqu.a",
+    "sha256": "5e128a34fe2522ad57f84ca6a7c9f194370deb4299e8024ec879f6f11cea872e"
+  },
+  {
+    "path": "Internal/Asm/DialogsPriv.a",
+    "sha256": "7b83dc613ac469a485c12d730e6d2683bdaf9b5502d32cf63f90d6c51fa268f5"
+  },
+  {
+    "path": "Internal/Asm/DiskCachePriv.a",
+    "sha256": "2b4321faad251695539c413f44157b06169ec23a67ac27c36ac0ebfb464f15fa"
+  },
+  {
+    "path": "Internal/Asm/DispatchHelperPriv.a",
+    "sha256": "036208035a754a8cb4eb42b653f452e89a7c947f2950e46b0fe0d8bf824c9f34"
+  },
+  {
+    "path": "Internal/Asm/DisplaysPriv.a",
+    "sha256": "8f066117f3390280f7d7ab52a2bf1e2bbd0e4ba3a93027b4ca75bb2b67cd3d4a"
+  },
+  {
+    "path": "Internal/Asm/DockingEqu.a",
+    "sha256": "c99a66d9822fde50d4596869c027a12353114df8490357b7f53b304469c45d03"
+  },
+  {
+    "path": "Internal/Asm/EDiskEqu.a",
+    "sha256": "d182735b3877c12698bd0812a4b19c8ad6e24db87d215ac2ea09a42ce2e17ea4"
+  },
+  {
+    "path": "Internal/Asm/EditionsPrivate.a",
+    "sha256": "f7fcc123897ad57c5a4dbe83b7f05a08698eb49f7d8d1d33f9d882505d98e6b9"
+  },
+  {
+    "path": "Internal/Asm/FileMgrPrivate.a",
+    "sha256": "20c359891235426154335d24163e47901459b3ea0310fd4e2bab13474870ecbf"
+  },
+  {
+    "path": "Internal/Asm/FileTransfersExtensions.a",
+    "sha256": "e3241fd5c954048287de1c705702f576aa2d60fc74c84433146200433a5b0733"
+  },
+  {
+    "path": "Internal/Asm/FinderPriv.a",
+    "sha256": "ba084e8b5841e5a91390dcdeccdef91ba8ee3c2e3ccedb1f863e0b6167a80297"
+  },
+  {
+    "path": "Internal/Asm/GestaltPrivateEqu.a",
+    "sha256": "56a2f8c28252c19331303c5f19cc3bef7d9833dc0baa04f6717226c513704f3a"
+  },
+  {
+    "path": "Internal/Asm/GibblyMacros.a",
+    "sha256": "a9e5addee021634bf16036346b8e510c14d820c71f7ffc399cd262f94d588b2d"
+  },
+  {
+    "path": "Internal/Asm/GrandCentralPriv.a",
+    "sha256": "549b8c4172584a66dfa8ecf0d08d2adb09448a829dff42dcd87b3a35cff64a62"
+  },
+  {
+    "path": "Internal/Asm/HardwarePrivateEqu.a",
+    "sha256": "71312a5e2578d72aa979d38ff83e3c0f8b1ec49b5b048a248252ca7dbbc60a59"
+  },
+  {
+    "path": "Internal/Asm/IOPEqu.a",
+    "sha256": "21dd8d36250101c5c4e1b5b6033ef564b9c6489f9a8e06796cac0c20be3383da"
+  },
+  {
+    "path": "Internal/Asm/IOPrimitiveEqu.a",
+    "sha256": "274aec85b0f7603dddd8bc79dd758c5c03fd948375a1742f0e1cba504bb2816c"
+  },
+  {
+    "path": "Internal/Asm/IconUtilsPriv.a",
+    "sha256": "d97dc17314e3e4812c22c1a81c394d56376c421164aa4dabf78467a0efc7352c"
+  },
+  {
+    "path": "Internal/Asm/IntModemMgrPrivEqu.a",
+    "sha256": "14ecd3fe6da742a258c1e8ee82a94f1360dc4062f1cef9f484a1792b8fd19102"
+  },
+  {
+    "path": "Internal/Asm/InternalMacros.a",
+    "sha256": "deb0d6e69f59323843fbe77f34e2bb98348387c7851bfe3edd3ee4c16b76c178"
+  },
+  {
+    "path": "Internal/Asm/InternalOnlyEqu.a",
+    "sha256": "2eab90672f1b0e223760ffa0b2e724ebb2a2b4b514c3cbac9f62d166fb76e38a"
+  },
+  {
+    "path": "Internal/Asm/IntlResourcesPriv.a",
+    "sha256": "f109bea5f755ba56c87d04aae52f93b071ddbb2a8679f7f948182fb2752604dc"
+  },
+  {
+    "path": "Internal/Asm/IntlUtilsPriv.a",
+    "sha256": "6b3a65f22f0a03cf573c59c79536fc0c31f03ba08ea5a264438664519e023d75"
+  },
+  {
+    "path": "Internal/Asm/LayerEqu.a",
+    "sha256": "b92449a5d2ad2dc6bbde806cd9cc888aad2676ff35efd740381866863194f60e"
+  },
+  {
+    "path": "Internal/Asm/LinkedPatchMacros.a",
+    "sha256": "6d077e3c21a96a60a3a0928d35d5b7d873e555984ffe4b336f268bcd11f0fe53"
+  },
+  {
+    "path": "Internal/Asm/MC680x0.a",
+    "sha256": "f30c129b3f18603412a6713d876fc428cb171e03f0a7166e7ca3d2885996dabb"
+  },
+  {
+    "path": "Internal/Asm/MFPrivate.a",
+    "sha256": "79562c56273115e284d9b1ecc0a90e8cfc2d6f1f1b554aaa605c4a8e6c874815"
+  },
+  {
+    "path": "Internal/Asm/MMUEqu.a",
+    "sha256": "221cbf012161765608993a5eb241d2520b98a50729f93f23fd38f9525dfeabf7"
+  },
+  {
+    "path": "Internal/Asm/MenuMgrPriv.a",
+    "sha256": "4f4985fe96d798e72e86bbbad51323c812f1e14904c9503460e658aa01b5dc3b"
+  },
+  {
+    "path": "Internal/Asm/PPCPriv.a",
+    "sha256": "e282f5af6d0e34cbc1dc598141ff9bc0b6a46211e4f969794073d2134d492f86"
+  },
+  {
+    "path": "Internal/Asm/PSCEqu.a",
+    "sha256": "ab17974d5291c70d1b2bc320dcb2b30d3b2e668f6ea2b6edf74a07a494e54940"
+  },
+  {
+    "path": "Internal/Asm/PalettePriv.a",
+    "sha256": "aab2ba32a753ca148f9e8f37e42c23e4a12fe7b937f83565b1a71d1432a558c9"
+  },
+  {
+    "path": "Internal/Asm/PatchMacros.a",
+    "sha256": "bee2b176ab197b180603da62adc2bb4fb78e236fb75ca5a8ec0e93964d4c4f8a"
+  },
+  {
+    "path": "Internal/Asm/PowerPrivEqu.a",
+    "sha256": "68229ec6ba393cb0ab60ea44b07e23cbf384273ac7f822ac25d09dbf4b36aac9"
+  },
+  {
+    "path": "Internal/Asm/ReliabilityEqu.a",
+    "sha256": "93ad5aa6412e26e53b5b0cb96490bc1d8de00960bbf4bdc3ab245488c5c5e3bd"
+  },
+  {
+    "path": "Internal/Asm/ResourceMgrPriv.a",
+    "sha256": "7aa25aaf3ad66f296e649f04215f407ecbbaebfb870f2db5ba8e2e8bc09bad68"
+  },
+  {
+    "path": "Internal/Asm/SCSIDiskModeEqu.a",
+    "sha256": "c7858936d63306b6820b576ce38c9b720b67462f1608351abaa8c6ac0dd9295f"
+  },
+  {
+    "path": "Internal/Asm/SCSIEqu96.a",
+    "sha256": "f64058ec0ecc73eced9112e431445f16adcc4c8b49b86f80347a0eb55898ce58"
+  },
+  {
+    "path": "Internal/Asm/SCSIPriv.a",
+    "sha256": "cce697a295d48ad363641425e502e7162d6a2beacb5c7ce0f7be138f513ad31b"
+  },
+  {
+    "path": "Internal/Asm/ScriptPriv.a",
+    "sha256": "8675b24887221b00f6e8e0f5dd1be64bc57e2824350e7451b1e868b5863567aa"
+  },
+  {
+    "path": "Internal/Asm/SlotMgrEqu.a",
+    "sha256": "1c7a7b36c5a78cbd867f16c994b50619c6d3da907102e65c93cc62a2762a4591"
+  },
+  {
+    "path": "Internal/Asm/StandardEqu.a",
+    "sha256": "a46bd33b849a8fb1a131462b204bf5034ec6ab4b1fc0f165be051cc123e4fc9a"
+  },
+  {
+    "path": "Internal/Asm/SysPrivateEqu.a",
+    "sha256": "ee617cc31e14eb0f051122c228b54d2942f830907af43e81a4a831f8fb923edf"
+  },
+  {
+    "path": "Internal/Asm/TSMPrivate.a",
+    "sha256": "384b5b7b19bb6f9f853e86162958e4525935d603fd090507258d0e805f96025f"
+  },
+  {
+    "path": "Internal/Asm/TerminalsExtensions.a",
+    "sha256": "98c3bd80440087e59ece4166a39ba9d27223aa6e52d22e0c24c23f55857a29e3"
+  },
+  {
+    "path": "Internal/Asm/TextEditPriv.a",
+    "sha256": "b45cfd72e13aae13d139f0cd9c18ee940f36ae1d8db20c7dd391a25841da6b3f"
+  },
+  {
+    "path": "Internal/Asm/TrapsPrivate.a",
+    "sha256": "9915e6303017294f085d66226adb972ee944be86b77de31d672a72a7b94afdcd"
+  },
+  {
+    "path": "Internal/Asm/UniversalEqu.a",
+    "sha256": "c8d4eec6e182a8c58bbdd87b22e9aa111146b71dfd8783de16eedf54a63da0fd"
+  },
+  {
+    "path": "Internal/Asm/VectorTableInit.a",
+    "sha256": "063f0786aa01071e5d3bc1711a70c3535373f79918f8e8d210bb8c05842b0ad2"
+  },
+  {
+    "path": "Internal/Asm/VectorTablePatch.a",
+    "sha256": "c15c4d3134d905a14bc15e94845a0f7adcff181161b32d35d3c19944cc8da12d"
+  },
+  {
+    "path": "Internal/Asm/egretequ.a",
+    "sha256": "aab4b57d81ed182f04fd08ada1aaaf5402763f00d42b3ffc4a5529e9f1782019"
+  },
+  {
+    "path": "Internal/Asm/fontPrivate.a",
+    "sha256": "22a5a7c26ab85ebcc8145ec1a6d7b8b1132297e754aca1f00688f2c70615be30"
+  },
+  {
+    "path": "Internal/Asm/i2cEqu.a",
+    "sha256": "d78a8dd6257a25923b83f081c695d7652884fe8d87d32c73a8fc976533c653bf"
+  },
+  {
+    "path": "Internal/InternalGlue/PPCPrivGlue.a",
+    "sha256": "34ad91b78142a499e6cb20d759492277e0ba8659ee8af054a7d08c49027c22cf"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/CommResourceMgrGlue.a",
+    "sha256": "5f293977411db5b25ef96e5e62c666373395f3c6504c2bfc538be7df43f787e5"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/CommRsrcMgrExtensionsGlue.a",
+    "sha256": "e92040cab1f8f8c3fa2195eca0dcc6873ce3b18d8ac939a1a210d7671497fea9"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/CommToolboxCoreGlue.a",
+    "sha256": "6940bc907648d816caf17d433748891c8f8bf37d2a4e159237cf4026bc5ddb12"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/CommToolboxUtilitiesGlue.a",
+    "sha256": "a907e87e6b7d87b8ae37d28e9dc290327127ee6737eabe69b4368878ff6c1eb6"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/ConnectionMgrExtensionsGlue.a",
+    "sha256": "2627b79b6ca19dc30cb0dc7d34c5a2bcff187f78729570943ab7d9fec06f9473"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/ConnectionMgrGlue.a",
+    "sha256": "38494895c44b70bab5d83b3c33f7341acb15c5c94ccf21509bf3a880491bf129"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/FileTransferMgrGlue.a",
+    "sha256": "df6ee7527b67015dfc0e2243634896bf21da488a598ac7a2e1e3cbd1a25a9750"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/FileXferMgrExtensionsGlue.a",
+    "sha256": "771dfd93e6d362ef8ce41832a0e20560e262b4e76286fcc86208f59e1d39fd55"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/TerminalMgrExtensionsGlue.a",
+    "sha256": "8f587f7f6f82954b6f33081b619f740b85ee020b6df8b718d9eaf6655258d0ac"
+  },
+  {
+    "path": "Libs/CommToolboxSrcs/TerminalMgrGlue.a",
+    "sha256": "3b3f81573727ef8986f06d0ace4d8c9efa4c9a8842cfcebb9e433c7c96a800ea"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/BitMaptoRegion.a",
+    "sha256": "07935a1678c542123597e1f69a812d428a51cf7f1c44803eaf8c41cc0235ec95"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/CONTROLS.a",
+    "sha256": "7321018840c67859311574ede78d220d3789a262da7b56f9bdba7283c0e1339a"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/Copyright.a",
+    "sha256": "9f9963f3516cb54a74aee96ee699ad98e1d4b3015d88d3c80807efc8cd6c9964"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/DESK.a",
+    "sha256": "961fea6e1a047880aeb523978d92648a9309bc4b6d56a6eae3b46e700336453c"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/DEVICES.a",
+    "sha256": "c46d4899b5e6a1b4d24e12d2167682a2e9cec4352a52d389cc9ca323407e1f7f"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/DIALOGS.a",
+    "sha256": "1f7efabcf3c0b4c3194f5cfde83fda8ef38e90299e31f6b17619c78ec25cba1c"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/ENet.a",
+    "sha256": "2ea3176e06e32e0fc9a8255a90a1d533c1c27ad123d2dc76dacff6b4c1e57f20"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/EnvironsGlue.a",
+    "sha256": "147d2f61a7bfbb68d9e778435a95cfd0e3e16acf364481414542a9c204e665d7"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/FILES.a",
+    "sha256": "87597df84cba5de5ac1051304f61eb83c8350587bdcad7c81e6c0147245d8173"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/FONTS.a",
+    "sha256": "9a82d846922ebcb6e5ad19926c44ebef2010af84ca5e67c81b6980e50d06de05"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/FixMathAsm.a",
+    "sha256": "61f5f7e8f94e816a2028508e00e233062af2c6c2a8b54dee4e45efad734a700a"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/GestaltGlue.a",
+    "sha256": "689780277f8b1d26ac258c00dbc73b84a67e23289fc7965bb8acef76dd7ee21a"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/GetPhysical.a",
+    "sha256": "0af1a895878a3c7c5392c5176a3c7dfbd5732d21203bab4e715d6cd39371c1b3"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/Graf3DAsm.a",
+    "sha256": "f309cfe8c284b53514af1b09bc0537c9788f1682bcddcb0d3ca36c2773bf52f8"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/ListTraps.a",
+    "sha256": "f13fdd022962fd827d30ac0c72ec1197a78423f5f86be1091585806979826ec5"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/MACINTOSH.a",
+    "sha256": "669de542d7779cb3184a4e1cdf4b1db115c3ced24b8fcf85e58a6b847a9ae877"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/MENUS.a",
+    "sha256": "af9c3282e072ea27d9acdb936f1af33f69954b124be41038dc012a2f290f1174"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/OSTraps.a",
+    "sha256": "a4b99d39828e0402a038abb4c27328e9b9a3e9cbe7f74eb9c8168d1a281fd642"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/OSUTILS.a",
+    "sha256": "7b6bab835c9f16dee7862029a125259a3dd4edfead7b3f93350bea17d54a881b"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/PPCGlue.a",
+    "sha256": "7328150223ee62c5da5131a81d4d086599d499cfd54dc22d5a8408126c312cbb"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/PackTraps.a",
+    "sha256": "bf73ad995f7fe8bac3f3e29521dad912ec7f9f13679276c95c74f78ee8c1b4fb"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/PackagesGlue.a",
+    "sha256": "d74494a2f1265fecedebba54891397f63ec8435025b02ff6c598b076b77657fb"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/Power.a",
+    "sha256": "24e9df4497b4b800993eb3599dc803aadf296f71a0721bd93a58e1ece2c3dd77"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/PrGlue.a",
+    "sha256": "3b005143a1d4a95f67b4f4565680fa9d16e1cc4b8c8ebb8702a40c6360802202"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/PrintCalls.a",
+    "sha256": "4085c5c06f2baa0284fba87867fc55e032e1eb35edb3650150eb772a20da825f"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/QUICKDRAW.a",
+    "sha256": "be7b142212608d9b52d5b88baae2e3f197cce067ece1ed9e5cfbf69e271154a6"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/RESOURCES.a",
+    "sha256": "f6296c96c77b3116f283cb005044f5ea28c97e57b369e017050d834187100135"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/SCSITraps.a",
+    "sha256": "0b4d8d65f39e1960c762f2d894598758cecf0c801bfaf6adff1b6cda0cf7570a"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/SEGLOAD.a",
+    "sha256": "e1ba83ff5a7e061711ec05797608fb9668fc5f0ed78803d5f4bbfcb95bb0cbd4"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/SlotTraps.a",
+    "sha256": "48da5e29110565161f27c849907b950290818049294e824788cb5fd24848f463"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/Strings.a",
+    "sha256": "539c91e9bd1c96d86de593480f1340e1a42901151495ec13397bd18a83647849"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/TEXTEDIT.a",
+    "sha256": "d752463630ce44aea1b1ff3579275e6187cd8abab623b0a08e516e232d6c5fae"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/TOOLUTILS.a",
+    "sha256": "ebb0de1d436af22ed5e1ad63d2e8d2b9a87dc63e7d268ec772b8892fc2e16b76"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/ToolTraps.a",
+    "sha256": "f190065db16444692f28105730357a41147a704461aed449f04d3ef5be8c88cf"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/WINDOWS.a",
+    "sha256": "fca8bde3250738f512df2c7c3de0847eabe28e4375438453e3de84dc4b8647a5"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/nAppleTalk.a",
+    "sha256": "28c31c646933f42d1c03c0f12a42fd533137654e25520bd58c8fde6e20d89b87"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/piATP.a",
+    "sha256": "3c8caf4287e9d53b69bcc4d848c161d8a8df1d2705b807aed96c96384539331e"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/piDDP.a",
+    "sha256": "773708617ba34882a4360f004259bebcaf941500795d2b84e0075f8b021b0fb4"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/piLAP.a",
+    "sha256": "e94c95fbfd54ca3ffab61c12891c8202d234b2052fc94df1ebbbc3599110229f"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/piMAIN.a",
+    "sha256": "1ab113880a3feb65347cd8407a9427ceed37eaaa4be5c6dd47ac12a0d93f4e64"
+  },
+  {
+    "path": "Libs/InterfaceSrcs/piNBP.a",
+    "sha256": "c69143c23178d2545b0062330931ff3905d07a75dc80d53cb1dc02be0a089bf4"
+  },
+  {
+    "path": "LinkedPatches/LinkPatch.a",
+    "sha256": "52682bb63c64e7eb7fa146ebfac570c7c589caef52c90609d1a79831e1ead740"
+  },
+  {
+    "path": "LinkedPatches/LinkedPatchLoader.a",
+    "sha256": "8d4790c15f5a94148b8298a4319b52fca8d73f266f934d39d033569ab01ca2fc"
+  },
+  {
+    "path": "LinkedPatches/PatchProtector.a",
+    "sha256": "2411bf1c9898b0718d45bb0705a41d54acb915af2225edccec8c88b7337c22ad"
+  },
+  {
+    "path": "Make/VectorTable.a",
+    "sha256": "697431c5aec2be0795b6c495cac95a967def4fa0e09615387cec483f85bc2294"
+  },
+  {
+    "path": "Misc/ShowINIT.a",
+    "sha256": "8770b04899f867fd6d50442214989de8fbd071bffc342685b3990d5f77bd565c"
+  },
+  {
+    "path": "OS/ADBMgr/ADBMgr.a",
+    "sha256": "cc401fbfd6abc4cd3bb931151676ea8bb23f406ea1f084c57cec51bdc6fa7e25"
+  },
+  {
+    "path": "OS/ADBMgr/ADBMgrPatch.a",
+    "sha256": "326a7776518f7ec615492cea8ba8d7f5b69d8fcf2aafa4b06f9ba6c86e5b1bea"
+  },
+  {
+    "path": "OS/Clock.a",
+    "sha256": "30bd4dc45eef2b5b89183d79b3cea41082063c168cb06a8b3f27e5e40e84a040"
+  },
+  {
+    "path": "OS/CrsrDev.a",
+    "sha256": "0cdb061237539ab065f8fd2e8cf20bbb6ba0573cb2b133b307e90ef97b4db0ce"
+  },
+  {
+    "path": "OS/CudaMgr.a",
+    "sha256": "0e9f3ca54789ea0c8e27be4d56fba28ec883e7507087f3d2f4796b80acb8c81b"
+  },
+  {
+    "path": "OS/DeferredTaskMgr.a",
+    "sha256": "85b6a3cd0d0a722d811ddd76dc5a72588e4c5feff1219b644f3162c09f322956"
+  },
+  {
+    "path": "OS/DeviceMgr.a",
+    "sha256": "85ca113f1d25d588a7c33ca46c2a9598ffbd4166a2a032f2e7cd1d8d6b4ca38e"
+  },
+  {
+    "path": "OS/DispTable.a",
+    "sha256": "838442dd1e150199ae167d02af6ecf15cc230bc06417dfeaa843fd942b0bc350"
+  },
+  {
+    "path": "OS/DispatchHelper.a",
+    "sha256": "b8d5704b20edd9b6f0a9cb3f7ac45d0f159fb9fa1759cde9646cccb4184e8c03"
+  },
+  {
+    "path": "OS/DockingMgr.a",
+    "sha256": "d7ed417cd168b9ab24fef90c81d8b252e542f83e2f3a55b6e797dfe745866d52"
+  },
+  {
+    "path": "OS/EgretMgr.a",
+    "sha256": "d9d68c0f2cced789037038d06f1d4bccc020a5da5d92370d095c10ee3ba5e106"
+  },
+  {
+    "path": "OS/FPUEmulation/BinDec.a",
+    "sha256": "cbb9794ab0ca0465f5bf59c97a6d6efa59944142dda55359898b38cd213a22ed"
+  },
+  {
+    "path": "OS/FPUEmulation/BugFix.a",
+    "sha256": "e05dd5831d5fc9e4b5b3b228a983ab7e264379c4859c5883c826c7ca92e3e896"
+  },
+  {
+    "path": "OS/FPUEmulation/Constants.a",
+    "sha256": "5f714790c54f6f686275e6983a90310fda99ae8b05fb535893f36dc1951937a3"
+  },
+  {
+    "path": "OS/FPUEmulation/DecBin.a",
+    "sha256": "fff243edb278323bfc98b1382228d7790e3a32ea6c651ab358b2d129135e20f7"
+  },
+  {
+    "path": "OS/FPUEmulation/DoFunc.a",
+    "sha256": "25b888e146c23f08d84d7d91d30999a5436aab2140f59857e133cd02cdba422f"
+  },
+  {
+    "path": "OS/FPUEmulation/FPEmulation.a",
+    "sha256": "8768f029089285a987efef45fc392b17f2eedca3da69f8558e26cc5fb6f29b65"
+  },
+  {
+    "path": "OS/FPUEmulation/FPSPMain.a",
+    "sha256": "e175076e08ea68546759468fc4a0cc12bb71a2b0a405180d28d3c287856f4af2"
+  },
+  {
+    "path": "OS/FPUEmulation/GenExcept.a",
+    "sha256": "6f25b6a9ee410897a62d62c6dfedd4ddf0fe6cf76498fae4bf7eddbc21ea885c"
+  },
+  {
+    "path": "OS/FPUEmulation/GetEM.a",
+    "sha256": "5f6c2ffdb51715f8ae61e269269e16b49b9069a0259a627b153c829ef35a6210"
+  },
+  {
+    "path": "OS/FPUEmulation/GetOp.a",
+    "sha256": "e649718977a0b63cc81553f192e78af77533b743df5533cbc196349291197ead"
+  },
+  {
+    "path": "OS/FPUEmulation/Hyperbolic.a",
+    "sha256": "e37de99d1140552a9c9d9408ad9dacedd9201c760432755c76705521f9cd7d7d"
+  },
+  {
+    "path": "OS/FPUEmulation/Int.a",
+    "sha256": "520ac540f33442354ecf728e402f735f6b224be2f4589681bdc8af0810b19c31"
+  },
+  {
+    "path": "OS/FPUEmulation/InvTrig.a",
+    "sha256": "af8689112ee3981d68f1d089ec6b9c3dada8acf38e9aa8e782145f6c4a48c993"
+  },
+  {
+    "path": "OS/FPUEmulation/KerneLex.a",
+    "sha256": "1732f367c5195ea4db0bbcf6748bc938b9f3b9bb9fcb04a6f0333d49231376a3"
+  },
+  {
+    "path": "OS/FPUEmulation/Log.a",
+    "sha256": "fae6ef3f70549da8b5668f3fc14c570135be083a381a92605c144be84ccec738"
+  },
+  {
+    "path": "OS/FPUEmulation/MoveCR.a",
+    "sha256": "c43a06b12b6f88556d62ebf0f8771bfcc29759b48f06325c5b23e11d1d380bca"
+  },
+  {
+    "path": "OS/FPUEmulation/Power.a",
+    "sha256": "7dda1737adac92df02184d17383c783076997999ce4d2e1e6ef517ee9d2e771b"
+  },
+  {
+    "path": "OS/FPUEmulation/RemMod.a",
+    "sha256": "e048defdaaf607f1dda99962c02c9ec105ddc6b0cad74ce331171921f265a3c7"
+  },
+  {
+    "path": "OS/FPUEmulation/ResFunc.a",
+    "sha256": "05fead3a208d94b419a5d107470ee096b9254afabc16a06f71f399210634ac4c"
+  },
+  {
+    "path": "OS/FPUEmulation/Round.a",
+    "sha256": "0b11ee388d7eae649fc824e63c156f890c4449a8ef032c491f2defdacaeffb1a"
+  },
+  {
+    "path": "OS/FPUEmulation/Scale.a",
+    "sha256": "4ee6ebac6ec26d8c8170866ec5b50dd4707391ffb3cd6588ed11389d3102e747"
+  },
+  {
+    "path": "OS/FPUEmulation/Trig.a",
+    "sha256": "67b4d1e80723d93fbd6382d4e307e2ff389b4076b4cab3130f9fa4e39a6a35b8"
+  },
+  {
+    "path": "OS/FPUEmulation/Util.a",
+    "sha256": "15cffa0c95c67f4008622fc3eb1d2c3eb95b2b340ad48b69902e7d91ef2b7056"
+  },
+  {
+    "path": "OS/FPUEmulation/XBSUN.a",
+    "sha256": "7f9ef44a593af5e5d5318f3caa2d78c1fda5fe718d6330863dd6596dbc7dc118"
+  },
+  {
+    "path": "OS/FPUEmulation/XFLine.a",
+    "sha256": "ecf3f2cec2386d2a529bdb50f33738b07dbd77396588d166d612f6f8eb9c4f6c"
+  },
+  {
+    "path": "OS/FPUEmulation/XOpErr.a",
+    "sha256": "1f1e76be3ae27f363c18bd712fffc8dc34951f1d41b5205b0869cd5b19a7eac7"
+  },
+  {
+    "path": "OS/FPUEmulation/XOvfl.a",
+    "sha256": "0a34e64ad83f15e9b109e626fa49cbe0655076ef034047b7925bb1f472b2488e"
+  },
+  {
+    "path": "OS/FPUEmulation/XSNAN.a",
+    "sha256": "c7a5178d7d639b04025a976b4de82d8e61caeea3f84fd9b99c4463c94fe672b0"
+  },
+  {
+    "path": "OS/FPUEmulation/XStore.a",
+    "sha256": "f97840acc7db665ad1a478bec406255b58ac14953daec9da2863e220be796c9a"
+  },
+  {
+    "path": "OS/FPUEmulation/XUnImp.a",
+    "sha256": "0e20107845a70d4fb0a1fe975f3c63e444531803a03aa4ffbb056876d12591f5"
+  },
+  {
+    "path": "OS/FPUEmulation/XUnSupp.a",
+    "sha256": "e04535cbe0c4a08f553bb5dc25075c4bd927341066749b305b48c092163956d3"
+  },
+  {
+    "path": "OS/FPUEmulation/XUnfl.a",
+    "sha256": "18ae591e0628e9c64d2746861a2b18fe4e28cb318bd90078dec51329dec233ca"
+  },
+  {
+    "path": "OS/Gestalt/GestaltExtensions.a",
+    "sha256": "efa0d38955efa8409487434eae53c38599fcf2ca080dc31366fa235ed94237c4"
+  },
+  {
+    "path": "OS/Gestalt/GestaltFunction.a",
+    "sha256": "c1003c50059b8f7ea1dd65e8880ecf5fb323c08c8831a9e26534f0f0d7e27abb"
+  },
+  {
+    "path": "OS/Gestalt/GestaltPatchHead.a",
+    "sha256": "de5a111ade3dc8bf1a02dc77ec085dcf9172efecd6cb2e7acfc9c29171d0038b"
+  },
+  {
+    "path": "OS/Gestalt/SysEnvirons.a",
+    "sha256": "d67f3ef24ffaa5eef12a0ae63f2ba21e3c754071be8d59228e56a18db7cf20c7"
+  },
+  {
+    "path": "OS/HFS/BTALLOC.a",
+    "sha256": "5238de52c439ce42ad4e01a7658ff3e9ae96a3fd0d24ea7b29cec1a66fe260ad"
+  },
+  {
+    "path": "OS/HFS/BTMAINT1.a",
+    "sha256": "511962668325f70d1faaa1e0207d8daa17c89ddbae07f67da985a61377a1695b"
+  },
+  {
+    "path": "OS/HFS/BTMAINT2.a",
+    "sha256": "6b089ca75b49f47071992ac8d701df3fa2987c6f65eb6be16351e8ce2a62dcaa"
+  },
+  {
+    "path": "OS/HFS/BTSVCS.a",
+    "sha256": "bd19f2d4cc36fb22e1c753ba9148703ee6825ebeef4a4923b71530fed255d364"
+  },
+  {
+    "path": "OS/HFS/CMMAINT.a",
+    "sha256": "29a4ae2a1dd258af0fa7633ab445317a79db58843f137aebedc3e71d4b1184d9"
+  },
+  {
+    "path": "OS/HFS/CMSVCS.a",
+    "sha256": "eebc64f3e3491acc1c698dd6cf6630656a1b6157ccb4259cee68c8d3bd47c262"
+  },
+  {
+    "path": "OS/HFS/Cache/CacheControl.a",
+    "sha256": "eb5a28a5174f02ea49f82c26ea551cd5c66c04b3649ac86f17b71fa38a2c78cb"
+  },
+  {
+    "path": "OS/HFS/Cache/DiskCache.a",
+    "sha256": "57928e1ec0c97780ef69f1e376c99b7997f7e7cd30f7723cc25be3647c8f3ba9"
+  },
+  {
+    "path": "OS/HFS/Cache.a",
+    "sha256": "61b37d7bfc541281ce5da0eb0ba680de177edda1f022c34dd2e58270a9b84a1c"
+  },
+  {
+    "path": "OS/HFS/CacheIO.a",
+    "sha256": "d2767922871917c157f9155555f4a96fd25c0d56f56f081e5227e57a7ffdf2b8"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTPScan.a",
+    "sha256": "82d3b3caf258cee66530a54e26c95f23175f08bfccbd4dfb2a9a7fdba8e2396b"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTScanPriv.a",
+    "sha256": "16e118d822f4b2c0427511293fa9e6c5f5ae306251f1fe556e53669def630270"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeAlloc.a",
+    "sha256": "fb0c7f08a70c427c0be7b38547447636c1b517dc4df1467bfd23a9a01eceb1e1"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeFuncs.a",
+    "sha256": "5fc894cd672bb581ab9479ceef710a0271c42179d142d6bdb089f9b827de33c6"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeGlue.a",
+    "sha256": "414b98fafc9e8867e06d4a8aaee9b0c05c29a23f5387f8d14676f1f1dea1b7f1"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeMaint1.a",
+    "sha256": "71f773fed98805ba924fc01bf8a7f903fd6e30aeb29d8c032417785872e92249"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeMaint2.a",
+    "sha256": "3943cf92181ea0bd3e321b296328d03fdb9cef28e0c87c4e93fe0e16d37a96d5"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreePrivate.a",
+    "sha256": "85e0f5921a5897f8f08d2a3f072ed0fba6f98ad32e7a125770b1f85fa54dabe4"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeQueue.a",
+    "sha256": "20a3efc9b61e23e5e66d48cf53163a10172c9c010239f705c5b7508c052e27b7"
+  },
+  {
+    "path": "OS/HFS/Extensions/BTreeMgr/BTreeSvcs.a",
+    "sha256": "3d7ca61193bac0cdc750a1da8d2b44486f3ec37299bf17caa394d49a29eedbe8"
+  },
+  {
+    "path": "OS/HFS/Extensions/CMSvcsExtras.a",
+    "sha256": "58c1704a3c2f30ddfb48f9ce4277789e031fa5e1fb3d9860605a79e608ca9ec6"
+  },
+  {
+    "path": "OS/HFS/Extensions/CatSearch.a",
+    "sha256": "1de3200c95a45acc47bd0168b85b73e254d93e66f1b9e52e0598b89698315ec9"
+  },
+  {
+    "path": "OS/HFS/Extensions/CatSrchPriv.a",
+    "sha256": "be245d86837cebe66459d3061fb15a36517422bc1d377bdf774ec6459514750a"
+  },
+  {
+    "path": "OS/HFS/Extensions/DTDBMgr.a",
+    "sha256": "93af07a3195a4fabec12674cc769a824a271efef7f54966a0cacbb083ff36de0"
+  },
+  {
+    "path": "OS/HFS/Extensions/DTDBMgrEqu.a",
+    "sha256": "5bc950259826489a1803c54cfabb47f7c02cdb30e8104fc3b7f9c7aaf7b8fe08"
+  },
+  {
+    "path": "OS/HFS/Extensions/DTDBMgrPriv.a",
+    "sha256": "8e73f34a62c7b8f95d9b6a173d4b4210faff4101d58f85f0c18003eb252b32ba"
+  },
+  {
+    "path": "OS/HFS/Extensions/ExternalMakeFSSpec.a",
+    "sha256": "01174336542ba8b340c69eb9f112278a4bd5c1fbdec843ca467c4840847a18ec"
+  },
+  {
+    "path": "OS/HFS/Extensions/FSpDispatch.a",
+    "sha256": "0098f413b6638c1de4e62d6b759a42b792114e29c51f7da8564f9b874eb1e403"
+  },
+  {
+    "path": "OS/HFS/Extensions/FileIDs.a",
+    "sha256": "a199e68cedeb79ce05c56066392858e5493d45ed0890719ad8171b5031e01720"
+  },
+  {
+    "path": "OS/HFS/Extensions/FileIDsSvcs.a",
+    "sha256": "618c0a9fa93856fdd987cf3bdbde0ae1b84667d754c4acc25764d773380367ab"
+  },
+  {
+    "path": "OS/HFS/Extensions/MakeFSSpec.a",
+    "sha256": "77d0741ff352c6753687d391a10f6624c0e98dcf71f7bb11f33176227c1d8e04"
+  },
+  {
+    "path": "OS/HFS/Extensions/QMgr.a",
+    "sha256": "2d7354a594a341fd6024ce39d9bd94b212a04c3cf936580b1c83f152e83a3da4"
+  },
+  {
+    "path": "OS/HFS/Extensions/QMgrEqu.a",
+    "sha256": "9e27f8e9de290aa7f805225ecf224ad6b47e48f9eb10ac2f50f9d9aefb30ad4f"
+  },
+  {
+    "path": "OS/HFS/FXM.a",
+    "sha256": "29f3b69f127191b02a64fc7c1bc21f52bd43d9a635d87e9bc6c1c79ce7f04a62"
+  },
+  {
+    "path": "OS/HFS/FileMgrHooks.a",
+    "sha256": "cbbf5abe1085cfab871bf3091c8d9fb381a2df5a21b2c01eae41e1decc3232b5"
+  },
+  {
+    "path": "OS/HFS/FileMgrPatches.a",
+    "sha256": "f693045a52a563c63e7d0499db7f3868fc5d35d330cda3e0228f36b84c7fa849"
+  },
+  {
+    "path": "OS/HFS/LaterFileMgrPatches.a",
+    "sha256": "5ccfa700f6a5b69328d2b72742ea685030b4d1f2b0bd782d7712dec78ba6d4a2"
+  },
+  {
+    "path": "OS/HFS/MFSDIR1.a",
+    "sha256": "3bdc88f224ca197ff1b9c19d46b94bedda878f4ad21baa4faceba06452d43d41"
+  },
+  {
+    "path": "OS/HFS/MFSDIR2.a",
+    "sha256": "c1372f4ab73c47e9fa3280270ad7a5d77bb6ffcad415bb1f173dcd915b028ff5"
+  },
+  {
+    "path": "OS/HFS/MFSDIR3.a",
+    "sha256": "74cd6b4e4cb368afe2983ccce6e9721a9aa8f32c357a2c5600b183a20d8ba8e8"
+  },
+  {
+    "path": "OS/HFS/MFSRFN1.a",
+    "sha256": "960dc34ec8ab080b7fee20b6fb855d045235e6f9291fff0ddd4b2a5e914e4863"
+  },
+  {
+    "path": "OS/HFS/MFSRFN2.a",
+    "sha256": "f17b3486cc4e42f1981689ba0d756c30ea64227d0c37c73af5b4df82677a05c6"
+  },
+  {
+    "path": "OS/HFS/MFSRFN3.a",
+    "sha256": "5f053f555ed857bb3a7bd4d4059ec2f71931e7d6b14254ea47a0802b0740f43c"
+  },
+  {
+    "path": "OS/HFS/MFSVOL.a",
+    "sha256": "7069be21af49557a9278c13bdce2886fd4e90b96466545d1fbdc553fe0eb817c"
+  },
+  {
+    "path": "OS/HFS/TFS.a",
+    "sha256": "d73c5f139d529dbd33ba71abfbac80ba64177766690055bf61e3b73de764fdea"
+  },
+  {
+    "path": "OS/HFS/TFSCOMMON.a",
+    "sha256": "2f15bf4ee208b83d57c4d4aaf277b21a863f12b553d00346e300532cba2f3aea"
+  },
+  {
+    "path": "OS/HFS/TFSDIR1.a",
+    "sha256": "fdd30f7b28572edb95e325b7123984776228e65f4cf6d0759014d673e795586d"
+  },
+  {
+    "path": "OS/HFS/TFSDIR2.a",
+    "sha256": "18b76c57d096c73846a65694fe3c12405585b0112d18712a1f459173b757ae26"
+  },
+  {
+    "path": "OS/HFS/TFSDIR3.a",
+    "sha256": "bc4bb0a37c6904575c5ff2bd30774f8010404551343ee134ade7650719576c44"
+  },
+  {
+    "path": "OS/HFS/TFSRFN1.a",
+    "sha256": "931321393f01b039453df960f35e339316f917e009d4101caf96e7d27b39ef64"
+  },
+  {
+    "path": "OS/HFS/TFSRFN2.a",
+    "sha256": "f42723d503bfce9283e4dee516b2936738ebb0d84fc06e17bff3b3ed4805f115"
+  },
+  {
+    "path": "OS/HFS/TFSRFN3.a",
+    "sha256": "4c37ad70b5390a66047364bf7670ad484426ce4a4d9956b266eb2fff4add97c1"
+  },
+  {
+    "path": "OS/HFS/TFSVOL.a",
+    "sha256": "532dac54d50c57c28d90e1a37a316ae0bb24d06bc5071f114601c8299f3c76e4"
+  },
+  {
+    "path": "OS/HFS/VSM.a",
+    "sha256": "b51b4428c353b07d31451fbb7061c733a4a6cf2ab977bce80677130829bda409"
+  },
+  {
+    "path": "OS/HwPriv.a",
+    "sha256": "4179c46792cd7130c7be79e33db5fccdd939840517063d7a5d10713c98fb0abf"
+  },
+  {
+    "path": "OS/I2C/I2C.a",
+    "sha256": "44c5d4ecd2f8bb1bb591f9a621a38c511a4f1f62d95535a0f755217f47336270"
+  },
+  {
+    "path": "OS/I2C/IICTest.a",
+    "sha256": "6c41f812cd4545ffa59c0778f9a63db892a4fce904d23beec61ad363ef168300"
+  },
+  {
+    "path": "OS/IOPMgr.a",
+    "sha256": "4d86dc7c6da098bc1e3f2fcabdd172c20934284023ee9bec8633a21e86158314"
+  },
+  {
+    "path": "OS/IntModemMgr.a",
+    "sha256": "a7bdecd89de3d421029d813f1b9d7f9a5e406f5abeee3d40a4d2c98175f4c9de"
+  },
+  {
+    "path": "OS/InterruptHandlers.a",
+    "sha256": "67eb951bf54a8a019100c0d9e81997a914f920f59520ff5400b3f74718e44e19"
+  },
+  {
+    "path": "OS/IoPrimitives/ADBPrimitives.a",
+    "sha256": "32e8706a4e3c446926c0ef1899dfeeb1861e4481bad747d9ea82b36e0b985a66"
+  },
+  {
+    "path": "OS/IoPrimitives/ClockPRAMPrimitives.a",
+    "sha256": "b4f65080d1e641d35bc7360fb779c1f7be4461adeb863a100af2802ec7be9050"
+  },
+  {
+    "path": "OS/IoPrimitives/ImmgPrimitives.a",
+    "sha256": "3c70b6651b95bda4b626d9956ed2ba2beb8889456295f1ca18ce03cab748a0a4"
+  },
+  {
+    "path": "OS/IoPrimitives/PowerMgrPrimitives.a",
+    "sha256": "b8138e856e968a29012c6b8f2ce3dec2ccc657dde48bc9e2f0dbac7b7240ada0"
+  },
+  {
+    "path": "OS/IoPrimitives/SndPrimitives.a",
+    "sha256": "6f7ec64a53a6b0537c07eb3cf18d04592b25640ba8ed375311a874df6a2753f4"
+  },
+  {
+    "path": "OS/Keyboard/KbdInstall.a",
+    "sha256": "4e26ad74ad230ea77c92ffceaebb08a093fa3db1175ff1cba93d91b84d7e02f1"
+  },
+  {
+    "path": "OS/Keyboard/KbdPatches.a",
+    "sha256": "3a2f419dc1957b10fb67e7f15a8134cde57ec362309110582dd8e4dd38b249ba"
+  },
+  {
+    "path": "OS/MMU/GetReal.a",
+    "sha256": "14abf9aea9e58f6f7c765cf56c1888bf8cdc8578cfc9c48f222dbc040640c4fa"
+  },
+  {
+    "path": "OS/MMU/MMU.a",
+    "sha256": "4e5aa09de47523ba3ceb269e88cdd40fb1e4d334c4ff1ed76d045818b9c95172"
+  },
+  {
+    "path": "OS/MMU/MMUPatches.a",
+    "sha256": "5cd488e52b84b930a884823ce933ff05556492978f2ae7f7791d03486639565d"
+  },
+  {
+    "path": "OS/MMU/MMUTables.a",
+    "sha256": "e0afccba688c9b9a3aea71a80c8b590868067e016f88a47859b786260893d9a2"
+  },
+  {
+    "path": "OS/MagicData.a",
+    "sha256": "b1d42d7903fc992ac8770e957fc0525be76ff07d1794d3367ce3fc49a800c4be"
+  },
+  {
+    "path": "OS/MemoryMgr/BlockMove.a",
+    "sha256": "6473b443317f9ad0535d966aed960589897f9f8311ce3b43faafa146a720314a"
+  },
+  {
+    "path": "OS/MemoryMgr/FigmentSources/MemMgrBoot.a",
+    "sha256": "07e3cfbffa05fbace0913e9ef9c46653d0721d1a2a10a9c99a4003590d25b4ff"
+  },
+  {
+    "path": "OS/MemoryMgr/FigmentSources/MemMgrGlue.a",
+    "sha256": "a349d4b89e1ec3c5e16f9d8e6a8bf6d10daeb60be5658d51cdc2b938b9aa591c"
+  },
+  {
+    "path": "OS/MemoryMgr/FigmentSources/MemMgrUtils.a",
+    "sha256": "d2d339d645d737b66d8e0dcee8e615352f3dd6274eeca22c6deb0b9f20693224"
+  },
+  {
+    "path": "OS/MemoryMgr/MemoryMgr.a",
+    "sha256": "ca881c974b5f00cc9a0dac3b8ef7f520c6b1e3198343db9b3d6ce15a042db18f"
+  },
+  {
+    "path": "OS/MemoryMgr/MemoryMgrExtensions.a",
+    "sha256": "b4bed3784e9de65029b01675a31679176e39cee54509d4f5b71f9cec9b72a28b"
+  },
+  {
+    "path": "OS/MemoryMgr/MemoryMgrInternal.a",
+    "sha256": "4973db5a6a27f756b2ae524d1a2c8bc44b8e4e25db586a041cf7d910812b9157"
+  },
+  {
+    "path": "OS/MemoryMgr/MemoryMgrPatches.a",
+    "sha256": "f37efcf4315cab595645a896a6aba50ee0c51a84190b1d1a37284a6fddebcaec"
+  },
+  {
+    "path": "OS/MemoryMgr/MemoryMgrPriv.a",
+    "sha256": "b9bc47e89e9092273ba7dd71b07cf185c639b0741bfbbded69665975816ad0a9"
+  },
+  {
+    "path": "OS/Mouse.a",
+    "sha256": "31db9a533d2c6c4337bcef703c800eaa9773ea3bd177f840ff5c2c0d28f5aafe"
+  },
+  {
+    "path": "OS/NetBoot/ATBoot.a",
+    "sha256": "3b24807d9839b4a3dfe255314c50179cd2df7b3669302f8d2b48c5c485c13849"
+  },
+  {
+    "path": "OS/NetBoot/ATBootEqu.a",
+    "sha256": "dba2f5be3675f798d040a89c9e5c020495d3576114367a2385bba1b1424b564f"
+  },
+  {
+    "path": "OS/NetBoot/ATBootUtils.a",
+    "sha256": "6325a3454745c2399a397c94791efacba77e5e2f2e22f1b290953a8b58357dc7"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/802Equ.a",
+    "sha256": "4149530a41656b83363008890c8cbef17358b9f2133bd081d2c93a8c9dbe2595"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/AARPequ.a",
+    "sha256": "050b677a0356656dc745e659ed92d22cb5d5aed549b0d10c3280cf557321e3db"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/ENETequ.a",
+    "sha256": "421a2b065e274988015265a45d7181f5f97c5d508dce382aafeeeef56bfbc9bf"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/LAPMgrEqu.a",
+    "sha256": "4d929651b3a8f33f504df15aa2adb953da5cf3ce57de998b022ed35e4c823a6e"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/LAPvars2.a",
+    "sha256": "53a0bcbefc5e7f45ff568ea99317346507f2550ce5d4de5c7b25a9e5c26d94b0"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/LMEquates.a",
+    "sha256": "83ea1f880db0c12807416374f51b48a59451b37a254bb461a8c3d1dcf6541700"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/mppflags2.a",
+    "sha256": "e1dba7dd5e7e30b7ae511b1aba77e311c917cfabd973db50f7ba2f7749661e06"
+  },
+  {
+    "path": "OS/NetBoot/ATIncludes/vardefs2.a",
+    "sha256": "50aa52ca734bf98bc3fd8855de76cb67f5aa889353046cfb5b51bc95fdc7b78d"
+  },
+  {
+    "path": "OS/NetBoot/BootUtils.a",
+    "sha256": "533c5578a712814a5ac253e0412d917f406aa6bca883f182dfe49aa56744c402"
+  },
+  {
+    "path": "OS/NetBoot/Hash/Hash.a",
+    "sha256": "f2eca40fa1d9f9e369c7716f50923cd7872e43cb2591098dcfbd4bbff11a7543"
+  },
+  {
+    "path": "OS/NetBoot/NetBoot.a",
+    "sha256": "1835313f5d528248ac467dcd4cf44363a7a8b27a2e37e4b7c5f453092a414bba"
+  },
+  {
+    "path": "OS/NetBoot/NetBootEqu.a",
+    "sha256": "127d4224b42e421092c147a5b8602130391c6a172dc27d9d5be16c94be10c55d"
+  },
+  {
+    "path": "OS/NetBoot/NetBootUtil.a",
+    "sha256": "61f4e8036d5d6c812e7d0d546b801762199f4872c3e5531d0093d54fdf74acc0"
+  },
+  {
+    "path": "OS/NetBoot/NetBootlmgr.a",
+    "sha256": "feb961ee1c4e42141299e4309775d0ca81854b4e09fbdc07582f0aaeed8d0aa7"
+  },
+  {
+    "path": "OS/NetBoot/NewProto.a",
+    "sha256": "fa369dd2e9e3c90401379178f97c6387044f1757c48583e974cc83bd5df24e9c"
+  },
+  {
+    "path": "OS/NetBoot/forXO.a",
+    "sha256": "c3a62352162884fa7a994b7bcd1820131a6e640493da1250e110a95715166567"
+  },
+  {
+    "path": "OS/OSEventMgr.a",
+    "sha256": "ab93d2ad511a6c3f253933f9af4dc48e47d3300ec060ba987ec5d86d7321e61e"
+  },
+  {
+    "path": "OS/OverPatch.a",
+    "sha256": "d5fbd004395620b9ff669072dd7ee9ad653aaeae557de8decd8e8a183b2b703b"
+  },
+  {
+    "path": "OS/PPC/BTIntf.a",
+    "sha256": "3f1b94ea0c640c9feea8e40dab61f3c866f9ec6fef512d374ee5d621957b1527"
+  },
+  {
+    "path": "OS/PPC/BTreeCGlue.a",
+    "sha256": "759f4414de52e6a32a685f84e322bddc5d25f1aaf175580d5a9d193db93074ab"
+  },
+  {
+    "path": "OS/PPC/PPCBrowser.a",
+    "sha256": "a7daa131e2e8ce59b92d8667318be22588508e957a9a6cd7000ad8f261201f13"
+  },
+  {
+    "path": "OS/PPC/PPCBrowserPackEntry.a",
+    "sha256": "7883aebf006ec137bcdccfa466679adc3dfa16d1527b8ab7b6853ca8be99be97"
+  },
+  {
+    "path": "OS/PPC/PPCDispatcher.a",
+    "sha256": "7eced665ef8fa730570014a8ccc2e0297abd3fc0d7811dea7c026cdb4240346a"
+  },
+  {
+    "path": "OS/PPC/PPCInstall.a",
+    "sha256": "2cc736f42d212d6ab3c8c824bff1fa22b5bffb342a1c97cfa0451fbb524ef806"
+  },
+  {
+    "path": "OS/PPC/PPCPatch.a",
+    "sha256": "4536ce15e13173b78cecd7df1538b70df01e85301fd10d39fe26e23dce8efeb6"
+  },
+  {
+    "path": "OS/PPC/PPCUtil.a",
+    "sha256": "694cd60f8be80553f3acc1790324b7c465d9e09bbf088085ce312ef99b771ca9"
+  },
+  {
+    "path": "OS/PPC/PromptForUser.a",
+    "sha256": "d34d6f5ae84e7d170423062124a59857bf087d7bae3a5e3b35d57e673286f39e"
+  },
+  {
+    "path": "OS/PPC/PromptForUserEqu.a",
+    "sha256": "2d9e9b61100241a9720c1097acdcbd28276056636feab0ee614a886ae8da29ad"
+  },
+  {
+    "path": "OS/PowerMgr/PowerMgr.a",
+    "sha256": "44b32b770e391cc6de9d8d582d678ceb822139a16972c05b3daf122cb509d8a5"
+  },
+  {
+    "path": "OS/PowerMgr/PowerMgrPatches.a",
+    "sha256": "e50b22dde20decde8f689e8474720d4aa32b2ccefc066a15ee64e2868a507664"
+  },
+  {
+    "path": "OS/PowerMgr/PwrControlsPatches.a",
+    "sha256": "39a2dea8a07f1782c92f95bf99e3a12e6d8b5da6ff3fc0e20b827a7159d53d91"
+  },
+  {
+    "path": "OS/Queue.a",
+    "sha256": "e7918c024cb79e1274eeca009f328f698c5bcd94eda2e0fda15a0028f0e529d1"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIBoot.a",
+    "sha256": "a16f53dd4f041cf9b12972a0cc34728901e4e64bfeca0fb72e711f9a51d047f0"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIDiskMode.a",
+    "sha256": "33aecd97683b473fa82ce52a280cd22435b9efba2be35c36418b3124b923697f"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSILinkPatch.a",
+    "sha256": "e0ba775625120b7b6bc6d4bb73169e59c693a4a5a3dd869c22e6ccd9e2003241"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgr96.a",
+    "sha256": "8dadba20da6d140febdef27d934d566d872718385e6e58b0b0e1b3266b39ad02"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgr96BIOS.a",
+    "sha256": "154d2a26e65873cc8a47888cb9551c21c15110f2db447b730b9d8e9596ae75db"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrDB.a",
+    "sha256": "bb0c84f911dc0906db8795a6d17996589b55793a15691a0808e2b25c9fbdec8b"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrHW.a",
+    "sha256": "8a2acb8f0e946737b832e67e593a65231693e013f5ba4d7733eb315b01b38a48"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrHW96.a",
+    "sha256": "4cb4818c62050234b6f60695198d6b57881e8954929bf9e570a02e84d17d4b3c"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrHW96BIOS.a",
+    "sha256": "59ded2c6a8e6bceedf121287d5b2ac5f35551581325895ee19b393472d7b2c77"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrHWPSC.a",
+    "sha256": "6f245dcda2dc834779ff577380999a985988b8934a86b411604e093b2bd9b2f9"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrInit.a",
+    "sha256": "6978a7804bba71574d730661a369548e669f91d0ca61f454011a94fd7ce390ea"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrInit96.a",
+    "sha256": "802f247c543bc230890b87b4a5d92f073fc2602dfb19bc61a577f3843691c0f6"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrInit96BIOS.a",
+    "sha256": "369d33cf775576eb1fecd01ab68bddbd5db841e24a82fb0488e98d3ee9240fa9"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrInitDB.a",
+    "sha256": "94710230d346e05fd0d6d8b18ac61cb1834887b502976f49cbcb7bb77d698e11"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrInitFlags.a",
+    "sha256": "67972809b73eeb0f11e89c1651b3d51dd6a1d222fba415eddfe8a5f6d86bfa71"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrInitPSC.a",
+    "sha256": "a37356f4abde9ed657c72006f8a30573f1b9edc75be1762e0fd60ce2e1b67d30"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrNew.a",
+    "sha256": "934298768d1543195af33f058403e2b60883f9125ce9933c034cd73fd4ef93f4"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrOld.a",
+    "sha256": "8a30fa6a13b9a83f3d6dabfc184025c056a84de97625b3d121c5025f7f8c95e2"
+  },
+  {
+    "path": "OS/SCSIMgr/SCSIMgrPSC.a",
+    "sha256": "42c433568ef62dfe155f1297d38cd09f3231b2d2316db0e2419583f087ecedd2"
+  },
+  {
+    "path": "OS/SCSIMgr/scsiLateLoad.a",
+    "sha256": "cb190b2bdf49532b22d43375c918abbb466ba0b23da4b8e9865a0e6f53de41d4"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/ACAM.a",
+    "sha256": "04de6e73d6be0839655a18797781c933e880c8e0fc63dfadbea7e5c9bdd1802f"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/BootItt.a",
+    "sha256": "146538d81f5d26554adc694219e34249cea7dd2a3fb0aa57c788178400275d3f"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/Debug.a",
+    "sha256": "e485ef04aa0e9151be380a78901b32deed108f2baa6dd8857f492443daf44144"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96.a",
+    "sha256": "82d6ff1cb9703de257a55c8724c6f796f0eee03e82838d04cd8c109031e7f738"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96AMIC.a",
+    "sha256": "4e288fab4c6b90ff5da83d0e82a0caa14dc7824b25e76422363c63b495df83c8"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96BIOS.a",
+    "sha256": "c3e363fd52474ce2c319b122da8a2d06142091f7aa3c3465f014f59f2a7e3e8a"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96DMA.a",
+    "sha256": "368a42d5ac29aa15b86a4d3ba8878eca73b5194506a0c4d04ff2e581019cdd46"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96Data.a",
+    "sha256": "320b2e471522421aebad9cb655a62c98ee9a539ebab7c61102a22e4ede980e3d"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96GC.a",
+    "sha256": "d9d286844661852ec88b3ddd4163bc08e3f6af14a65e09e9608f79de40d396fd"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96HWInit.a",
+    "sha256": "fba523ea25792b275abcc22658f5fd0bfbce089e9f47a49c82ddb104840625a6"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96Init.a",
+    "sha256": "c298f2ff23838acf5ad7847f2c93907ad386ccab4011659069491d74afd1455e"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96PSC.a",
+    "sha256": "78dba3338bba8fc55326bc081145d8f093cc7419f616fbd5d1b3ef5587f205d1"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96Routines.a",
+    "sha256": "f204ca5fe1d3ca3b67b6adaa1b39a856fe08647df659318edf84f730db7d6688"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/HALc96equ.a",
+    "sha256": "ce0303dbf737c5e9393fa205d038f0d2a73b738c813bcca0eaa2196e3b24a2b6"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/IttInit.a",
+    "sha256": "917e9d467d8e628442f44c0e6d25e9187ef9c096cbd0b5c901714d7d23d72b5a"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/QueueUtils.a",
+    "sha256": "b6f087434e5995814577f1ceeb139ebd3416a46710efbba753073baa594e9b91"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/Recorder.a",
+    "sha256": "990388c8cc869182c989054bd53638ca5e7e0f43a60de9c551accafdabfef8ab"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/SCSIEqu53c96.a",
+    "sha256": "852eb48be46ec12d0e88493e020366258df24b514903077bd890ee4d0f1e151e"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/SCSIGlue.a",
+    "sha256": "ab102f3fbd7985273d4517acd0450945bf314b08660799e77c98965d44a478c9"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/SIMCore.a",
+    "sha256": "34c37271315d3bbb56c4adf166b0481c6cb4c8a5e813f34e009100c29a0c8f87"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/SIMCoreEqu.a",
+    "sha256": "230e0ab746a998ff3261513dd5934f05db18a9c0df22e58269d5bc271f72e511"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/SIMmachine.a",
+    "sha256": "fc1af47d873f1143e1ab83bec4bd72d9b0f29d7f27161bfb4878b9722d4a9d62"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/XPT.a",
+    "sha256": "ce4a20f3c4ee77242f93aea46f1949531d81bff10bd0b2edc157ca55baa4b15a"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/XPTEqu.a",
+    "sha256": "36640c294a4704ed1cbc0ef57aa1eaafa630262f1f03d016bc42ec6ca01adc13"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/XPTSCSIXlate.a",
+    "sha256": "7e1bb822ca7dbaf1c0365e789355d03690f2029305401af8a27a88ef775dde2b"
+  },
+  {
+    "path": "OS/SCSIMgr4pt3/timeout.a",
+    "sha256": "dbb04f76f8a0a6f0d0930c12e970a7c0a4a0855403e723762e89f0ad3565439f"
+  },
+  {
+    "path": "OS/SlotMgr/SlotInterrupts.a",
+    "sha256": "10267a31489afb8142c7ecf7f55817255aa53104310a54060e9e02d4b339f524"
+  },
+  {
+    "path": "OS/SlotMgr/SlotMgr.a",
+    "sha256": "ec345581a511b414ff7bd5c22ccc5c6c003913ed27ab379e802d963cee18473c"
+  },
+  {
+    "path": "OS/SlotMgr/SlotMgrInit.a",
+    "sha256": "e903eb6acda3d1e859d9e1b1f616e732b7df242b61f22e2349f63516b1f7f156"
+  },
+  {
+    "path": "OS/SlotMgr/SlotMgrPatch.a",
+    "sha256": "85c0c13585f254e17b622fcd094f17f526ee5547db9a222f14e404b93fa5ab24"
+  },
+  {
+    "path": "OS/SlotMgr/SlotMgrPatchHead.a",
+    "sha256": "eab3e3500849db4bfc2ad21bab9e847da05b6f9f533c07dfdf0a4ee321b3bfd1"
+  },
+  {
+    "path": "OS/StartMgr/Boot1.a",
+    "sha256": "52530d242c7830ef5cf8a6721bb134d845982653db10883df4ab6888b76fe934"
+  },
+  {
+    "path": "OS/StartMgr/Boot2.a",
+    "sha256": "14fa42b1aa6c60eaa8883835c04796669292f53463e625dd841536c6cf11e843"
+  },
+  {
+    "path": "OS/StartMgr/Boot3.a",
+    "sha256": "1e71461d2f5adde1e602c02f6de6e804704d62b29703946528f729ef30c007a8"
+  },
+  {
+    "path": "OS/StartMgr/CTETypes.a",
+    "sha256": "862c855246eb790c8c4a4987029f0091baac85c29acd6b15c582758ead5421a3"
+  },
+  {
+    "path": "OS/StartMgr/ExceptionSupport.a",
+    "sha256": "a4c529f858d6994d335772402af52f8b6436ac939fb5f453725f43eb55db2730"
+  },
+  {
+    "path": "OS/StartMgr/IncludeExceptionSupport.a",
+    "sha256": "2750017c2548ae25a482747439eed0285eb200f4d33788e54d7e2cf143bf7084"
+  },
+  {
+    "path": "OS/StartMgr/STCritTests.a",
+    "sha256": "5017b8ee5bd699eca966b10dba6c2225275a11a5df79d9a3e462f9b72b50c545"
+  },
+  {
+    "path": "OS/StartMgr/STEqu.a",
+    "sha256": "a1e901d9bc15fdd9b37b85fd53331cf39752a6d118581e0e77935a658f6c0400"
+  },
+  {
+    "path": "OS/StartMgr/SizeMem.a",
+    "sha256": "059c0d8fe17b9e477f1a4cf7db95f46033fd2bf51b9e2f1bb7d3e957cda01831"
+  },
+  {
+    "path": "OS/StartMgr/StartAlert.a",
+    "sha256": "643a98911259c2028a3accd81fd783a84c32e4bbf1f088ae26f43f7fde35c5a3"
+  },
+  {
+    "path": "OS/StartMgr/StartBoot.a",
+    "sha256": "ec961ac857235f45f5a72dae581ea669ee4f12662c5084464f2ecfe1e948835d"
+  },
+  {
+    "path": "OS/StartMgr/StartErr.a",
+    "sha256": "dc3b8f13e6ea82e582732a33e0b71d5b4dc8e7dafcc4875848478d05e3df88ef"
+  },
+  {
+    "path": "OS/StartMgr/StartFail.a",
+    "sha256": "ad1b84576da8777d5a2e014732d9164f4f9628e1a623280ad68ed06acbc5bf2b"
+  },
+  {
+    "path": "OS/StartMgr/StartInit.a",
+    "sha256": "15a435c41f67bf4e517627c53333d520461594c80036fcd825b517c22c8e30b0"
+  },
+  {
+    "path": "OS/StartMgr/StartSearch.a",
+    "sha256": "ddd46d97ebec9bac66ab0f2662ed95c0358415ec9eb41904da7a452a30f0de34"
+  },
+  {
+    "path": "OS/StartMgr/StartTop.a",
+    "sha256": "c61390bbf01cb628f6d1b8d448b867398666ff74c7011235c4a0c8585c0eac58"
+  },
+  {
+    "path": "OS/StartMgr/StdMacros.a",
+    "sha256": "f443ae8ba73a8a56112b55c497b8269bb245553d7b20d0a7543ddfa1e2c5a8a0"
+  },
+  {
+    "path": "OS/StartMgr/SubtestController.a",
+    "sha256": "9bbb519185220c0b6c12bbd21a51c7d605a2010679ab8580bc6d63dcb37a93e6"
+  },
+  {
+    "path": "OS/StartMgr/USTCritTests.a",
+    "sha256": "ab94af3f95140500c3a90a7ba9f29f71b45eaf1af52039adeef9c896213da908"
+  },
+  {
+    "path": "OS/StartMgr/USTEnvirons.a",
+    "sha256": "ff64cf2ade212f8d998a8b28758c2755626ceb03d51a58d32ef6d73a4c393950"
+  },
+  {
+    "path": "OS/StartMgr/USTMacros.a",
+    "sha256": "3d04d03e726c6a2afd00e7ddc24d01eae0ab4fe3139dd07df8f60c8fa8113e5c"
+  },
+  {
+    "path": "OS/StartMgr/USTNonCritTsts.a",
+    "sha256": "209d5f62fc52ca942221215267f7fa1cb6b5962aff78599c84a6bd25742b4569"
+  },
+  {
+    "path": "OS/StartMgr/USTPostProc.a",
+    "sha256": "220094f14d7dd19c68341f2da5482723a9614ae07cffa1d7844ad9691eab6246"
+  },
+  {
+    "path": "OS/StartMgr/USTPram.a",
+    "sha256": "027fe01890d6fc8733b1d77eb651d4ae02eaf34280b5386e4c0c0759bb36daf9"
+  },
+  {
+    "path": "OS/StartMgr/USTStartTest.a",
+    "sha256": "fdc149d3d72bc9808085d2e4456775c0530cb4e33d1c26ad5df0dfd8a41fbbff"
+  },
+  {
+    "path": "OS/StartMgr/USTStartUp.a",
+    "sha256": "ddcec2ac29dccd34127031864709a717810e571f4c7b4c1ce243e606a3fd9c94"
+  },
+  {
+    "path": "OS/StartMgr/USTSubtests.a",
+    "sha256": "070aca8669d6fb83fd871353a35e16c3d053a46ecde8ab91770e174bcd178a73"
+  },
+  {
+    "path": "OS/StartMgr/USTTestMgr.a",
+    "sha256": "f7d9e6878aa84d98c31071595ade6d71ed7aa0b10ebe6d22e4ef482149330bc4"
+  },
+  {
+    "path": "OS/StartMgr/genericinterface.a",
+    "sha256": "63ef87b34ba337fd9a21692149c5475adfca82daf6fe4e76ca388fa4a1bb0d59"
+  },
+  {
+    "path": "OS/SysUtil.a",
+    "sha256": "a15fc9ba95239f3361e06b2db8d7bfbca433aa6813e795ac4616a2b33c176e8f"
+  },
+  {
+    "path": "OS/TimeMgr/TimeMgr.a",
+    "sha256": "b9582222c33100ee43a06a8961882b1903ec0fe8a51563b2f7d7606c042808ba"
+  },
+  {
+    "path": "OS/TimeMgr/TimeMgrPatch.a",
+    "sha256": "800608c95503121571e3e0c7beafe9034ea8651deb225c275711b0fad9ebe0c4"
+  },
+  {
+    "path": "OS/TrapDispatcher/Dispatch.a",
+    "sha256": "31956670deb21407c16c71b3c2e35ec96ad0c7cb56423c86b464c7ff88c2179e"
+  },
+  {
+    "path": "OS/TrapDispatcher/DispatchPatch.a",
+    "sha256": "239cce9326a5b632fa0d47589c9c1fc5e39e79d1a630eadaad8a08d4bec429af"
+  },
+  {
+    "path": "OS/Universal.a",
+    "sha256": "6a87d15bd1b7aa4317a3513863a7db096d59b98040192a727de16befc7780708"
+  },
+  {
+    "path": "OS/UniversalTables.a",
+    "sha256": "2c17124418d0e7a240298832d0f887dcbb40979e07baecbec7a8a07fe57d1e24"
+  },
+  {
+    "path": "OS/VDig/IICTest.a",
+    "sha256": "e95cf97c36f65229595758a7e5acc8f4833b00eb8a470d3b52ed5255339f69c4"
+  },
+  {
+    "path": "OS/VMPatches.a",
+    "sha256": "8c81e0dadd3bb3abe453463d2037212718e09865676a68be03ff4e1027ab1581"
+  },
+  {
+    "path": "OS/VerticalRetraceMgr.a",
+    "sha256": "a3b2584ac573b14076cfec6ba8bd87ea7eeb941a6092b847949947e56ed65e3d"
+  },
+  {
+    "path": "OS/WallyWorld.a",
+    "sha256": "4fff26f3b678064de9352ca79891e588817c2798512afb37a06b7d9afdf99ab0"
+  },
+  {
+    "path": "Patches/BeforePatches.a",
+    "sha256": "619644ea1016f57c220a54c096734fed12582ffa10a15c69ad194c9edad42438"
+  },
+  {
+    "path": "Patches/BrightnessPatches.a",
+    "sha256": "8dcdcfc4b75164f9c11269728769c1d05826b3b52259f1b5cadf6edca3f4beb9"
+  },
+  {
+    "path": "Patches/DeCompressDefProc.a",
+    "sha256": "e37eae40601c2992358c229366f707779c2fdbc2b57f33ee96f482caf722d455"
+  },
+  {
+    "path": "Patches/DeCompressDefProc1.a",
+    "sha256": "fb28d5acc7d522012f67f4b32530abfb9f5bd4c095f0b1596aa3fa6e260f61aa"
+  },
+  {
+    "path": "Patches/DeCompressorPatch.a",
+    "sha256": "5c8c7fdc12642ffab45eb07b70fef64018aa2ac9750bde4f9ccbfd0996824b50"
+  },
+  {
+    "path": "Patches/GreggyBitsDefProc.a",
+    "sha256": "cf970c5c2d7cd451c2fe211c54088e8f1d234dec4d3ff2e06ee881318fc27725"
+  },
+  {
+    "path": "Patches/InactiveAppleTalkPatches.a",
+    "sha256": "296ec1981d9b0313ce10693bdff39ca79d88d66b0ebf35fa083d6537d36b9854"
+  },
+  {
+    "path": "Patches/LoadPatches.a",
+    "sha256": "d95b016152187fa93fde0b53f6f7d0e81e80b34353596c583e9cd3ce3a0b0bc3"
+  },
+  {
+    "path": "Patches/MiscPatches.a",
+    "sha256": "4824244ba4d30c099d1175beecf5fb9375bb8b2c89da918863564c8aea63cf69"
+  },
+  {
+    "path": "Patches/PatchIIROM.a",
+    "sha256": "29662d07bfa28c9db03d96044652608abbf850ac5d9ee27fae0ca3c92b4857b2"
+  },
+  {
+    "path": "Patches/PatchIIciROM.a",
+    "sha256": "4879ad044850a4163a7388ad7ec9e82483f06ff528e074cf587f379f898ac380"
+  },
+  {
+    "path": "Patches/PatchPlusROM.a",
+    "sha256": "1640899a939269ef9a00110660f9ae21b22dbf2a8f19b24c2af17379af3ed470"
+  },
+  {
+    "path": "Patches/PatchPortableROM.a",
+    "sha256": "82d3825441af743792472b6ce408438713aadad236b57f6ae0ca2356bfa25dd8"
+  },
+  {
+    "path": "Patches/PatchSEROM.a",
+    "sha256": "9c799ffe97fbecd01bf474d5e165dfaa4c1cfe0509582a61e650c2b71b34ce32"
+  },
+  {
+    "path": "Patches/ProcessManagerSegmentTweaks.a",
+    "sha256": "59db294f6f51447c5ab5086321077ad326021a665c42190004485aaba107888c"
+  },
+  {
+    "path": "Patches/SysBeepPatch.a",
+    "sha256": "72c3a59ff222dd179f07829239da2e0d29e8f323f1f3b0e13862763e4dc8adf1"
+  },
+  {
+    "path": "Patches/ToolboxCastration.a",
+    "sha256": "f6dfba5c764aa827f9332c954fbe544280ecffbaca1227b3142df5a8608260b9"
+  },
+  {
+    "path": "Patches/VideoPatch.a",
+    "sha256": "ce2fcb4959cec9c385efe96a9146bbda4d1f78375a9f561061134f40cbb19a30"
+  },
+  {
+    "path": "ProcessMgr/Aux.a",
+    "sha256": "5edd3a398ea5fbf368b993e86dafb9d0ae471a27bb92985e9c29a7c8370c7bff"
+  },
+  {
+    "path": "ProcessMgr/DAHandler.a",
+    "sha256": "6286bd0b4f7c332daecd0c14b1bd7a31d09c11385bff2ef2b7551c5677534f82"
+  },
+  {
+    "path": "ProcessMgr/Data.a",
+    "sha256": "19893f8e8cf9d5e920fd80c693c908b32f149cc0275b24f8e1a602436f8dd4cf"
+  },
+  {
+    "path": "ProcessMgr/Error.a",
+    "sha256": "cc3b2b4f6677fd1ecf42954e15e5f0e904ad57c35efd31d8811fd7a078cf61bc"
+  },
+  {
+    "path": "ProcessMgr/LomemTab.BlackWhite.a",
+    "sha256": "72a72160df3d51fb6659c09d29c479f2a8c90630192ae07198b01b755f2ccd88"
+  },
+  {
+    "path": "ProcessMgr/LomemTab.Color.a",
+    "sha256": "abb8a545ab61eebe343335d0cb9f16981bd10c1348df60917220cba2cfda74de"
+  },
+  {
+    "path": "ProcessMgr/MakePMIncludes.a",
+    "sha256": "a6c91334e3f9a6c67f415f27abc3e16a6af98503f37393351756726af73832f0"
+  },
+  {
+    "path": "ProcessMgr/OSDispatch.a",
+    "sha256": "7636a32b481a4924c4a6f55b552cecedda83d87a061d0785cc1def670006e1fc"
+  },
+  {
+    "path": "ProcessMgr/ProcessMgrMisc.a",
+    "sha256": "eb7f1b4bf25ffeadacc4e2c3bf8bd1344f4ea3c8ea621ae801a9701f1ebaa0e8"
+  },
+  {
+    "path": "ProcessMgr/PuppetString.Default.a",
+    "sha256": "02994735140634f707457ecf3c6ccb0bab6fe3b7c2463ba8bc3d42685c109715"
+  },
+  {
+    "path": "ProcessMgr/PuppetString.MacDraw.a",
+    "sha256": "5b3d689b934d450c0458b307bb645dc4d472bb619a92fec7dfef0d70cadd569c"
+  },
+  {
+    "path": "ProcessMgr/PuppetString.MacPaint.a",
+    "sha256": "0c99d0810d383f783c211101c7d60c44532a60b16e297b0046a61fcd692bb8fb"
+  },
+  {
+    "path": "ProcessMgr/PuppetString.MacWrite.a",
+    "sha256": "e9b264d6cb62dbce72332a705b49744fba0858a8dcc47d4affdf99ca50ca8911"
+  },
+  {
+    "path": "ProcessMgr/PuppetStringDefs.a",
+    "sha256": "601e175ad14a63de96215e2948b69a850d235ec761df775c00b97e5162b8f97b"
+  },
+  {
+    "path": "ProcessMgr/Switch.a",
+    "sha256": "4424686ca98aae319ac925d5ddcd0ad4808346c5234e09e52223ac79b9c4dcd9"
+  },
+  {
+    "path": "ProcessMgr/ZoomRect.a",
+    "sha256": "1446908cccdc224f59965a90ecc1f7afeac80fb70b30ff3ec46c16c770594e2f"
+  },
+  {
+    "path": "QuickDraw/Angles.a",
+    "sha256": "bf47b1e7fce02c8c4294543c945ee192c5b3569384f539b66221250b89cf7b75"
+  },
+  {
+    "path": "QuickDraw/Arcs.a",
+    "sha256": "2a8e3b8e6ec0dfdf45bcb15bc5cd0817fc3aaca8101c4b75f0dce1a9af9a3be8"
+  },
+  {
+    "path": "QuickDraw/Arith8Blt.a",
+    "sha256": "8ee57ae88ae713a637d7b4cc8054896730d1f5cffcc0398ff41b098937d0ada7"
+  },
+  {
+    "path": "QuickDraw/BitBlt.a",
+    "sha256": "c4d22964430a8a945713f513ea0de37e77b524e9bb546fc070776fb54184cacf"
+  },
+  {
+    "path": "QuickDraw/BitMaps.a",
+    "sha256": "96212034ce496fa9626933f7e7d852f2990a80f64e3ca9fba146f2c92fc1c257"
+  },
+  {
+    "path": "QuickDraw/CCrsrCore.a",
+    "sha256": "e57e003321be02297a3ca664e6b70e1b02b8899904c1eec6db1d31e4c7e11d38"
+  },
+  {
+    "path": "QuickDraw/CQD.a",
+    "sha256": "8f156e573bfee2ccb91db66097ff057b3198a238ef8272e1aa2af95cbdcc9657"
+  },
+  {
+    "path": "QuickDraw/CheckDevicesINIT.a",
+    "sha256": "8fd7cdff3617d95a3a3fe31066c2bbd5ad73b3381e6aeaf7d1278ce4a1279d9b"
+  },
+  {
+    "path": "QuickDraw/Classic/Angles.m.a",
+    "sha256": "ccda143511bbabed1f25d0d47a84eb9067945abb200475317b29df901526a939"
+  },
+  {
+    "path": "QuickDraw/Classic/Arcs.m.a",
+    "sha256": "d143046c4609f4a94cfb482a4715b8d67aead97007b32ba6509bbff245618803"
+  },
+  {
+    "path": "QuickDraw/Classic/BitBlt.m.a",
+    "sha256": "6d0e76ae0e5492fe84f1c4d8e1c23d8b12fdeab11a3220e8a5a00cddd6b6edd6"
+  },
+  {
+    "path": "QuickDraw/Classic/Bitmaps.m.a",
+    "sha256": "6e0fbc99efb19d665c522d69e0af88a76996ba2af136e2a2077660fd666819f9"
+  },
+  {
+    "path": "QuickDraw/Classic/ClassicGWorld.a",
+    "sha256": "47ef2214e5223f5151587b8f25e40cfd2b210793c0da5a1a379d1ec6b5c7812b"
+  },
+  {
+    "path": "QuickDraw/Classic/CrsrCore.a",
+    "sha256": "18ba00f320b95b734f820cf88b11844bf3c7263a5ebcf0d9a29e01388d5e5313"
+  },
+  {
+    "path": "QuickDraw/Classic/DrawArc.m.a",
+    "sha256": "f302aa543a654ae17113b6c9e9f8fb590f92a378262df8022222e5b4727ebda7"
+  },
+  {
+    "path": "QuickDraw/Classic/DrawLine.m.a",
+    "sha256": "8c835a2c0114bc945ae559bc9075422f07f60c14fc4179b9d303f3033d61b62f"
+  },
+  {
+    "path": "QuickDraw/Classic/DrawText.m.a",
+    "sha256": "4edfc5f51706df9766eda35da6c5a3df7979458bdcfd3751e4976d9d360ac569"
+  },
+  {
+    "path": "QuickDraw/Classic/GrafAsm.m.a",
+    "sha256": "998e2d9925d9eca1fc34f6571e444e78bfc97bf2987670ba7e7a3dbd3e0de9fc"
+  },
+  {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2"
+  },
+  {
+    "path": "QuickDraw/Classic/LCursor.m.a",
+    "sha256": "455f24b21000bdd9dfdac4a006cf5e1285cb3a7eadaa651ebd934843feba4bbe"
+  },
+  {
+    "path": "QuickDraw/Classic/Lines.m.a",
+    "sha256": "6828a4208691d0b479c578aa297e276471c245855816ec28d232cac6906cb2f0"
+  },
+  {
+    "path": "QuickDraw/Classic/Ovals.m.a",
+    "sha256": "a04c09e2897ea4c32cc12c4343ebecc466616a17ce63aacbb3e88272dad7ce33"
+  },
+  {
+    "path": "QuickDraw/Classic/PackRgn.m.a",
+    "sha256": "7887047e16dbeb84f699ad097e13e3bdc24eadd707924085ed155a0d1d353b93"
+  },
+  {
+    "path": "QuickDraw/Classic/Patterns.m.a",
+    "sha256": "4f62f52b6ad6cd412d9a385ee0bb740c3841a69dfc85426274e6391fbffef5dc"
+  },
+  {
+    "path": "QuickDraw/Classic/Pictures.m.a",
+    "sha256": "428838adfbd431a0ce4bdf6ca0a9b14dca58a283bb3265cedf0e3b2ba82cd141"
+  },
+  {
+    "path": "QuickDraw/Classic/Polygons.m.a",
+    "sha256": "28196acf35fef537fbe83ec988bad7c44aa3fc217f89c27d2c3e36d65e7c598f"
+  },
+  {
+    "path": "QuickDraw/Classic/PutLine.m.a",
+    "sha256": "5309d4636cf62bd5dfd0ef4706430684904bc3692aa400539b8a0df99546d744"
+  },
+  {
+    "path": "QuickDraw/Classic/PutOval.m.a",
+    "sha256": "e363519e0f23b41a4a3cec40f16b027bbb4633d04627f76e0c67789a657ffff8"
+  },
+  {
+    "path": "QuickDraw/Classic/PutRgn.m.a",
+    "sha256": "af1924a091ff0f2f220ba025dc214c96176aaec73e5258aad591cfe0b66b9c47"
+  },
+  {
+    "path": "QuickDraw/Classic/QDEquGlue.m.a",
+    "sha256": "92b78cdbf139485a72c5b091282219431f92c6b4b814e8c9611a5d3532c45a98"
+  },
+  {
+    "path": "QuickDraw/Classic/QuickGlue.m.a",
+    "sha256": "ec1ec758a21db5cf470c27cb8db4342f706616ab01b7de955cddc345f3110718"
+  },
+  {
+    "path": "QuickDraw/Classic/RRects.m.a",
+    "sha256": "ec1572ecdd7b526eafc6dd89f528411bb84e4ba3e36aa753e5b55df4bf5bfc53"
+  },
+  {
+    "path": "QuickDraw/Classic/Rects.m.a",
+    "sha256": "d87e1ece6fe9ceac96343bf2677bec27ca58e00c4ca5f5d166b8434886654985"
+  },
+  {
+    "path": "QuickDraw/Classic/Regions.m.a",
+    "sha256": "1b7aae34bb2a0b470c65d990b372c9316e45d0d9e6d700602d77b220a5e39a63"
+  },
+  {
+    "path": "QuickDraw/Classic/RgnBlt.m.a",
+    "sha256": "cddd6015e25d35a8f94185c1ae63194c20c384f8462e0a92e96f8ac769af9911"
+  },
+  {
+    "path": "QuickDraw/Classic/RgnOp.m.a",
+    "sha256": "e2a44390efee9552294f3085fb7d63b5f5382fa65b758c67366572b83e930df2"
+  },
+  {
+    "path": "QuickDraw/Classic/SeekRgn.m.a",
+    "sha256": "6424f8b7ec8aec091f822e2912f169f1b5e03c7c447eacc319fb5bc6548a2b94"
+  },
+  {
+    "path": "QuickDraw/Classic/SortPoints.m.a",
+    "sha256": "1b3d2b04cfb030a51df5799574d2cee649cdf2c8951e42184e23ed692ccb16c4"
+  },
+  {
+    "path": "QuickDraw/Classic/Stretch.m.a",
+    "sha256": "9d21de02c5be24893afc092be56e19c7887e9aa39fb475a27f008e682c7ec82c"
+  },
+  {
+    "path": "QuickDraw/Classic/Text.m.a",
+    "sha256": "01623e205df3a2c1e1df4c6b1890aad237a12eed75290d09d203dda9a1e337a4"
+  },
+  {
+    "path": "QuickDraw/Classic/Util.m.a",
+    "sha256": "ece92be92c636ec3804050e72938bc2d37b74fccde7553768fb03386ca666d8f"
+  },
+  {
+    "path": "QuickDraw/ColorAsm.a",
+    "sha256": "9aa1b493e63a6f96481d71336b81b472175a01c1f80602fdf6f9675451743274"
+  },
+  {
+    "path": "QuickDraw/ColorMgr.a",
+    "sha256": "cbff598cf229f2df7c52fc0f9e34c3850a7b0fc3b91bc3022ede340a85e4f37c"
+  },
+  {
+    "path": "QuickDraw/DeviceLoop.a",
+    "sha256": "4468d05fda400bfc45e598d3d5536f868da8cdd66482b241d95f918925c32ed5"
+  },
+  {
+    "path": "QuickDraw/DrawArc.a",
+    "sha256": "dd4c3c5fcaae0270451f5666f460f0fef627ce0f23c2f026e7bf4ee09de49381"
+  },
+  {
+    "path": "QuickDraw/DrawLine.a",
+    "sha256": "6fc68c754c49e8b8297615fc13c9081256b575fec9a6909764ed6f3457a5413f"
+  },
+  {
+    "path": "QuickDraw/DrawText.a",
+    "sha256": "06646cdb84aade8a80398238dbdf43da9c8ed6654afbd084ad346637c62bc6a8"
+  },
+  {
+    "path": "QuickDraw/DrawTextShell.a",
+    "sha256": "80fa51323f330eb7f1731fdee3a8a449de2e9e406d28927942658203a051a1f9"
+  },
+  {
+    "path": "QuickDraw/DrawingVars.a",
+    "sha256": "891483357578869ed815a1ff3c461f263504815b7cdecaa7c87cd42d3922916a"
+  },
+  {
+    "path": "QuickDraw/FastTraps.a",
+    "sha256": "5c22f6d614e712b4c8450f018196204537673e1f118db9b4e44a4af37ea6495c"
+  },
+  {
+    "path": "QuickDraw/GDevice.a",
+    "sha256": "7609c0b69720884cb4367eeb237f7d285411d1d0f9c5b9f357434e69b5f91035"
+  },
+  {
+    "path": "QuickDraw/GWorld.a",
+    "sha256": "270e1d08438fde09cf709382e5383c7d3301f7be4f709f14cd7912be165da18b"
+  },
+  {
+    "path": "QuickDraw/GrafAsm.a",
+    "sha256": "f920ae7b757abce558c786780062108bfd9cd0ee9ed84767b613ee3ad68f2b43"
+  },
+  {
+    "path": "QuickDraw/JacksonPollock/32ATInit.a",
+    "sha256": "d339e6fd015dd8620b41c7a6d5446e9f2e7674e15addd1fa881bbbd0b60d0990"
+  },
+  {
+    "path": "QuickDraw/JacksonPollock/JPAlert.a",
+    "sha256": "33074665cd83fa489c0bb27dd78a92f14b6a51622f8cf396503f2db2d501c815"
+  },
+  {
+    "path": "QuickDraw/JacksonPollock/JPInit.a",
+    "sha256": "59e23ce1289cb5a65a119f226dc0e9b79f1ab622b2118b1e4aa2d835b7dca421"
+  },
+  {
+    "path": "QuickDraw/JacksonPollock/JPPatch.a",
+    "sha256": "0018a904b65b331a278074542bef25452926813a6eac48de8cc98df091365cc5"
+  },
+  {
+    "path": "QuickDraw/JacksonPollock/VMPatch.a",
+    "sha256": "06a220997efc1da2e6f023dba773afacda36db9e5eff7f59dc28eded48227deb"
+  },
+  {
+    "path": "QuickDraw/LCursor.a",
+    "sha256": "1a86f77ae8673c207a5f99a3207dcc08c985aa41b4b3fe4cef59a12e24c852a1"
+  },
+  {
+    "path": "QuickDraw/Lines.a",
+    "sha256": "68d0096a35fee05e413e8f65a492a45484c57b1011c1471f10ce0d2c3fd10341"
+  },
+  {
+    "path": "QuickDraw/MaskAsm.a",
+    "sha256": "2c3ab348e3743491c1335be0406ec5a4f022b8379c92594710aabfca336fcc62"
+  },
+  {
+    "path": "QuickDraw/Ovals.a",
+    "sha256": "9919a6fd762814b27e6c36176001e2f8b43e2e4595f0a35b30fafcd445fabbf5"
+  },
+  {
+    "path": "QuickDraw/PackRgn.a",
+    "sha256": "1b3b091a2a1eb6c76ee5c8b5ca8ff124a40a88e97019fd3b0b1728fbce47effd"
+  },
+  {
+    "path": "QuickDraw/PaletteMgr.a",
+    "sha256": "8a9a6650158a47c26403c1b69e0fc375c909f2ae4e7a6251c5e137ef5150f1a7"
+  },
+  {
+    "path": "QuickDraw/Patches/AllB&WQDPatch.a",
+    "sha256": "1feeb634a53cb8513b1e4de8ffe794d391d799ef7b647db1f355a2d2903e95da"
+  },
+  {
+    "path": "QuickDraw/Patches/ClassicQDPatches.a",
+    "sha256": "a8b0b982e1549b84a5e1f885991610d3640eb0fb87ba872e5c04010755029d4e"
+  },
+  {
+    "path": "QuickDraw/Patches/DrawPicture32Patch.a",
+    "sha256": "db90c0a882b9d01a59e177018055dfa0fc4d20b1b77924bab3ed9e3c13198ef3"
+  },
+  {
+    "path": "QuickDraw/Patches/DrawPicturePatch.a",
+    "sha256": "72394ea74f5f281509c97e7a5454e55dde6a4c32aed173e4c8ec20d3aac8e3e9"
+  },
+  {
+    "path": "QuickDraw/Patches/DrawPicturePlusSE.a",
+    "sha256": "7b384f555fd966b6391f8a5b80b777b001c82a83a566bcfbf3091f5b838e5a76"
+  },
+  {
+    "path": "QuickDraw/Patches/DrawPicturePortable.a",
+    "sha256": "15db6784f27ead46cfb9a1121df095ba116c8729cdf5cdeba5ad8f403e0c6de6"
+  },
+  {
+    "path": "QuickDraw/Patches/PackBitsPatch.a",
+    "sha256": "10e21eb58a68f5f0b663f7b3600aabce726fc11b0b63bd25e366f84cb6b62c4c"
+  },
+  {
+    "path": "QuickDraw/Patches/PaletteMgrPatch.a",
+    "sha256": "4ac3a70e0d955a1f7018bf66bc0d49d68feb4b7933f69d27ac9814d983f7ca3a"
+  },
+  {
+    "path": "QuickDraw/Patches/PaletteMgrPatches.a",
+    "sha256": "60093b652d689ee2b9a283fbf35f1a5cc09e0d6d2aa1c0081b9a2f09ff0b0a81"
+  },
+  {
+    "path": "QuickDraw/Patches/QDciPatchROM.a",
+    "sha256": "065586c34d8591c9511397f264b6b4dee05cedb661c4cadd77b1d9018512394b"
+  },
+  {
+    "path": "QuickDraw/Patches/QuickDrawPatches.a",
+    "sha256": "a4deecf8a987a585bc79d919c5150b03e6acf9771cd0ee8660c6da85881461f4"
+  },
+  {
+    "path": "QuickDraw/Patches/QuickPolysClassicPatch.a",
+    "sha256": "f7d000d5a5e38c32a38b7fd43e1226d3791d88be5e7cc44b171e9ea784753f81"
+  },
+  {
+    "path": "QuickDraw/Patches/QuickPolysMacIIPatch.a",
+    "sha256": "e792d6a71083d6ab41044e97c0e8dea6fdb9deea22633498f3ad5d4da589ac25"
+  },
+  {
+    "path": "QuickDraw/Patches/QuickerDraw.a",
+    "sha256": "73a6f93e20e929d49e0293ede4d7cea3839ec5cc872c26ebe375e55949634990"
+  },
+  {
+    "path": "QuickDraw/Patterns.a",
+    "sha256": "1603c85f8f583cfc11a1f9e6b84c2becd6b0795f576f7dfe7cea82d40a03bf0c"
+  },
+  {
+    "path": "QuickDraw/PictUtilities/puDispatch.a",
+    "sha256": "f05da58ebf2c481ad78fb0a93a4d6a144dbd03c9057d367ed980087750993f1a"
+  },
+  {
+    "path": "QuickDraw/PictUtilities/puLowLevel.a",
+    "sha256": "47076c5cfa66d6005307f64eeb2b1ed9b5919dfabb8a5ffe41a020068be8b3d8"
+  },
+  {
+    "path": "QuickDraw/PictUtilities/puMedian.a",
+    "sha256": "9348afc374e9f73421d97cb29915fa56a233855eda3f71c16d801c6affffb02e"
+  },
+  {
+    "path": "QuickDraw/PictUtilities/puPackEntry.a",
+    "sha256": "add1964b3f37cf0c0d81bf12ccc56be451b31391c74f901903db343d186c082a"
+  },
+  {
+    "path": "QuickDraw/PictUtilities/puPopular.a",
+    "sha256": "c434195c29e6b9b04ae46faa18d2221b3e003d9bc1214cf0e15fcc7256c28979"
+  },
+  {
+    "path": "QuickDraw/Pictures.a",
+    "sha256": "20a822ba9d2d6d37de4267817ec423bc0bb64685261c19fab15f724dbec9b320"
+  },
+  {
+    "path": "QuickDraw/Polygons.a",
+    "sha256": "09190db2f0ff86d0777906fe03185af63a1381841a055d3dc57d3550df5c7a47"
+  },
+  {
+    "path": "QuickDraw/PutLine.a",
+    "sha256": "f216e5b3c2f174ea7f88fb6697da2e787826a721b780b038236469916a58110d"
+  },
+  {
+    "path": "QuickDraw/PutOval.a",
+    "sha256": "f8e66ce82354abebdef484b4c97856484d287c6f77a39c0b556bab88b6299ee3"
+  },
+  {
+    "path": "QuickDraw/PutRgn.a",
+    "sha256": "9eea8c219ea6173ff4a375b49ba14703ea33e9669de10f6498f996a957f342b9"
+  },
+  {
+    "path": "QuickDraw/QD.a",
+    "sha256": "910ac1ceae3707642eb433f383b53f32665f3f7e1917425f43bdc9c99559f4ef"
+  },
+  {
+    "path": "QuickDraw/QDHooks.a",
+    "sha256": "4bd794787e1818cd09a0aeb61eed7d36b42f06912191fdd9333a611a3d075002"
+  },
+  {
+    "path": "QuickDraw/QDTrapInstall.a",
+    "sha256": "e941d260a17a020cfe8e45813eb0df612ae5faab06e6e70222bf7a6e3edc8b1d"
+  },
+  {
+    "path": "QuickDraw/QDUtil.a",
+    "sha256": "bc4fdd2b54d795cd35d0f1b4a7ac40dff18008106062254e62b257f5e5c80fb6"
+  },
+  {
+    "path": "QuickDraw/QuickPolys.a",
+    "sha256": "bb2e1d41aaed1a972f0a6e73054c4243fb8001fb8526962a01228bace2ae1252"
+  },
+  {
+    "path": "QuickDraw/RRects.a",
+    "sha256": "4a752a5dde35e47188224cb4fc92b14c2bac7425ae1e4a3332cb0a670497b4e1"
+  },
+  {
+    "path": "QuickDraw/Rects.a",
+    "sha256": "fabc4991176d512fecae7b9d686615bed1d6761cd9257bb62d27f25d7bc47844"
+  },
+  {
+    "path": "QuickDraw/Regions.a",
+    "sha256": "adb82e7395150aa2f0c09a172e44452033f85617a686dd4a8a2ef0d18186daf1"
+  },
+  {
+    "path": "QuickDraw/RgnBlt.a",
+    "sha256": "bfc2ffb6ecfedaad9286ba427bd297e1e174c0103fe41c09d976e36a969d56a1"
+  },
+  {
+    "path": "QuickDraw/RgnOp.a",
+    "sha256": "3232406cd10fa651879e7119b70b18d9dcbd9fcb177771b718887a4f6957cecc"
+  },
+  {
+    "path": "QuickDraw/ScaleBlt.a",
+    "sha256": "53240f2ae5ad6ca99ed3c3fafc95462509534ea902960b47a4710a7c285f3f88"
+  },
+  {
+    "path": "QuickDraw/SeekMask.a",
+    "sha256": "1289555e47b3b21669d207233a0123275919b7669dbdc525266ac1a3807bdb8d"
+  },
+  {
+    "path": "QuickDraw/SeekRgn.a",
+    "sha256": "9ac24c3d6b7640e01585a046d7f60f2baa985aa096459df267b46622289fef1a"
+  },
+  {
+    "path": "QuickDraw/SortPoints.a",
+    "sha256": "a0485c8e3b2a858168358b4a2c079409cc07159f65fc9b8ce499e296febadfa8"
+  },
+  {
+    "path": "QuickDraw/Stretch.a",
+    "sha256": "60e98cab5a7470758f373a2f3f668a6ed41e7c1a7261be2dc51302d782443da7"
+  },
+  {
+    "path": "QuickDraw/Text.a",
+    "sha256": "a0cf78e47b3b81a695f62fd3adbeb4bef312795e76d3956865d524ab9ec806e8"
+  },
+  {
+    "path": "QuickDraw/TextShell.a",
+    "sha256": "14c0251759a45e0b62881ce6e9d98a3ebd36ff52de245e27eb62a6ab70a2eb0e"
+  },
+  {
+    "path": "QuickDraw/getPMData.a",
+    "sha256": "a32cea34d6190f293dea0e0b3b22fdc5fc880f663561d4909955c8f89850a86c"
+  },
+  {
+    "path": "Tidbits/BootAlerts.a",
+    "sha256": "a5e9da28516c77b1c738c3e88fa4895f6e10ddc5ac53e1fad3eed6c1c991d1d6"
+  },
+  {
+    "path": "Tidbits/LateLoad.a",
+    "sha256": "8c3e65f520734541b8882cf931a2a9713aeefc1708c0e76b103bceea173efbe1"
+  },
+  {
+    "path": "Tidbits/ParityINIT.a",
+    "sha256": "37f7590954a01e602b21ae2715f501e4e8721fc9ae262566ef2a63b43c90d16e"
+  },
+  {
+    "path": "Tidbits/PictWhap.a",
+    "sha256": "972da3cd8a1e2415a037d54bc2730b14fee3c9ef1f88236c66d7c1a184076571"
+  },
+  {
+    "path": "Tidbits/PreventSwitchLaunch.a",
+    "sha256": "68024ee8a8d6e3b2cecb23d70c73ea90c66accdfa1837c49c183934f691f383e"
+  },
+  {
+    "path": "Tidbits/ROM_EM/ROM_EMDispatch.a",
+    "sha256": "a03e54c553bcdb502266d59ee6d90b51ddfeffc7b5500dde9275beb2d29597bb"
+  },
+  {
+    "path": "Tidbits/ROvr.a",
+    "sha256": "d14d1dff8d6adccace9ddc86fd78be4af1935bff2836afa8897f83b92653908f"
+  },
+  {
+    "path": "Tidbits/ResTop.a",
+    "sha256": "2594f3ccdbdef0a9275e084a1c2a9fc39ef0de72321a42ded7506a2adaa85ab7"
+  },
+  {
+    "path": "Tidbits/SplashScreenINIT.a",
+    "sha256": "879708ed032230f2075030a71863815836683e33c93fefc20d59aa60cfca4960"
+  },
+  {
+    "path": "Tidbits/UserAlerts.a",
+    "sha256": "77fcbb8da637eb4337a4d276b1889a4e92fec20b84b8de1e6533609bb32fa1f1"
+  },
+  {
+    "path": "Toolbox/AliasMgr/AliasMgr.a",
+    "sha256": "a3e8d221fd4550e04d025bee573ea63d95a3a5d6f0227e38765f906b37efc602"
+  },
+  {
+    "path": "Toolbox/AliasMgr/AliasMgrPatch.a",
+    "sha256": "1b89b93c28d1d7c2ff6923b41178d0cab8c9361f12f9e69e2d6d9621ff4c3d7e"
+  },
+  {
+    "path": "Toolbox/AliasMgr/FolderMgr.a",
+    "sha256": "2bd25d5b52cb3aeaa6e2ff8a59a0ead75521e6fd5f9c9ba33c9a4d0d5b0fcd24"
+  },
+  {
+    "path": "Toolbox/AliasMgr/alDlogUtil.a",
+    "sha256": "c7bcf30d32e2220dff4d968746a7df4f6e9b544e62ed2ca8d79652037ad22d7b"
+  },
+  {
+    "path": "Toolbox/AliasMgr/alLDEF.a",
+    "sha256": "e63660dd9367cf262be6f01725db1c1cb0d06256172fbabd332a2c3606274682"
+  },
+  {
+    "path": "Toolbox/AppleEventMgr/AEDFGlue.a",
+    "sha256": "5dc4f5d085b7056db9f4dc6593a54cd7327a49fd07d293ccfa71de922735f62f"
+  },
+  {
+    "path": "Toolbox/AppleEventMgr/AEDFWrapper.a",
+    "sha256": "5b6867d4ad16f4ede5386308b0eaea826a9be7e504c41cbeeb6d1385eeaf581b"
+  },
+  {
+    "path": "Toolbox/AppleEventMgr/AEHandlerTable.a",
+    "sha256": "b8fc80f941777b0ae8a1622e8e7febfcf878028a4b300c2e03145f4d74cbfccf"
+  },
+  {
+    "path": "Toolbox/AppleEventMgr/AEHashtable.a",
+    "sha256": "282e54637f79108f4fa4543f45b3dec667a5ff521324e67cb62b2a58e458c8a1"
+  },
+  {
+    "path": "Toolbox/AppleEventMgr/AEPackEntry.a",
+    "sha256": "f374202162ebf3438be9c8657121ab5c6658c49859b7da131071c6fa0fb00376"
+  },
+  {
+    "path": "Toolbox/AppleEventMgr/AEUtil.a",
+    "sha256": "04a703e2e42d33030e92507be7538b13330bdb98d6f830a02f72bd808703ed9a"
+  },
+  {
+    "path": "Toolbox/BitEdit/BitEdit.a",
+    "sha256": "5a12460077d20cb8ce0c4a1ac2b57ad0886fc2dd928a41bde4ce1f482dee6391"
+  },
+  {
+    "path": "Toolbox/BitEdit/BitEditPACK.a",
+    "sha256": "70e9a9b376575a72ebb0df6ac32ed54d622f074ef3a2bc27cadcee446fdc5bd5"
+  },
+  {
+    "path": "Toolbox/ColorPicker/ColorPicker.a",
+    "sha256": "0238b51cce05184bd00f90e1b7adac4e9e2ca77812132d7291945987784a23f2"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommResourceMgr/CommResourceMgr.a",
+    "sha256": "9d6e16ae90e16a88c8f84c506048b424cfb966c8c1799d29c044afcdd1ea24d6"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommResourceMgr/CommResourceMgrUtilities.a",
+    "sha256": "94bb73a4cf914d1f439ff47f739892552dc82613bf9d81713bc27bc1f68e7157"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxStartup/CommToolboxDispatcher.a",
+    "sha256": "9f89f73aca1b1c3b16cf5839f6d80d95bdbb3e5dacec2f3fd03c51f2cd7799d8"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxStartup/CommToolboxFix.a",
+    "sha256": "b943f6b78b748e45c66c1d995c85c83fed287ba5079e475a17d8a3c43d2634bd"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxStartup/CommToolboxPatches.a",
+    "sha256": "28fba48c74c1fd80b7c72bb481bfb1fd9e42febb330f787dcd77c491e1d18bf5"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxStartup/INIT29.a",
+    "sha256": "599f159434a1cb182ef537deca4eb88acfce032d0da58d200aa0f1d3f28bd797"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/Choose/Choose.a",
+    "sha256": "3e0faf001267a7232571718efa2520f7f556b1e5065b226b1463e6468fd09170"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/Choose/ChooseUtilities.a",
+    "sha256": "b653f4614f4ce670d5fca0951dc8baa27ffb8375550e8d4e5964a4ab17dafa28"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/CommToolboxLDEF.a",
+    "sha256": "8478fc690e068394f3dc6b5d1865539f592b1aab9ab90903088dd1a5614daa87"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/CommToolboxUtilities.a",
+    "sha256": "54fba4a5a760c0a50c05c4f5978b2c000d4750f3e376f78b106a362b61358e2e"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/DITL.a",
+    "sha256": "bc2cc52479da956317afc566e349913bad0f9869842f8963abfa81291427981e"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/StandardNBP/StandardNBP.a",
+    "sha256": "d825a5c9113a6d7ff60c80363cdb17f520c0671f6445c5603e4644d29c54f766"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/StandardNBP/StandardNBPLDEF.a",
+    "sha256": "833ac5492bce8a33be594d0817a7305b06361d8b0b8f1e2e4fe8424b7381ebf7"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/StandardNBP/StandardNBPUtilities.a",
+    "sha256": "1359b0a8900340380845055aa669f753bf5bee1947d72c8ff8d92a42c345065a"
+  },
+  {
+    "path": "Toolbox/CommToolbox/CommToolboxUtilities/popup.a",
+    "sha256": "33caf35a965f511af7e618a93e2c71d50401b4b4c4f7070f37fcb6f14e377efe"
+  },
+  {
+    "path": "Toolbox/CommToolbox/ConnectionMgr/ConnectionMgr.a",
+    "sha256": "465f471c49adc0a07780fb0122a460ce422457fb8388c1108c44e6ca6c216b12"
+  },
+  {
+    "path": "Toolbox/CommToolbox/FileTransferMgr/FileTransferMgr.a",
+    "sha256": "8a15c834809c27c286e7ffce4b8949f98e689dce6c89a9be4344e37125a0fbad"
+  },
+  {
+    "path": "Toolbox/CommToolbox/TerminalMgr/TerminalMgr.a",
+    "sha256": "6897ad01fd527c2766972ea4c06b7942686671a887ce40e5f371a0cd8c7892ed"
+  },
+  {
+    "path": "Toolbox/ComponentMgr/ThingManagerDispatcher.a",
+    "sha256": "b3154e81b25004da2681d3bc5d3713f572284969982608deabe32a30fb2f642e"
+  },
+  {
+    "path": "Toolbox/ControlMgr/ButtonCDEF.a",
+    "sha256": "b01357ba4edbec12285584219ec497872deb9b28dff37fd00c7bea6b51196411"
+  },
+  {
+    "path": "Toolbox/ControlMgr/ControlMgr.a",
+    "sha256": "dc3ff2eac05b68b353dfa4b8b8414a85c07e5c0665bc972497a499d614808679"
+  },
+  {
+    "path": "Toolbox/ControlMgr/ControlMgrExtensions.a",
+    "sha256": "0133e8a2c867ad7673d7e3fce6f53873800e45c341ff560c06184d425aa76c94"
+  },
+  {
+    "path": "Toolbox/ControlMgr/ControlMgrPatches.a",
+    "sha256": "f30f077a024e8efd688c9b381a36e03fdb2ad766b47323dc3e21d555baec6173"
+  },
+  {
+    "path": "Toolbox/ControlMgr/PictButtonCDEF.a",
+    "sha256": "59e7bfd343b4a4a2ff4e9998f2e9db9b659437e7f3ef64877e167fe002315e26"
+  },
+  {
+    "path": "Toolbox/ControlMgr/PopupCDEF.a",
+    "sha256": "a8b69cee42f0aa6f8173fdeef57547e7489b1c52a0be4b2ebf245280afbf0293"
+  },
+  {
+    "path": "Toolbox/ControlMgr/PopupCDEFMDEF.a",
+    "sha256": "f528cfcd6cd12d3415369541a270aaf9dbc6ee3e189d060ec88431fbd0937805"
+  },
+  {
+    "path": "Toolbox/ControlMgr/ScrollBarCDEF.a",
+    "sha256": "3fa0b8420fd676526b6c134f5817b17db6de95a940c91367026e45f32fb687df"
+  },
+  {
+    "path": "Toolbox/DataAccessMgr/DataAccessCompletion.a",
+    "sha256": "d9b8a333756e41e04057b510869993b54e013b71aa996b3d7f434d730922c7c0"
+  },
+  {
+    "path": "Toolbox/DataAccessMgr/DataAccessMgr.a",
+    "sha256": "e6796c09d3d41864fc486d47f24056327dc4b900b453db37051e2eb3b9342e46"
+  },
+  {
+    "path": "Toolbox/DataAccessMgr/DataAccessPackEntry.a",
+    "sha256": "12e62ab68449c7e35ef594dda1689c40021cc21c9377ffb461ce470d719e8b46"
+  },
+  {
+    "path": "Toolbox/DataAccessMgr/DataAccessResultsHandlers.a",
+    "sha256": "b194fcd429df7a51562f65d0e8cd1918fe632d7c76f9af5075e8ca316424ae37"
+  },
+  {
+    "path": "Toolbox/DataPubsMgr/dpCompileOptions.inc.a",
+    "sha256": "361e173b7d9035f479875438163843d667de78e8449ac77c771fbac032b95642"
+  },
+  {
+    "path": "Toolbox/DataPubsMgr/dpDispatcher.a",
+    "sha256": "6f6d1388854a9a81eb894d9b2e3df9578cef0c7e4aee781236eef58f6a43932e"
+  },
+  {
+    "path": "Toolbox/DataPubsMgr/dpMisc.a",
+    "sha256": "ddaf2dd7cea3cbd4493f2e0debe300d335e9db49db4cbae5c04257d60993b517"
+  },
+  {
+    "path": "Toolbox/DataPubsMgr/dpPackEntry.a",
+    "sha256": "54ad2104778855b235a77a62bef1087a891c705a08890e92e729ddd2a8d5a98e"
+  },
+  {
+    "path": "Toolbox/DeskMgr/DeskMgr.a",
+    "sha256": "d4f8a325fda948ee6e9c910103b3ad2f820290c7bbb83053bd7c954dc5ed2e28"
+  },
+  {
+    "path": "Toolbox/DeskMgr/DeskMgrPatches.a",
+    "sha256": "d16e6953bac2ff19457d6fb9b41a64d42406f8384afc3d886b62bba807ade550"
+  },
+  {
+    "path": "Toolbox/DialogMgr/DialogDispatch.a",
+    "sha256": "24958f8bed2b83e32a32d1153087d7f5ea7bf5615ef68ac24df8e4916c6958e5"
+  },
+  {
+    "path": "Toolbox/DialogMgr/DialogMgr.a",
+    "sha256": "7f6ed360e72fcbf3bb21bb4bc269008af8d6c5fa9a0c28886a009b4f530036cf"
+  },
+  {
+    "path": "Toolbox/DialogMgr/DialogMgrExtensions.a",
+    "sha256": "1c6707a06bd91b0bad0b82504756f67b85890b2589916ebd0ca09a6658ff86ea"
+  },
+  {
+    "path": "Toolbox/DialogMgr/DialogMgrPatches.a",
+    "sha256": "097d54fcdb72b42090cfd8ab9b6ae81f51b526a63c7f8e7e0fad5082b78738b9"
+  },
+  {
+    "path": "Toolbox/DialogMgr/ModalDialogMenuExtensions.a",
+    "sha256": "f980be162ec05aae063cae6b74a8468887133eeaebb50c9285ec0cb75d544c53"
+  },
+  {
+    "path": "Toolbox/DialogMgr/ModalDialogMenuPatches.a",
+    "sha256": "3fc1c736eec65948989a9fb8e6209b59823b7c7f5c540d009c2919ce4a434028"
+  },
+  {
+    "path": "Toolbox/DictionaryMgr/DictionaryMgr.a",
+    "sha256": "d006e21077b9468ab9dd3fdb759fe53c8e1748324264685bbb44a2427ae7094b"
+  },
+  {
+    "path": "Toolbox/DiskInit/DiskInit.a",
+    "sha256": "dedf58b6155e15c32283a1eb04640043c224c3b51e01af17d4560b67e47c84bb"
+  },
+  {
+    "path": "Toolbox/DiskInit/DiskInitHFS.a",
+    "sha256": "e63ff0456377c862e8dfc4de89716e477f44b876f432d53321945ce15975d8e8"
+  },
+  {
+    "path": "Toolbox/DisplayMgr/DisplayMgr.a",
+    "sha256": "e17851db82c0edb4f0ff9b37099bf6694353af7fd3a3356e03ac510bf6acfec6"
+  },
+  {
+    "path": "Toolbox/DisplayMgr/StartDisplayMgr.a",
+    "sha256": "fceb768e0820e66e5348ebbf2919ff93a334c9b7ccb85db8df92a5512997b726"
+  },
+  {
+    "path": "Toolbox/ExpansionBusMgr/ExpansionBus.a",
+    "sha256": "5fe54ef3abf701ff117d4d16f080909bc4b361286574dd66fa0d2ad17316b24c"
+  },
+  {
+    "path": "Toolbox/ExpansionBusMgr/ExpansionBusMgr.a",
+    "sha256": "e1cffe9059d62a2bdd2bdf9645c41ff688bfb0f57d4bb21e58b61fad2e374aaa"
+  },
+  {
+    "path": "Toolbox/FontMgr/BassExtensions.a",
+    "sha256": "1d5f70d5e88ccd35b906c496270c00d97bb4fcd9268f30526e44b4de9d70e172"
+  },
+  {
+    "path": "Toolbox/FontMgr/Bass_Allocate.a",
+    "sha256": "2e1b1b5f1ef081fa79f1595fd0346b05db81eb27c3f3ac3afa93a6d4e7cfb481"
+  },
+  {
+    "path": "Toolbox/FontMgr/DiskCache/Source/DiskCachePatches.a",
+    "sha256": "6cad7a884f76dd0287a9f8918e507f8a20e72bade8907ba8ecf374cddaf154cd"
+  },
+  {
+    "path": "Toolbox/FontMgr/DoubleByteSupport.a",
+    "sha256": "6fb0f667916199b31f06cf873cf090f6e5af5ec746a2b4dacfa9803ce2c6f753"
+  },
+  {
+    "path": "Toolbox/FontMgr/FontFolderExtension.a",
+    "sha256": "e71ea2045b4a534c4c4b3080d85bcf387515857500b61539daaffbceb92de933"
+  },
+  {
+    "path": "Toolbox/FontMgr/FontMath.a",
+    "sha256": "20513f457271cc78198586e8bc6d9401d0ff64444d707aaf15169a52a21c1402"
+  },
+  {
+    "path": "Toolbox/FontMgr/FontMgr.a",
+    "sha256": "077207f83069325cf98e8c56b6a817b7c36b10d185e291bec5af154b311f0532"
+  },
+  {
+    "path": "Toolbox/FontMgr/FontMgrPatch.a",
+    "sha256": "208801a737d3d036da6aeb64cb1b9b5ab4128de865114a06f959a230624d4c6b"
+  },
+  {
+    "path": "Toolbox/FontMgr/FontMgrShell.a",
+    "sha256": "2e6f7a9e6879da4ab6ea725c2701f7c4add79eb7b26483d6fbe4b41e960398f9"
+  },
+  {
+    "path": "Toolbox/FontMgr/OutlineMetrics.a",
+    "sha256": "a6f7bcabfdb5d739eec0a7fb93ae52331417481a0f9a00280faf8b687c367ae1"
+  },
+  {
+    "path": "Toolbox/FontMgr/ShowINIT.a",
+    "sha256": "8784de3d0276ef746762653450b4f8764165974ac1e64406ed88d11189fc0c43"
+  },
+  {
+    "path": "Toolbox/FontMgr/SplineDefines.a",
+    "sha256": "a0fa546c00c8359e2dbccc005840333f4d2b5c2f9db0fd06f4f7c0b0eb542606"
+  },
+  {
+    "path": "Toolbox/FontMgr/StartBass.a",
+    "sha256": "9a5d204915fba571cc4397bbd2744b8629c4bad64d36ff1cb65c83eb823e7819"
+  },
+  {
+    "path": "Toolbox/GetMgr/GetMgr.a",
+    "sha256": "9beb2473c442caea601681fa8c5c9111b71b9520c4f020ffb842307aa430e903"
+  },
+  {
+    "path": "Toolbox/GetMgr/GetMgrPatches.a",
+    "sha256": "c26ed60d57ac9936b040159bd4844c14990d4654056e309b54ad0cfeff811e17"
+  },
+  {
+    "path": "Toolbox/HelpMgr/BalloonExtensions.a",
+    "sha256": "ea8497568e4bba2096eebb23ad2c8c7f0cba6bd1bfdee7ad46fc3affd1412d78"
+  },
+  {
+    "path": "Toolbox/HelpMgr/BalloonPACK.a",
+    "sha256": "5ebdd68155fab4b65076bdbba2076e41d1975a1a948227a16e8d7314c0abd20f"
+  },
+  {
+    "path": "Toolbox/HelpMgr/BalloonPACKEqu.a",
+    "sha256": "a85ea815cf70412f91097136e3bca2b69e9efed937254eca580d022191ecbe8d"
+  },
+  {
+    "path": "Toolbox/HelpMgr/BalloonWDEF.a",
+    "sha256": "07805d46562e7eb1751f457f5b6589538e8f9d058f1b4714c822f8bd7a19350d"
+  },
+  {
+    "path": "Toolbox/HelpMgr/Balloonptch28.a",
+    "sha256": "f94f8cf8f8f7cf1d2ba6a00e8261ca6982ec195224e07dbba5ad9ab2f8ea50f1"
+  },
+  {
+    "path": "Toolbox/IconUtils/IconUtils.a",
+    "sha256": "37cdcb9177bc6be91be980f5a2bd8af86994a622a9c1b314a1ac4cd49f3ab023"
+  },
+  {
+    "path": "Toolbox/InSANE/ELEMS020.a",
+    "sha256": "df205622d1d1d4f326e4175f261e673da2dd511c418d6ad058e25e9ad1b5d6b6"
+  },
+  {
+    "path": "Toolbox/InSANE/ELEMS020_1.a",
+    "sha256": "236fa43c1e8b62fed63789f854b5649343c0154c4c80aae224b7e77a717f70ad"
+  },
+  {
+    "path": "Toolbox/InSANE/ELEMS020_2.a",
+    "sha256": "6a1c0f3b5971eae368badc3c3f23d9a3f7c609fcfc8d476329bab2a521f4366f"
+  },
+  {
+    "path": "Toolbox/InSANE/ELEMS020_3.a",
+    "sha256": "8da64783a8dba6999ef976a1783c433510a3e18fc7bcde4d2b46762648475e4b"
+  },
+  {
+    "path": "Toolbox/InSANE/ELEMS020_C.a",
+    "sha256": "257b752e13efa9d1af2d5540f0e2922c1674fb0a44b0aa78f7ee4efd395bf7d9"
+  },
+  {
+    "path": "Toolbox/InSANE/FP020.a",
+    "sha256": "3aadcb341427a729ccc077fefa1d5a2b5cdff0c9440e18259176feb3ae98a94f"
+  },
+  {
+    "path": "Toolbox/InSANE/FPBD.a",
+    "sha256": "a200256160fc44a443c4a8fa46ac99e527a09c0bb2b7091ebc1fbbbcaa89bfaa"
+  },
+  {
+    "path": "Toolbox/InSANE/FPCTRL.a",
+    "sha256": "9029025077efa6f6f9c0cc0378e644f4a98d6965c32cd5bbae871b9b71a8253c"
+  },
+  {
+    "path": "Toolbox/InSANE/FPEQUS.a",
+    "sha256": "11db6af7b69e2bdaad8d643469d5a8d144371420badb172ede4a28971d152347"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHW.a",
+    "sha256": "f53d22b0314519324d36476a670c6d1796a5d6cc05509f93a995c2213b0e3454"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHWArith.a",
+    "sha256": "c4f0828a64b74f65b4bbc3f30c2e0cf37e6eecb950bf466e17b1a472a348164e"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHWArith96.a",
+    "sha256": "ed6b624361e19087be02e4bd2a2acacb7a5f8eebfc18266e9212703a1db75d74"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHWB2DC.a",
+    "sha256": "a7b88d36f7145df3d2834be1f655218c5a2088208c7485db689191c8f1dd9b2b"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHWCtrl.a",
+    "sha256": "a6c25f129290fdcf85494959219e37d184c079c28df307fe9326283f25317d54"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHWEqus.a",
+    "sha256": "8be80687989eaeaeabdfed3f4a5e0ec80c463e0eab26a144bf0c299e07283ea3"
+  },
+  {
+    "path": "Toolbox/InSANE/FPHWNonArith.a",
+    "sha256": "3f0d5f68b51d5d43e6fa3d140ae21760e944d54ce46dd03835d13fbecd17c3e7"
+  },
+  {
+    "path": "Toolbox/InSANE/FPOPS.a",
+    "sha256": "8dbc8c60403b4fb256a2016362e2dd38191206b1b652352e000c712a05150a50"
+  },
+  {
+    "path": "Toolbox/InSANE/FPPrivTrap.a",
+    "sha256": "c6fc9d847e52b0161a3df1ac97c57aa2402dc579dad9dd42f483c2ad0f7f2700"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsArcTg.a",
+    "sha256": "8a923e8117860d58fd1852e8789c522ad4cc63c62d4b1ce13d922d00e3fe368c"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsCoeffs.a",
+    "sha256": "43c13eae6e9b5a26b53640257b0953e08c1a8fb98d80f76ddb9c280427bb1633"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsCommon.a",
+    "sha256": "1216fc04b04014a177d17015aea3b4d166be5a8bcac3d2a508606627ea36091e"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsControl.a",
+    "sha256": "649a77734c6b96ab0882b0257e1ed867af9b952e9e3ed4678e870765b1ec09e7"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsEqus.a",
+    "sha256": "844660cb1489778844a330072e89c7683bcb9ed98deb8861b2b10dbc9cce3fbf"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsExp.a",
+    "sha256": "49f8edff6e22ce6bb79c0423d06317e39dc205b665a18180e1861e0460799f78"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsFinancial.a",
+    "sha256": "476fb1ef5beb253e3d2e83a72f6e199fbba943b6efcdd2da5cb21ad027c40702"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsLogs.a",
+    "sha256": "94863d9805c3d124904463c13054a09649d77eae02dddb8ac4ecbfe1c48c777a"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsSinCos.a",
+    "sha256": "84a52bc995afc0edc99bbd817dcf79d8a472fc9419def339341a1271440832c9"
+  },
+  {
+    "path": "Toolbox/InSANE/HWElemsTg.a",
+    "sha256": "b0dd03c029310726d5064ef65baba5ae705ca9a78e42f91d6ad2b659ba1f4ae8"
+  },
+  {
+    "path": "Toolbox/ListMgr/IconLDEF.a",
+    "sha256": "15fe3e39833e52f09ed41c682ba6faa24880439d9b8c1057f5e27e7f2f4c2b23"
+  },
+  {
+    "path": "Toolbox/ListMgr/ListMgrPACK.a",
+    "sha256": "6742c1ed0da593609dffb9b166a348f8f0f6ee488d9a9eee96e660bae8bea7a5"
+  },
+  {
+    "path": "Toolbox/ListMgr/ListMgrPriv.a",
+    "sha256": "da20dd3437231c3c031b0921a49419170085c392854250a44481bdbe59f4fc09"
+  },
+  {
+    "path": "Toolbox/ListMgr/TextLDEF.a",
+    "sha256": "4f0efef0cf91b9a59280b4e59d06b955badf0635686486458efa800281f44b1b"
+  },
+  {
+    "path": "Toolbox/MenuMgr/IncludeMenuMgr.a",
+    "sha256": "fea0068dbae08a3ed29f04a8670b443d9de491e36d6542db91431ddab0926643"
+  },
+  {
+    "path": "Toolbox/MenuMgr/InvalMenuBarPatch.a",
+    "sha256": "afe118bd0cbeab47422fb0c1adec797822fa4bb72c32a78293cb0763c5db755d"
+  },
+  {
+    "path": "Toolbox/MenuMgr/MenuDispatch.a",
+    "sha256": "1c6fad3b22d97c60765848edcb81f7bbe188fad09cc632ff07ba4b0a4d9323c9"
+  },
+  {
+    "path": "Toolbox/MenuMgr/MenuMgr.a",
+    "sha256": "18763856841833242b3e229d7a3d5db0b24f7566e79df538d665262a262a0e9a"
+  },
+  {
+    "path": "Toolbox/MenuMgr/MenuMgrExtensions.a",
+    "sha256": "f8768864275cd9e1723f2ac10c373cdd04b5b65c904ba75f713c483bb6b22469"
+  },
+  {
+    "path": "Toolbox/MenuMgr/MenuMgrPatch.a",
+    "sha256": "8cfef94d9899300aa2076b32450c62127b84537dcae25265f8be15cd25956e57"
+  },
+  {
+    "path": "Toolbox/MenuMgr/MenuMgrPatchII.a",
+    "sha256": "aabfdf0cf85b35aa8bcb6bf346f55e35a8d2653fa8be4e3e2708e89ecb2b2a6c"
+  },
+  {
+    "path": "Toolbox/MenuMgr/SaveRestoreBits.a",
+    "sha256": "9ce65a3e33048a07b1f2a2cc21287b99223974e3aa11337210f0fb6072a1dd19"
+  },
+  {
+    "path": "Toolbox/MenuMgr/StandardMBDF.a",
+    "sha256": "ee07c61f77ebbb9e47f95adb73e6188dd16f5f5e79440b09ec86ab42a868aa92"
+  },
+  {
+    "path": "Toolbox/MenuMgr/StandardMDEF.a",
+    "sha256": "45d7e23b75a3a132b24b490740a0a9d20732b26d18341cec712f9950061e0fec"
+  },
+  {
+    "path": "Toolbox/MenuMgr/SystemMenusPatch.a",
+    "sha256": "e25a70f082dbaefea0f393bf911286291487f4f9ba91df6eb6aa8ec4eb9a0fa8"
+  },
+  {
+    "path": "Toolbox/Munger/Munger.a",
+    "sha256": "71f29c29e7a64c0dfa95e9960b0c3245bff27f4f3b734399943001020e50eb9f"
+  },
+  {
+    "path": "Toolbox/Munger/MungerPatches.a",
+    "sha256": "6a0bb396991374718ec90ad26c267c1e3e1e448639dccec611cda82a269b921a"
+  },
+  {
+    "path": "Toolbox/NotificationMgr/MemUtils.a",
+    "sha256": "9c854c06aff31f0dd1008a7536bff8844e0478770a48ae22b7348ba78347ec11"
+  },
+  {
+    "path": "Toolbox/NotificationMgr/NotificationMgr.a",
+    "sha256": "6d596caa549ff5aaf3ced86399c8193db8887f04a8e3012c0260e620cf63756a"
+  },
+  {
+    "path": "Toolbox/NotificationMgr/NotificationMgrPatch.a",
+    "sha256": "519b056d0922537e5a9a206a83942377a3251a37a12d4ccd3cd9fb338ba1e72b"
+  },
+  {
+    "path": "Toolbox/NotificationMgr/PatchROMAlarmNotify.a",
+    "sha256": "594a1a2891f6425926c1b3a1e8891b397f80328e6dac4ecc28a9d93222074b2c"
+  },
+  {
+    "path": "Toolbox/NotificationMgr/SetProcessorLevel.a",
+    "sha256": "e6c6f89c369c6fdc3cbd8131d66c02326c4765025565e8cddbbde6c0f036cba5"
+  },
+  {
+    "path": "Toolbox/PackageMgr.a",
+    "sha256": "53114ba4a0c3a925281fd9977dfff4a296a2a6b565c0b5640a1f266ef19f30ca"
+  },
+  {
+    "path": "Toolbox/Printing/PrintDriver.a",
+    "sha256": "7208b560d51469d14eb875c69549ef6fcc71359b439c5ae8d385ffc7c4c7bc24"
+  },
+  {
+    "path": "Toolbox/Printing/PrintGlue.a",
+    "sha256": "f074113c6fb8e568db3c230f4fdf9ec6c95b290424d290fef385717fe1a2619a"
+  },
+  {
+    "path": "Toolbox/Printing/PrintGlueShell.a",
+    "sha256": "0dfc7c22cbe676d047064d15ec3da4d2f22cdd79f4965b1ff6e7ae74cfc4e4c6"
+  },
+  {
+    "path": "Toolbox/ResourceMgr/OpenResFile.a",
+    "sha256": "eb8515f35b941ad13d9b0b8d7b07f0315bbfce93671589b1b08d4ab2c868ac9b"
+  },
+  {
+    "path": "Toolbox/ResourceMgr/ResourceMgr.a",
+    "sha256": "9205e992287fc0e2948369879cc112937d7a22390c32423fb3f97eeacd4a171c"
+  },
+  {
+    "path": "Toolbox/ResourceMgr/ResourceMgrExtensions.a",
+    "sha256": "63199ff14bfe95ae23f182443bb7cb5186f33db8ccfdfeb62743f52911f69ef3"
+  },
+  {
+    "path": "Toolbox/ResourceMgr/ResourceMgrPatches.a",
+    "sha256": "b2b76d12d1353aa334b36b888bb498d8897c687f24465f3e547ce6e89d7162d8"
+  },
+  {
+    "path": "Toolbox/ResourceMgr/ResourceOverridePatches.a",
+    "sha256": "5d2fc91dfe8cced4d3d33e517c34d12e48db10994c37849eb52703577405d59d"
+  },
+  {
+    "path": "Toolbox/SANE/881Elems68K1.a",
+    "sha256": "b3fdb2ea0879d988aaa09e4b21b815aa31c6e0bac2d47d9e5c3cd15e66dad3e1"
+  },
+  {
+    "path": "Toolbox/SANE/881Elems68KC.a",
+    "sha256": "6920a76b58d0d05fb6d31e384097bf8e8dfa4e62f427d6d11310e74196a6ac43"
+  },
+  {
+    "path": "Toolbox/SANE/BinDec.a",
+    "sha256": "e4c21022e3e53e6077069defa3c71f4155a90d571607c0781d37b2bf59a90c32"
+  },
+  {
+    "path": "Toolbox/SANE/Dec2Str.a",
+    "sha256": "6fdd83c6e05089e0f4f3515562ee7f20bf475348893556fb5f3a837727e87b11"
+  },
+  {
+    "path": "Toolbox/SANE/ELEMS020.a",
+    "sha256": "237b2afcab304a696401063142f8f5a3cf2a60e9ff7e230aa6bd3c30aedf96b8"
+  },
+  {
+    "path": "Toolbox/SANE/ELEMS020_1.a",
+    "sha256": "cd566f900c588225dd0243c4c2dd7c7797283a8b34fe1ee07d4c3773ef019fc2"
+  },
+  {
+    "path": "Toolbox/SANE/ELEMS020_2.a",
+    "sha256": "06c5fb57ebe3f5d2aba37d5e73f13315ce7e5d0cecb1b647ed6ef5f7a06cd07c"
+  },
+  {
+    "path": "Toolbox/SANE/ELEMS020_3.a",
+    "sha256": "c69b48416976f91984eecaa396e0ed2b70dccac54b5108b55c61794b913faadf"
+  },
+  {
+    "path": "Toolbox/SANE/ELEMS020_C.a",
+    "sha256": "cd61723e3696fc8771775f98ab722d8b5b39d30c4b60bcbe14e9dc6c7516e580"
+  },
+  {
+    "path": "Toolbox/SANE/Elems68K.a",
+    "sha256": "574befd5ef3efb3428571689875830e77cb8f41edecf41a26c8b4f9db1d2fbac"
+  },
+  {
+    "path": "Toolbox/SANE/Elems68K1.a",
+    "sha256": "8acd47363c5f78e28a74bbc73f99199ea69bd82f9345721f672f0670aea5c321"
+  },
+  {
+    "path": "Toolbox/SANE/Elems68K2.a",
+    "sha256": "3e6784f0b38d369922568d6f8d452e6de5d4beacdf7a749a318565d8bfb9a34a"
+  },
+  {
+    "path": "Toolbox/SANE/Elems68K3.a",
+    "sha256": "67d750b59ad13c8dc41d56e3a4a8abdf759d904916b354bf637402972c4e177f"
+  },
+  {
+    "path": "Toolbox/SANE/Elems68KC.a",
+    "sha256": "cba615d9c31dec5e36a16d1bbf3f672f27c33e7922c307143871ad7fa79ae01e"
+  },
+  {
+    "path": "Toolbox/SANE/Elems881.a",
+    "sha256": "363fb4c0d89853cf9924024734e241a09b96c102700569384ba21700a5d66110"
+  },
+  {
+    "path": "Toolbox/SANE/FP020.a",
+    "sha256": "548b6f4ba0b745f54816d25a33ff1524793a9fe9fbec106c8f5f81ce6e2d0afd"
+  },
+  {
+    "path": "Toolbox/SANE/FP020BD.a",
+    "sha256": "c0eb0f7ed684a6bdd3583ea751c3d63de4719a88f04ca716a41749e15aaffc3f"
+  },
+  {
+    "path": "Toolbox/SANE/FP020CTRL.a",
+    "sha256": "51d6d6c5f849e515ec484add10d3352b821a3811a97b0d7158b4153489d9a043"
+  },
+  {
+    "path": "Toolbox/SANE/FP020EQUS.a",
+    "sha256": "f5238f20b3e5939e809678debe74f3cc2dc3d5a429f9d79c04e90377c76ddcd0"
+  },
+  {
+    "path": "Toolbox/SANE/FP020OPS.a",
+    "sha256": "bef4f84727de368241eab4c7f35a959d35b68a8aa7aedb3da35e5bf263a6ebb3"
+  },
+  {
+    "path": "Toolbox/SANE/FP68K.a",
+    "sha256": "6ecea1c345bc9b3280916cc8286f6003b3e5da9b599c532ada4beb7b65863c65"
+  },
+  {
+    "path": "Toolbox/SANE/FP881.a",
+    "sha256": "f5ec75f502424edd12c568eebbafbeeafd4bedc4d0a6e6b9b147ecfc0b36de1d"
+  },
+  {
+    "path": "Toolbox/SANE/FP881Arith.a",
+    "sha256": "3bedc5687e54f9529559ed9291485ec3036187fd0145d5d54a0a137ffb3c16c3"
+  },
+  {
+    "path": "Toolbox/SANE/FP881B2DC.a",
+    "sha256": "9b7c9f4e2f1f5cb9657b127088de23eb7d7bbda2c17144f38a6253ce96a87900"
+  },
+  {
+    "path": "Toolbox/SANE/FP881Ctrl.a",
+    "sha256": "5aaf1ab8ce75d37d4fddbb5036a079212038b0e1b493a8a3869ffac18fb9a7b0"
+  },
+  {
+    "path": "Toolbox/SANE/FP881Equs.a",
+    "sha256": "d470fe9341253166a6701f17a11c72bddec7aca6a615e93eee2c807bc55e6365"
+  },
+  {
+    "path": "Toolbox/SANE/FP881NonArith.a",
+    "sha256": "3f363bcde6610d21215ddb7b3d165d30325ed13c6214ca17f4723179c572f24b"
+  },
+  {
+    "path": "Toolbox/SANE/FPBD.a",
+    "sha256": "33074f6dc73470f699d812c1c67a72216a4b1b885b23e21168f005f077aa0f6b"
+  },
+  {
+    "path": "Toolbox/SANE/FPCtrl.a",
+    "sha256": "8ffedf4a47783451874d3464c14df5c66e68c5259d2365d905b115ee8b043b2f"
+  },
+  {
+    "path": "Toolbox/SANE/FPEqus.a",
+    "sha256": "4201e7fcd36f461f9919f35e8f9d69d72183722edaf52781d610d95be1d1dc1b"
+  },
+  {
+    "path": "Toolbox/SANE/FPOps.a",
+    "sha256": "558d9c926e7f11c515e89d57212210aa739294a7240675bb35dfa2c8dcf3d8e4"
+  },
+  {
+    "path": "Toolbox/SANE/Str2Dec.a",
+    "sha256": "858aad7788c4f9aa990314b34ea39dfc615f9baec8aa38795ab9e76ea2f3d3d4"
+  },
+  {
+    "path": "Toolbox/ScrapMgr/ScrapMgr.a",
+    "sha256": "ab8ca6e91eb55612ab09ea37d9e551e8c430cb9cfe6947156abd5ef666f6c082"
+  },
+  {
+    "path": "Toolbox/ScrapMgr/ScrapMgrPatches.a",
+    "sha256": "b660df07d1ac4e325106a281bcfe321e74b9bb250e0187aa384ccc375c9ecdb5"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/DblByteCompat.a",
+    "sha256": "b0da269d1d9a0166aadef9d2f676044751f48026805439d258a685a32fc78d4e"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/InternationalPACK.a",
+    "sha256": "9b603b616874ff121f2eaa86d826430fa8ab8d4a85617561d8576f65391e3fa9"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/RomanITL2.a",
+    "sha256": "ea00b729b001f3556afc3f2297daa20fb9471fb290440f30b969f639c21fbcfb"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/RomanNewJust.a",
+    "sha256": "f49a0d4996d16f8a1d1550d2ac0e3af149596b2dcac68d0404a296334f104dcd"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/RomanUtil.a",
+    "sha256": "017e5e0a9a2e648aadb5001964758c6f32956900c62c0f1ed8becd4d02f01a3a"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrDispatch.a",
+    "sha256": "2fb040bc5c89d15d295affdd877c59791912570e25582dfadb291a3246c26cda"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrExtHead.a",
+    "sha256": "bc75ddc596dc59ef2bca271b0016ba0df1e39355ce6850f00130486090774d85"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrExtTail.a",
+    "sha256": "9a53731342b41832a0bc982e87180a2056785cbd9690ec2ace23d3daae473d5d"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrExtensions.a",
+    "sha256": "3c46b66842196979f468669b86c01ec99e9b65fa42cae2edebc57186103785fb"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrHeader.a",
+    "sha256": "b14f5b8f053ed5fcb1d245ebce6f673ebb6c51bdc43ff9370a5645c3e30b5ab5"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrInit.a",
+    "sha256": "57c72831736fc7b535d0ef9d59970b3da3400fbe512551f863299872d1d6b725"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrKbdMenu.a",
+    "sha256": "a19e24aac6bfc4a7700a615557268d8406eeb115c6c4d3efdb18625b13b8fdb6"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrKeyGetSet.a",
+    "sha256": "a9ff7733d676c5c9cd573691b7bb406db7d19c459353351e815a297ad17d5420"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrMisc.a",
+    "sha256": "9559b0457d33d8b33bb3eb615cc1b5e2983dcbb5dbe46cd2ec8a5fa68031e166"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrPatch.a",
+    "sha256": "c7958d6f51959dc13776232da7c77d489e252fba141499f20bfefa82b16f1bcd"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrROMPatch.a",
+    "sha256": "25334431d1f83d6e4ce517b7f7f36d3633635196d53a9316f427d6de8d492cfe"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrSysMenuPatch.a",
+    "sha256": "7e993938c17f57f71e6f3be095fa8ab6c79b9e3a60c5cde975967c55143b19fd"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrTruncRepl.a",
+    "sha256": "5ecc68835a30c5ecff8531e2359f9071322473f3484ecf4811cfbaf3b78629b4"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrUtil.a",
+    "sha256": "5e98c0b2390316551ea891ab59ad68f90fc8d2eae9ef491e2d0e4e8546ed3c9a"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrUtilDate.a",
+    "sha256": "a6c977ef20e15d3f266bf308fe13e9917f12339065a233af6d77621a0b8186d0"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrUtilNum.a",
+    "sha256": "4a93be56281a032cd436e1101ba6968244b3a10dc2894cbb55789865affd09ce"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/ScriptMgrUtilText.a",
+    "sha256": "c1301c015761f93126aa65041853b2f084a596c97a0d62e2c9de53b274dc8f65"
+  },
+  {
+    "path": "Toolbox/ScriptMgr/itl4Roman.a",
+    "sha256": "e84cba7d182de72aebdfd97d8d6dda3294a475c3ef78229497d918b0fc8a1adb"
+  },
+  {
+    "path": "Toolbox/SegmentLoader/SegmentLoader.a",
+    "sha256": "66fe3803a5388e873bb9dd850522470e535426a3434f4ce86f39be9033b9c873"
+  },
+  {
+    "path": "Toolbox/SegmentLoader/SegmentLoaderPatches.a",
+    "sha256": "4e5947aff85ab06a4a2dab9f3e21c4b13a1394d5741c41edc833b2f271fdd227"
+  },
+  {
+    "path": "Toolbox/SexyDate.a",
+    "sha256": "3ebac9ea1a9e72810a868a79b70a83d4469e5003c1b2bb8eb21f461414b037a5"
+  },
+  {
+    "path": "Toolbox/ShutDownMgr/ShutDownMgr.a",
+    "sha256": "cf571d4da96b5ced9c80ee1d01525209d051ae8dbed5d5803bdb31eacced0f25"
+  },
+  {
+    "path": "Toolbox/StandardFile/StandardFileLDEF.a",
+    "sha256": "74ab293d2e0bdd7953bf79ffc21991a3182551a4e810b00f2fd99a2660af170e"
+  },
+  {
+    "path": "Toolbox/StandardFile/StandardFilePACK.a",
+    "sha256": "457070e2882951aa31e4b37b1d08a3f4820a397a7295e13669b0de4a039b2f69"
+  },
+  {
+    "path": "Toolbox/StandardFile/StandardFilePriv.a",
+    "sha256": "d23f1138311e35334a253f514ba9fa8d280a96a3f7c1ceb43f7fbbd7e7bbc2f5"
+  },
+  {
+    "path": "Toolbox/TextEdit/IncludeTextEdit.a",
+    "sha256": "a6497d5e424dccdd11d038cc2d47cc00ac123b76fd7a68a78cab1dfd852923c5"
+  },
+  {
+    "path": "Toolbox/TextEdit/StyledTextEdit.a",
+    "sha256": "cb52316b5ed1bd145de6bd8098eb266c82a922de7514ea798fabab7cdfead301"
+  },
+  {
+    "path": "Toolbox/TextEdit/TextEdit.a",
+    "sha256": "0d643613e832182ccd2017794d0b039d3c52070a791490227a0020a71ae85003"
+  },
+  {
+    "path": "Toolbox/TextEdit/TextEditInit.a",
+    "sha256": "01b2a18161c12e9c906d4f4af7ab815e5610ef6ec340d9b33ebf4e5597907520"
+  },
+  {
+    "path": "Toolbox/TextEdit/TextEditPatch.a",
+    "sha256": "dc7d8b082e4954865f172404b5817bcdcd2ded8713c61440e9dbeb33408d8727"
+  },
+  {
+    "path": "Toolbox/TextEdit/TextEditPatchIIciROM.a",
+    "sha256": "c18ce38142a2e2e8a191fd0c18523cedfdc05af73f9b881caf03ba484df178a3"
+  },
+  {
+    "path": "Toolbox/TextServicesMgr/TSMDispatch.a",
+    "sha256": "ed3d82f1e07ab6e8458b36badacdae8e6d11bf9880620095fd0b052a159844a7"
+  },
+  {
+    "path": "Toolbox/TextServicesMgr/TSMExtension.a",
+    "sha256": "bdf3e0f25e4e0f2dcc4cd4197c239aa9ae1c4e938c3d6537dc07d7c0a6c4c2e8"
+  },
+  {
+    "path": "Toolbox/ToolboxEventMgr/ToolboxEventMgr.a",
+    "sha256": "99cdf7fee78add5ab11cf8bc2f6833c496720ff8ca7fe81ac01973eda82807b3"
+  },
+  {
+    "path": "Toolbox/ToolboxEventMgr/ToolboxEventMgrPatches.a",
+    "sha256": "316ab964b9d78379a00e7a963c7f73d708dfe481a4cf7ab301245fde42f5ac99"
+  },
+  {
+    "path": "Toolbox/ToolboxEventMgr/WaitNextEvent.a",
+    "sha256": "a455cc56c3741e509e4d13c9e1509846d75e4086f47e7a4c5d7f587bb662c1f3"
+  },
+  {
+    "path": "Toolbox/WindowMgr/LayerWDEF.a",
+    "sha256": "2649e4c56bb97319f2c3dd409c43d89c509d3a6e8a389aad637fd75295104951"
+  },
+  {
+    "path": "Toolbox/WindowMgr/RoundedWDEF.a",
+    "sha256": "55dfc9c4631432e2f6cd2ccaa2ed4b8d9b1db425bfc6eeb5e04932b8307e446e"
+  },
+  {
+    "path": "Toolbox/WindowMgr/StandardWDEF.a",
+    "sha256": "f5800cdbc7cf6a176192992104c874f7a90e7d553bfc6b759c33d69daeab16bd"
+  },
+  {
+    "path": "Toolbox/WindowMgr/WindowList.a",
+    "sha256": "c71f000e349104999387a7187535da9cad6c961429b99dc9a8b9dc68b934379c"
+  },
+  {
+    "path": "Toolbox/WindowMgr/WindowMgr.a",
+    "sha256": "efaab6ae4ec70e8a4a0ba4bd69dab3529ce6eae9b8f28d1b3a0ae3b5b5356c1a"
+  },
+  {
+    "path": "Toolbox/WindowMgr/WindowMgrExtensions.a",
+    "sha256": "0658019fd735c412052466ac7d63c0d528c08bd2c11d509aa1e1805766680da9"
+  },
+  {
+    "path": "Toolbox/WindowMgr/WindowMgrPatches.a",
+    "sha256": "82a37eec23d38707deb699ce3764b7d5454bf8db04945a786481be2423a5aa1b"
+  },
+  {
+    "path": "Tools/CRCPatch.a",
+    "sha256": "c5929772dca080f1ea3d26b6659103185a4e3ec2cc0caeea617c15ffc89426ec"
+  }
+]

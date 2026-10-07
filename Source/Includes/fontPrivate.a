@@ -1,0 +1,20 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Internal/Asm/fontPrivate.a
+;
+;	File:		fontPrivate.a
+;
+;
+;	Written by:	Charlton E. Lui
+;
+;	Copyright:	© 1989-1992 by Apple Computer, Inc., all rights reserved.
+;
+
+		INCLUDE 'ColorEqu.a'
+
+FoutCurStyle	EQU 	FOutUnused			;post the current style used here.
+NumTables	EQU 	12
+FMSwapTrap	EQU 	$101				;the FMSwapFont trap number for _GetTrapAddr
+WidListSize 	EQU 	NumTables*4
+FAssocSiz		EQU 	6					;size of a font association table entry.

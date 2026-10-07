@@ -1,0 +1,91 @@
+{
+  "module": "oseventmgr",
+  "source": "Reconstruction/Source/OS/OSEventMgr.a",
+  "originals": [
+    {
+      "path": "OS/OSEventMgr.a",
+      "sha256": "ab93d2ad511a6c3f253933f9af4dc48e47d3300ec060ba987ec5d86d7321e61e"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89"
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba"
+    }
+  ],
+  "scope": "PostEvent, FillRecord, OSEventAvail, GetOSEvent, DeleteEvt, and FlushEvents.",
+  "target": {
+    "program": "Mac Plus",
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "base_address": "0x400000",
+    "size": 131072,
+    "checksum": "0x4d1f8172",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "ghidra_import_path": "/home/james/Mac OS/Mac_ROMs/68k/128k/Macintosh Plus/1986-03 - 4D1F8172 - MacPlus v3.ROM"
+  },
+  "span": {
+    "start": "0x4026ec",
+    "end_exclusive": "0x402852",
+    "length": 358,
+    "sha256": "6d02d5d8887835bb5a69b08bfbf4d8ea72b370063018c8059bc3e36bce82343c",
+    "boundary_evidence": "PostEvent begins at 0x4026ec. FlushEvents ends with RTS at 0x402850, before the TFSDispatch entry at 0x402852."
+  },
+  "integration_manifest": {
+    "name": "oseventmgr",
+    "source": "Reconstruction/Source/OS/OSEventMgr.a",
+    "start": "0x4026ec",
+    "end_exclusive": "0x402852",
+    "entry_points": {
+      "PostEvent": "0x4026ec",
+      "FillRecord": "0x402746",
+      "OSEventAvail": "0x402764",
+      "GetOSEvent": "0x4027ec",
+      "DeleteEvt": "0x4027fe",
+      "FlushEvents": "0x40280a"
+    }
+  },
+  "changes": [
+    "Removed the later InitEvents procedure and idle, Help Manager, and Script Manager additions. Preserved applicable routine descriptions and change history through October 1985.",
+    "Restored LoIntMask, 0x0100, in all three event queue critical sections. Change C173 in September 1986 raised the mask to disable SCC interrupts; the Mac Plus ROM uses the earlier value.",
+    "Restored the word KeyLast test before the auto-key event-mask test. PostEvent receives a zero-extended copy of KeyLast. Changes C89 and C517 in July and December 1986 introduced the later keyboard message layout.",
+    "Restored GetOSEvent's original return path without the extra A0 save and Script Manager processing. The ROM directly removes the queue element after OSEventAvail succeeds.",
+    "Retained the October 1985 FlushEvents change that writes -1 to LastSPExtra. The ROM contains that write at 0x402812.",
+    "Removed later Trap suffixes, replaced imports with the verified Enqueue and Dequeue addresses, and made their PC-relative calls explicit. Selected the ROM branch widths and ADDQ encoding.",
+    "Copied required equates from the supplied interface files. Added marked reconstruction notes and kept the original copyright, author, and applicable comments."
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "report": "Reconstruction/Build/verification.json",
+    "source_sha256": "4954191750efe5fa901e9005410ee6274fe08d5300c14a15b0bed7549c1648b9",
+    "checked_bytes": 358,
+    "entry_points_checked": 6,
+    "assembled_sha256": "6d02d5d8887835bb5a69b08bfbf4d8ea72b370063018c8059bc3e36bce82343c",
+    "assembler": "GNU assembler 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "method": "Translate the source syntax, expand its macro definitions, assemble for the 68000, link at the ROM address, and compare every emitted byte.",
+    "limitations": [
+      "Instruction and data bytes match the entire span. The exact historical spelling and source layout of the restored instructions remain inferred.",
+      "Enqueue and Dequeue are verified separately in Queue.a. Other hardware and caller behavior lies outside this span."
+    ]
+  }
+}

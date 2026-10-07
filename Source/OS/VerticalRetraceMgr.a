@@ -1,0 +1,137 @@
+;
+;	File:		VerticalRetraceMgr.a
+;
+;	Contains:	This file contains the core routines pertaining to the vertical
+; 				retrace manager.  VINSTALL installs a routine into the vertical
+;  				retrace task list while VREMOVE removes it.
+;
+;	Written by:	Andy Hertzfeld 05-May-81
+;
+;	Copyright:	© 1981-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				 7/24/85	RDC		Changed interrupt level masking to use equates Added separate
+;									include statement for HWequ file (no longer in systlqk.sym)
+;				  5/7/85	JTC		Disallow VBL interrupts during computation. <07May85>
+;				 4/30/85	JTC		Fix overflow problem in computing initial phase bias. <30Apr85>
+;				 1/30/85	LAK		Added RAM patch to VInstall.
+;				 1/23/85	LAK		Adapted for new equate files.
+;				  8/8/83	LAK		added a comment only.
+;				 6/18/83	AJH		saved 2 bytes by moving CoreStub
+;				 7/26/82	LAK		phase of zero specifies no offset (used for exact one shots) -
+;									mod to VINSTALL
+;				  6/4/82	LAK		use phase in VINSTALL to determine initial count
+;				 9/17/81	bmw		vinstall returns zero in d0 if it's happy
+;
+*R This file restores VInstall and VRemove at
+*R $401C2A through $401C89. The interrupt handler occupies a separate ROM span.
+*R The retained history and routine comments come from OS/VerticalRetraceMgr.a.
+*R The ROM has no zero-phase shortcut. It uses the system VBL queue directly.
+*R See Evidence/vertical-retrace.json for source provenance and byte checks.
+;
+
+		IMPORT DEQUEUE,ENQUEUE ;]
+
+		MACHINE MC68000
+		STRING ASIS
+		BLANKS ON
+
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+
+
+*R The ROM masks level 1 interrupts during phasing.
+HiIntMask EQU $0100 ;]
+
+VBLCore PROC EXPORT
+        EXPORT VInstall,VRemove ;]
+
+;_______________________________________________________________________
+;
+; Trap:			_VINSTALL
+;
+; Arguments:	A0 (input) :	address of vertical retrace control block
+;				D0 (output):	error code -	0  no error
+;											   -2  invalid queue element type
+;
+; Function: 	Installs a vertical retrace routine which is called after
+;				VBLCOUNT(A0) video frames.
+;				To permit VBl tasks to be called with the same frequencies but		<30Apr85>
+;				in different time slices the following phasing mechanism is used:
+;				Compute T := Ticks MOD Count  (this takes two DIVU's to avoid overflow).
+;				Then T indicates the momentary phase, relative to Count.
+;				Then compute the proper InitialCount so that the VBl task will be
+;				executed Phase slices AFTER the next slice whose MOD with Count is 0.
+;				if (Phase - T) >= 0
+;					then  InitialCount := Count + (Phase - T)
+;					else  InitialCount := Count + (Count + (Phase - T))
+;				To compute Ticks MOD Count we let Ticks = 2^16*Thi + Tlo and note that
+;					Ticks MOD Count  =	( 2^16*(Thi MOD Count) + Tlo ) MOD Count
+;				with the pleasant benefit that neither MOD cannot cause DIVU to overflow!
+;
+;				However, life is not without its uncertainties! If the clock should tick
+;				whilest this computation is performed, the initial phase will be off by
+;				a tick.  But this could be solved by INSTALLING such tasks at VBL time,
+;				guaranteeing a fresh slice within which to work!!!
+;
+; Registers Used: D0,D1,D2,A0,A1													<30Apr85>
+;_______________________________________________________________________
+
+VInstall
+			cmpi.w 	#vType,VBLType(a0)	; is it the proper type?
+			beq.s	VInstallCount ;]
+VTypeError	moveq.l	#VTypErr,d0 		; flag the error
+			rts 						; and return...
+
+VInstallCount ;]
+			move.w	vblCount(a0),d1 	; D1.W = Count						<30Apr85>
+			beq.s	@QueueIt			; Count=0 is special, one-shot case <30Apr85>
+
+			move.w	sr,-(sp)			; save current interrupt status 	<07May85>
+			ori.w 	#HiIntMask,sr		; disallow VBL interrupts			<07May85>/<24Jul85>
+
+			move.l	Ticks,d0; D0 = 2^16*Thi + Tlo				<30Apr85>
+			swap	d0					;									<30Apr85>
+			moveq.l	#0,d2				;									<30Apr85>
+			move.w	d0,d2				; D2 = Thi							<30Apr85>
+			divu	d1,d2				; D2.hi = Thi MOD Count 			<30Apr85>
+			swap	d2					;									<30Apr85>
+			move.w	d2,d0				;									<30Apr85>
+			swap	d0					; D0 = 2^16*(Thi MOD Count) + Tlo	<30Apr85>
+			divu	d1,d0				;									<30Apr85>
+			swap	d0					; D0.W = Ticks MOD Count			<30Apr85>
+
+			sub.w	VBLPhase(a0),d0 	;									<30Apr85>
+			neg.w	d0					; D0.W = Phase - (Ticks MOD Count)	<30Apr85>
+			bpl.s	@PhaseDone			;									<30Apr85>
+			add.w	d1,d0				; D0.W = Count + (Phase - (...))	<30Apr85>
+@PhaseDone								;									<30Apr85>
+			add.w	d0,vblCount(a0) 	;									<30Apr85>
+
+			move.w	(sp)+,sr			; restore old status				<07May85>
+
+@QueueIt	lea VBLQueue,a1			; get address of queue
+			jsr 	ENQUEUE	;] install it in the queue
+			moveq.l	#noErr,D0			; indicate success
+			rts 						; and return...
+
+;_______________________________________________________________________
+;
+; The VREMOVE trap routine removes a vertical retrace control block from the
+; VBL queue. On entry, A0 points to the control block.	D0 returns the error
+; code; all other registers are preserved.
+;
+;_______________________________________________________________________
+;
+VRemove	 	cmpi.w 	#vType,VBLType(a0)	; is it the proper type?
+			bne.s	VTypeError			; if not, exit with error
+
+			move.l	a1,-(sp)			; preserve A1
+			lea 	VBLQueue,a1 		; get address of queue
+			jsr 	DEQUEUE	;] remove it from the queue
+			movea.l	(sp)+,a1			; restore A1
+AnRTS		rts							; return Dequeue error code
+
+		ENDPROC
+		END

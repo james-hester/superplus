@@ -1,0 +1,294 @@
+;
+;	File:		GrafAsm.m.a
+;
+;	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+;
+;
+*R GrafInit.a restores the Mac Plus port initialization code.
+*R Its source is QuickDraw/Classic/GrafAsm.m.a, under its original header.
+*R Cross-checked against QuickDraw Source/GrafAsm.a and QuickGlue.a.
+*R SetStdProcs retains the Plus ROM's trap-table dispatch.
+*R ROM addresses: $408784 through $408955. See Evidence/grafinit.json.
+;
+		IMPORT CopyRgn,NewRgn,RectRgn ;]
+
+		BLANKS	ON
+		STRING	ASIS
+
+			MACHINE	MC68000
+
+		INCLUDE 'GrafTypes.a' ;]
+
+;------------------------------------------------------------
+;
+;  --> GRAFASM.TEXT
+;
+;  Miscellaneous unclassified routines.
+;
+
+*R The ROM fixes lastGrafGlob at -202.
+*R The Toolbox table starts at $C00.
+*R Calls use PC addressing.
+
+xToolTable		EQU	$C00
+
+JStdArc 		EQU 	xToolTable+(4*$BD)
+JStdBits		EQU 	xToolTable+(4*$EB)
+JStdComment 	EQU 	xToolTable+(4*$F1)
+JStdGetPic		EQU 	xToolTable+(4*$EE)
+JStdLine		EQU 	xToolTable+(4*$90)
+JStdOval		EQU 	xToolTable+(4*$B6)
+JStdPoly		EQU 	xToolTable+(4*$C5)
+JStdPutPic		EQU 	xToolTable+(4*$F0)
+JStdRect		EQU 	xToolTable+(4*$A0)
+JStdRgn 		EQU 	xToolTable+(4*$D1)
+JStdRRect		EQU 	xToolTable+(4*$AF)
+JStdText		EQU 	xToolTable+(4*$82)
+JStdTxMeas		EQU 	xToolTable+(4*$ED)
+
+
+		INCLUDE 'Traps.a'
+		INCLUDE 'GrafTraps.a' ;]
+
+
+*R The storage glue also appears in QuickGlue.a.
+*R Its original attribution and storage heading follow.
+;
+;  QuickDraw/Mac OS Interface
+;
+;  written by Andy Hertzfeld  16-Sept-82
+;
+;  (c) 1982 by Apple Computer, Inc.  All rights reserved.
+;
+;  Here is a subset of Unit Storage (the ones needed by
+;  QuickDraw), implemented by trapping to the Mac OS.
+;
+
+NewHandle FUNC	  EXPORT
+		EXPORT	SetHSize
+;------------------------------------------------
+;
+;  FUNCTION NewHandle(byteCount: INTEGER): Ptr;
+;
+	   MOVEQ	#0,D0		   ;clear out high part
+	   MOVE.L  (SP)+,A1 	   ;get return address
+	   MOVE.W  (SP)+,D0 	   ;get the byte count
+	   _NewHandle		   ;ask OS to do request
+	   BNE.S	MemFull 	   ;if memory full, deep shit!
+	   MOVE.L  A0,(SP)		   ;return result handle on stack
+	   JMP	   (A1) 	   ;return to caller
+
+;  handle the memory full error by deep-shitting
+
+MemFull MOVEQ	#25,D0			;Deep Shit memory full error code
+		_MSysError
+		DC.W	$A9FF			;invoke debugger just in case it comes back
+
+;
+;  PROCEDURE SetHSize(h: Handle; newSize: INTEGER);
+;
+SetHSize MOVEQ	 #0,D0			;clear high word
+		MOVE.L	(SP)+,A1		;pop return address
+		MOVE.W	(SP)+,D0		;pop the new size
+		MOVE.L	(SP)+,A0		;pop the handle
+		_SetHandleSize			;let OS do it
+		BNE.S	MemFull 		;if out of memory, deepShit
+		JMP 	(A1)			;return to caller
+
+
+
+InitGraf PROC  EXPORT	
+;--------------------------------------------------
+;
+;  PROCEDURE InitGraf(globalPtr: Ptr);
+;
+;
+PARAMSIZE		EQU 	4
+GLOBALPTR		EQU 	PARAMSIZE+8-4			;LONG
+
+		LINK	A6,#0					;NO LOCALS
+		MOVE.L	A4,-(SP)				;SAVE REG
+		MOVE.L	GLOBALPTR(A6),A4			;GET POINTER TO QUICKDRAW GLOBALS
+		MOVE.L	A4,GRAFGLOBALS(A5)			;SAVE IN MAGIC LOCATION
+;
+; new addition 22 Apr 85
+;
+		CLR.B	$8F3					; set lo-mem flag, QDExist
+
+		LEA 	lastGrafGlob(A4),A0 		;SET UP START POINTER
+		LEA 	thePort+4(A4),A1			;SET UP LIMIT POINTER
+CLRLP	CLR.W	(A0)+					;CLEAR A WORD
+		CMPA.L	A1,A0					;CHECK LIMIT POINTER
+		BNE.S	CLRLP					;CLEAR ALL GLOBALS
+
+												;]QDSpareD..QDSpare3 = all zeros
+												;playIndex := 0
+												;fontPtr = Nil
+												;FixTxWid := 0.0
+												;patAlign := (0,0)
+												;polyMax := 0
+												;thePoly := Nil
+												;QDSpare0 := 0
+												;playPic := Nil
+												;rgnMax := 0
+												;rgnIndex := 0
+												;rgnBuf := Nil
+
+		LEA 	wideData(A4),A4
+		MOVE.L	A4,D0					;REMEMBER ADDR OF WIDEDATA
+		MOVE	#10,(A4)+				;wideData.rgnSize := 10
+		MOVE.L	#$80018001,(A4)+			;wideData.rgnBBox :=
+		MOVE.L	#$7FFF7FFF,(A4)+			;(-32767,-32767,32767,32767)
+		MOVE.L	A4,D1					;REMEMBER ADDR OF WIDEMASTER
+		MOVE.L	D0,(A4)+				;wideMaster := @wideData
+		MOVE.L	D1,(A4)+				;wideOpen := @wideMaster
+		MOVEQ	#1,D0
+		MOVE.L	D0,(A4)+				;randSeed := 1
+		MOVE.L	A4,-(SP)				;point to screenBits
+		_GetScrnBits					;fill in screenBits
+		ADD 	#14,A4					;bump past screenBits
+		MOVEQ	#26,D0					;INIT LOOP COUNT
+		LEA 	CURDATA,A0	;POINT TO CURSOR DATA
+CRSRLP	MOVE.L	(A0)+,(A4)+ 			;COPY A LONG INTO GLOBALS
+		DBRA	D0,CRSRLP				;LOOP FOR 27 LONGS
+												;thePort := NIL
+		MOVE.L	(SP)+,A4				;RESTORE REG
+*R Expanded UNLINK for the four-byte parameter.
+		UNLK	A6					;RELEASE LOCAL VARIABLES
+		MOVE.L	(SP)+, (SP)			;STRIP PARAMETERS
+		RTS							;RETURN
+
+
+CURDATA DC.W	$0000,$4000,$6000,$7000 		;ARROW.DATA
+		DC.W	$7800,$7C00,$7E00,$7F00
+		DC.W	$7F80,$7C00,$6C00,$4600
+		DC.W	$0600,$0300,$0300,$0000
+
+		DC.W	$C000,$E000,$F000,$F800 		;ARROW.MASK
+		DC.W	$FC00,$FE00,$FF00,$FF80
+		DC.W	$FFC0,$FFE0,$FE00,$EF00
+		DC.W	$CF00,$8780,$0780,$0380
+
+		DC.W	$0001,$0001 			;ARROW.HOTSPOT := (1,1)
+
+		DC.L	$77DD77DD,$77DD77DD 		;dkGray
+		DC.L	$88228822,$88228822 		;ltGray
+		DC.L	$AA55AA55,$AA55AA55 		;gray
+		DC.L	$FFFFFFFF,$FFFFFFFF 		;black
+		DC.L	$00000000,$00000000 		;white
+
+
+
+OpenPort PROC  EXPORT	
+;-------------------------------------------------------------
+;
+;  PROCEDURE OpenPort(port: GrafPtr);
+;  { allocate clipRgn and visRgn, then call InitPort.
+;
+		CLR.L	-(SP)					;MAKE ROOM FOR FUNCTION RESULT
+		JSR 	NewRgn	;ALLOCATE A NEW REGION
+		CLR.L	-(SP)					;MAKE ROOM FOR FUNCTION RESULT
+		JSR 	NewRgn	;ALLOCATE A SECOND NEW REGION
+		MOVE.L	12(SP),A0				;POINT TO PORT
+		MOVE.L	(SP)+,CLIPRGN(A0)			;INSTALL NEW REGION INTO CLIPRGN
+		MOVE.L	(SP)+,VISRGN(A0)			;AND OTHER INTO VISRGN
+												;FALL THRU TO InitPort
+
+
+		EXPORT	InitPort
+InitPort
+;-------------------------------------------------------------
+;
+;  PROCEDURE InitPort(port: GrafPtr);
+;
+;  { initialize all fields of an existing GrafPort }
+;
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	4(SP),A1				;GET PORT PARAM
+		MOVE.L	A1,THEPORT(A0)				;SetPort(port)
+		CLR.W	(A1)+					;DEVICE := 0
+		LEA 	SCREENBITS(A0),A0			;POINT TO SCREENBITS
+		MOVE.L	(A0)+,(A1)+ 			;portBits := screenBits
+		MOVE.W	(A0)+,(A1)+ 			;COPY ROWBYTES
+		MOVE.L	(A0),(A1)+				;COPY TOPLEFT
+		MOVE.L	4(A0),(A1)+ 			;COPY BOTRIGHT
+		MOVE.L	(A0),(A1)+				;portRect := screenBits.bounds
+		MOVE.L	4(A0),(A1)+ 			;all 8 bytes
+		MOVE.L	(A1)+,-(SP) 			;visRgn := screenBits.bounds
+		MOVE.L	A0,-(SP)
+		JSR 	RectRgn
+		MOVE.L	4(SP),A1				;GET PORT PARAM
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	WIDEOPEN(A0),-(SP)			;PUSH WIDE OPEN RGN
+		MOVE.L	CLIPRGN(A1),-(SP)			;PUSH CLIPRGN
+		JSR 	CopyRgn	;SET TO WIDE OPEN
+		MOVE.L	4(SP),A1				;GET PORT PARAM
+		LEA 	BKPAT(A1),A1
+		CLR.L	(A1)+					;bkPat := white
+		CLR.L	(A1)+
+		MOVEQ	#-1,D0
+		MOVE.L	D0,(A1)+				;fillPat := Black
+		MOVE.L	D0,(A1)+
+		CLR.L	(A1)+					;pnLoc := (0,0)
+		MOVE.L	#$00010001,(A1)+			;pnSize := (1,1)
+		MOVE	#8,(A1)+				;pnMode := patCopy
+		MOVE.L	D0,(A1)+				;pnPat := black
+		MOVE.L	D0,(A1)+
+		CLR.W	(A1)+					;pnVis := 0
+		CLR.L	(A1)+					;txFont, txFace := 0
+		MOVE	#1,(A1)+				;txMode := srcOr
+		CLR 	(A1)+					;txSize := 0
+		CLR.L	(A1)+					;spExtra := 0.0
+		MOVE.L	#blackColor,(A1)+			;fgColor := blackColor
+		MOVE.L	#whiteColor,(A1)+			;bkColor := whiteColor
+		CLR.L	(A1)+					;colrBit,patStretch := 0
+		CLR.L	(A1)+					;picSave := Nil
+		CLR.L	(A1)+					;rgnSave := Nil
+		CLR.L	(A1)+					;polySave := Nil
+		CLR.L	(A1)+					;grafProcs := Nil
+		MOVE.L	(SP)+,(SP)				;STRIP PARAM
+		RTS 					;AND RETURN
+
+
+
+ClosePort PROC	EXPORT	
+;-------------------------------------------------------------
+;
+;  PROCEDURE ClosePort(port: GrafPtr);
+;
+;  { just disposes of clipRgn and visRgn }
+;
+		MOVE.L	4(SP),A0				;GET PORT
+		MOVE.L	CLIPRGN(A0),A0				;GET CLIPRGN HANDLE
+		_DisposHandle					;DISCARD IT
+		MOVE.L	4(SP),A0				;GET PORT
+		MOVE.L	VISRGN(A0),A0				;GET VISRGN HANDLE
+		_DisposHandle					;DISCARD IT
+		MOVE.L	(SP)+,(SP)				;STRIP PARAM
+		RTS 					;AND RETURN
+
+
+SetStdProcs PROC  EXPORT	
+;-------------------------------------------------------------
+;
+;  PROCEDURE SetStdProcs(VAR procs: QDProcs);
+;
+		MOVE.L	(SP)+,A0				;pop return addr
+		MOVE.L	(SP)+,A1				;pop addr of proc record
+		MOVE.L	JStdText,(A1)+				;copy piece of trap table
+		MOVE.L	JStdLine,(A1)+				;copy piece of trap table
+		MOVE.L	JStdRect,(A1)+				;copy piece of trap table
+		MOVE.L	JStdRRect,(A1)+ 			;copy piece of trap table
+		MOVE.L	JStdOval,(A1)+				;copy piece of trap table
+		MOVE.L	JStdArc,(A1)+				;copy piece of trap table
+		MOVE.L	JStdPoly,(A1)+				;copy piece of trap table
+		MOVE.L	JStdRgn,(A1)+				;copy piece of trap table
+		MOVE.L	JStdBits,(A1)+				;copy piece of trap table
+		MOVE.L	JStdComment,(A1)+			;copy piece of trap table
+		MOVE.L	JStdTxMeas,(A1)+			;copy piece of trap table
+		MOVE.L	JStdGetPic,(A1)+			;copy piece of trap table
+		MOVE.L	JStdPutPic,(A1)+			;copy piece of trap table
+		JMP 	(A0)					;and return
+
+			ENDPROC
+			END

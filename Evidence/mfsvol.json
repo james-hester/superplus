@@ -1,0 +1,371 @@
+{
+  "module": "MFSVOL",
+  "source": "Reconstruction/Source/OS/HFS/MFSVOL.a",
+  "originals": [
+    {
+      "path": "OS/HFS/MFSVOL.a",
+      "sha256": "7069be21af49557a9278c13bdce2886fd4e90b96466545d1fbdc553fe0eb817c",
+      "line_ranges": [
+        [
+          1,
+          9
+        ],
+        [
+          14,
+          488
+        ]
+      ],
+      "role": "All routine bodies, applicable history, and original comments."
+    },
+    {
+      "path": "OS/HFS/TFSDIR1.a",
+      "sha256": "fdd30f7b28572edb95e325b7123984776228e65f4cf6d0759014d673e795586d",
+      "line_ranges": [
+        [
+          191,
+          211
+        ]
+      ],
+      "role": "Gt1stFCB starts the next source module and establishes the end boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          50,
+          50
+        ],
+        [
+          251,
+          251
+        ],
+        [
+          257,
+          258
+        ],
+        [
+          260,
+          260
+        ],
+        [
+          262,
+          263
+        ],
+        [
+          278,
+          278
+        ],
+        [
+          284,
+          286
+        ],
+        [
+          290,
+          292
+        ],
+        [
+          294,
+          294
+        ],
+        [
+          298,
+          298
+        ],
+        [
+          302,
+          302
+        ],
+        [
+          304,
+          304
+        ],
+        [
+          307,
+          307
+        ],
+        [
+          361,
+          361
+        ],
+        [
+          397,
+          398
+        ],
+        [
+          434,
+          434
+        ],
+        [
+          437,
+          438
+        ],
+        [
+          441,
+          441
+        ]
+      ],
+      "role": "Volume, file, master-directory, and low-memory definitions."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          68,
+          68
+        ],
+        [
+          100,
+          100
+        ],
+        [
+          309,
+          309
+        ],
+        [
+          520,
+          520
+        ]
+      ],
+      "role": "Allocation-map width, master-directory block number, and cache options."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          499,
+          499
+        ],
+        [
+          524,
+          524
+        ],
+        [
+          529,
+          529
+        ],
+        [
+          797,
+          798
+        ]
+      ],
+      "role": "Time, parameter-block fields, and queue fields."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          180,
+          180
+        ],
+        [
+          208,
+          208
+        ]
+      ],
+      "role": "Directory-full and bad-master-directory error values."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x403daa",
+      "end_exclusive": "0x403ff2",
+      "rom_offset": "0x3daa",
+      "length": 584,
+      "sha256": "07638c24efbf4ff99371ea088a8a7d50c8af7778a844eaf0cdd3cec2c292d364",
+      "start_label": "MV_GetMFSMap",
+      "end_label": "MFSVOLEnd",
+      "boundary_evidence": "MV_GetMFSMap starts the surviving MFSVOL source and follows SetupDef at ROM address 0x403daa. The final GMVIDone branch ends at 0x403ff2, where Gt1stFCB begins OS/HFS/TFSDIR1.a."
+    }
+  ],
+  "entry_points": {
+    "MV_GetMFSMap": "0x403daa",
+    "moveMapIn": "0x403dce",
+    "mpTblIn": "0x403dea",
+    "MFSMDBErr": "0x403dee",
+    "MFSMtErr": "0x403df0",
+    "MDspsMap": "0x403df6",
+    "CkMFSMap": "0x403e0a",
+    "CkMFSVol": "0x403e26",
+    "conChkLoop": "0x403e32",
+    "dScanDone": "0x403e72",
+    "CkFilLen": "0x403eaa",
+    "MFSFlush": "0x403f00",
+    "mvMpOut": "0x403f42",
+    "mpTblOut": "0x403f62",
+    "MFSFlCaches": "0x403f70",
+    "MFSFlDone": "0x403f76",
+    "MFSFlOK": "0x403f8e",
+    "MFSFlExit": "0x403f90",
+    "GetMFSVolInfo": "0x403f9a",
+    "RetMFSVolInfo": "0x403fc6",
+    "GMVIDone": "0x403fee",
+    "MFSVOLEnd": "0x403ff2"
+  },
+  "integration_manifest": {
+    "name": "mfsvol",
+    "source": "Reconstruction/Source/OS/HFS/MFSVOL.a",
+    "start": "0x403daa",
+    "end_exclusive": "0x403ff2",
+    "entry_points": {
+      "MV_GetMFSMap": "0x403daa",
+      "moveMapIn": "0x403dce",
+      "mpTblIn": "0x403dea",
+      "MFSMDBErr": "0x403dee",
+      "MFSMtErr": "0x403df0",
+      "MDspsMap": "0x403df6",
+      "CkMFSMap": "0x403e0a",
+      "CkMFSVol": "0x403e26",
+      "conChkLoop": "0x403e32",
+      "dScanDone": "0x403e72",
+      "CkFilLen": "0x403eaa",
+      "MFSFlush": "0x403f00",
+      "mvMpOut": "0x403f42",
+      "mpTblOut": "0x403f62",
+      "MFSFlCaches": "0x403f70",
+      "MFSFlDone": "0x403f76",
+      "MFSFlOK": "0x403f8e",
+      "MFSFlExit": "0x403f90",
+      "GetMFSVolInfo": "0x403f9a",
+      "RetMFSVolInfo": "0x403fc6",
+      "GMVIDone": "0x403fee",
+      "MFSVOLEnd": "0x403ff2"
+    }
+  },
+  "changes": [
+    {
+      "location": "Instruction bodies",
+      "change": "Retained the surviving instruction sequence without behavioral reversions.",
+      "evidence": "The mount, allocation-map checks, file-length checks, flush path, and volume-information path assemble to all 584 ROM bytes. The October 1985 cache and write-protection changes recorded in the source are present in this ROM."
+    },
+    {
+      "location": "Source definitions and trap variants",
+      "change": "Copied required equates from the surviving include files and supplied external addresses. Encoded the NewPtr system-heap option directly and made JSR addressing explicit.",
+      "evidence": "NewPtr emits 0xa51e at 0x403dc2. SetPtrSize and DisposPtr emit 0xa020 and 0xa01f. RelBlock and MarkA5Block use PC-relative JSR instructions. External short branches to Gt1stFCB and GtNxtFCB preserve their original sizes."
+    },
+    {
+      "location": "Source provenance and labels",
+      "change": "Preserved the original header, applicable history, and comments. Used source labels to resolve provisional exported names. Added only the reconstruction notes and end label.",
+      "evidence": "The exported symbols call CkMFSMap and GetMFSVolInfo provisional names with question marks. The surviving source supplies their names and complete bodies at 0x403e0a and 0x403f9a. All 22 recorded labels match the assembled positions."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "MtVolEr1",
+      "address": "0x403162"
+    },
+    {
+      "name": "MFSVolRead",
+      "address": "0x40512a"
+    },
+    {
+      "name": "GtNxBlk",
+      "address": "0x40566e"
+    },
+    {
+      "name": "MFSRd1stDB",
+      "address": "0x4050fc"
+    },
+    {
+      "name": "RelBlock",
+      "address": "0x407a0a"
+    },
+    {
+      "name": "GtNxEntry",
+      "address": "0x40438a"
+    },
+    {
+      "name": "MFSRdNxtDB",
+      "address": "0x40510c"
+    },
+    {
+      "name": "CVFlgs",
+      "address": "0x403a76"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    },
+    {
+      "name": "CheckRemount",
+      "address": "0x403008"
+    },
+    {
+      "name": "MarkA5Block",
+      "address": "0x407a02"
+    },
+    {
+      "name": "MFSMapRead",
+      "address": "0x405130"
+    },
+    {
+      "name": "FlushBuffers",
+      "address": "0x40344e"
+    },
+    {
+      "name": "DsposVCB",
+      "address": "0x40336e"
+    },
+    {
+      "name": "FSQueue",
+      "address": "0x4028aa"
+    },
+    {
+      "name": "DtrmV3",
+      "address": "0x403642"
+    },
+    {
+      "name": "DtrmV1",
+      "address": "0x403650"
+    },
+    {
+      "name": "NSVErrXit",
+      "address": "0x403aaa"
+    },
+    {
+      "name": "Gt1stFCB",
+      "address": "0x403ff2"
+    },
+    {
+      "name": "GtNxtFCB",
+      "address": "0x403ffa"
+    },
+    {
+      "name": "XferVName",
+      "address": "0x403aae"
+    },
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x403daa, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "9e42488851d79558a4a711a62dc0a270b2a998828b7731841152ecd58e69cf14",
+    "assembled_length": 584,
+    "matched_bytes": 584,
+    "entry_points_checked": 22,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute mounts, map repairs, disk writes, memory allocation, or asynchronous operations.",
+      "External routine and trap targets are outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. The surviving MFSVOL instruction sequence matches this target without changes to its behavior."
+    ]
+  }
+}

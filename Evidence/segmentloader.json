@@ -1,0 +1,87 @@
+{
+  "module": "SegmentLoader",
+  "source": "Reconstruction/Source/Toolbox/SegmentLoader.a",
+  "originals": [
+    {
+      "path": "Toolbox/SegmentLoader/SegmentLoader.a",
+      "sha256": "66fe3803a5388e873bb9dd850522470e535426a3434f4ce86f39be9033b9c873"
+    },
+    {
+      "path": "Interfaces/AIncludes/Devices.a",
+      "sha256": "6f7e2ae2535e9dd5f737b4423a9d7d8231d1abbfb2eed441b3ec9a4ea03eea8b"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89"
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564"
+    },
+    {
+      "path": "Internal/Asm/HardwarePrivateEqu.a",
+      "sha256": "71312a5e2578d72aa979d38ff83e3c0f8b1ec49b5b048a248252ca7dbbc60a59"
+    }
+  ],
+  "integration_manifest": {
+    "name": "segmentloader",
+    "source": "Reconstruction/Source/Toolbox/SegmentLoader.a",
+    "start": "0x40f456",
+    "end_exclusive": "0x40f790",
+    "entry_points": {
+      "LoadSeg": "0x40f456",
+      "UnloadSeg": "0x40f4e0",
+      "LoadCode": "0x40f4ca",
+      "FlushApplVbls": "0x40f522",
+      "Chain": "0x40f556",
+      "Launch": "0x40f55c",
+      "vSegStack": "0x40f67a",
+      "ExitToShell": "0x40f6d8",
+      "GetAppParms": "0x40f710",
+      "InstallRDrivers": "0x40f72c"
+    }
+  },
+  "span": {
+    "start": "0x40f456",
+    "end_exclusive": "0x40f790",
+    "length": 826,
+    "sha256": "237485d2bad2ec30715d47cba4d876a2c54d4dbe18d046f2c7acc3fb48192b60",
+    "boundary_evidence": "LoadSeg begins at 0x40f456 after the Font Manager. InstallRDrivers ends at 0x40f790, where ReadParam begins."
+  },
+  "changes": [
+    "Retained the segment loader, Launch and Chain, ExitToShell, application-parameter retrieval, and driver initialization. Preserved the original author, copyright, applicable routine comments, and history through November 1985.",
+    "Restored direct lock-bit tests and changes through the handle. LoadSeg clears the master pointer's high byte on the stack before using it. Removed the later HGetState, HLock, HUnlock, and StripAddress traps.",
+    "Removed cache-flush additions and the later scod resource path. LoadCode loads CODE resources and sets ResLoad immediately before GetResource, as the ROM does.",
+    "Restored FlushApplVbls to mask addresses with Lo3Bytes and compare them with ApplZone and ROMBase. Removed the later AppZoneAddr helper.",
+    "Restored hook clearing, VBL removal, CurApRefNum clearing, and RDrvrInstall at their original positions in Launch. The surviving source preserves these instructions as comments beside the change that moved them into InitApplZone.",
+    "Restored the LC extension test at OpenApp, the original stack setup without longword alignment, and direct register initialization before the application call. Removed later FPU and palette support and the launch-init vector.",
+    "Restored DiagROM, 0x00f80000, as the initial address-register and zero-address value. ExitToShell branches directly to Launch rather than using its trap.",
+    "Restored the 40-byte driver control entry from the original structure ending at dCtlMenu+2. SysEqu.a explicitly notes that the earlier entry was 40 bytes.",
+    "Preserved InstallRDrivers' older storage check: it reads DCtlStorage after clearing the driver entry, rather than testing the saved D1 value. The later source describes the resulting invalid-handle bug and dates its correction to January 1986. That correction is absent from this ROM span.",
+    "Selected the ROM branch widths and copied required interface equates and trap definitions. Added marked reconstruction notes, corrected the FlushApplVbls caller comment, and removed comments describing reverted changes."
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "source_sha256": "473d3c355faad7227d7c8de9c0c65c91469d22bec09db3ddc321798e98643cc3",
+    "checked_bytes": 826,
+    "entry_points_checked": 10,
+    "command": "python3 Reconstruction/Tools/verify.py",
+    "limitations": [
+      "The complete span and ten entry points match. The original Mac Plus source file and historical MPW build remain unavailable.",
+      "The source-history date for the driver-storage correction does not establish whether that change entered this ROM build. The instruction bytes establish that the older check remains here.",
+      "Most original instruction comments remain verbatim. Comments for restored instructions and their historical placement are partly inferred."
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+*R Mac Plus declarations selected from the surviving includes.
+*R See Evidence/shared-includes.json for source lines and retained local definitions.
+;
+*R Source: Interfaces/AIncludes/Quickdraw.a
+;
+; File: Quickdraw.a
+;
+; Assembler Interface to the Macintosh Libraries
+; Copyright Apple Computer, Inc. 1984-1992
+; All Rights Reserved
+;
+
+ulineBit  		EQU 		2

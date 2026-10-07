@@ -1,0 +1,116 @@
+{
+  "module": "TFSRFN3",
+  "source": "Reconstruction/Source/OS/HFS/TFSRFN3.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSRFN3.a",
+      "sha256": "4c37ad70b5390a66047364bf7670ad484426ce4a4d9956b266eb2fff4add97c1",
+      "line_ranges": [
+        [
+          1,
+          95
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/MFSRFN3.a",
+      "sha256": "5f053f555ed857bb3a7bd4d4059ec2f71931e7d6b14254ea47a0802b0740f43c",
+      "line_ranges": [
+        [
+          49,
+          66
+        ]
+      ],
+      "role": "Lg2Phys establishes the next module boundary."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x4055be",
+      "end_exclusive": "0x4055e0",
+      "rom_offset": "0x55be",
+      "length": 34,
+      "sha256": "b29ec40c8a05152fc985f20fde13e2478fbd3ce5398f3a74a56581751d07fb5f",
+      "start_label": "Alloc",
+      "end_label": "TFSRFN3End",
+      "boundary_evidence": "Alloc follows the MFSRFN2 branch at 0x4055be. The final return ends at 0x4055e0, where Lg2Phys begins MFSRFN3."
+    }
+  ],
+  "entry_points": {
+    "Alloc": "0x4055be",
+    "AllocContig": "0x4055ce",
+    "AllocCall": "0x4055d4",
+    "TFSRFN3End": "0x4055e0"
+  },
+  "integration_manifest": {
+    "name": "tfsrfn3",
+    "source": "Reconstruction/Source/OS/HFS/TFSRFN3.a",
+    "start": "0x4055be",
+    "end_exclusive": "0x4055e0",
+    "entry_points": {
+      "Alloc": "0x4055be",
+      "AllocContig": "0x4055ce",
+      "AllocCall": "0x4055d4",
+      "TFSRFN3End": "0x4055e0"
+    }
+  },
+  "changes": [
+    {
+      "location": "Allocation entries and option register",
+      "change": "Restored separate Alloc and AllocContig entry points.",
+      "evidence": "Alloc tests TFSVolTst, saves its return address and D3, then clears D3 at 0x4055ca. AllocContig begins at 0x4055ce, saves the same state, and sets the D3 low byte at 0x4055d2. Both join the ExtendFile call at 0x4055d4. The January 1986 source replaced this interface with AllocTFS and a D0 option."
+    },
+    {
+      "location": "Source provenance and addressing",
+      "change": "Preserved the original header, applicable history, and comments. Marked the restored entry sequence and supplied external routine addresses.",
+      "evidence": "The shared return sequence survives unchanged. ExtendFile uses an explicit PC-relative JSR. All 34 bytes and four recorded labels match."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "TFSVolTst",
+      "address": "0x404ec2"
+    },
+    {
+      "name": "MFSAlloc",
+      "address": "0x40569a"
+    },
+    {
+      "name": "ExtendFile",
+      "address": "0x405b7c"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x4055be, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "6a58f289202e8cbb58a4341197e936f8df1483006f5a882ad81bc9fca61daa1f",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/TFSRFN3.a",
+        "sha256": "6a58f289202e8cbb58a4341197e936f8df1483006f5a882ad81bc9fca61daa1f"
+      }
+    ],
+    "assembled_length": 34,
+    "matched_bytes": 34,
+    "entry_points_checked": 4,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

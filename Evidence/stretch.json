@@ -1,0 +1,671 @@
+{
+  "module": "QuickDraw/Stretch.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Stretch.a",
+  "source_sha256": "e33493085380fea0f85ee223b097e573e751948e8f8529a1742b47c840ad7232",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/Stretch.m.a",
+    "sha256": "9d21de02c5be24893afc092be56e19c7887e9aa39fb475a27f008e682c7ec82c",
+    "instruction_lines": [
+      38,
+      1197
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        161,
+        184
+      ],
+      [
+        210,
+        212
+      ],
+      [
+        281,
+        290
+      ]
+    ],
+    "macro_reference_lines": [
+      443,
+      488
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x40d062",
+      "end_address_exclusive": "0x40d8d0",
+      "rom_offset": "0xd062",
+      "length": 2158,
+      "sha256": "e2824754f3c5fb0547d32408324f8811345920f8960556277894a81af9021e3d",
+      "first_symbol": "StretchBits",
+      "last_symbol": "TABLE8"
+    }
+  ],
+  "symbols": {
+    "StretchBits": "0x40d062",
+    "INITONE": "0x40d1f6",
+    "SEEKMASK": "0x40d3c2",
+    "RECTJMP": "0x40d3d2",
+    "MODETAB": "0x40d52a",
+    "SetupStretch": "0x40d52e",
+    "TABLE15": "0x40d69e",
+    "TABLE2": "0x40d6c6",
+    "TABLE3A": "0x40d6fa",
+    "TABLE3B": "0x40d702",
+    "TABLE3C": "0x40d712",
+    "TABLE4": "0x40d738",
+    "TABLE6A": "0x40d784",
+    "TABLE6B": "0x40d794",
+    "TABLE6C": "0x40d7b4",
+    "TABLE8": "0x40d7e2"
+  },
+  "manifest_entry": {
+    "name": "stretch",
+    "source": "Reconstruction/Source/QuickDraw/Stretch.a",
+    "start": "0x40d062",
+    "end_exclusive": "0x40d8d0",
+    "entry_points": {
+      "StretchBits": "0x40d062",
+      "INITONE": "0x40d1f6",
+      "SEEKMASK": "0x40d3c2",
+      "RECTJMP": "0x40d3d2",
+      "MODETAB": "0x40d52a",
+      "SetupStretch": "0x40d52e",
+      "TABLE15": "0x40d69e",
+      "TABLE2": "0x40d6c6",
+      "TABLE3A": "0x40d6fa",
+      "TABLE3B": "0x40d702",
+      "TABLE3C": "0x40d712",
+      "TABLE4": "0x40d738",
+      "TABLE6A": "0x40d784",
+      "TABLE6B": "0x40d794",
+      "TABLE6C": "0x40d7b4",
+      "TABLE8": "0x40d7e2"
+    }
+  },
+  "external_routines": {
+    "RgnBlt": "0x40a732",
+    "RSect": "0x40a110",
+    "ShieldCursor": "0x4082fe",
+    "ShowCursor": "0x4082f8",
+    "InitRgn": "0x40c2c6",
+    "SeekRgn": "0x40c2fe",
+    "ColorMap": "0x408560",
+    "XorSlab": "0x408642"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete Stretch.m.a routine set in its original order, including applicable comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call sites and supplied a macro that emits the return sequences in the ROM. It executes UNLK A6, pops the return address into A0, removes the parameters, and jumps through A0. The later GrafTypes macro uses RTD_ for these parameter sizes."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ. Made short branches explicit where the ROM uses them."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved applicable original headers, routine comments, and data definitions. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "restoration",
+      "upstream_line": 484,
+      "description": "Removed the MOVEQ #0,D0 added in November 1990 before the ratio routine call. The ROM contains no corresponding clear."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC indexing explicit for RECTJMP and all bitmap expansion tables."
+    },
+    {
+      "kind": "data",
+      "description": "Preserved all 244 bytes of region dispatch, transfer-mode dispatch, and bitmap expansion tables as their original DC.B, DC.W, and DC.L definitions."
+    },
+    {
+      "kind": "traps",
+      "description": "Defined the existing _MFixRatio calls as the ROM trap word $A869."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "upstream_line": 151,
+      "original": "JSR \tRGNBLT",
+      "restored": "JSR\tRGNBLT(PC)"
+    },
+    {
+      "upstream_line": 157,
+      "original": "JSR \tSetupStretch",
+      "restored": "JSR\tSetupStretch(PC)"
+    },
+    {
+      "upstream_line": 168,
+      "original": "JSR \tCOLORMAP",
+      "restored": "JSR\tCOLORMAP(PC)"
+    },
+    {
+      "upstream_line": 196,
+      "original": "JSR \tRSECT",
+      "restored": "JSR\tRSECT(PC)"
+    },
+    {
+      "upstream_line": 206,
+      "original": "JSR \tSHIELDCURSOR",
+      "restored": "JSR\tSHIELDCURSOR(PC)"
+    },
+    {
+      "upstream_line": 214,
+      "original": "SUB \t#1,D0",
+      "restored": "SUBQ\t#1,D0"
+    },
+    {
+      "upstream_line": 229,
+      "original": "SUB \t#1,D0",
+      "restored": "SUBQ\t#1,D0"
+    },
+    {
+      "upstream_line": 289,
+      "original": "ADD \t#2,D5",
+      "restored": "ADDQ\t#2,D5"
+    },
+    {
+      "upstream_line": 297,
+      "original": "ADD \t#4,D5",
+      "restored": "ADDQ\t#4,D5"
+    },
+    {
+      "upstream_line": 305,
+      "original": "ADD \t#8,D5",
+      "restored": "ADDQ\t#8,D5"
+    },
+    {
+      "upstream_line": 307,
+      "original": "PEA \tCRECT",
+      "restored": "PEA\tCRECT(PC)"
+    },
+    {
+      "upstream_line": 311,
+      "original": "JMP \tINITRGN",
+      "restored": "JMP\tINITRGN(PC)"
+    },
+    {
+      "upstream_line": 326,
+      "original": "JSR \tXorSlab",
+      "restored": "JSR\tXorSlab(PC)"
+    },
+    {
+      "upstream_line": 348,
+      "original": "LEA \tMODETAB,A0",
+      "restored": "LEA\tMODETAB(PC),A0"
+    },
+    {
+      "upstream_line": 367,
+      "original": "ADD.L\t#2,D1",
+      "restored": "ADDQ.L\t#2,D1"
+    },
+    {
+      "upstream_line": 507,
+      "original": "NODRAW\tADD \t#1,VERT(A6)",
+      "restored": "NODRAW\tADDQ\t#1,VERT(A6)"
+    },
+    {
+      "upstream_line": 513,
+      "original": "BGE \tNXTMASK",
+      "restored": "BGE.S\tNXTMASK"
+    },
+    {
+      "upstream_line": 521,
+      "original": "DONE\tJSR \tSHOWCURSOR",
+      "restored": "DONE\tJSR\tSHOWCURSOR(PC)"
+    },
+    {
+      "upstream_line": 534,
+      "original": "MOVE\tRECTJMP(D1),D1",
+      "restored": "MOVE\tRECTJMP(PC,D1),D1"
+    },
+    {
+      "upstream_line": 535,
+      "original": "JMP\tRECTJMP(D1)",
+      "restored": "JMP\tRECTJMP(PC,D1)"
+    },
+    {
+      "upstream_line": 569,
+      "original": "JMP \tSEEKRGN",
+      "restored": "JMP\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 578,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 581,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 595,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 598,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 612,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 615,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 635,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 638,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 641,
+      "original": "JSR \tSEEKRGN",
+      "restored": "JSR\tSEEKRGN(PC)"
+    },
+    {
+      "upstream_line": 773,
+      "original": "LEA\t  DONE,A0",
+      "restored": "LEA\tDONE(PC),A0"
+    },
+    {
+      "upstream_line": 778,
+      "original": "LEA\t  ONE,A0",
+      "restored": "LEA\tONE(PC),A0"
+    },
+    {
+      "upstream_line": 792,
+      "original": "LEA\t  DOUBLE,A0",
+      "restored": "LEA\tDOUBLE(PC),A0"
+    },
+    {
+      "upstream_line": 795,
+      "original": "LEA\t  QUAD,A0",
+      "restored": "LEA\tQUAD(PC),A0"
+    },
+    {
+      "upstream_line": 798,
+      "original": "LEA\t  EIGHT,A0",
+      "restored": "LEA\tEIGHT(PC),A0"
+    },
+    {
+      "upstream_line": 801,
+      "original": "LEA\t  SIXTEEN,A0",
+      "restored": "LEA\tSIXTEEN(PC),A0"
+    },
+    {
+      "upstream_line": 804,
+      "original": "LEA\t  ONE_5,A0",
+      "restored": "LEA\tONE_5(PC),A0"
+    },
+    {
+      "upstream_line": 807,
+      "original": "LEA\t  TRIPLE,A0",
+      "restored": "LEA\tTRIPLE(PC),A0"
+    },
+    {
+      "upstream_line": 810,
+      "original": "LEA\t  SIX,A0",
+      "restored": "LEA\tSIX(PC),A0"
+    },
+    {
+      "upstream_line": 822,
+      "original": "LEA\t  EIGHTS,A0",
+      "restored": "LEA\tEIGHTS(PC),A0"
+    },
+    {
+      "upstream_line": 824,
+      "original": "NOMATCH  LEA\t  STRETCH,A0",
+      "restored": "NOMATCH\tLEA\tSTRETCH(PC),A0"
+    },
+    {
+      "upstream_line": 836,
+      "original": "LEA\t  HALF,A0",
+      "restored": "LEA\tHALF(PC),A0"
+    },
+    {
+      "upstream_line": 839,
+      "original": "LEA\t  QRTR,A0",
+      "restored": "LEA\tQRTR(PC),A0"
+    },
+    {
+      "upstream_line": 842,
+      "original": "LEA\t  THREE4,A0",
+      "restored": "LEA\tTHREE4(PC),A0"
+    },
+    {
+      "upstream_line": 845,
+      "original": "LEA\t  SHRINK,A0",
+      "restored": "LEA\tSHRINK(PC),A0"
+    },
+    {
+      "upstream_line": 846,
+      "original": "BRA\t  FOUND",
+      "restored": "BRA.S\tFOUND"
+    },
+    {
+      "upstream_line": 857,
+      "original": "BLO \tONE",
+      "restored": "BLO.S\tONE"
+    },
+    {
+      "upstream_line": 882,
+      "original": "BLO \tTHREE4A",
+      "restored": "BLO.S\tTHREE4A"
+    },
+    {
+      "upstream_line": 883,
+      "original": "ADD \t#4,SP",
+      "restored": "ADDQ\t#4,SP"
+    },
+    {
+      "upstream_line": 904,
+      "original": "BLO \tHALF1",
+      "restored": "BLO.S\tHALF1"
+    },
+    {
+      "upstream_line": 921,
+      "original": "BLO \tQRTR1",
+      "restored": "BLO.S\tQRTR1"
+    },
+    {
+      "upstream_line": 932,
+      "original": "MOVE.B\tTABLE15(D1),D2",
+      "restored": "MOVE.B\tTABLE15(PC,D1),D2"
+    },
+    {
+      "upstream_line": 935,
+      "original": "MOVE.B\tTABLE15(D0),D2",
+      "restored": "MOVE.B\tTABLE15(PC,D0),D2"
+    },
+    {
+      "upstream_line": 940,
+      "original": "MOVE.B\tTABLE15(D1),D2",
+      "restored": "MOVE.B\tTABLE15(PC,D1),D2"
+    },
+    {
+      "upstream_line": 943,
+      "original": "MOVE.B\tTABLE15(D0),D2",
+      "restored": "MOVE.B\tTABLE15(PC,D0),D2"
+    },
+    {
+      "upstream_line": 953,
+      "original": "BLO \tONE_5",
+      "restored": "BLO.S\tONE_5"
+    },
+    {
+      "upstream_line": 969,
+      "original": "MOVE.B\tTABLE2(D1),(A1)+",
+      "restored": "MOVE.B\tTABLE2(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 971,
+      "original": "MOVE.B\tTABLE2(D0),(A1)+",
+      "restored": "MOVE.B\tTABLE2(PC,D0),(A1)+"
+    },
+    {
+      "upstream_line": 973,
+      "original": "BLO \tDOUBLE",
+      "restored": "BLO.S\tDOUBLE"
+    },
+    {
+      "upstream_line": 990,
+      "original": "MOVE.B\tTABLE3A(D2),(A1)+",
+      "restored": "MOVE.B\tTABLE3A(PC,D2),(A1)+"
+    },
+    {
+      "upstream_line": 993,
+      "original": "MOVE.B\tTABLE3B(D1),(A1)+",
+      "restored": "MOVE.B\tTABLE3B(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 995,
+      "original": "MOVE.B\tTABLE3C(D0),(A1)+",
+      "restored": "MOVE.B\tTABLE3C(PC,D0),(A1)+"
+    },
+    {
+      "upstream_line": 997,
+      "original": "BLO \tTRIPLE",
+      "restored": "BLO.S\tTRIPLE"
+    },
+    {
+      "upstream_line": 1019,
+      "original": "MOVE.W\tTABLE4(D1),(A1)+",
+      "restored": "MOVE.W\tTABLE4(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 1022,
+      "original": "MOVE.W\tTABLE4(D0),(A1)+",
+      "restored": "MOVE.W\tTABLE4(PC,D0),(A1)+"
+    },
+    {
+      "upstream_line": 1024,
+      "original": "BLO \tQUAD",
+      "restored": "BLO.S\tQUAD"
+    },
+    {
+      "upstream_line": 1040,
+      "original": "MOVE.W\tTABLE6A(D1),(A1)+",
+      "restored": "MOVE.W\tTABLE6A(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 1044,
+      "original": "MOVE.W\tTABLE6B(D1),(A1)+",
+      "restored": "MOVE.W\tTABLE6B(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 1048,
+      "original": "MOVE.W\tTABLE6C(D1),(A1)+",
+      "restored": "MOVE.W\tTABLE6C(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 1050,
+      "original": "BLO \tSIX",
+      "restored": "BLO.S\tSIX"
+    },
+    {
+      "upstream_line": 1072,
+      "original": "MOVE.L\tTABLE8(D1),(A1)+",
+      "restored": "MOVE.L\tTABLE8(PC,D1),(A1)+"
+    },
+    {
+      "upstream_line": 1075,
+      "original": "MOVE.L\tTABLE8(D0),(A1)+",
+      "restored": "MOVE.L\tTABLE8(PC,D0),(A1)+"
+    },
+    {
+      "upstream_line": 1077,
+      "original": "BLO \tEIGHT",
+      "restored": "BLO.S\tEIGHT"
+    },
+    {
+      "upstream_line": 1100,
+      "original": "BLO \tSIXTENA",
+      "restored": "BLO.S\tSIXTENA"
+    },
+    {
+      "upstream_line": 1104,
+      "original": "BLO \tSIXTENA",
+      "restored": "BLO.S\tSIXTENA"
+    },
+    {
+      "upstream_line": 1113,
+      "original": "SUB \t#1,D4",
+      "restored": "SUBQ\t#1,D4"
+    },
+    {
+      "upstream_line": 1124,
+      "original": "BLS \tEIGHTS1",
+      "restored": "BLS.S\tEIGHTS1"
+    },
+    {
+      "upstream_line": 1148,
+      "original": "BCC \tNXTSRC1",
+      "restored": "BCC.S\tNXTSRC1"
+    },
+    {
+      "upstream_line": 1150,
+      "original": "BCC \tNXTSRC1",
+      "restored": "BCC.S\tNXTSRC1"
+    },
+    {
+      "upstream_line": 1154,
+      "original": "BLO \tNXTSRC1",
+      "restored": "BLO.S\tNXTSRC1"
+    },
+    {
+      "upstream_line": 1178,
+      "original": "BCS \tNXTSRC2",
+      "restored": "BCS.S\tNXTSRC2"
+    },
+    {
+      "upstream_line": 1181,
+      "original": "BCC \tBLACKOK",
+      "restored": "BCC.S\tBLACKOK"
+    },
+    {
+      "upstream_line": 1185,
+      "original": "BLO \tBLACKOK",
+      "restored": "BLO.S\tBLACKOK"
+    },
+    {
+      "upstream_line": 1189,
+      "original": "BCS \tNXTSRC2",
+      "restored": "BCS.S\tNXTSRC2"
+    },
+    {
+      "upstream_line": 1191,
+      "original": "BCC \tWHITEOK",
+      "restored": "BCC.S\tWHITEOK"
+    },
+    {
+      "upstream_line": 1195,
+      "original": "BLO \tWHITEOK",
+      "restored": "BLO.S\tWHITEOK"
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 2158,
+    "checked_entry_points": 16,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-stretch-verify",
+    "temporary_verifier": "/tmp/verify-bitmaps.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "e33493085380fea0f85ee223b097e573e751948e8f8529a1742b47c840ad7232",
+    "assembled_sha256": "e2824754f3c5fb0547d32408324f8811345920f8960556277894a81af9021e3d",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "original_data_spans": [
+    {
+      "label": "RECTJMP",
+      "start": "0x40d3d2",
+      "end_exclusive": "0x40d3e2",
+      "length": 16
+    },
+    {
+      "label": "MODETAB",
+      "start": "0x40d52a",
+      "end_exclusive": "0x40d52e",
+      "length": 4
+    },
+    {
+      "label": "TABLE15",
+      "start": "0x40d69e",
+      "end_exclusive": "0x40d6ae",
+      "length": 16
+    },
+    {
+      "label": "TABLE2",
+      "start": "0x40d6c6",
+      "end_exclusive": "0x40d6d6",
+      "length": 16
+    },
+    {
+      "label": "TABLE3A",
+      "start": "0x40d6fa",
+      "end_exclusive": "0x40d702",
+      "length": 8
+    },
+    {
+      "label": "TABLE3B",
+      "start": "0x40d702",
+      "end_exclusive": "0x40d712",
+      "length": 16
+    },
+    {
+      "label": "TABLE3C",
+      "start": "0x40d712",
+      "end_exclusive": "0x40d71a",
+      "length": 8
+    },
+    {
+      "label": "TABLE4",
+      "start": "0x40d738",
+      "end_exclusive": "0x40d758",
+      "length": 32
+    },
+    {
+      "label": "TABLE6A",
+      "start": "0x40d784",
+      "end_exclusive": "0x40d794",
+      "length": 16
+    },
+    {
+      "label": "TABLE6B",
+      "start": "0x40d794",
+      "end_exclusive": "0x40d7b4",
+      "length": 32
+    },
+    {
+      "label": "TABLE6C",
+      "start": "0x40d7b4",
+      "end_exclusive": "0x40d7c4",
+      "length": 16
+    },
+    {
+      "label": "TABLE8",
+      "start": "0x40d7e2",
+      "end_exclusive": "0x40d822",
+      "length": 64
+    }
+  ]
+}

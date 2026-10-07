@@ -1,0 +1,1496 @@
+{
+  "module": "Resources/SANE/Elems68K.a",
+  "source_path": "Reconstruction/Source/Resources/SANE/Elems68K.a",
+  "source_sha256": "3ed98a06fcaf1e11789dc9c4f5ca851cabadee5c7a2947e80caddc7f8a2d688f",
+  "upstream_sources": [
+    {
+      "path": "Toolbox/SANE/Elems68K.a",
+      "sha256": "574befd5ef3efb3428571689875830e77cb8f41edecf41a26c8b4f9db1d2fbac"
+    },
+    {
+      "path": "Toolbox/SANE/Elems68K1.a",
+      "sha256": "8acd47363c5f78e28a74bbc73f99199ea69bd82f9345721f672f0670aea5c321"
+    },
+    {
+      "path": "Toolbox/SANE/Elems68K2.a",
+      "sha256": "3e6784f0b38d369922568d6f8d452e6de5d4beacdf7a749a318565d8bfb9a34a"
+    },
+    {
+      "path": "Toolbox/SANE/Elems68K3.a",
+      "sha256": "67d750b59ad13c8dc41d56e3a4a8abdf759d904916b354bf637402972c4e177f"
+    },
+    {
+      "path": "Toolbox/SANE/Elems68KC.a",
+      "sha256": "cba615d9c31dec5e36a16d1bbf3f672f27c33e7922c307143871ad7fa79ae01e"
+    }
+  ],
+  "upstream_references": [
+    {
+      "path": "Interfaces/AIncludes/SANEMacs.a",
+      "sha256": "62d7338f06707342ab2b3387b322fe35274ca493db3a9c24eaad813d0b2ef06f"
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60"
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba"
+    },
+    {
+      "path": "Interfaces/AIncludes/Traps.a",
+      "sha256": "8ca1c092cbb1a52b6bf599aea3c71faecb57761d32db14e6f92a10ab92d348f0"
+    },
+    {
+      "path": "Toolbox/SANE/SANE.make",
+      "sha256": "dd4919e86bac93fcb08518e6f66fda592d7bb7c23b3d9f833693cad1e8c1da2d"
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start_address": "0x41cf26",
+      "end_address_exclusive": "0x41df8c",
+      "rom_offset": "0x1cf26",
+      "length": 4198,
+      "sha256": "18b7f7119da58e35b753e79316d7671ffdab2d46ce95365bf7aaa66751fc3719",
+      "first_symbol": "PACK5ResourceBlock",
+      "last_symbol": "ATANP"
+    }
+  ],
+  "resource": {
+    "type": "PACK",
+    "id": 5,
+    "name": null,
+    "attributes": "0x58",
+    "offset": "0x1cf2e",
+    "size": 4190,
+    "end": "0x1df8c",
+    "block_offset": "0x1cf26",
+    "block_size": 4198,
+    "block_flags": "0xc0",
+    "master_pointer_offset": 120
+  },
+  "boundary_evidence": {
+    "description": "The resource map identifies PACK 5 at offset $1CF2E with 4190 body bytes. Its eight-byte block starts at $1CF26 and declares 4198 bytes, ending at $1DF8C. The surviving driver includes Elems68K1, Elems68K2, Elems68K3 and Elems68KC in exactly that order. Their complete contents match the ROM after restoring package locking and instruction encodings. The final ATANP coefficients end at the resource boundary.",
+    "resource_reference": "Reconstruction/Evidence/rom-resources.json",
+    "symbol_reference": "Reconstruction/Evidence/ghidra-symbols.tsv",
+    "instruction_reference": "Reconstruction/Evidence/ghidra-instructions.tsv"
+  },
+  "source_spans": [
+    {
+      "source": "Reconstruction/Source/Resources/SANE/Elems68K1.a",
+      "upstream_source": "Toolbox/SANE/Elems68K1.a",
+      "start_address": "0x41cf2e",
+      "end_address_exclusive": "0x41d30c",
+      "length": 990,
+      "description": "Package header, dispatch, classification, exception helpers, logarithms and shared result delivery."
+    },
+    {
+      "source": "Reconstruction/Source/Resources/SANE/Elems68K2.a",
+      "upstream_source": "Toolbox/SANE/Elems68K2.a",
+      "start_address": "0x41d30c",
+      "end_address_exclusive": "0x41d8ce",
+      "length": 1474,
+      "description": "Exponentials, integer and general powers, compound interest and annuity."
+    },
+    {
+      "source": "Reconstruction/Source/Resources/SANE/Elems68K3.a",
+      "upstream_source": "Toolbox/SANE/Elems68K3.a",
+      "start_address": "0x41d8ce",
+      "end_address_exclusive": "0x41dc90",
+      "length": 962,
+      "description": "Sine, cosine, tangent, arctangent, argument reduction and random-number generation."
+    },
+    {
+      "source": "Reconstruction/Source/Resources/SANE/Elems68KC.a",
+      "upstream_source": "Toolbox/SANE/Elems68KC.a",
+      "start_address": "0x41dc90",
+      "end_address_exclusive": "0x41df8c",
+      "length": 764,
+      "description": "Original polynomial degrees, approximation coefficients and extended-format constants."
+    }
+  ],
+  "code_spans": [
+    {
+      "start_address": "0x41cf2e",
+      "end_address_exclusive": "0x41cf30",
+      "length": 2
+    },
+    {
+      "start_address": "0x41cf3a",
+      "end_address_exclusive": "0x41cff4",
+      "length": 186
+    },
+    {
+      "start_address": "0x41d016",
+      "end_address_exclusive": "0x41dc90",
+      "length": 3194
+    }
+  ],
+  "data_spans": [
+    {
+      "start_address": "0x41cf26",
+      "end_address_exclusive": "0x41cf2e",
+      "length": 8,
+      "description": "The resource block header combines flag byte $C0 with the derived block length, then stores relative master-pointer offset $78. The resource map separately records attributes $58."
+    },
+    {
+      "start_address": "0x41cf30",
+      "end_address_exclusive": "0x41cf3a",
+      "length": 10,
+      "description": "The package header contains flags zero, type PACK, ID five and version one. The entry branch skips this header."
+    },
+    {
+      "start_address": "0x41cff4",
+      "end_address_exclusive": "0x41d016",
+      "length": 34,
+      "description": "The original ELEMSTAB contains 17 signed offsets relative to LIFTOFF. It dispatches the logarithm, exponential, power, financial, trigonometric and random-number operations."
+    },
+    {
+      "start_address": "0x41dc90",
+      "end_address_exclusive": "0x41df8c",
+      "length": 764,
+      "description": "All 764 bytes of approximation tables and floating constants come from the unchanged data statements in Elems68KC.a."
+    }
+  ],
+  "symbols": {
+    "PACK5ResourceBlock": "0x41cf26",
+    "ELEMS68K": "0x41cf2e",
+    "START": "0x41cf3a",
+    "CLASSCOM": "0x41cf76",
+    "CLASSSKIP": "0x41cf7c",
+    "HAVESRC2": "0x41cf7e",
+    "CLASSIFY": "0x41cf8a",
+    "classify__local_1": "0x41cfa2",
+    "DSTONLY": "0x41cfa4",
+    "CLASSDSTORSRC2": "0x41cfb0",
+    "NOT2NANS": "0x41cfd4",
+    "NANEXIT": "0x41cfe2",
+    "LIFTOFF": "0x41cfe6",
+    "NONANS": "0x41cfe6",
+    "ELEMSTAB": "0x41cff4",
+    "A0TOA1": "0x41d016",
+    "POLYEVAL": "0x41d020",
+    "POLYLOOP": "0x41d02c",
+    "CLEARUFLOW": "0x41d04c",
+    "CLEAROFLOW": "0x41d050",
+    "CLEARINVALID": "0x41d054",
+    "CLEARINEXACT": "0x41d058",
+    "CLEARX": "0x41d05a",
+    "CLEAREXIT": "0x41d06e",
+    "FORCEOFLOW": "0x41d074",
+    "FORCEUFLOW": "0x41d078",
+    "FORCEDIVZER": "0x41d07c",
+    "FORCEINVALID": "0x41d080",
+    "FORCEINEXACT": "0x41d084",
+    "FORCEX": "0x41d086",
+    "TESTDIVZER": "0x41d092",
+    "TESTUFLOW": "0x41d096",
+    "TESTOFLOW": "0x41d09a",
+    "TESTINVALID": "0x41d09e",
+    "TESTINEXACT": "0x41d0a2",
+    "TESTX": "0x41d0a4",
+    "SCALBXX": "0x41d0b2",
+    "scalbxx__local_1": "0x41d0e2",
+    "SKIPFIRSTSCALB": "0x41d0e4",
+    "At1": "0x41d0ee",
+    "At3": "0x41d0f0",
+    "at3__local_5": "0x41d102",
+    "SCALEINT": "0x41d102",
+    "VSMAXINT": "0x41d110",
+    "LOGTOP": "0x41d120",
+    "LOGERROR": "0x41d12a",
+    "LOGFINITE": "0x41d130",
+    "LOG1PLUSX": "0x41d140",
+    "LOG0": "0x41d156",
+    "LOG12R": "0x41d15a",
+    "LOG2R": "0x41d19a",
+    "At11": "0x41d1e2",
+    "LOGFINI": "0x41d1fc",
+    "logfini__local_1": "0x41d20e",
+    "LOGAPPROX": "0x41d212",
+    "logapprox__local_1": "0x41d226",
+    "LANONZERO": "0x41d22c",
+    "LANORMAL": "0x41d23a",
+    "LAFINI": "0x41d29e",
+    "P0STUFF": "0x41d2ac",
+    "M0STUFF": "0x41d2b2",
+    "P1STUFF": "0x41d2b8",
+    "M1STUFF": "0x41d2be",
+    "DIVP0STUFF": "0x41d2c4",
+    "PINFSTUFF": "0x41d2c8",
+    "DIVM0STUFF": "0x41d2ce",
+    "MINFSTUFF": "0x41d2d2",
+    "STUFFVAL": "0x41d2d6",
+    "STUFFEXIT": "0x41d2dc",
+    "ERRORNAN": "0x41d2de",
+    "RESULTDELIVERED": "0x41d2f0",
+    "EXPTOP": "0x41d30c",
+    "EXPNONZERO": "0x41d318",
+    "EXP2R": "0x41d31e",
+    "EXPR": "0x41d322",
+    "EXPROOT": "0x41d340",
+    "SPLIT2": "0x41d35a",
+    "SPLIT": "0x41d37c",
+    "EXP1TOP": "0x41d3bc",
+    "EXPEASY": "0x41d3ca",
+    "EXP1FINITE": "0x41d3ce",
+    "EXP21R": "0x41d3d6",
+    "EXP1OUT": "0x41d3e6",
+    "EXP21RNORM": "0x41d3f0",
+    "EXP1R": "0x41d3f6",
+    "EXP1ROOT": "0x41d414",
+    "EXP1RDONE": "0x41d44c",
+    "EXPAPPROX": "0x41d450",
+    "EXPHARD": "0x41d460",
+    "XPWRITOP": "0x41d4cc",
+    "xpwritop__local_1": "0x41d4e0",
+    "ZPWRNEG": "0x41d4f4",
+    "FINPWRI": "0x41d4fe",
+    "finpwri__local_1": "0x41d504",
+    "XPWRBIG": "0x41d510",
+    "xpwrbig__local_3": "0x41d534",
+    "XPWRK": "0x41d538",
+    "XPWRKSTORE": "0x41d548",
+    "XPWRKDIV": "0x41d550",
+    "XPWRKCLEAR": "0x41d574",
+    "xpwrkclear__local_11": "0x41d58e",
+    "XPWRKLOOP": "0x41d592",
+    "XKLPTOP": "0x41d5a0",
+    "XKLPENTRY": "0x41d5aa",
+    "XKLPSKIP": "0x41d5b8",
+    "XPWRY": "0x41d5be",
+    "XPWRYTOP": "0x41d5ee",
+    "XPWRY9ERR": "0x41d5fa",
+    "XPWRYERR": "0x41d5fc",
+    "NEGPWRY": "0x41d606",
+    "negpwry__local_1": "0x41d658",
+    "XPWRYCOM": "0x41d65c",
+    "xpwrycom__local_1": "0x41d672",
+    "xpwrycom__local_2": "0x41d676",
+    "NONPWRY": "0x41d67c",
+    "FINPWRY": "0x41d686",
+    "XPWRYOK": "0x41d69a",
+    "xpwryok__local_1": "0x41d6c6",
+    "XPWRYHARD": "0x41d6ce",
+    "COMPOUNDTOP": "0x41d6de",
+    "CMPTOZERO": "0x41d6f6",
+    "CMPM1N": "0x41d6fa",
+    "CMPZERO": "0x41d702",
+    "CMPGTM1": "0x41d706",
+    "CMPTOFIN": "0x41d718",
+    "cmpbasee": "0x41d74a",
+    "cmpresult": "0x41d75a",
+    "ERRFINAN": "0x41d76e",
+    "ANNUITYTOP": "0x41d774",
+    "ANNM1": "0x41d78e",
+    "ANNOK": "0x41d792",
+    "ANN0": "0x41d796",
+    "ANNXN": "0x41d79a",
+    "ANNSRC": "0x41d7a0",
+    "ANNRINF": "0x41d7ac",
+    "ANNROK": "0x41d7c6",
+    "ANNDOIT": "0x41d7f0",
+    "anndoit__local_1": "0x41d82c",
+    "annbasee": "0x41d834",
+    "annresult": "0x41d848",
+    "annclear": "0x41d85a",
+    "annclear__local_1": "0x41d872",
+    "ANNDOUT": "0x41d87a",
+    "annspecial": "0x41d888",
+    "SINTOP": "0x41d8ce",
+    "SINCOSCOM": "0x41d8d8",
+    "sincoscom__local_1": "0x41d8e8",
+    "sincoscom__local_3": "0x41d8ec",
+    "sincoscom__local_5": "0x41d8f8",
+    "TRIGFINI": "0x41d8f8",
+    "trigfini__local_11": "0x41d914",
+    "trigfini__local_13": "0x41d91c",
+    "COSTOP": "0x41d920",
+    "TRIGREDUCTION": "0x41d92c",
+    "SINGUTS": "0x41d93c",
+    "T2POVERQ": "0x41d962",
+    "POVERQ": "0x41d970",
+    "COSGUTS": "0x41d9a2",
+    "CGBIG": "0x41d9e8",
+    "TANTOP": "0x41da38",
+    "tantop__local_21": "0x41da7c",
+    "TANGUTS": "0x41da80",
+    "TGBIG": "0x41dace",
+    "TGFIN": "0x41db18",
+    "ATANTOP": "0x41db22",
+    "ATFINITE": "0x41db36",
+    "ATQUICK": "0x41db38",
+    "ATHARD": "0x41db3c",
+    "ATANGUTS": "0x41db4a",
+    "AGNOINV": "0x41db7a",
+    "AGLONGFORM": "0x41dba6",
+    "AGFINI": "0x41dc3c",
+    "AGSUBPI2": "0x41dc5a",
+    "RANDTOP": "0x41dc66",
+    "randtop__local_1": "0x41dc8c",
+    "LOG21P": "0x41dc90",
+    "LOG21Q": "0x41dcce",
+    "EXP21P": "0x41dcee",
+    "EXP21Q": "0x41dd18",
+    "FPK1": "0x41dd38",
+    "FPKM1": "0x41dd42",
+    "FPK0": "0x41dd4c",
+    "FPKM0": "0x41dd56",
+    "FPK2": "0x41dd60",
+    "FPKMAXINT": "0x41dd6a",
+    "FPKINF": "0x41dd74",
+    "FPKMINF": "0x41dd7e",
+    "FPK3": "0x41dd88",
+    "FPKFOURTH": "0x41dd92",
+    "FPKHALF": "0x41dd9c",
+    "FPK34": "0x41dda6",
+    "FPK78": "0x41ddb0",
+    "FPKPI2": "0x41ddba",
+    "FPKPI4": "0x41ddc4",
+    "FPKARAND": "0x41ddce",
+    "FPKPRAND": "0x41ddd8",
+    "FPKSQRT2": "0x41dde2",
+    "FPKSQRTHALF": "0x41ddec",
+    "FPKE": "0x41ddf6",
+    "FPKLOGE2": "0x41de00",
+    "FPKX2": "0x41de0a",
+    "FPKX2FX2": "0x41de14",
+    "FPKATNCONS": "0x41de1e",
+    "SINQ": "0x41de28",
+    "SINP": "0x41de52",
+    "COSQ": "0x41de7c",
+    "COSP": "0x41dea6",
+    "TANQ": "0x41ded0",
+    "TANP": "0x41defa",
+    "ATANQ": "0x41df24",
+    "ATANP": "0x41df58",
+    "PACK5ResourceEnd": "0x41df8c"
+  },
+  "symbol_provenance": {
+    "description": "Every routine and data label comes from the surviving source. The two resource-block labels identify the added header boundary. Names containing __local_ are verifier names for original @ labels under their preceding global label. The byte comparison establishes label addresses but does not establish the spelling used by the lost 1985 source revision.",
+    "resource_entry_reference": "_PACK_5_ at 0x41cf2e"
+  },
+  "changes": [
+    {
+      "kind": "resource_wrapper",
+      "description": "Added the eight-byte block header before ELEMS68K. Its size is PACK5ResourceEnd-PACK5ResourceBlock. Preserved the original body header, including version one."
+    },
+    {
+      "kind": "package_locking",
+      "description": "Restored ROMRSRC to zero by reactivating the earlier definition already present in the driver. Preserved the later definition as a comment. The entry saves the state byte from the PACK 5 handle, sets lock bit seven, and restores the state before returning. Both code paths remain under the original conditionals."
+    },
+    {
+      "kind": "source_structure",
+      "description": "Kept the original driver and four implementation includes as separate active files. Replaced the compiled StandardEqu.d dependency with selected interface equates and macros in ElemsSANEMacs.a. Include names now match the saved filenames. No arithmetic routine, special-case path, dispatch entry or constant was removed."
+    },
+    {
+      "kind": "macros",
+      "description": "Retained 32 active SANE macros from SANEMacs.a. Their calls still express floating arithmetic, comparisons, conversions, exception handling and environment changes. FADDX uses CLR.W -(SP) to emit the ROM selector zero; the released macro writes zero with MOVE.W #FFEXT+FOADD,-(SP). Every other selected macro body remains unchanged. Trap _FP68K uses its named OPWORD value $A9EB."
+    },
+    {
+      "kind": "addressing",
+      "description": "Added explicit PC addressing to 77 existing code or data references. These are PEA and LEA operands and the ELEMSTAB/LIFTOFF indexed dispatch operands. The labels and targets remain unchanged."
+    },
+    {
+      "kind": "branch_encoding",
+      "description": "Selected the observed short encoding at nine branches in Elems68K2.a. Seven unsized processor branches now use .S. The annuity tests use existing FBULTS and FBEQS macros in place of the long variants. The conditions and targets remain unchanged."
+    },
+    {
+      "kind": "comments_and_history",
+      "description": "Preserved the original comments and history in all five source files. The reconstruction notes identify these later headers as provenance. Elems68K3.a retains a later header that names the MC68881; this ROM implementation calls the software FP68K package. Later dates, placeholder header fields and original comment errors remain as released source text."
+    }
+  ],
+  "instruction_edits": [
+    {
+      "source": "Elems68K1.a",
+      "original_line": 302,
+      "reconstructed_line": 305,
+      "original": "MOVE.W ELEMSTAB(D0),D0",
+      "reconstructed": "MOVE.W ELEMSTAB(PC,D0.W),D0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 310,
+      "reconstructed_line": 313,
+      "original": "JMP LIFTOFF(D0)",
+      "reconstructed": "JMP LIFTOFF(PC,D0.W)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 491,
+      "reconstructed_line": 494,
+      "original": "PEA FPKMAXINT",
+      "reconstructed": "PEA FPKMAXINT(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 508,
+      "reconstructed_line": 511,
+      "original": "PEA FPKMAXINT",
+      "reconstructed": "PEA FPKMAXINT(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 536,
+      "reconstructed_line": 539,
+      "original": "PEA FPKMAXINT",
+      "reconstructed": "PEA FPKMAXINT(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 578,
+      "reconstructed_line": 581,
+      "original": "PEA FPKM1",
+      "reconstructed": "PEA FPKM1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 603,
+      "reconstructed_line": 606,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 610,
+      "reconstructed_line": 613,
+      "original": "PEA FPKSQRTHALF",
+      "reconstructed": "PEA FPKSQRTHALF(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 616,
+      "reconstructed_line": 619,
+      "original": "PEA FPKSQRT2",
+      "reconstructed": "PEA FPKSQRT2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 662,
+      "reconstructed_line": 665,
+      "original": "PEA FPKSQRT2",
+      "reconstructed": "PEA FPKSQRT2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 667,
+      "reconstructed_line": 670,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 671,
+      "reconstructed_line": 674,
+      "original": "PEA FPK2",
+      "reconstructed": "PEA FPK2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 680,
+      "reconstructed_line": 683,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 701,
+      "reconstructed_line": 704,
+      "original": "PEA FPKLOGE2",
+      "reconstructed": "PEA FPKLOGE2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 745,
+      "reconstructed_line": 748,
+      "original": "PEA FPKLOGE2",
+      "reconstructed": "PEA FPKLOGE2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 754,
+      "reconstructed_line": 757,
+      "original": "PEA FPK2",
+      "reconstructed": "PEA FPK2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 774,
+      "reconstructed_line": 777,
+      "original": "LEA LOG21P,A1",
+      "reconstructed": "LEA LOG21P(PC),A1",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 789,
+      "reconstructed_line": 792,
+      "original": "LEA LOG21Q,A1",
+      "reconstructed": "LEA LOG21Q(PC),A1",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 815,
+      "reconstructed_line": 818,
+      "original": "LEA FPK0,A0",
+      "reconstructed": "LEA FPK0(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 818,
+      "reconstructed_line": 821,
+      "original": "LEA FPKM0,A0",
+      "reconstructed": "LEA FPKM0(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 821,
+      "reconstructed_line": 824,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 824,
+      "reconstructed_line": 827,
+      "original": "LEA FPKM1,A0",
+      "reconstructed": "LEA FPKM1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 829,
+      "reconstructed_line": 832,
+      "original": "LEA FPKINF,A0",
+      "reconstructed": "LEA FPKINF(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K1.a",
+      "original_line": 834,
+      "reconstructed_line": 837,
+      "original": "LEA FPKMINF,A0",
+      "reconstructed": "LEA FPKMINF(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 39,
+      "reconstructed_line": 42,
+      "original": "BEQ P1STUFF",
+      "reconstructed": "BEQ.S P1STUFF",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 43,
+      "reconstructed_line": 46,
+      "original": "BMI P0STUFF",
+      "reconstructed": "BMI.S P0STUFF",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 44,
+      "reconstructed_line": 47,
+      "original": "BRA RESULTDELIVERED",
+      "reconstructed": "BRA.S RESULTDELIVERED",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 90,
+      "reconstructed_line": 93,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 97,
+      "reconstructed_line": 100,
+      "original": "BRA RESULTDELIVERED",
+      "reconstructed": "BRA.S RESULTDELIVERED",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 130,
+      "reconstructed_line": 133,
+      "original": "PEA FPKLOGE2",
+      "reconstructed": "PEA FPKLOGE2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 182,
+      "reconstructed_line": 185,
+      "original": "PEA FPKLOGE2",
+      "reconstructed": "PEA FPKLOGE2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 220,
+      "reconstructed_line": 223,
+      "original": "PEA FPK0",
+      "reconstructed": "PEA FPK0(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 225,
+      "reconstructed_line": 228,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 233,
+      "reconstructed_line": 236,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 254,
+      "reconstructed_line": 257,
+      "original": "PEA FPK0",
+      "reconstructed": "PEA FPK0(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 269,
+      "reconstructed_line": 272,
+      "original": "LEA EXP21P,A1",
+      "reconstructed": "LEA EXP21P(PC),A1",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 278,
+      "reconstructed_line": 281,
+      "original": "LEA EXP21Q,A1",
+      "reconstructed": "LEA EXP21Q(PC),A1",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 286,
+      "reconstructed_line": 289,
+      "original": "PEA FPK2",
+      "reconstructed": "PEA FPK2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 408,
+      "reconstructed_line": 411,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 443,
+      "reconstructed_line": 446,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 538,
+      "reconstructed_line": 541,
+      "original": "BNE XPWRYERR",
+      "reconstructed": "BNE.S XPWRYERR",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 545,
+      "reconstructed_line": 548,
+      "original": "PEA FPK2",
+      "reconstructed": "PEA FPK2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 591,
+      "reconstructed_line": 594,
+      "original": "BEQ XPWRY9ERR",
+      "reconstructed": "BEQ.S XPWRY9ERR",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 599,
+      "reconstructed_line": 602,
+      "original": "LEA FPKINF,A0",
+      "reconstructed": "LEA FPKINF(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 602,
+      "reconstructed_line": 605,
+      "original": "LEA FPK0,A0",
+      "reconstructed": "LEA FPK0(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 631,
+      "reconstructed_line": 634,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 685,
+      "reconstructed_line": 688,
+      "original": "PEA FPKM1",
+      "reconstructed": "PEA FPKM1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 794,
+      "reconstructed_line": 797,
+      "original": "PEA FPKM1",
+      "reconstructed": "PEA FPKM1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 797,
+      "reconstructed_line": 800,
+      "original": "FBULTL ERRFINAN",
+      "reconstructed": "FBULTS ERRFINAN",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 843,
+      "reconstructed_line": 846,
+      "original": "PEA FPKM1",
+      "reconstructed": "PEA FPKM1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 846,
+      "reconstructed_line": 849,
+      "original": "FBEQL ANNM1",
+      "reconstructed": "FBEQS ANNM1",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 859,
+      "reconstructed_line": 862,
+      "original": "BMI ANNSRC",
+      "reconstructed": "BMI.S ANNSRC",
+      "kind": "branch_encoding"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 867,
+      "reconstructed_line": 870,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K2.a",
+      "original_line": 990,
+      "reconstructed_line": 993,
+      "original": "PEA fpk1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 130,
+      "reconstructed_line": 133,
+      "original": "PEA FPKPI2",
+      "reconstructed": "PEA FPKPI2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 147,
+      "reconstructed_line": 150,
+      "original": "LEA SINQ,A2",
+      "reconstructed": "LEA SINQ(PC),A2",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 229,
+      "reconstructed_line": 232,
+      "original": "LEA COSQ,A2",
+      "reconstructed": "LEA COSQ(PC),A2",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 239,
+      "reconstructed_line": 242,
+      "original": "PEA FPKFOURTH",
+      "reconstructed": "PEA FPKFOURTH(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 247,
+      "reconstructed_line": 250,
+      "original": "PEA FPKHALF",
+      "reconstructed": "PEA FPKHALF(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 258,
+      "reconstructed_line": 261,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 269,
+      "reconstructed_line": 272,
+      "original": "PEA FPKHALF",
+      "reconstructed": "PEA FPKHALF(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 278,
+      "reconstructed_line": 281,
+      "original": "PEA FPKHALF",
+      "reconstructed": "PEA FPKHALF(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 296,
+      "reconstructed_line": 299,
+      "original": "PEA FPK78",
+      "reconstructed": "PEA FPK78(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 344,
+      "reconstructed_line": 347,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 371,
+      "reconstructed_line": 374,
+      "original": "LEA TANQ,A2",
+      "reconstructed": "LEA TANQ(PC),A2",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 393,
+      "reconstructed_line": 396,
+      "original": "PEA FPKFOURTH",
+      "reconstructed": "PEA FPKFOURTH(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 401,
+      "reconstructed_line": 404,
+      "original": "PEA FPK3",
+      "reconstructed": "PEA FPK3(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 420,
+      "reconstructed_line": 423,
+      "original": "PEA FPK34",
+      "reconstructed": "PEA FPK34(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 424,
+      "reconstructed_line": 427,
+      "original": "PEA FPK3",
+      "reconstructed": "PEA FPK3(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 436,
+      "reconstructed_line": 439,
+      "original": "PEA FPKFOURTH",
+      "reconstructed": "PEA FPKFOURTH(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 482,
+      "reconstructed_line": 485,
+      "original": "LEA FPKPI2,A0",
+      "reconstructed": "LEA FPKPI2(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 505,
+      "reconstructed_line": 508,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 516,
+      "reconstructed_line": 519,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 534,
+      "reconstructed_line": 537,
+      "original": "PEA FPKATNCONS",
+      "reconstructed": "PEA FPKATNCONS(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 541,
+      "reconstructed_line": 544,
+      "original": "LEA ATANQ,A2",
+      "reconstructed": "LEA ATANQ(PC),A2",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 556,
+      "reconstructed_line": 559,
+      "original": "PEA FPKX2",
+      "reconstructed": "PEA FPKX2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 561,
+      "reconstructed_line": 564,
+      "original": "LEA FPK1,A0",
+      "reconstructed": "LEA FPK1(PC),A0",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 569,
+      "reconstructed_line": 572,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 573,
+      "reconstructed_line": 576,
+      "original": "PEA FPK1",
+      "reconstructed": "PEA FPK1(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 577,
+      "reconstructed_line": 580,
+      "original": "PEA FPKX2",
+      "reconstructed": "PEA FPKX2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 593,
+      "reconstructed_line": 596,
+      "original": "LEA ATANQ,A2",
+      "reconstructed": "LEA ATANQ(PC),A2",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 604,
+      "reconstructed_line": 607,
+      "original": "PEA FPKX2FX2",
+      "reconstructed": "PEA FPKX2FX2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 634,
+      "reconstructed_line": 637,
+      "original": "PEA FPKPI2",
+      "reconstructed": "PEA FPKPI2(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 653,
+      "reconstructed_line": 656,
+      "original": "PEA FPKARAND",
+      "reconstructed": "PEA FPKARAND(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 657,
+      "reconstructed_line": 660,
+      "original": "PEA FPKPRAND",
+      "reconstructed": "PEA FPKPRAND(PC)",
+      "kind": "explicit_pc_addressing"
+    },
+    {
+      "source": "Elems68K3.a",
+      "original_line": 664,
+      "reconstructed_line": 667,
+      "original": "PEA FPKPRAND",
+      "reconstructed": "PEA FPKPRAND(PC)",
+      "kind": "explicit_pc_addressing"
+    }
+  ],
+  "macro_names": [
+    "FADDX",
+    "FSUBX",
+    "FMULX",
+    "FDIVX",
+    "FRINTX",
+    "FREMX",
+    "FLOGBX",
+    "FSCALBX",
+    "FX2X",
+    "FI2X",
+    "FX2I",
+    "FCMPX",
+    "FBEQL",
+    "FBGTL",
+    "FBULTL",
+    "FBULEL",
+    "FBEQS",
+    "FBLTS",
+    "FBLES",
+    "FBGTS",
+    "FBGES",
+    "FBULTS",
+    "FBULES",
+    "FBUGTS",
+    "FBNES",
+    "FCLASSX",
+    "FGETENV",
+    "FSETENV",
+    "FTESTXCP",
+    "FSETXCP",
+    "FPROCENTRY",
+    "FPROCEXIT"
+  ],
+  "historical_evidence": [
+    {
+      "source": "Toolbox/SANE/Elems68K.a",
+      "source_lines": [
+        1,
+        3
+      ],
+      "description": "The July 1989 entry changed ROMRSRC to one to omit locking for ROM resources. The Mac Plus ROM still contains both locking sequences."
+    },
+    {
+      "source": "Toolbox/SANE/Elems68K.a",
+      "source_lines": [
+        49,
+        52
+      ],
+      "description": "The 1985 history records the locking fix, new quiet-NaN delivery and the decision to use one package despite extra ROM instructions. These paths survive in the ROM."
+    },
+    {
+      "source": "Toolbox/SANE/Elems68K.a",
+      "source_lines": [
+        61,
+        62
+      ],
+      "description": "The inactive earlier ROMRSRC definition says to leave it zero. Reactivating that definition restores the observed code."
+    },
+    {
+      "source": "Toolbox/SANE/Elems68K1.a",
+      "source_lines": [
+        15,
+        15
+      ],
+      "description": "The May 1988 history records renaming floating branch macros to avoid conflicts with 68881 names. The reconstructed source retains the released names, choosing short forms where the ROM uses them."
+    },
+    {
+      "source": "Toolbox/SANE/Elems68K1.a",
+      "source_lines": [
+        131,
+        138
+      ],
+      "description": "The surviving package header still contains version one, although the driver history describes a version-two revision in March 1985. The ROM also contains one; both original facts remain visible."
+    },
+    {
+      "source": "Toolbox/SANE/SANE.make",
+      "source_lines": [
+        12,
+        13
+      ],
+      "description": "The March 1993 makefile history says later non-FPU PACK 4 and PACK 5 builds moved to InSANE. The retained Elems68K driver and includes match this earlier ROM package."
+    }
+  ],
+  "preserved_rom_behavior": [
+    {
+      "address": "0x41cf44",
+      "description": "The package saves and sets the lock bit even though this resource resides in ROM. Its matching exit restores the saved state through AppPacks+20."
+    },
+    {
+      "address": "0x41cfe6",
+      "description": "The dispatcher masks the opcode with $00FE and indexes ELEMSTAB without a bounds check."
+    },
+    {
+      "address": "0x41d2de",
+      "description": "ERRORNAN constructs a new quiet NaN with exponent $7FFF and the requested code, then signals invalid through FORCEINVALID."
+    },
+    {
+      "address": "0x41d0ce",
+      "description": "SCALBXX applies scaling in bounded integer stages using MAXINT. The reconstruction retains the original exception handling and special cases."
+    }
+  ],
+  "limitations": [
+    "The exact 1985 source files are unavailable. The surviving implementation nevertheless matches every ROM instruction and coefficient after the documented build and encoding choices.",
+    "The explicit short branches and FADDX zero push reproduce the ROM encodings. They do not establish whether the historical source spelled those forms explicitly or an assembler selected them.",
+    "The byte comparison checks the complete package and all 212 emitted labels. It does not execute floating operations or test numerical accuracy."
+  ],
+  "verification": {
+    "verifier": "Reconstruction/Tools/verify.py:verify_module",
+    "command": "python3 /tmp/verify-pack5.py",
+    "method": "Translated the final driver with its active includes, conditionals and macros. Assembled for the 68000, linked at the block address, rejected unresolved relocations and compared every emitted byte with the ROM. Checked all emitted code and data labels.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_options": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "matched_bytes": 4198,
+    "instruction_count": 1202,
+    "fp68k_trap_count": 125,
+    "data_bytes": 816,
+    "entry_points_checked": 212,
+    "result": {
+      "name": "pack5",
+      "source": "Reconstruction/Source/Resources/SANE/Elems68K.a",
+      "source_sha256": "3ed98a06fcaf1e11789dc9c4f5ca851cabadee5c7a2947e80caddc7f8a2d688f",
+      "start": "0x41cf26",
+      "end_exclusive": "0x41df8c",
+      "bytes": 4198,
+      "sha256": "18b7f7119da58e35b753e79316d7671ffdab2d46ce95365bf7aaa66751fc3719",
+      "matches_rom": true,
+      "source_dependencies": [
+        {
+          "path": "Reconstruction/Source/Resources/SANE/Elems68K.a",
+          "sha256": "3ed98a06fcaf1e11789dc9c4f5ca851cabadee5c7a2947e80caddc7f8a2d688f"
+        },
+        {
+          "path": "Reconstruction/Source/Resources/SANE/Elems68K1.a",
+          "sha256": "3f12a2d6a673f22d12af16f359eadd301049690c10bb8cb380061028cb52d1d6"
+        },
+        {
+          "path": "Reconstruction/Source/Resources/SANE/Elems68K2.a",
+          "sha256": "54e71561e6074df527451d4630e55d8d773e8741face53eeccd6472e18ccd3ec"
+        },
+        {
+          "path": "Reconstruction/Source/Resources/SANE/Elems68K3.a",
+          "sha256": "3d7375176654f56e3d70cdf425f99da651cdb25fe34a65fb24e554b0e83db321"
+        },
+        {
+          "path": "Reconstruction/Source/Resources/SANE/Elems68KC.a",
+          "sha256": "4009c7d7c35e09601a151b1469f6bc62f0afabc12568e59f26e5c45184192832"
+        },
+        {
+          "path": "Reconstruction/Source/Resources/SANE/ElemsSANEMacs.a",
+          "sha256": "7746b5c58ed3aa9bd0546d12b93ddb5c5359d4abe445808ef804f303abc280c7"
+        }
+      ]
+    },
+    "source_statement_audit": {
+      "command": "python3 /tmp/audit-pack5-source.py",
+      "description": "Compared all 1479 non-comment statements in the four implementation includes against the originals. The statement order, labels, equates and operands remain unchanged except for 77 explicit PC references and nine branch encodings. All 124 statements in the constants include remain exact.",
+      "statements": 1479,
+      "explicit_pc_references": 77,
+      "branch_encoding_changes": 9,
+      "constant_statements": 124
+    },
+    "preserved_original_comment_occurrences": 1712,
+    "authored_comment_lines": 16,
+    "prose_lint": {
+      "command": "vale /tmp/pack5-authored.md",
+      "config": "/Users/james/.vale.ini",
+      "result": "0 errors, 0 warnings, 0 suggestions",
+      "scope": "Authored source comments and evidence prose. Preserved original comments were excluded."
+    }
+  },
+  "integration_manifest": {
+    "name": "pack5",
+    "source": "Reconstruction/Source/Resources/SANE/Elems68K.a",
+    "start": "0x41cf26",
+    "end_exclusive": "0x41df8c",
+    "entry_points": {
+      "PACK5ResourceBlock": "0x41cf26",
+      "ELEMS68K": "0x41cf2e",
+      "START": "0x41cf3a",
+      "CLASSCOM": "0x41cf76",
+      "CLASSSKIP": "0x41cf7c",
+      "HAVESRC2": "0x41cf7e",
+      "CLASSIFY": "0x41cf8a",
+      "classify__local_1": "0x41cfa2",
+      "DSTONLY": "0x41cfa4",
+      "CLASSDSTORSRC2": "0x41cfb0",
+      "NOT2NANS": "0x41cfd4",
+      "NANEXIT": "0x41cfe2",
+      "LIFTOFF": "0x41cfe6",
+      "NONANS": "0x41cfe6",
+      "ELEMSTAB": "0x41cff4",
+      "A0TOA1": "0x41d016",
+      "POLYEVAL": "0x41d020",
+      "POLYLOOP": "0x41d02c",
+      "CLEARUFLOW": "0x41d04c",
+      "CLEAROFLOW": "0x41d050",
+      "CLEARINVALID": "0x41d054",
+      "CLEARINEXACT": "0x41d058",
+      "CLEARX": "0x41d05a",
+      "CLEAREXIT": "0x41d06e",
+      "FORCEOFLOW": "0x41d074",
+      "FORCEUFLOW": "0x41d078",
+      "FORCEDIVZER": "0x41d07c",
+      "FORCEINVALID": "0x41d080",
+      "FORCEINEXACT": "0x41d084",
+      "FORCEX": "0x41d086",
+      "TESTDIVZER": "0x41d092",
+      "TESTUFLOW": "0x41d096",
+      "TESTOFLOW": "0x41d09a",
+      "TESTINVALID": "0x41d09e",
+      "TESTINEXACT": "0x41d0a2",
+      "TESTX": "0x41d0a4",
+      "SCALBXX": "0x41d0b2",
+      "scalbxx__local_1": "0x41d0e2",
+      "SKIPFIRSTSCALB": "0x41d0e4",
+      "At1": "0x41d0ee",
+      "At3": "0x41d0f0",
+      "at3__local_5": "0x41d102",
+      "SCALEINT": "0x41d102",
+      "VSMAXINT": "0x41d110",
+      "LOGTOP": "0x41d120",
+      "LOGERROR": "0x41d12a",
+      "LOGFINITE": "0x41d130",
+      "LOG1PLUSX": "0x41d140",
+      "LOG0": "0x41d156",
+      "LOG12R": "0x41d15a",
+      "LOG2R": "0x41d19a",
+      "At11": "0x41d1e2",
+      "LOGFINI": "0x41d1fc",
+      "logfini__local_1": "0x41d20e",
+      "LOGAPPROX": "0x41d212",
+      "logapprox__local_1": "0x41d226",
+      "LANONZERO": "0x41d22c",
+      "LANORMAL": "0x41d23a",
+      "LAFINI": "0x41d29e",
+      "P0STUFF": "0x41d2ac",
+      "M0STUFF": "0x41d2b2",
+      "P1STUFF": "0x41d2b8",
+      "M1STUFF": "0x41d2be",
+      "DIVP0STUFF": "0x41d2c4",
+      "PINFSTUFF": "0x41d2c8",
+      "DIVM0STUFF": "0x41d2ce",
+      "MINFSTUFF": "0x41d2d2",
+      "STUFFVAL": "0x41d2d6",
+      "STUFFEXIT": "0x41d2dc",
+      "ERRORNAN": "0x41d2de",
+      "RESULTDELIVERED": "0x41d2f0",
+      "EXPTOP": "0x41d30c",
+      "EXPNONZERO": "0x41d318",
+      "EXP2R": "0x41d31e",
+      "EXPR": "0x41d322",
+      "EXPROOT": "0x41d340",
+      "SPLIT2": "0x41d35a",
+      "SPLIT": "0x41d37c",
+      "EXP1TOP": "0x41d3bc",
+      "EXPEASY": "0x41d3ca",
+      "EXP1FINITE": "0x41d3ce",
+      "EXP21R": "0x41d3d6",
+      "EXP1OUT": "0x41d3e6",
+      "EXP21RNORM": "0x41d3f0",
+      "EXP1R": "0x41d3f6",
+      "EXP1ROOT": "0x41d414",
+      "EXP1RDONE": "0x41d44c",
+      "EXPAPPROX": "0x41d450",
+      "EXPHARD": "0x41d460",
+      "XPWRITOP": "0x41d4cc",
+      "xpwritop__local_1": "0x41d4e0",
+      "ZPWRNEG": "0x41d4f4",
+      "FINPWRI": "0x41d4fe",
+      "finpwri__local_1": "0x41d504",
+      "XPWRBIG": "0x41d510",
+      "xpwrbig__local_3": "0x41d534",
+      "XPWRK": "0x41d538",
+      "XPWRKSTORE": "0x41d548",
+      "XPWRKDIV": "0x41d550",
+      "XPWRKCLEAR": "0x41d574",
+      "xpwrkclear__local_11": "0x41d58e",
+      "XPWRKLOOP": "0x41d592",
+      "XKLPTOP": "0x41d5a0",
+      "XKLPENTRY": "0x41d5aa",
+      "XKLPSKIP": "0x41d5b8",
+      "XPWRY": "0x41d5be",
+      "XPWRYTOP": "0x41d5ee",
+      "XPWRY9ERR": "0x41d5fa",
+      "XPWRYERR": "0x41d5fc",
+      "NEGPWRY": "0x41d606",
+      "negpwry__local_1": "0x41d658",
+      "XPWRYCOM": "0x41d65c",
+      "xpwrycom__local_1": "0x41d672",
+      "xpwrycom__local_2": "0x41d676",
+      "NONPWRY": "0x41d67c",
+      "FINPWRY": "0x41d686",
+      "XPWRYOK": "0x41d69a",
+      "xpwryok__local_1": "0x41d6c6",
+      "XPWRYHARD": "0x41d6ce",
+      "COMPOUNDTOP": "0x41d6de",
+      "CMPTOZERO": "0x41d6f6",
+      "CMPM1N": "0x41d6fa",
+      "CMPZERO": "0x41d702",
+      "CMPGTM1": "0x41d706",
+      "CMPTOFIN": "0x41d718",
+      "cmpbasee": "0x41d74a",
+      "cmpresult": "0x41d75a",
+      "ERRFINAN": "0x41d76e",
+      "ANNUITYTOP": "0x41d774",
+      "ANNM1": "0x41d78e",
+      "ANNOK": "0x41d792",
+      "ANN0": "0x41d796",
+      "ANNXN": "0x41d79a",
+      "ANNSRC": "0x41d7a0",
+      "ANNRINF": "0x41d7ac",
+      "ANNROK": "0x41d7c6",
+      "ANNDOIT": "0x41d7f0",
+      "anndoit__local_1": "0x41d82c",
+      "annbasee": "0x41d834",
+      "annresult": "0x41d848",
+      "annclear": "0x41d85a",
+      "annclear__local_1": "0x41d872",
+      "ANNDOUT": "0x41d87a",
+      "annspecial": "0x41d888",
+      "SINTOP": "0x41d8ce",
+      "SINCOSCOM": "0x41d8d8",
+      "sincoscom__local_1": "0x41d8e8",
+      "sincoscom__local_3": "0x41d8ec",
+      "sincoscom__local_5": "0x41d8f8",
+      "TRIGFINI": "0x41d8f8",
+      "trigfini__local_11": "0x41d914",
+      "trigfini__local_13": "0x41d91c",
+      "COSTOP": "0x41d920",
+      "TRIGREDUCTION": "0x41d92c",
+      "SINGUTS": "0x41d93c",
+      "T2POVERQ": "0x41d962",
+      "POVERQ": "0x41d970",
+      "COSGUTS": "0x41d9a2",
+      "CGBIG": "0x41d9e8",
+      "TANTOP": "0x41da38",
+      "tantop__local_21": "0x41da7c",
+      "TANGUTS": "0x41da80",
+      "TGBIG": "0x41dace",
+      "TGFIN": "0x41db18",
+      "ATANTOP": "0x41db22",
+      "ATFINITE": "0x41db36",
+      "ATQUICK": "0x41db38",
+      "ATHARD": "0x41db3c",
+      "ATANGUTS": "0x41db4a",
+      "AGNOINV": "0x41db7a",
+      "AGLONGFORM": "0x41dba6",
+      "AGFINI": "0x41dc3c",
+      "AGSUBPI2": "0x41dc5a",
+      "RANDTOP": "0x41dc66",
+      "randtop__local_1": "0x41dc8c",
+      "LOG21P": "0x41dc90",
+      "LOG21Q": "0x41dcce",
+      "EXP21P": "0x41dcee",
+      "EXP21Q": "0x41dd18",
+      "FPK1": "0x41dd38",
+      "FPKM1": "0x41dd42",
+      "FPK0": "0x41dd4c",
+      "FPKM0": "0x41dd56",
+      "FPK2": "0x41dd60",
+      "FPKMAXINT": "0x41dd6a",
+      "FPKINF": "0x41dd74",
+      "FPKMINF": "0x41dd7e",
+      "FPK3": "0x41dd88",
+      "FPKFOURTH": "0x41dd92",
+      "FPKHALF": "0x41dd9c",
+      "FPK34": "0x41dda6",
+      "FPK78": "0x41ddb0",
+      "FPKPI2": "0x41ddba",
+      "FPKPI4": "0x41ddc4",
+      "FPKARAND": "0x41ddce",
+      "FPKPRAND": "0x41ddd8",
+      "FPKSQRT2": "0x41dde2",
+      "FPKSQRTHALF": "0x41ddec",
+      "FPKE": "0x41ddf6",
+      "FPKLOGE2": "0x41de00",
+      "FPKX2": "0x41de0a",
+      "FPKX2FX2": "0x41de14",
+      "FPKATNCONS": "0x41de1e",
+      "SINQ": "0x41de28",
+      "SINP": "0x41de52",
+      "COSQ": "0x41de7c",
+      "COSP": "0x41dea6",
+      "TANQ": "0x41ded0",
+      "TANP": "0x41defa",
+      "ATANQ": "0x41df24",
+      "ATANP": "0x41df58",
+      "PACK5ResourceEnd": "0x41df8c"
+    }
+  }
+}

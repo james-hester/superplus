@@ -1,0 +1,55 @@
+*R Used Sony constants retain the original include expressions.
+*R The Mac Plus layout has two floppy drives and four DCD drives.
+*R ROM operands establish the older head-settle time and GrowZone offset.
+
+		INCLUDE 'HardwareEqu.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SonyInterfaceEqu.a' ;]
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'Traps.a'
+
+saveRegs  		EQU 		wakeTimeCnt+2     		; * wakeup routine saves D3-D7,A3-A6 here
+tagBufPtr 		EQU 		saveRegs+36       		; if non-zero, pointer to separate
+tagBufOS  		EQU 		tagBufPtr+4       		; temp offset into buffer
+diskErrs  		EQU 		tagBufOS+2    			; global soft errors
+passThru  		EQU 		diskErrs+2    			; 0 if pass thru on external port
+hasSuperDrives	EQU 		passThru+1    			; $FF if at least 1 SuperDrive connected
+curSector 		EQU 		hasSuperDrives+1  		; current sector being read/written 
+tcRdEnable		EQU 		curSector+2       		; (byte) set non-zero to activate reads into cache
+tcInstalled   	EQU 		tcRdEnable+1      		; (byte) non-zero when caching is installed and on
+tcDrive   		EQU 		tcInstalled+1     		; (word) drive number of cache blks (zero to inval)
+tcSideTrack   	EQU 		tcDrive+2     			; (word) side/track of cache blocks 
+tcSectMap 		EQU 		tcSideTrack+2     		; (long) bitmap of sectors currently cached 
+tcBuffer  		EQU 		tcSectMap+4       		; (long) pointer to track cache buffer (512+12)*12
+tcNumCached   	EQU 		tcBuffer+4    			; (word) number read into cache 
+tcNumUsed 		EQU 		tcNumCached+2     		; (word actual number used
+lastDrive 		EQU 		tcNumUsed+2       		; (word) set at CkDrvNum to previous value of Drive
+timeOutDrive  	EQU 		lastDrive+4       		; (word) set at PowerDown to value of Drive 
+timeQEl   		EQU 		timeOutDrive+2    		; a time queue element
+nextGZProc EQU timeQEl+12 ;]
+sonyVarEnd EQU nextGZProc+4 ;]
+drive3 EQU sonyVarEnd
+drive4 EQU drive3+dcdLclLth
+drive5 EQU drive4+dcdLclLth
+drive6 EQU drive5+dcdLclLth
+stsRtnAddr		EQU 		drive6+dcdLclLth  		; DCD status call return address
+dcdCmd			EQU 		stsRtnAddr+4      		; command byte to DCD
+response  		EQU 		dcdCmd        			; response byte (command+$80)
+seqNum			EQU 		response+1    			; mb sequence number (sys commands only)
+status			EQU 		seqNum+1      			; returned status bytes
+tagBytes  		EQU 		status+4      			; tag bytes get stuffed here temporarily
+bufSize   		EQU 		tagBytes+tagSize  		; number of bytes/block
+lastStatus		EQU 		bufSize+4     			; last status returned
+lastResult		EQU 		lastStatus+4      		; error type
+dcdFlags  		EQU 		lastResult+1      		; flag of whether we've done a reset
+chkTime   		EQU 		dcdFlags+1    			; 100usec check ready count
+maxTime   		EQU 		chkTime+2     			; maximum number of checks
+stsBuffer 		EQU 		maxTime+2     			; 512 bytes of status
+devReserve		EQU 		stsBuffer
+devIcon   		EQU 		devReserve+44
+devFiller 		EQU 		devIcon+256       		; 32 bytes for optional name
+diskVarLth		EQU 		devFiller+32
+kHdSetTime EQU 300 ;]
+maxDrvNum EQU 6 ;]
+

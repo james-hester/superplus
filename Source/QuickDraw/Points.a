@@ -1,0 +1,317 @@
+;
+;	File:		GrafAsm.m.a
+;
+;	Copyright:	© 1988-1990 by Apple Computer, Inc., all rights reserved.
+;
+;
+*R Points.a preserves the point and port routines below.
+*R Their source is QuickDraw/Classic/GrafAsm.m.a, under its original header.
+*R Cross-checked against QuickDraw Source/GrafAsm.a; its comments survive here.
+*R ROM addresses: $408956 through $408AB5. See Evidence/points.json.
+;
+		IMPORT CopyRgn,OffsetRgn,PortWord,RectRgn ;]
+
+		BLANKS	ON
+		STRING	ASIS
+
+			MACHINE	MC68000
+
+		INCLUDE 'GrafTypes.a' ;]
+
+;------------------------------------------------------------
+;
+;  --> GRAFASM.TEXT
+;
+;  Miscellaneous unclassified routines.
+;
+
+*R Calls use PC addressing.
+
+
+LocalToGlobal PROC	EXPORT		
+		EXPORT GlobalToLocal,AddPt,SubPt,SetPort,GetPort
+;-------------------------------------------------------------
+;
+;  PROCEDURE LocalToGlobal(VAR pt: Point);
+;
+;  restores all registers.
+;
+		MOVEM.L D0-D2/A0/A1,-(SP)			;SAVE REGS
+		MOVEQ	#1,D2					;INDICATE SUB
+		BRA.S	SHARE
+
+
+
+;-------------------------------------------------------------
+;
+;  PROCEDURE GlobalToLocal(VAR pt: Point);
+;
+;  restores all registers.
+;
+GlobalToLocal
+		MOVEM.L D0-D2/A0/A1,-(SP)			;SAVE REGS
+		CLR.L	D2					;INDICATE ADD
+SHARE	MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;POINT TO CURRENT GRAFPORT
+		MOVE.L	24(SP),A1				;POINT TO VAR PT
+		MOVE	PORTBITS+BOUNDS+TOP(A0),D0		;GET DV
+		MOVE	PORTBITS+BOUNDS+LEFT(A0),D1 	;GET DH
+		BSR.S	ADDSUB					;CONVERT TO LOCAL
+		MOVEM.L (SP)+,D0-D2/A0/A1			;RESTORE REGS
+		BRA.S	SHARE3					;STRIP 4 BYTES AND RETURN
+;
+;
+;
+ADDSUB	TST 	D2
+		BEQ.S	JUSTADD
+		NEG 	D0
+		NEG 	D1
+JUSTADD ADD 	D0,(A1)+
+		ADD 	D1,(A1)+
+		RTS
+
+
+
+;-------------------------------------------------------------
+;
+;  PROCEDURE AddPt(src: Point; VAR dst: Point);
+;  { add two points together, restores all regs }
+;
+AddPt	MOVEM.L D0-D2/A1,-(SP)				;SAVE REGS
+		CLR.L	D2					;INDICATE ADD
+		BRA.S	SHARE2
+
+
+
+;-------------------------------------------------------------
+;
+;  PROCEDURE SubPt(src: Point; VAR dst: Point);
+;  { subtract src Point from dst point, restores all regs }
+;
+SubPt	MOVEM.L D0-D2/A1,-(SP)				;SAVE REGS
+		MOVEQ	#1,D2					;INDICATE SUB
+SHARE2	MOVE.L	20(SP),A1				;POINT TO DST
+		MOVE	24+V(SP),D0 			;GET SRC.V
+		MOVE	24+H(SP),D1 			;GET SRC.H
+		BSR.S	ADDSUB
+		MOVEM.L (SP)+,D0-D2/A1				;RESTORE REGS
+		MOVE.L	(SP)+,(SP)
+SHARE3	MOVE.L	(SP)+,(SP)
+		RTS 					;AND RETURN
+
+
+
+;----------------------------------------------------------
+;
+;  PROCEDURE SetPort(gp: GrafPtr);
+;  { switch the current port to a different GrafPort }
+;
+SetPort MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	4(SP),THEPORT(A0)			;INSTALL INTO THEPORT
+		BRA.S	SHARE3					;STRIP 4 BYTES AND RETURN
+
+
+
+;----------------------------------------------------------
+;
+;  PROCEDURE GetPort(VAR gp: GrafPtr);
+;  { inquire the current GrafPort }
+;
+GetPort MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	4(SP),A1				;POINT TO VAR GP
+		MOVE.L	THEPORT(A0),(A1)			;COPY FROM THEPORT
+		BRA.S	SHARE3					;STRIP 4 BYTES AND RETURN
+
+
+
+GrafDevice PROC  EXPORT 	
+;----------------------------------------------------------
+;
+;  PROCEDURE GrafDevice(device: INTEGER);
+;
+		MOVEQ	#DEVICE,D0				;PUT PORT OFFSET IN D0
+		JMP 	PortWord	;INSTALL PARAM INTO THEPORT
+
+
+
+SetPortBits PROC  EXPORT	
+		EXPORT BackPat
+;----------------------------------------------------------
+;
+;  PROCEDURE SetPortBits(bm: BitMap);
+;  { re-direct output to a different BitMap }
+;
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;GET CURRENT GRAFPORT
+		LEA 	PORTBITS(A0),A0 			;POINT TO PORTBITS
+		MOVE.L	4(SP),A1				;POINT TO BITMAP
+		MOVE.L	(A1)+,(A0)+ 			;COPY BASEADDR
+		MOVE.W	(A1)+,(A0)+ 			;COPY ROWBYTES
+SHARE	MOVE.L	(A1)+,(A0)+ 			;COPY BOUNDS.TOPLEFT
+		MOVE.L	(A1)+,(A0)+ 			;COPY BOUNDS.BOTRIGHT
+		MOVE.L	(SP)+,(SP)				;STRIP 4 BYTES
+		RTS 					;AND RETURN
+
+
+
+;----------------------------------------------------------
+;
+;  PROCEDURE BackPat(pat: Pattern);
+;  { set the background pattern }
+;
+BackPat MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;GET CURRENT GRAFPORT
+		LEA 	BKPAT(A0),A0				;POINT TO BKPAT
+		MOVE.L	4(SP),A1				;GET ADDR OF PATTERN
+		BRA.S	SHARE
+
+
+
+PortSize PROC  EXPORT	
+;----------------------------------------------------------
+;
+;  PROCEDURE PortSize(width,height: INTEGER);
+;
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;GET CURRENT GRAFPORT
+		MOVE	PORTRECT+LEFT(A0),D0			;GET PORTRECT.LEFT
+		ADD 	6(SP),D0				;ADD WIDTH
+		MOVE	D0,PORTRECT+RIGHT(A0)			;UPDATE PORTRECT.RIGHT
+		MOVE	PORTRECT+TOP(A0),D0 		;GET PORTRECT.TOP
+		ADD 	4(SP),D0				;ADD HEIGHT
+		MOVE	D0,PORTRECT+BOTTOM(A0)			;UPDATE PORTRECT.BOTTOM
+		MOVE.L	(SP)+,(SP)				;STRIP 4 BYTES
+		RTS 					;AND RETURN
+
+
+
+MovePortTo PROC  EXPORT 	
+		EXPORT SetOrigin,ClipRect
+;----------------------------------------------------------
+;
+;  PROCEDURE MovePortTo(leftGlobal,topGlobal: INTEGER);
+;  { move portRect to a different part of the bitmap }
+;
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;GET CURRENT GRAFPORT
+		MOVE	PORTRECT+LEFT(A0),D0			;GET PORTRECT.LEFT
+		SUB 	PORTBITS+BOUNDS+LEFT(A0),D0 	;CONVERT TO GLOBAL
+		SUB 	6(SP),D0				;SUB LEFTGLOBAL FOR DH
+		MOVE	PORTRECT+TOP(A0),D1 		;GET PORTRECT.TOP
+		SUB 	PORTBITS+BOUNDS+TOP(A0),D1		;CONVERT TO GLOBAL
+		SUB 	4(SP),D1				;SUB TOPGLOBAL FOR DV
+		MOVE.L	(SP)+,(SP)				;STRIP 4 BYTES
+OFSPORT LEA 	PORTBITS+BOUNDS(A0),A0			;OFFSET PORTBITS.BOUNDS DH,DV
+OFSRECT ADD 	D1,(A0)+				;OFFSET TOP
+		ADD 	D0,(A0)+				;OFFSET LEFT
+		ADD 	D1,(A0)+				;OFFSET BOTTOM
+		ADD 	D0,(A0)+				;OFFSET RIGHT
+		RTS 					;AND RETURN
+
+
+
+;----------------------------------------------------------
+;
+;  PROCEDURE SetOrigin(h,v: INTEGER);
+;  { re-define the local coords by adjusting portBits.bounds, }
+;  { portRect, and visRgn }
+;
+SetOrigin
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;GET CURRENT GRAFPORT
+		MOVE.L	4(SP),D0				;GET V AND H BOTH
+		CMP.L	PORTRECT+TOPLEFT(A0),D0 		;SAME AS ALREADY IN THEPORT ?
+		BEQ.S	DONE					;YES, QUIT
+		MOVE	6(SP),D0				;GET H
+		SUB 	PORTRECT+LEFT(A0),D0			;DH:=H-PORTRECT.LEFT
+		MOVE	4(SP),D1				;GET V
+		SUB 	PORTRECT+TOP(A0),D1 		;DV:=V-PORTRECT.TOP
+		MOVE.L	VISRGN(A0),-(SP)			;PUSH PARMS FOR LATER
+		MOVE	D0,-(SP)
+		MOVE	D1,-(SP)
+		BSR.S	OFSPORT 				;OFFSET PORTBITS.BOUNDS
+		LEA 	PORTRECT-PORTBITS-BOUNDS-8(A0),A0 ;POINT A0 AT PORTRECT
+		BSR.S	OFSRECT 				;OFFSET PORTRECT
+		JSR 	OffsetRgn
+DONE	MOVE.L	(SP)+,(SP)				;STRIP 4 BYTES
+		RTS 					;AND RETURN
+
+
+
+;----------------------------------------------------------
+;
+;  PROCEDURE ClipRect(r: Rect);
+;  { Make the current grafport's clipRgn match a given rectangle }
+;
+ClipRect
+		MOVE.L	GRAFGLOBALS(A5),A0			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A0),A0				;GET CURRENT GRAFPORT
+		MOVE.L	CLIPRGN(A0),-(SP)			;PUSH CLIPRGN
+		MOVE.L	8(SP),-(SP) 			;PUCH ADDR OF RECT
+		JSR 	RectRgn
+		BRA.S	DONE
+
+
+
+SetClip PROC  EXPORT
+		EXPORT GetClip
+;----------------------------------------------------------
+;
+;  PROCEDURE SetClip(rgn: RgnHandle);
+;
+;  copy rgn into theport^.clipRgn
+;
+		MOVE.L	(SP)+,A0				;POP RETURN ADDR
+		MOVE.L	GRAFGLOBALS(A5),A1			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A1),A1				;GET CURRENT GRAFPORT
+		MOVE.L	CLIPRGN(A1),-(SP)			;PUSH THEPORT^.CLIPRGN
+		BRA.S	SHARE
+
+
+
+;----------------------------------------------------------
+;
+;  PROCEDURE GetClip(rgn: RgnHandle);
+;
+;  copy from theport^.clipRgn into rgn.
+;
+GetClip
+		MOVE.L	(SP)+,A0				;POP RETURN ADDR
+		MOVE.L	(SP)+,D0				;POP RGN HANDLE
+		MOVE.L	GRAFGLOBALS(A5),A1			;POINT TO QUICKDRAW GLOBALS
+		MOVE.L	THEPORT(A1),A1				;GET CURRENT GRAFPORT
+		MOVE.L	CLIPRGN(A1),-(SP)			;PUSH THEPORT^.CLIPRGN
+		MOVE.L	D0,-(SP)				;PUSH RGN
+SHARE	MOVE.L	A0,-(SP)				;RESTORE RETURN ADDR
+		JMP 	CopyRgn	;AND GO TO COPYRGN
+
+
+
+SetPt	PROC  EXPORT
+;-------------------------------------------------------------
+;
+;  PROCEDURE SetPt(VAR pt: Point; h,v: INTEGER);
+;
+		MOVE.L	(SP)+,A0				;POP RETURN ADDR
+		MOVE.L	(SP)+,D0				;POP H,V
+		MOVE.L	(SP)+,A1				;POP VAR ADDR OF PT
+		MOVE.L	D0,(A1) 				;STORE H,V INTO PT
+		JMP 	(A0)					;RETURN
+
+
+EqualPt FUNC  EXPORT
+;----------------------------------------------------------
+;
+;  FUNCTION  EqualPt(pt1,pt2: Point): BOOLEAN;
+;
+;  CLOBBERS D0,A0.
+;
+		MOVE.L	(SP)+,A0				;POP RETURN ADDR
+		MOVE.L	(SP)+,D0				;pop point1
+		CMP.L	(SP)+,D0				;is point2 = point1 ?
+		SEQ 	(SP)					;IF YES, SET TO TRUE
+		NEG.B	(SP)					;CONVERT -1 TO 1
+		JMP 	(A0)					;RETURN
+
+			ENDPROC
+			END

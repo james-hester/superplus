@@ -1,0 +1,1682 @@
+{
+  "module": "OS/StartMgr/StartupTests.a",
+  "source_path": "Reconstruction/Source/OS/StartMgr/StartupTests.a",
+  "source_sha256": "4ab8793d09c2459428a3a701d4b2d820a2c60fdaeda4e5c17ea9b9ba393ff5e5",
+  "upstream_sources": [
+    {
+      "path": "OS/StartMgr/STCritTests.a",
+      "sha256": "5017b8ee5bd699eca966b10dba6c2225275a11a5df79d9a3e462f9b72b50c545"
+    },
+    {
+      "path": "OS/StartMgr/StartFail.a",
+      "sha256": "ad1b84576da8777d5a2e014732d9164f4f9628e1a623280ad68ed06acbc5bf2b"
+    },
+    {
+      "path": "OS/StartMgr/StartSearch.a",
+      "sha256": "ddd46d97ebec9bac66ab0f2662ed95c0358415ec9eb41904da7a452a30f0de34"
+    }
+  ],
+  "retained_preamble": [
+    [
+      "OS/StartMgr/STCritTests.a",
+      1,
+      9
+    ],
+    [
+      "OS/StartMgr/StartFail.a",
+      1,
+      5
+    ]
+  ],
+  "retained_routine_comments": {
+    "0x400ec4": {
+      "path": "OS/StartMgr/StartFail.a",
+      "lines": [
+        486,
+        487,
+        488,
+        489,
+        490,
+        491,
+        492,
+        493,
+        494,
+        495,
+        496,
+        497,
+        498,
+        499
+      ]
+    }
+  },
+  "retained_body_comments": {
+    "0x400eec": {
+      "path": "OS/StartMgr/StartFail.a",
+      "lines": [
+        524
+      ]
+    }
+  },
+  "equate_sources": [
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "copied_lines": [
+        1043
+      ]
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "copied_lines": [
+        654
+      ]
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x400d76",
+      "end_address_exclusive": "0x401036",
+      "rom_offset": "0xd76",
+      "length": 704,
+      "sha256": "935a72266013711e853e4e4e37586c5351df9dc650f8d4dbce0964cc123958f9"
+    }
+  ],
+  "manifest_entry": {
+    "name": "startup-tests",
+    "source": "Reconstruction/Source/OS/StartMgr/StartupTests.a",
+    "start": "0x400d76",
+    "end_exclusive": "0x401036",
+    "entry_points": {
+      "StartUpROMTest": "0x400d76",
+      "AddressTest": "0x400d9e",
+      "SizeRAM": "0x400dc2",
+      "StartRAMPatterns": "0x400dfc",
+      "TestResults": "0x400e2c",
+      "TestReturn": "0x400e36",
+      "Mod3Test": "0x400e3c",
+      "Mod3Patterns": "0x400eac",
+      "Mod3Patterns2": "0x400eae",
+      "Mod3Patterns3": "0x400eb0",
+      "PutIcon": "0x400ec4",
+      "DeadMac": "0x400f00",
+      "HappyMac": "0x400f28",
+      "PutSymbol": "0x400f2e",
+      "MacOutline": "0x400f3e",
+      "DiskOutline": "0x400fa2",
+      "HappyFace": "0x400fd2",
+      "SadFace": "0x400fe6",
+      "QuestionMark": "0x400ffa",
+      "CrossMark": "0x401018",
+      "ROMLoop": "0x400d8a",
+      "TestAddressBit": "0x400da8",
+      "AddressFailed": "0x400dbe",
+      "TestRAMBlock": "0x400dd4",
+      "ToggleRAMBlock": "0x400dd6",
+      "CheckRAMBlocks": "0x400de6",
+      "TestPattern2": "0x400e18",
+      "TestPattern3": "0x400e22",
+      "FillPattern": "0x400e82",
+      "CheckPattern": "0x400e96",
+      "UNCOMP1": "0x400ec6",
+      "UILOOP": "0x400eca",
+      "MLOOP": "0x400ed0",
+      "IBLACK": "0x400eda",
+      "CHECK": "0x400edc",
+      "DONE": "0x400ee8",
+      "XLOOP": "0x400ef0",
+      "DrawMacOutline": "0x400f04",
+      "DrawMacFace": "0x400f16",
+      "DrawMacDone": "0x400f26",
+      "PutSymbolRow": "0x400f30"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "startup-tests",
+      "source": "Reconstruction/Source/OS/StartMgr/StartupTests.a",
+      "start": "0x400d76",
+      "end_exclusive": "0x401036",
+      "entry_points": {
+        "StartUpROMTest": "0x400d76",
+        "AddressTest": "0x400d9e",
+        "SizeRAM": "0x400dc2",
+        "StartRAMPatterns": "0x400dfc",
+        "TestResults": "0x400e2c",
+        "TestReturn": "0x400e36",
+        "Mod3Test": "0x400e3c",
+        "Mod3Patterns": "0x400eac",
+        "Mod3Patterns2": "0x400eae",
+        "Mod3Patterns3": "0x400eb0",
+        "PutIcon": "0x400ec4",
+        "DeadMac": "0x400f00",
+        "HappyMac": "0x400f28",
+        "PutSymbol": "0x400f2e",
+        "MacOutline": "0x400f3e",
+        "DiskOutline": "0x400fa2",
+        "HappyFace": "0x400fd2",
+        "SadFace": "0x400fe6",
+        "QuestionMark": "0x400ffa",
+        "CrossMark": "0x401018",
+        "ROMLoop": "0x400d8a",
+        "TestAddressBit": "0x400da8",
+        "AddressFailed": "0x400dbe",
+        "TestRAMBlock": "0x400dd4",
+        "ToggleRAMBlock": "0x400dd6",
+        "CheckRAMBlocks": "0x400de6",
+        "TestPattern2": "0x400e18",
+        "TestPattern3": "0x400e22",
+        "FillPattern": "0x400e82",
+        "CheckPattern": "0x400e96",
+        "UNCOMP1": "0x400ec6",
+        "UILOOP": "0x400eca",
+        "MLOOP": "0x400ed0",
+        "IBLACK": "0x400eda",
+        "CHECK": "0x400edc",
+        "DONE": "0x400ee8",
+        "XLOOP": "0x400ef0",
+        "DrawMacOutline": "0x400f04",
+        "DrawMacFace": "0x400f16",
+        "DrawMacDone": "0x400f26",
+        "PutSymbolRow": "0x400f30"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "StartUpROMTest begins at $400D76 after InitEvents. It sets the first test number in A4 before computing the ROM checksum.",
+    "end": "The CrossMark row bitmap ends at $401036, where SysErrInit begins."
+  },
+  "edits": [
+    {
+      "kind": "source_restoration",
+      "description": "Restored the startup checksum, memory tests, icon decoder, display helpers, and data through $401036. The evidence records 27 matching released operations and 146 ROM-only operations. The emitted span contains 432 instruction bytes and 272 data bytes."
+    },
+    {
+      "kind": "test_restoration",
+      "description": "Restored the older combined test entry, address alias test, RAM sizing, and memory pattern passes. The released STCritTests.a has a changed checksum register layout and rewritten memory tests, so the missing operations are identified explicitly."
+    },
+    {
+      "kind": "display_restoration",
+      "description": "Restored fixed screen addresses, the 64-byte row stride, and the DeadMac, HappyMac, and PutSymbol bodies. StartFail.a records the removal of the older Mac Plus display helpers in June 1989."
+    },
+    {
+      "kind": "data_provenance",
+      "description": "Preserved the ROM memory pattern table and compressed Mac and disk outlines. The compressed images each consume their complete data span and expand to 32-by-32 pixels. The two faces and two disk symbols match the middle 16 bits of rows in the released HappyIcon, SadMacIcon, QDiskIcon, and XDiskIcon data."
+    },
+    {
+      "kind": "comment_preservation",
+      "description": "Retained the original test and display file headers, PutIcon interface description, matching instruction comments, and icon decoding comments. Omitted obsolete checksum chip-layout comments and a branch comment whose destination changed."
+    }
+  ],
+  "source_instruction_pairs": {
+    "0x400d7a": {
+      "path": "OS/StartMgr/STCritTests.a",
+      "line": 173,
+      "original_code": "moveq\t#0,d0",
+      "comment": "clear checksum accumulator",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,d0",
+      "inline_comment_retained": true
+    },
+    "0x400d7c": {
+      "path": "OS/StartMgr/STCritTests.a",
+      "line": 174,
+      "original_code": "moveq\t#0,d1",
+      "comment": "clear scratch",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#0,d1",
+      "inline_comment_retained": true
+    },
+    "0x400d8a": {
+      "path": "OS/StartMgr/STCritTests.a",
+      "line": 181,
+      "original_code": "move.w\t(a0)+,d0",
+      "comment": "fetch a ROM word",
+      "preceding_comments": [],
+      "op": "MOVE.W",
+      "operand": "(a0)+,d0",
+      "inline_comment_retained": true
+    },
+    "0x400d8c": {
+      "path": "OS/StartMgr/STCritTests.a",
+      "line": 182,
+      "original_code": "add.l\td0,d1",
+      "comment": "add to checksum",
+      "preceding_comments": [],
+      "op": "ADD.L",
+      "operand": "d0,d1",
+      "inline_comment_retained": true
+    },
+    "0x400e3a": {
+      "path": "OS/StartMgr/STCritTests.a",
+      "line": 199,
+      "original_code": "@10\tjmp\t(a6)",
+      "comment": "and exit",
+      "preceding_comments": [],
+      "op": "JMP",
+      "operand": "(a6)",
+      "inline_comment_retained": true
+    },
+    "0x400ec4": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 501,
+      "original_code": "PutIcon\t\tMOVEQ\t#16-1,D3",
+      "comment": " There are 16 octals in an icon\t\t\t<1.3>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#16-1,D3"
+    },
+    "0x400ec6": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 502,
+      "original_code": "UNCOMP1\t\tMOVE.L\tA2,A0",
+      "comment": " save screen start address",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A2,A0",
+      "inline_comment_retained": true
+    },
+    "0x400ec8": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 503,
+      "original_code": "MOVEQ\t#4-1,D2",
+      "comment": " reset row bytes counter\t\t\t\t\t<1.3>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#4-1,D2"
+    },
+    "0x400eca": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 505,
+      "original_code": "UILOOP\t\tMOVE\t#$100,D4",
+      "comment": " prime D0 for 8 bit count count",
+      "preceding_comments": [],
+      "op": "MOVE",
+      "operand": "#$100,D4",
+      "inline_comment_retained": true
+    },
+    "0x400ece": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 506,
+      "original_code": "MOVE.B\t(A4)+,D4",
+      "comment": " load map byte from compressed image",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4)+,D4",
+      "inline_comment_retained": true
+    },
+    "0x400ed0": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 508,
+      "original_code": "MLOOP\t\tLSR.W\t#1,D4",
+      "comment": " shift off map bit",
+      "preceding_comments": [],
+      "op": "LSR.W",
+      "operand": "#1,D4",
+      "inline_comment_retained": true
+    },
+    "0x400ed2": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 509,
+      "original_code": "BEQ.S\tDONE",
+      "comment": " byte done when = 0",
+      "preceding_comments": [],
+      "op": "BEQ.S",
+      "operand": "DONE",
+      "inline_comment_retained": true
+    },
+    "0x400ed4": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 510,
+      "original_code": "BCC.S\tIBLACK",
+      "comment": " dispatch on the bit",
+      "preceding_comments": [],
+      "op": "BCC.S",
+      "operand": "IBLACK",
+      "inline_comment_retained": true
+    },
+    "0x400ed6": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 511,
+      "original_code": "CLR.B\t(A2)+",
+      "comment": " store zero in new",
+      "preceding_comments": [],
+      "op": "CLR.B",
+      "operand": "(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x400ed8": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 512,
+      "original_code": "BRA.S\tCHECK",
+      "comment": " continue for all 8 bits",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "CHECK",
+      "inline_comment_retained": true
+    },
+    "0x400eda": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 514,
+      "original_code": "IBLACK\t\tMOVE.B\t(A4)+,(A2)+",
+      "comment": " store byte in new",
+      "preceding_comments": [],
+      "op": "MOVE.B",
+      "operand": "(A4)+,(A2)+",
+      "inline_comment_retained": true
+    },
+    "0x400edc": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 515,
+      "original_code": "CHECK\t\tDBF \tD2,MLOOP",
+      "comment": " see if on scanline seam (every 4 bytes)",
+      "preceding_comments": [],
+      "op": "DBF",
+      "operand": "D2,MLOOP",
+      "inline_comment_retained": true
+    },
+    "0x400ee4": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 519,
+      "original_code": "MOVEQ\t#3,D2",
+      "comment": " reset row bytes counter",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#3,D2",
+      "inline_comment_retained": true
+    },
+    "0x400ee6": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 520,
+      "original_code": "BRA.S\tMLOOP",
+      "comment": " continue for all 8 bits",
+      "preceding_comments": [],
+      "op": "BRA.S",
+      "operand": "MLOOP",
+      "inline_comment_retained": true
+    },
+    "0x400ee8": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 522,
+      "original_code": "DONE\t\tDBF \tD3,UILOOP",
+      "comment": " do the rest of the octals in ICON",
+      "preceding_comments": [],
+      "op": "DBF",
+      "operand": "D3,UILOOP",
+      "inline_comment_retained": true
+    },
+    "0x400eec": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 526,
+      "original_code": "MOVE.L\tA0,A1",
+      "comment": " second pointer",
+      "preceding_comments": [
+        [
+          524,
+          "; Now unXOR the icon on the screen"
+        ]
+      ],
+      "op": "MOVE.L",
+      "operand": "A0,A1",
+      "inline_comment_retained": true
+    },
+    "0x400eee": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 527,
+      "original_code": "MOVEQ\t#31-1,D3",
+      "comment": " do 31 scanlines\t\t\t\t\t\t\t<1.3>",
+      "preceding_comments": [],
+      "op": "MOVEQ",
+      "operand": "#31-1,D3"
+    },
+    "0x400ef4": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 530,
+      "original_code": "MOVE.L\t(A0),D4",
+      "comment": " get long from previous scanline",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "(A0),D4",
+      "inline_comment_retained": true
+    },
+    "0x400ef6": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 531,
+      "original_code": "EOR.L\tD4,(A1)",
+      "comment": " xor into this scanline",
+      "preceding_comments": [],
+      "op": "EOR.L",
+      "operand": "D4,(A1)",
+      "inline_comment_retained": true
+    },
+    "0x400ef8": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 532,
+      "original_code": "MOVE.L\tA1,A0",
+      "comment": " \"add\" rowBytes to a2",
+      "preceding_comments": [],
+      "op": "MOVE.L",
+      "operand": "A1,A0",
+      "inline_comment_retained": true
+    },
+    "0x400efa": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 533,
+      "original_code": "DBF \tD3,XLOOP",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "DBF",
+      "operand": "D3,XLOOP"
+    },
+    "0x400efe": {
+      "path": "OS/StartMgr/StartFail.a",
+      "line": 534,
+      "original_code": "RTS6",
+      "comment": "",
+      "preceding_comments": [],
+      "op": "RTS6",
+      "operand": ""
+    }
+  },
+  "rom_only_instructions": [
+    {
+      "address": 4197750,
+      "op": "MOVEQ",
+      "operand": "#1,D0",
+      "bytes": "7001",
+      "rom_instruction": "moveq #1,%d0"
+    },
+    {
+      "address": 4197752,
+      "op": "MOVE.L",
+      "operand": "D0,A4",
+      "bytes": "2840",
+      "rom_instruction": "moveal %d0,%a4"
+    },
+    {
+      "address": 4197758,
+      "op": "LEA",
+      "operand": "ROMStart,A0",
+      "bytes": "41f900400000",
+      "rom_instruction": "lea 0x400000,%a0"
+    },
+    {
+      "address": 4197764,
+      "op": "MOVE.L",
+      "operand": "(A0)+,D3",
+      "bytes": "2618",
+      "rom_instruction": "movel %a0@+,%d3"
+    },
+    {
+      "address": 4197766,
+      "op": "MOVE.W",
+      "operand": "#-3,D2",
+      "bytes": "343cfffd",
+      "rom_instruction": "movew #-3,%d2"
+    },
+    {
+      "address": 4197774,
+      "op": "DBRA",
+      "operand": "D2,ROMLoop",
+      "bytes": "51cafffa",
+      "rom_instruction": "dbf %d2,0x400d8a"
+    },
+    {
+      "address": 4197778,
+      "op": "EOR.L",
+      "operand": "D3,D1",
+      "bytes": "b781",
+      "rom_instruction": "eorl %d3,%d1"
+    },
+    {
+      "address": 4197780,
+      "op": "MOVE.W",
+      "operand": "D1,D0",
+      "bytes": "3001",
+      "rom_instruction": "movew %d1,%d0"
+    },
+    {
+      "address": 4197782,
+      "op": "SWAP",
+      "operand": "D1",
+      "bytes": "4841",
+      "rom_instruction": "swap %d1"
+    },
+    {
+      "address": 4197784,
+      "op": "OR.W",
+      "operand": "D0,D1",
+      "bytes": "8240",
+      "rom_instruction": "orw %d0,%d1"
+    },
+    {
+      "address": 4197786,
+      "op": "BNE.W",
+      "operand": "TestReturn",
+      "bytes": "6600009a",
+      "rom_instruction": "bnew 0x400e36"
+    },
+    {
+      "address": 4197790,
+      "op": "ADDQ.W",
+      "operand": "#1,A4",
+      "bytes": "524c",
+      "rom_instruction": "addqw #1,%a4"
+    },
+    {
+      "address": 4197792,
+      "op": "CLR.W",
+      "operand": "(A3)",
+      "bytes": "4253",
+      "rom_instruction": "clrw %a3@"
+    },
+    {
+      "address": 4197794,
+      "op": "MOVEQ",
+      "operand": "#-1,D0",
+      "bytes": "70ff",
+      "rom_instruction": "moveq #-1,%d0"
+    },
+    {
+      "address": 4197796,
+      "op": "MOVEQ",
+      "operand": "#2,D1",
+      "bytes": "7202",
+      "rom_instruction": "moveq #2,%d1"
+    },
+    {
+      "address": 4197798,
+      "op": "MOVEQ",
+      "operand": "#15,D3",
+      "bytes": "760f",
+      "rom_instruction": "moveq #15,%d3"
+    },
+    {
+      "address": 4197800,
+      "op": "MOVE.L",
+      "operand": "A3,A2",
+      "bytes": "244b",
+      "rom_instruction": "moveal %a3,%a2"
+    },
+    {
+      "address": 4197802,
+      "op": "ADD.L",
+      "operand": "D1,A2",
+      "bytes": "d5c1",
+      "rom_instruction": "addal %d1,%a2"
+    },
+    {
+      "address": 4197804,
+      "op": "ADD.L",
+      "operand": "D1,D1",
+      "bytes": "d281",
+      "rom_instruction": "addl %d1,%d1"
+    },
+    {
+      "address": 4197806,
+      "op": "MOVE.W",
+      "operand": "D0,(A2)",
+      "bytes": "3480",
+      "rom_instruction": "movew %d0,%a2@"
+    },
+    {
+      "address": 4197808,
+      "op": "TST.W",
+      "operand": "(A3)",
+      "bytes": "4a53",
+      "rom_instruction": "tstw %a3@"
+    },
+    {
+      "address": 4197810,
+      "op": "BNE.S",
+      "operand": "AddressFailed",
+      "bytes": "660a",
+      "rom_instruction": "bnes 0x400dbe"
+    },
+    {
+      "address": 4197812,
+      "op": "CLR.W",
+      "operand": "(A3)",
+      "bytes": "4253",
+      "rom_instruction": "clrw %a3@"
+    },
+    {
+      "address": 4197814,
+      "op": "EOR.W",
+      "operand": "D0,(A2)",
+      "bytes": "b152",
+      "rom_instruction": "eorw %d0,%a2@"
+    },
+    {
+      "address": 4197816,
+      "op": "DBNE",
+      "operand": "D3,TestAddressBit",
+      "bytes": "56cbffee",
+      "rom_instruction": "dbne %d3,0x400da8"
+    },
+    {
+      "address": 4197820,
+      "op": "BEQ.S",
+      "operand": "SizeRAM",
+      "bytes": "6704",
+      "rom_instruction": "beqs 0x400dc2"
+    },
+    {
+      "address": 4197822,
+      "op": "MOVE.W",
+      "operand": "(A3),D1",
+      "bytes": "3213",
+      "rom_instruction": "movew %a3@,%d1"
+    },
+    {
+      "address": 4197824,
+      "op": "BRA.S",
+      "operand": "TestReturn",
+      "bytes": "6074",
+      "rom_instruction": "bras 0x400e36"
+    },
+    {
+      "address": 4197826,
+      "op": "MOVE.L",
+      "operand": "A3,A2",
+      "bytes": "244b",
+      "rom_instruction": "moveal %a3,%a2"
+    },
+    {
+      "address": 4197828,
+      "op": "ADD.L",
+      "operand": "D1,A2",
+      "bytes": "d5c1",
+      "rom_instruction": "addal %d1,%a2"
+    },
+    {
+      "address": 4197830,
+      "op": "CLR.W",
+      "operand": "(A3)",
+      "bytes": "4253",
+      "rom_instruction": "clrw %a3@"
+    },
+    {
+      "address": 4197832,
+      "op": "MOVE.W",
+      "operand": "D0,(A2)",
+      "bytes": "3480",
+      "rom_instruction": "movew %d0,%a2@"
+    },
+    {
+      "address": 4197834,
+      "op": "TST.W",
+      "operand": "(A3)",
+      "bytes": "4a53",
+      "rom_instruction": "tstw %a3@"
+    },
+    {
+      "address": 4197836,
+      "op": "BNE.S",
+      "operand": "StartRAMPatterns",
+      "bytes": "662e",
+      "rom_instruction": "bnes 0x400dfc"
+    },
+    {
+      "address": 4197838,
+      "op": "MOVE.L",
+      "operand": "A3,A2",
+      "bytes": "244b",
+      "rom_instruction": "moveal %a3,%a2"
+    },
+    {
+      "address": 4197840,
+      "op": "ASL.L",
+      "operand": "#2,D1",
+      "bytes": "e581",
+      "rom_instruction": "asll #2,%d1"
+    },
+    {
+      "address": 4197842,
+      "op": "MOVEQ",
+      "operand": "#1,D2",
+      "bytes": "7401",
+      "rom_instruction": "moveq #1,%d2"
+    },
+    {
+      "address": 4197844,
+      "op": "MOVEQ",
+      "operand": "#5,D3",
+      "bytes": "7605",
+      "rom_instruction": "moveq #5,%d3"
+    },
+    {
+      "address": 4197846,
+      "op": "NOT.W",
+      "operand": "D2",
+      "bytes": "4642",
+      "rom_instruction": "notw %d2"
+    },
+    {
+      "address": 4197848,
+      "op": "MOVE.W",
+      "operand": "D2,(A2)",
+      "bytes": "3482",
+      "rom_instruction": "movew %d2,%a2@"
+    },
+    {
+      "address": 4197850,
+      "op": "CMP.W",
+      "operand": "(A2),D2",
+      "bytes": "b452",
+      "rom_instruction": "cmpw %a2@,%d2"
+    },
+    {
+      "address": 4197852,
+      "op": "DBNE",
+      "operand": "D3,ToggleRAMBlock",
+      "bytes": "56cbfff8",
+      "rom_instruction": "dbne %d3,0x400dd6"
+    },
+    {
+      "address": 4197856,
+      "op": "BNE.S",
+      "operand": "StartRAMPatterns",
+      "bytes": "661a",
+      "rom_instruction": "bnes 0x400dfc"
+    },
+    {
+      "address": 4197858,
+      "op": "MOVE.L",
+      "operand": "A3,A1",
+      "bytes": "224b",
+      "rom_instruction": "moveal %a3,%a1"
+    },
+    {
+      "address": 4197860,
+      "op": "MOVEQ",
+      "operand": "#0,D3",
+      "bytes": "7600",
+      "rom_instruction": "moveq #0,%d3"
+    },
+    {
+      "address": 4197862,
+      "op": "ADDQ.W",
+      "operand": "#1,D3",
+      "bytes": "5243",
+      "rom_instruction": "addqw #1,%d3"
+    },
+    {
+      "address": 4197864,
+      "op": "CMP.W",
+      "operand": "(A1),D3",
+      "bytes": "b651",
+      "rom_instruction": "cmpw %a1@,%d3"
+    },
+    {
+      "address": 4197866,
+      "op": "BNE.S",
+      "operand": "StartRAMPatterns",
+      "bytes": "6610",
+      "rom_instruction": "bnes 0x400dfc"
+    },
+    {
+      "address": 4197868,
+      "op": "ADD.L",
+      "operand": "D1,A1",
+      "bytes": "d3c1",
+      "rom_instruction": "addal %d1,%a1"
+    },
+    {
+      "address": 4197870,
+      "op": "CMP.W",
+      "operand": "D3,D2",
+      "bytes": "b443",
+      "rom_instruction": "cmpw %d3,%d2"
+    },
+    {
+      "address": 4197872,
+      "op": "BGT.S",
+      "operand": "CheckRAMBlocks",
+      "bytes": "6ef4",
+      "rom_instruction": "bgts 0x400de6"
+    },
+    {
+      "address": 4197874,
+      "op": "ADD.L",
+      "operand": "D1,A2",
+      "bytes": "d5c1",
+      "rom_instruction": "addal %d1,%a2"
+    },
+    {
+      "address": 4197876,
+      "op": "ADDQ.W",
+      "operand": "#1,D2",
+      "bytes": "5242",
+      "rom_instruction": "addqw #1,%d2"
+    },
+    {
+      "address": 4197878,
+      "op": "CMPI.W",
+      "operand": "#8,D2",
+      "bytes": "0c420008",
+      "rom_instruction": "cmpiw #8,%d2"
+    },
+    {
+      "address": 4197882,
+      "op": "BLE.S",
+      "operand": "TestRAMBlock",
+      "bytes": "6fd8",
+      "rom_instruction": "bles 0x400dd4"
+    },
+    {
+      "address": 4197884,
+      "op": "ADDQ.W",
+      "operand": "#1,A4",
+      "bytes": "524c",
+      "rom_instruction": "addqw #1,%a4"
+    },
+    {
+      "address": 4197886,
+      "op": "MOVEQ",
+      "operand": "#0,D0",
+      "bytes": "7000",
+      "rom_instruction": "moveq #0,%d0"
+    },
+    {
+      "address": 4197888,
+      "op": "CMPI.L",
+      "operand": "#ROMStart,ROMBase(A3)",
+      "bytes": "0cab00400000",
+      "rom_instruction": "cmpil #4194304,%a3@(686)"
+    },
+    {
+      "address": 4197896,
+      "op": "BEQ.S",
+      "operand": "TestResults",
+      "bytes": "6722",
+      "rom_instruction": "beqs 0x400e2c"
+    },
+    {
+      "address": 4197898,
+      "op": "TST.B",
+      "operand": "D6",
+      "bytes": "4a06",
+      "rom_instruction": "tstb %d6"
+    },
+    {
+      "address": 4197900,
+      "op": "BPL.S",
+      "operand": "TestResults",
+      "bytes": "6a1e",
+      "rom_instruction": "bpls 0x400e2c"
+    },
+    {
+      "address": 4197902,
+      "op": "LEA",
+      "operand": "MOD3PATTERNS(PC),A0",
+      "bytes": "41fa009c",
+      "rom_instruction": "lea %pc@(0x400eac),%a0"
+    },
+    {
+      "address": 4197906,
+      "op": "LEA",
+      "operand": "TESTPATTERN2(PC),A5",
+      "bytes": "4bfa0004",
+      "rom_instruction": "lea %pc@(0x400e18),%a5"
+    },
+    {
+      "address": 4197910,
+      "op": "BRA.S",
+      "operand": "Mod3Test",
+      "bytes": "6024",
+      "rom_instruction": "bras 0x400e3c"
+    },
+    {
+      "address": 4197912,
+      "op": "LEA",
+      "operand": "MOD3PATTERNS3(PC),A0",
+      "bytes": "41fa0096",
+      "rom_instruction": "lea %pc@(0x400eb0),%a0"
+    },
+    {
+      "address": 4197916,
+      "op": "LEA",
+      "operand": "TESTPATTERN3(PC),A5",
+      "bytes": "4bfa0004",
+      "rom_instruction": "lea %pc@(0x400e22),%a5"
+    },
+    {
+      "address": 4197920,
+      "op": "BRA.S",
+      "operand": "Mod3Test",
+      "bytes": "601a",
+      "rom_instruction": "bras 0x400e3c"
+    },
+    {
+      "address": 4197922,
+      "op": "LEA",
+      "operand": "MOD3PATTERNS2(PC),A0",
+      "bytes": "41fa008a",
+      "rom_instruction": "lea %pc@(0x400eae),%a0"
+    },
+    {
+      "address": 4197926,
+      "op": "LEA",
+      "operand": "TESTRESULTS(PC),A5",
+      "bytes": "4bfa0004",
+      "rom_instruction": "lea %pc@(0x400e2c),%a5"
+    },
+    {
+      "address": 4197930,
+      "op": "BRA.S",
+      "operand": "Mod3Test",
+      "bytes": "6010",
+      "rom_instruction": "bras 0x400e3c"
+    },
+    {
+      "address": 4197932,
+      "op": "MOVE.L",
+      "operand": "A2,A5",
+      "bytes": "2a4a",
+      "rom_instruction": "moveal %a2,%a5"
+    },
+    {
+      "address": 4197934,
+      "op": "MOVEQ",
+      "operand": "#0,D1",
+      "bytes": "7200",
+      "rom_instruction": "moveq #0,%d1"
+    },
+    {
+      "address": 4197936,
+      "op": "MOVE.W",
+      "operand": "D0,D1",
+      "bytes": "3200",
+      "rom_instruction": "movew %d0,%d1"
+    },
+    {
+      "address": 4197938,
+      "op": "SWAP",
+      "operand": "D0",
+      "bytes": "4840",
+      "rom_instruction": "swap %d0"
+    },
+    {
+      "address": 4197940,
+      "op": "OR.W",
+      "operand": "D0,D1",
+      "bytes": "8240",
+      "rom_instruction": "orw %d0,%d1"
+    },
+    {
+      "address": 4197942,
+      "op": "MOVE.L",
+      "operand": "A5,D0",
+      "bytes": "200d",
+      "rom_instruction": "movel %a5,%d0"
+    },
+    {
+      "address": 4197944,
+      "op": "TST.W",
+      "operand": "D1",
+      "bytes": "4a41",
+      "rom_instruction": "tstw %d1"
+    },
+    {
+      "address": 4197948,
+      "op": "MOVE.L",
+      "operand": "A2,D1",
+      "bytes": "220a",
+      "rom_instruction": "movel %a2,%d1"
+    },
+    {
+      "address": 4197950,
+      "op": "SUB.L",
+      "operand": "A3,D1",
+      "bytes": "928b",
+      "rom_instruction": "subl %a3,%d1"
+    },
+    {
+      "address": 4197952,
+      "op": "MOVE.L",
+      "operand": "D1,D2",
+      "bytes": "2401",
+      "rom_instruction": "movel %d1,%d2"
+    },
+    {
+      "address": 4197954,
+      "op": "CLR.W",
+      "operand": "D2",
+      "bytes": "4242",
+      "rom_instruction": "clrw %d2"
+    },
+    {
+      "address": 4197956,
+      "op": "SWAP",
+      "operand": "D2",
+      "bytes": "4842",
+      "rom_instruction": "swap %d2"
+    },
+    {
+      "address": 4197958,
+      "op": "MOVEQ",
+      "operand": "#0,D3",
+      "bytes": "7600",
+      "rom_instruction": "moveq #0,%d3"
+    },
+    {
+      "address": 4197960,
+      "op": "MOVE.W",
+      "operand": "D1,D3",
+      "bytes": "3601",
+      "rom_instruction": "movew %d1,%d3"
+    },
+    {
+      "address": 4197962,
+      "op": "ADD.L",
+      "operand": "D3,D2",
+      "bytes": "d483",
+      "rom_instruction": "addl %d3,%d2"
+    },
+    {
+      "address": 4197964,
+      "op": "DIVU.W",
+      "operand": "#3,D2",
+      "bytes": "84fc0003",
+      "rom_instruction": "divuw #3,%d2"
+    },
+    {
+      "address": 4197968,
+      "op": "CLR.W",
+      "operand": "D2",
+      "bytes": "4242",
+      "rom_instruction": "clrw %d2"
+    },
+    {
+      "address": 4197970,
+      "op": "SWAP",
+      "operand": "D2",
+      "bytes": "4842",
+      "rom_instruction": "swap %d2"
+    },
+    {
+      "address": 4197972,
+      "op": "MOVE.L",
+      "operand": "A2,D3",
+      "bytes": "260a",
+      "rom_instruction": "movel %a2,%d3"
+    },
+    {
+      "address": 4197974,
+      "op": "SUBQ.L",
+      "operand": "#2,D2",
+      "bytes": "5582",
+      "rom_instruction": "subql #2,%d2"
+    },
+    {
+      "address": 4197976,
+      "op": "ADD.L",
+      "operand": "D2,D2",
+      "bytes": "d482",
+      "rom_instruction": "addl %d2,%d2"
+    },
+    {
+      "address": 4197978,
+      "op": "ADD.L",
+      "operand": "D2,D3",
+      "bytes": "d682",
+      "rom_instruction": "addl %d2,%d3"
+    },
+    {
+      "address": 4197980,
+      "op": "ADD.L",
+      "operand": "D2,D1",
+      "bytes": "d282",
+      "rom_instruction": "addl %d2,%d1"
+    },
+    {
+      "address": 4197982,
+      "op": "MOVE.W",
+      "operand": "D1,D7",
+      "bytes": "3e01",
+      "rom_instruction": "movew %d1,%d7"
+    },
+    {
+      "address": 4197984,
+      "op": "CLR.W",
+      "operand": "D1",
+      "bytes": "4241",
+      "rom_instruction": "clrw %d1"
+    },
+    {
+      "address": 4197986,
+      "op": "SWAP",
+      "operand": "D1",
+      "bytes": "4841",
+      "rom_instruction": "swap %d1"
+    },
+    {
+      "address": 4197988,
+      "op": "DIVU.W",
+      "operand": "#12,D1",
+      "bytes": "82fc000c",
+      "rom_instruction": "divuw #12,%d1"
+    },
+    {
+      "address": 4197992,
+      "op": "SWAP",
+      "operand": "D1",
+      "bytes": "4841",
+      "rom_instruction": "swap %d1"
+    },
+    {
+      "address": 4197994,
+      "op": "SWAP",
+      "operand": "D7",
+      "bytes": "4847",
+      "rom_instruction": "swap %d7"
+    },
+    {
+      "address": 4197996,
+      "op": "MOVE.W",
+      "operand": "D1,D7",
+      "bytes": "3e01",
+      "rom_instruction": "movew %d1,%d7"
+    },
+    {
+      "address": 4197998,
+      "op": "SWAP",
+      "operand": "D7",
+      "bytes": "4847",
+      "rom_instruction": "swap %d7"
+    },
+    {
+      "address": 4198000,
+      "op": "DIVU.W",
+      "operand": "#12,D7",
+      "bytes": "8efc000c",
+      "rom_instruction": "divuw #12,%d7"
+    },
+    {
+      "address": 4198004,
+      "op": "MOVE.W",
+      "operand": "D7,D1",
+      "bytes": "3207",
+      "rom_instruction": "movew %d7,%d1"
+    },
+    {
+      "address": 4198006,
+      "op": "MOVE.L",
+      "operand": "D1,D7",
+      "bytes": "2e01",
+      "rom_instruction": "movel %d1,%d7"
+    },
+    {
+      "address": 4198008,
+      "op": "LSR.L",
+      "operand": "#1,D1",
+      "bytes": "e289",
+      "rom_instruction": "lsrl #1,%d1"
+    },
+    {
+      "address": 4198010,
+      "op": "MOVE.L",
+      "operand": "D3,A1",
+      "bytes": "2243",
+      "rom_instruction": "moveal %d3,%a1"
+    },
+    {
+      "address": 4198012,
+      "op": "MOVEM.L",
+      "operand": "(A0),D2-D6",
+      "bytes": "4cd0007c",
+      "rom_instruction": "moveml %a0@,%d2-%d6"
+    },
+    {
+      "address": 4198016,
+      "op": "MOVE.L",
+      "operand": "A3,A0",
+      "bytes": "204b",
+      "rom_instruction": "moveal %a3,%a0"
+    },
+    {
+      "address": 4198018,
+      "op": "MOVEM.L",
+      "operand": "D2-D4,(A0)",
+      "bytes": "48d0001c",
+      "rom_instruction": "moveml %d2-%d4,%a0@"
+    },
+    {
+      "address": 4198022,
+      "op": "ADD.W",
+      "operand": "#12,A0",
+      "bytes": "d0fc000c",
+      "rom_instruction": "addaw #12,%a0"
+    },
+    {
+      "address": 4198026,
+      "op": "MOVEM.L",
+      "operand": "D4-D6,-(A1)",
+      "bytes": "48e10e00",
+      "rom_instruction": "moveml %d4-%d6,%a1@-"
+    },
+    {
+      "address": 4198030,
+      "op": "SUBQ.L",
+      "operand": "#1,D1",
+      "bytes": "5381",
+      "rom_instruction": "subql #1,%d1"
+    },
+    {
+      "address": 4198032,
+      "op": "BPL.S",
+      "operand": "FillPattern",
+      "bytes": "6af0",
+      "rom_instruction": "bpls 0x400e82"
+    },
+    {
+      "address": 4198034,
+      "op": "MOVE.L",
+      "operand": "A3,A0",
+      "bytes": "204b",
+      "rom_instruction": "moveal %a3,%a0"
+    },
+    {
+      "address": 4198036,
+      "op": "MOVE.L",
+      "operand": "D7,D1",
+      "bytes": "2207",
+      "rom_instruction": "movel %d7,%d1"
+    },
+    {
+      "address": 4198038,
+      "op": "MOVEM.L",
+      "operand": "(A0)+,D5-D7",
+      "bytes": "4cd800e0",
+      "rom_instruction": "moveml %a0@+,%d5-%d7"
+    },
+    {
+      "address": 4198042,
+      "op": "EOR.L",
+      "operand": "D2,D5",
+      "bytes": "b585",
+      "rom_instruction": "eorl %d2,%d5"
+    },
+    {
+      "address": 4198044,
+      "op": "EOR.L",
+      "operand": "D3,D6",
+      "bytes": "b786",
+      "rom_instruction": "eorl %d3,%d6"
+    },
+    {
+      "address": 4198046,
+      "op": "EOR.L",
+      "operand": "D4,D7",
+      "bytes": "b987",
+      "rom_instruction": "eorl %d4,%d7"
+    },
+    {
+      "address": 4198048,
+      "op": "OR.L",
+      "operand": "D5,D6",
+      "bytes": "8c85",
+      "rom_instruction": "orl %d5,%d6"
+    },
+    {
+      "address": 4198050,
+      "op": "OR.L",
+      "operand": "D6,D7",
+      "bytes": "8e86",
+      "rom_instruction": "orl %d6,%d7"
+    },
+    {
+      "address": 4198052,
+      "op": "OR.L",
+      "operand": "D7,D0",
+      "bytes": "8087",
+      "rom_instruction": "orl %d7,%d0"
+    },
+    {
+      "address": 4198054,
+      "op": "SUBQ.L",
+      "operand": "#1,D1",
+      "bytes": "5381",
+      "rom_instruction": "subql #1,%d1"
+    },
+    {
+      "address": 4198056,
+      "op": "BGT.S",
+      "operand": "CheckPattern",
+      "bytes": "6eec",
+      "rom_instruction": "bgts 0x400e96"
+    },
+    {
+      "address": 4198058,
+      "op": "JMP",
+      "operand": "(A5)",
+      "bytes": "4ed5",
+      "rom_instruction": "jmp %a5@"
+    },
+    {
+      "address": 4198112,
+      "op": "ADD.W",
+      "operand": "#64-4,A2",
+      "bytes": "d4fc003c",
+      "rom_instruction": "addaw #60,%a2"
+    },
+    {
+      "address": 4198128,
+      "op": "ADD.W",
+      "operand": "#64,A1",
+      "bytes": "d2fc0040",
+      "rom_instruction": "addaw #64,%a1"
+    },
+    {
+      "address": 4198144,
+      "op": "LEA",
+      "operand": "SADFACE(PC),A0",
+      "bytes": "41fa00e4",
+      "rom_instruction": "lea %pc@(0x400fe6),%a0"
+    },
+    {
+      "address": 4198148,
+      "op": "LEA",
+      "operand": "MACOUTLINE(PC),A4",
+      "bytes": "49fa0038",
+      "rom_instruction": "lea %pc@(0x400f3e),%a4"
+    },
+    {
+      "address": 4198152,
+      "op": "MOVE.L",
+      "operand": "A0,D7",
+      "bytes": "2e08",
+      "rom_instruction": "movel %a0,%d7"
+    },
+    {
+      "address": 4198154,
+      "op": "MOVE.L",
+      "operand": "#ScreenLow+145*64+30,A2",
+      "bytes": "247c003fcb5e",
+      "rom_instruction": "moveal #4180830,%a2"
+    },
+    {
+      "address": 4198160,
+      "op": "LEA",
+      "operand": "DRAWMACFACE(PC),A6",
+      "bytes": "4dfa0004",
+      "rom_instruction": "lea %pc@(0x400f16),%fp"
+    },
+    {
+      "address": 4198164,
+      "op": "BRA.S",
+      "operand": "PutIcon",
+      "bytes": "60ae",
+      "rom_instruction": "bras 0x400ec4"
+    },
+    {
+      "address": 4198166,
+      "op": "MOVE.L",
+      "operand": "#ScreenLow+151*64+31,A2",
+      "bytes": "247c003fccdf",
+      "rom_instruction": "moveal #4181215,%a2"
+    },
+    {
+      "address": 4198172,
+      "op": "MOVE.L",
+      "operand": "D7,A4",
+      "bytes": "2847",
+      "rom_instruction": "moveal %d7,%a4"
+    },
+    {
+      "address": 4198174,
+      "op": "LEA",
+      "operand": "DRAWMACDONE(PC),A6",
+      "bytes": "4dfa0006",
+      "rom_instruction": "lea %pc@(0x400f26),%fp"
+    },
+    {
+      "address": 4198178,
+      "op": "BRA.W",
+      "operand": "PutSymbol",
+      "bytes": "6000000a",
+      "rom_instruction": "braw 0x400f2e"
+    },
+    {
+      "address": 4198182,
+      "op": "JMP",
+      "operand": "(A5)",
+      "bytes": "4ed5",
+      "rom_instruction": "jmp %a5@"
+    },
+    {
+      "address": 4198184,
+      "op": "LEA",
+      "operand": "HAPPYFACE(PC),A0",
+      "bytes": "41fa00a8",
+      "rom_instruction": "lea %pc@(0x400fd2),%a0"
+    },
+    {
+      "address": 4198188,
+      "op": "BRA.S",
+      "operand": "DrawMacOutline",
+      "bytes": "60d6",
+      "rom_instruction": "bras 0x400f04"
+    },
+    {
+      "address": 4198190,
+      "op": "MOVEQ",
+      "operand": "#9,D2",
+      "bytes": "7409",
+      "rom_instruction": "moveq #9,%d2"
+    },
+    {
+      "address": 4198192,
+      "op": "MOVE.B",
+      "operand": "(A4)+,(A2)+",
+      "bytes": "14dc",
+      "rom_instruction": "moveb %a4@+,%a2@+"
+    },
+    {
+      "address": 4198194,
+      "op": "MOVE.B",
+      "operand": "(A4)+,(A2)+",
+      "bytes": "14dc",
+      "rom_instruction": "moveb %a4@+,%a2@+"
+    },
+    {
+      "address": 4198196,
+      "op": "ADD.W",
+      "operand": "#64-2,A2",
+      "bytes": "d4fc003e",
+      "rom_instruction": "addaw #62,%a2"
+    },
+    {
+      "address": 4198200,
+      "op": "DBRA",
+      "operand": "D2,PutSymbolRow",
+      "bytes": "51cafff6",
+      "rom_instruction": "dbf %d2,0x400f30"
+    },
+    {
+      "address": 4198204,
+      "op": "JMP",
+      "operand": "(A6)",
+      "bytes": "4ed6",
+      "rom_instruction": "jmp %fp@"
+    }
+  ],
+  "restored_equates": {
+    "ROMStart": 4194304,
+    "ScreenLow": [
+      "Interfaces/AIncludes/HardwareEqu.a",
+      654
+    ]
+  },
+  "restored_symbolic_operands": {
+    "4197758": "ROMStart,A0",
+    "4197888": "#ROMStart,ROMBase(A3)",
+    "4198112": "#64-4,A2",
+    "4198128": "#64,A1",
+    "4198154": "#ScreenLow+145*64+30,A2",
+    "4198166": "#ScreenLow+151*64+31,A2",
+    "4198196": "#64-2,A2"
+  },
+  "retained_data": {
+    "4198060": {
+      "length": 2,
+      "text": "        DC.W $DB6D"
+    },
+    "4198062": {
+      "length": 2,
+      "text": "        DC.W $B6DB"
+    },
+    "4198064": {
+      "length": 20,
+      "text": "        DC.W $6DB6,$DB6D,$B6DB,$6DB6,$DB6D,$B6DB,$6DB6,$DB6D\n        DC.W $B6DB,$6DB6"
+    },
+    "4198206": {
+      "length": 100,
+      "text": "        DC.B $00,$57,$FF,$FF,$D5,$FF,$FF,$FF\n        DC.B $FF,$06,$F8,$3F,$E1,$FF,$FF,$0F\n        DC.B $60,$E3,$FF,$FF,$8F,$E0,$0F,$66\n        DC.B $E0,$0F,$E0,$0F,$66,$E0,$0F,$E0\n        DC.B $0F,$66,$E0,$0F,$E0,$0F,$66,$E0\n        DC.B $0F,$E0,$0F,$66,$E0,$0F,$E0,$0F\n        DC.B $06,$E0,$0F,$E3,$FF,$FF,$8F,$60\n        DC.B $E1,$FF,$FF,$0F,$E0,$0F,$66,$E0\n        DC.B $0F,$E0,$0F,$22,$E3,$3F,$0F,$E3\n        DC.B $3F,$0F,$66,$E0,$0F,$E0,$0F,$06\n        DC.B $E0,$0F,$FF,$FF,$FF,$FF,$60,$F7\n        DC.B $FF,$FF,$DF,$F0,$1F,$06,$F0,$1F\n        DC.B $F7,$FF,$FF,$DF"
+    },
+    "4198306": {
+      "length": 48,
+      "text": "        DC.B $00,$7F,$FF,$FF,$F5,$FE,$FF,$FE\n        DC.B $FF,$33,$70,$0F,$F8,$07,$F7,$03\n        DC.B $FF,$BB,$F8,$70,$98,$01,$FF,$FF\n        DC.B $FF,$FE,$FF,$00,$07,$FF,$FF,$E0\n        DC.B $0F,$FF,$FF,$F0,$FF,$FF,$FF,$FF\n        DC.B $FF,$FF,$FF,$0F,$77,$FF,$FF,$EF"
+    },
+    "4198354": {
+      "length": 20,
+      "text": "        DC.W $0000,$1110,$1110,$0100,$0100,$0300,$0000,$0840\n        DC.W $0780,$0000"
+    },
+    "4198374": {
+      "length": 20,
+      "text": "        DC.W $2828,$1010,$2828,$0000,$0480,$0300,$0000,$0FC0\n        DC.W $1030,$0008"
+    },
+    "4198394": {
+      "length": 30,
+      "text": "        DC.W $0000,$0000,$07E0,$0FF0,$0C30,$0C30,$0070,$00E0\n        DC.W $01C0,$0180,$0180,$0000,$0180,$0180,$0000"
+    },
+    "4198424": {
+      "length": 30,
+      "text": "        DC.W $0000,$0000,$1008,$381C,$1C38,$0E70,$07E0,$03C0\n        DC.W $03C0,$07E0,$0E70,$1C38,$381C,$1008,$0000"
+    }
+  },
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 704,
+    "checked_entry_points": 41,
+    "instruction_count": 173,
+    "source_operation_matches": 27,
+    "rom_only_operation_count": 146,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled the source, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-startup-tests-verify",
+    "source_sha256": "4ab8793d09c2459428a3a701d4b2d820a2c60fdaeda4e5c17ea9b9ba393ff5e5",
+    "assembled_sha256": "935a72266013711e853e4e4e37586c5351df9dc650f8d4dbce0964cc123958f9",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish original formatting or original names for reconstructed labels."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  },
+  "icon_validation": [
+    {
+      "name": "HappyFace",
+      "rom_start": "0x400fd2",
+      "length": 20,
+      "source": "OS/StartMgr/StartSearch.a",
+      "line_range": [
+        1284,
+        1287
+      ],
+      "source_row_first_zero_based": 6,
+      "row_count": 10,
+      "extraction": "Each source row is a 32-bit word. Shift right by eight bits and retain its low 16 bits.",
+      "result": "exact_word_match"
+    },
+    {
+      "name": "SadFace",
+      "rom_start": "0x400fe6",
+      "length": 20,
+      "source": "OS/StartMgr/StartFail.a",
+      "line_range": [
+        539,
+        570
+      ],
+      "source_row_first_zero_based": 6,
+      "row_count": 10,
+      "extraction": "Each source row is a 32-bit word. Shift right by eight bits and retain its low 16 bits.",
+      "result": "exact_word_match"
+    },
+    {
+      "name": "QuestionMark",
+      "rom_start": "0x400ffa",
+      "length": 30,
+      "source": "OS/StartMgr/StartSearch.a",
+      "line_range": [
+        1304,
+        1307
+      ],
+      "source_row_first_zero_based": 15,
+      "row_count": 15,
+      "extraction": "Each source row is a 32-bit word. Shift right by eight bits and retain its low 16 bits.",
+      "result": "exact_word_match"
+    },
+    {
+      "name": "CrossMark",
+      "rom_start": "0x401018",
+      "length": 30,
+      "source": "OS/StartMgr/StartSearch.a",
+      "line_range": [
+        1314,
+        1317
+      ],
+      "source_row_first_zero_based": 15,
+      "row_count": 15,
+      "extraction": "Each source row is a 32-bit word. Shift right by eight bits and retain its low 16 bits.",
+      "result": "exact_word_match"
+    },
+    {
+      "name": "MacOutline",
+      "rom_start": "0x400f3e",
+      "compressed_length": 100,
+      "expanded_length": 128,
+      "width": 32,
+      "height": 32,
+      "decoded_sha256": "064601e490414da2a403fb244a25a8ac89088cac3ace6ecb3c1c9265b5a24cc7",
+      "result": "exact_compressed_span_and_dimensions"
+    },
+    {
+      "name": "DiskOutline",
+      "rom_start": "0x400fa2",
+      "compressed_length": 48,
+      "expanded_length": 128,
+      "width": 32,
+      "height": 32,
+      "decoded_sha256": "d73eccf5a9f02a28e078339f258541f764725eb449002a3296ef3cc3bc6bb976",
+      "result": "exact_compressed_span_and_dimensions"
+    }
+  ],
+  "missing_body_history": [
+    {
+      "path": "OS/StartMgr/STCritTests.a",
+      "lines": [
+        13,
+        25
+      ],
+      "subject": "Later memory test replacements and obsolete code removal."
+    },
+    {
+      "path": "OS/StartMgr/StartFail.a",
+      "lines": [
+        39,
+        44
+      ],
+      "subject": "Removal of the older display helpers and PutSymbol."
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "module": "OS/TrapDispatcher.a",
+  "source_path": "Reconstruction/Source/OS/TrapDispatcher.a",
+  "source_sha256": "5c17a491642f6d89a22c793bcf8acb8fcc5ef8811443d4bc14aedb4014ee95ae",
+  "upstream_sources": [
+    {
+      "path": "OS/TrapDispatcher/Dispatch.a",
+      "sha256": "31956670deb21407c16c71b3c2e35ec96ad0c7cb56423c86b464c7ff88c2179e",
+      "retained_comment_ranges": [
+        [
+          1,
+          8
+        ],
+        [
+          112,
+          127
+        ],
+        [
+          130,
+          194
+        ],
+        [
+          407,
+          412
+        ],
+        [
+          414,
+          420
+        ],
+        [
+          370,
+          379
+        ]
+      ],
+      "rewrite_history_lines": [
+        43,
+        57,
+        58
+      ]
+    },
+    {
+      "path": "OS/TrapDispatcher/DispatchPatch.a",
+      "sha256": "239cce9326a5b632fa0d47589c9c1fc5e39e79d1a630eadaad8a08d4bec429af",
+      "comparison_range": [
+        121,
+        296
+      ],
+      "role": "Compared the later Plus and SE patch dispatcher. Its expanded table and register allocation differ from the target ROM."
+    }
+  ],
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x401f4a",
+      "end_address_exclusive": "0x402030",
+      "rom_offset": "0x1f4a",
+      "length": 230,
+      "sha256": "fca9d299cf364353df2636a74e341a8a6c24fddd3640b751e65ea636cb035101"
+    }
+  ],
+  "manifest_entry": {
+    "name": "trap-dispatcher",
+    "source": "Reconstruction/Source/OS/TrapDispatcher.a",
+    "start": "0x401f4a",
+    "end_exclusive": "0x402030",
+    "entry_points": {
+      "Dispatch": "0x401f4a",
+      "EMT1010": "0x401f52",
+      "DispatchCommon": "0x401f54",
+      "OSTrap": "0x401f88",
+      "OSExit": "0x401fa2",
+      "OSKeepA0": "0x401fac",
+      "ToolExit": "0x401f86",
+      "SetTrapAddress": "0x401fba",
+      "SetTrapEntry": "0x401fd6",
+      "SetOSTrap": "0x401fce",
+      "SetOldTrap": "0x401fe0",
+      "FindOldTable": "0x401fe4",
+      "OldOSTrap": "0x402000",
+      "OldTableExit": "0x402004",
+      "GetOldTrap": "0x402006",
+      "GetTrapAddress": "0x40200a",
+      "GetOSTrap": "0x40201e",
+      "GetTrapEntry": "0x402026"
+    }
+  },
+  "integration_manifest": [
+    {
+      "name": "trap-dispatcher",
+      "source": "Reconstruction/Source/OS/TrapDispatcher.a",
+      "start": "0x401f4a",
+      "end_exclusive": "0x402030",
+      "entry_points": {
+        "Dispatch": "0x401f4a",
+        "EMT1010": "0x401f52",
+        "DispatchCommon": "0x401f54",
+        "OSTrap": "0x401f88",
+        "OSExit": "0x401fa2",
+        "OSKeepA0": "0x401fac",
+        "ToolExit": "0x401f86",
+        "SetTrapAddress": "0x401fba",
+        "SetTrapEntry": "0x401fd6",
+        "SetOSTrap": "0x401fce",
+        "SetOldTrap": "0x401fe0",
+        "FindOldTable": "0x401fe4",
+        "OldOSTrap": "0x402000",
+        "OldTableExit": "0x402004",
+        "GetOldTrap": "0x402006",
+        "GetTrapAddress": "0x40200a",
+        "GetOSTrap": "0x40201e",
+        "GetTrapEntry": "0x402026"
+      }
+    }
+  ],
+  "boundary_evidence": {
+    "start": "Dispatch begins at $401F4A immediately after PinRect. EMT1010 begins at $401F52 and shares the dispatcher body.",
+    "end": "GetTrapAddress ends with RTS at $40202E. Memory Manager queue routines begin at $402030."
+  },
+  "restored_symbolic_operands": {
+    "0x401f64": "#numTrapMask,D2",
+    "0x401f68": "#$A800,D1",
+    "0x401f7a": "#$A800+autoPop,D1",
+    "0x401f8c": "#dontSaveA0,D2",
+    "0x401fba": "#OldDisp,D1",
+    "0x401fc0": "#numTrapMask,D0",
+    "0x401fc8": "#ToolDisp,D1",
+    "0x401fe4": "#numTrapMask,D0",
+    "0x40200a": "#OldDisp,D1",
+    "0x402010": "#numTrapMask,D0",
+    "0x402018": "#ToolDisp,D1"
+  },
+  "edits": [
+    {
+      "kind": "restored_body",
+      "description": "Restored both exception-frame entries, Toolbox auto-pop handling, OS register preservation, and GetTrapAddress and SetTrapAddress from the ROM. The released Dispatch.a history records a rewrite in November 1988 and removal of 68000 paths in May 1992. Its retained interface description defines the old behavior."
+    },
+    {
+      "kind": "constants",
+      "description": "Restored the Plus table addresses, $0400 for OS traps and $0C00 for Toolbox traps, with a 9-bit Toolbox mask. The selector bits agree with the released old/new trap numbering description. Bit 8 controls A0 preservation; bit 10 selects Toolbox auto-pop."
+    },
+    {
+      "kind": "source_comments",
+      "description": "Retained the original header, early history, applicable calling convention description, and trap-address routine contracts. Omitted later processor timing, cache flushing, patch protection, and extended Toolbox paths."
+    },
+    {
+      "kind": "build",
+      "description": "Assembled every instruction from a mnemonic and operands. The module contains no data directives or instruction placeholders. ROM branch destinations and widths are explicit. Descriptive local labels do not claim to reproduce lost original names."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 230,
+    "checked_entry_points": 18,
+    "instruction_count": 76,
+    "method": "Called the shared verify_module function in an independent temporary directory. It assembled MC68000 code, linked at the ROM address, checked all entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-trap-dispatcher-verify",
+    "source_sha256": "5c17a491642f6d89a22c793bcf8acb8fcc5ef8811443d4bc14aedb4014ee95ae",
+    "assembled_sha256": "fca9d299cf364353df2636a74e341a8a6c24fddd3640b751e65ea636cb035101",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. The released source no longer contains the original bodies; these are ROM restorations supported by the retained interface description."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

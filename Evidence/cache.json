@@ -1,0 +1,292 @@
+{
+  "module": "CACHE",
+  "source": "Reconstruction/Source/OS/HFS/CACHE.a",
+  "originals": [
+    {
+      "path": "OS/HFS/Cache.a",
+      "sha256": "61b37d7bfc541281ce5da0eb0ba680de177edda1f022c34dd2e58270a9b84a1c",
+      "line_ranges": [
+        [
+          1,
+          1099
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/CacheIO.a",
+      "sha256": "d2767922871917c157f9155555f4a96fd25c0d56f56f081e5227e57a7ffdf2b8",
+      "line_ranges": [
+        [
+          96,
+          123
+        ]
+      ],
+      "role": "ReadOwnBuf and ReadBlock establish the following module boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          141,
+          141
+        ],
+        [
+          150,
+          150
+        ],
+        [
+          176,
+          178
+        ],
+        [
+          252,
+          256
+        ],
+        [
+          260,
+          271
+        ],
+        [
+          274,
+          275
+        ],
+        [
+          279,
+          281
+        ],
+        [
+          285,
+          285
+        ],
+        [
+          292,
+          295
+        ],
+        [
+          303,
+          305
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          301,
+          301
+        ],
+        [
+          303,
+          303
+        ],
+        [
+          314,
+          314
+        ],
+        [
+          341,
+          341
+        ],
+        [
+          352,
+          352
+        ],
+        [
+          354,
+          354
+        ],
+        [
+          361,
+          362
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          332,
+          339
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          1481,
+          1481
+        ]
+      ],
+      "role": "Original field offsets, flags, constants, or error values used by this module."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x40769a",
+      "end_exclusive": "0x407bae",
+      "rom_offset": "0x769a",
+      "length": 1300,
+      "sha256": "a65e34f73add044f8811e56d34b29db68be573708d7b63ae48fc81db56796c5c",
+      "start_label": "Cache",
+      "end_label": "CACHEEnd",
+      "boundary_evidence": "GetOwnBuf starts Cache at 0x40769a after BTMAINT2 UpdIKey. NQCBuf returns at 0x407bac. CacheIO ReadOwnBuf and ReadBlock begin at 0x407bae."
+    }
+  ],
+  "entry_points": {
+    "Cache": "0x40769a",
+    "GetOwnBuf": "0x40769a",
+    "FlushOwnBuf": "0x4076a8",
+    "FlushCache": "0x4076c6",
+    "vFlushCache": "0x4076cc",
+    "GetBlock": "0x4077b0",
+    "vGetBlock": "0x4077b6",
+    "InitCache": "0x40799a",
+    "MarkEmpty": "0x4079e8",
+    "MarkBlock": "0x4079f4",
+    "vMarkBlock": "0x4079fa",
+    "MarkA5Block": "0x407a02",
+    "RelBlock": "0x407a0a",
+    "vRelBlock": "0x407a10",
+    "CacheRdIP": "0x407b2a",
+    "CacheWrIP": "0x407b56",
+    "DQCBuf": "0x407b84",
+    "NQCBuf": "0x407b9a",
+    "CACHEEnd": "0x407bae"
+  },
+  "integration_manifest": {
+    "name": "cache",
+    "source": "Reconstruction/Source/OS/HFS/CACHE.a",
+    "start": "0x40769a",
+    "end_exclusive": "0x407bae",
+    "entry_points": {
+      "Cache": "0x40769a",
+      "GetOwnBuf": "0x40769a",
+      "FlushOwnBuf": "0x4076a8",
+      "FlushCache": "0x4076c6",
+      "vFlushCache": "0x4076cc",
+      "GetBlock": "0x4077b0",
+      "vGetBlock": "0x4077b6",
+      "InitCache": "0x40799a",
+      "MarkEmpty": "0x4079e8",
+      "MarkBlock": "0x4079f4",
+      "vMarkBlock": "0x4079fa",
+      "MarkA5Block": "0x407a02",
+      "RelBlock": "0x407a0a",
+      "vRelBlock": "0x407a10",
+      "CacheRdIP": "0x407b2a",
+      "CacheWrIP": "0x407b56",
+      "DQCBuf": "0x407b84",
+      "NQCBuf": "0x407b9a",
+      "CACHEEnd": "0x407bae"
+    }
+  },
+  "changes": [
+    {
+      "location": "GetOwnBuf and GBMapFBlk",
+      "change": "Restored the caller buffer loads removed in February 1987.",
+      "evidence": "Both GetOwnBuf at 0x40769a and GBMapFBlk at 0x40783e load FCBBfAdr rather than forcing D0 to zero. The surviving flush, read, and trash paths then use the caller buffer."
+    },
+    {
+      "location": "InitCache at 0x40799a",
+      "change": "Restored the A6 stack frame before the January 1994 stack fix. Kept the system-heap cleared-pointer allocation and named its combined opcode.",
+      "evidence": "InitCache saves its return address and registers on A6 at 0x40799a. It restores them at 0x4079de. The allocation trap at 0x4079b4 is 0xa71e."
+    },
+    {
+      "location": "Debug configuration and field assumptions",
+      "change": "Retained inactive debug code and original field equality checks as comments. The copied equates preserve those equalities.",
+      "evidence": "COBFlags equals CBHFlags at 26, COBDBlk equals CBHDBlk at 18, and COBFlBlk equals CBHFlBlk at 22. The target contains no debug traps in the guarded paths or GetBlock in-use path."
+    },
+    {
+      "location": "Surviving cache bodies",
+      "change": "Preserved the original header, applicable history, and comments. Added required original equates, external addresses, and explicit PC-relative calls.",
+      "evidence": "All 1300 bytes and 19 labels match. The queue operations, direct read/write support, and cache state transitions retain the surviving source behavior."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "ReadBlock",
+      "address": "0x407bae"
+    },
+    {
+      "name": "ReadOwnBuf",
+      "address": "0x407bae"
+    },
+    {
+      "name": "WriteBlock",
+      "address": "0x407bc0"
+    },
+    {
+      "name": "WriteOwnBuf",
+      "address": "0x407bb8"
+    },
+    {
+      "name": "RdBlocks",
+      "address": "0x407c8c"
+    },
+    {
+      "name": "WrBlocks",
+      "address": "0x407cda"
+    },
+    {
+      "name": "Lg2Phys",
+      "address": "0x4055e0"
+    },
+    {
+      "name": "TFSVCBTst",
+      "address": "0x404ec6"
+    },
+    {
+      "name": "GetVCBRfn",
+      "address": "0x402ca6"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x40769a, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "cf43749f7899c853456444e9eafd1f7576a8d439a6cc277bd4072b093e93a83d",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/HFS/CACHE.a",
+        "sha256": "cf43749f7899c853456444e9eafd1f7576a8d439a6cc277bd4072b093e93a83d"
+      }
+    ],
+    "assembled_length": 1300,
+    "matched_bytes": 1300,
+    "entry_points_checked": 19,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file operations, disk writes, memory handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

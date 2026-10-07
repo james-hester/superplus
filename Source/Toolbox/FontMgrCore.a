@@ -1,0 +1,1548 @@
+;—————————————————————————————————————————————————————————————————————————————————————————————————————
+;
+;	File:		FontMgr.a
+;
+;	Copyright:	© 1983-1993 by Apple Computer, Inc., all rights reserved.
+;
+;	Scaling Font Manager for MacIntosh User Interface ToolBox
+;
+;	written by Andy Hertzfeld	February 5, 1983
+;
+;	New 128K ROM version, AJH, last week of April 1985
+;
+;	Here it is, the new scaling font manager which supports independent
+;	typeFaces and sizes.  The font manager is built on top of the
+;	resource manager and provides a simple swapping mechanism for fonts,
+;	based on the resource/memory manager's purgable objects. It is passed
+;	an input record from QuickDraw consisting of the font face, device, style
+;	and scale and selects the closest font to the requested size that it can.
+;	It is optimized so that it is very fast if the request is the same as the
+;	last time.
+;
+;	Printer support is provided via two control/status calls defined by the font .
+;	manager. After it figures out what everything should be, it gives the
+;	appropriate device a control call to let it change things.  Also, it makes
+;	a status call to get a table of style values to aid in in figuring things out.
+;
+;	Major changes for the new (128K) ROM include a new font addressing
+;	scheme using family definition records as resource type "FONT",
+;	which allows up to 64K different font families and tweaked fonts for
+;	bold, italic, etc.  Fractional widths are fully supported.
+;
+;
+*R This file restores the Mac Plus Font Manager core
+*R at $40E6CE through $40F0BF. FontMgrInit.a supplies its entry wrapper.
+*R FontMgr.a supplies GetFOND and BuildCharTable. See Evidence/fontmgr-core.json.
+;
+*R The ROM predates the retained source's cache and
+*R substitution changes. Instructions follow the ROM; matching source operands
+*R and applicable comments come from FontMgrPatch.a. The evidence lists each
+*R source pairing and each instruction restored from the ROM alone.
+*R Additional routine and branch labels describe the inferred control flow.
+;
+		IMPORT BuildCharTable,GetFOND,InValWidths ;]
+		EXPORT FPointOne,GetFontHandle,GetStrike,MyFixMul,MyFixRatio,SetScreenDevice ;]
+
+		MACHINE MC68000
+		STRING ASIS
+		BLANKS ON
+
+		INCLUDE 'ColorEqu.a'
+		INCLUDE 'Quickdraw.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+		INCLUDE 'fontPrivate.a'
+
+
+
+; the following word values are to be placed into the
+; word located at RomMapInsert
+
+MapTrue   		EQU 		$FFFF     				; link in ROM map with resload true
+
+FMDefaultSize 	EQU 		$987      				; default size [byte]
+
+;new FONT manager stuff
+
+
+
+; Font Header Data Record
+
+
+; Font Manager Input Record (CurFMInput)
+
+
+
+; Font Manager Output record (FMgrOutRec)
+
+
+
+
+
+
+
+
+
+
+spExtra   		EQU 		$4C       				; space extra [fixed]
+
+GrafGlobals   	EQU 		0         				; A5 offset to globptr
+thePort   		EQU 		0         				;GrafPtr
+
+
+
+
+
+
+; format of a width table:
+
+WidTabSize	EQU 	WidthASize+2			;total size of a width table.
+
+FONDFlags		EQU 	0					; 0 (word) Flags word for family
+FONDFamID	EQU 	FONDFlags+2 			; 2 (word) Family ID number
+FONDFirst		EQU 	FONDFamID+2 			; 4 (word) first character in font
+FONDLast		EQU 	FONDFirst+2 			; 6 (word) last character in font
+FONDAscent	EQU 	FONDLast+2			; 8 (word) maximum Ascent expressed for 1 pt.
+FONDDescent 	EQU 	FONDAscent+2			; A (word) maximum Descent expressed for 1 pt.
+FONDLeading 	EQU 	FONDDescent+2			; C (word) maximum Leading expressed for 1 pt.
+FONDWidMax	EQU 	FONDLeading+2			; E (word) maximum MaxWidth expressed for 1 pt.
+FONDWTabOff 	EQU 	FONDWidMax+2			;10 (long) Offset to width table
+FONDKernOff 	EQU 	FONDWTabOff+4		;14 (long) Offset to kerning table
+FONDStylOff 	EQU 	FONDKernOff+4			;18 (long) Offset to Style Mapping Table
+FONDProperty	EQU 	FONDStylOff+4			;1C (12 words) contains style property info
+FONDAssoc	EQU 	FONDProperty+24 		;34 (variable length) Font Association Table.
+
+
+saveFondFlags EQU WidthListHand ;]
+
+
+
+FontManagerCore PROC ;]
+
+
+; the most important thing to do is to see if the input record is the same
+; as it was last time, as fast as we can
+
+FMSwapFontCore ;]
+		MOVE.L	WidthTabHandle,A0
+		MOVE.L	(A0),WidthPtr
+		MOVE.L	4(SP),A0
+		LEA	CurFMInput,A1	;point at last request
+		CMPM.L	(A0)+,(A1)+	;the same?
+		BNE.S	GoDifFont
+		CMPM.L	(A0)+,(A1)+	;face, needbits, device the same?
+		BNE.S	GoDifFont
+		CMPM.L	(A0)+,(A1)+	;numer the same?
+		BNE.S	GoDifFont
+		CMPM.L	(A0)+,(A1)+	;denom the same?
+		BNE.S	GoDifFont
+
+; ugh -- now we have to pull SpExtra out of the port to see if
+; that changed.  If not, we're cool.
+		MOVE.L	GrafGlobals(A5),A0
+		MOVE.L	thePort(A0),A0
+		MOVE.L	LastSpExtra,D0	;get spaceExtra <DLD 24-Oct-85>
+		CMP.L	SpExtra(A0),D0	;did it change? <DLD 24-Oct-85>
+		BEQ.S	CheckPurged ;]
+		ADDQ.L	#1,D0
+		BEQ.S	GoDifFont
+
+; spaceExtra changing is not such a big deal; we don't have to recalculate
+; everything.  Dive in at the right spot...
+		MOVE.L	4(SP),D0
+		MOVEM.L	D3-D7/A3-A4,-(SP)
+		MOVE.L	D0,A3
+		BRA.W	AdjustSpace	;dive in...
+
+; the request is different from the last one, so do things the slow way
+
+GoDifFont
+		MOVEM.L	A3-A4,-(SP)
+		MOVE.L	12(SP),A3
+		BRA.W	DifFont	;go handle it
+
+CheckPurged
+		MOVE.L	FOutFontHandle,A0	;get the font handle.
+		TST.B	(A0)
+		BNE.S	FMSwapDone
+		TST.L	(A0)
+		BNE.S	GoDifFont
+		MOVE.L	A0,-(SP)	;push it
+		MOVE.W	#MapTrue,ROMMapInsert	;get it from ROM if possible	<10 Jul 85>
+		_LoadResource	;make sure its loaded
+		TST.W	ResErr
+		BNE.S	RetrySystemFont ;]
+		BSR.W	BuildCharTable	;need to rebuild character table
+		BRA.S	FMSwapDone ;]
+
+*R The ROM retries a failed resource load with a copied input record and family zero.
+
+RetrySystemFont ;]
+		MOVEQ	#16,D0
+		SUB.L	D0,SP
+		MOVE.L	SP,A1
+		LEA	CurFMFamily,A0 ;]
+		_BlockMove
+		CLR.W	(SP)
+		MOVE.L	SP,-(SP)
+		BSR.S	FMSwapFontCore ;]
+		ADD.W	#16,SP
+
+; all done with FMSwapFont so restore registers and return to our caller
+
+FMSwapDone
+		MOVE.L	(SP)+,A0	;get return address
+		ADDQ.W	#4,SP	;strip parameter
+		JMP	(A0)	;return to caller
+
+;———————————————————————————————————————————————————————————————————
+; At this point, we have the proper bits but the style parameters are wrong.
+; Fill out the style record using a table supplied by the current device
+
+DoStyle
+		MOVE.B	FOutCurStyle,D1	;get style byte
+		LEA	FOutBold,A0	;point at style part of output record
+		CLR.L	(A0)+	;set everything to 0
+		CLR.W	(A0)+	;clear some more
+		CLR.B	(A0)+	;clear seven bytes total
+
+; special case the most common case -- plain text (ie, style byte is 0)
+		TST.B	D1	;plain?
+		BEQ.S	CheckWTable	;if so, skip the loop
+
+; we must fill out the style record the hard way, by looping through the
+; driver-supplied style definition table
+		MOVEQ	#0,D2	;clear high part for indexing
+		LEA	FMStyleTab,A1	;point to the style table
+		MOVEQ	#6,D0	;consider 7 bits worth
+		LEA	FOutBold,A0	;point to style params
+
+FMCore_40E776 ;]
+		MOVE.B	(A1)+,D2	;get index
+		MOVE.B	(A1)+,D3	;get field increment
+		MOVE.B	(A1)+,D4	;get extra increment
+		LSR.W	#1,D1	;examine next style bit
+		BCC.S	FMCore_40E788 ;]
+		ADD.B	D3,0(A0,D2)	;increment proper style param
+		ADD.B	D4,FOutExtra	;also increment extra
+
+FMCore_40E788 ;]
+		DBRA	D0,FMCore_40E776 ;]
+
+; special case underlining since it doesn't fit into our model
+		BTST	#ULineBit,fmInFace(A3) ;]
+		BEQ.S	CheckWTable	;if not, skip
+		LEA	FOutULOffset,A0	;point to underline parameters
+		MOVE.B	(A1)+,(A0)+	;copy the three underline parameters
+		MOVE.B	(A1)+,(A0)+	;copy second byte
+		MOVE.B	(A1)+,(A0)+	;copy third byte
+
+;————————————————————————————————————————————————————————————————————
+; Now the style is all set up so its time to make sure the width table is cool.  First check to see if the
+; widths were already cached, so we can skip the most time-consuming part of the work.
+; These tests decide to use either the integral style extra provided by the Font Manager, or the
+; fractional style extra in the FOND.
+
+CheckWTable
+		MOVE.L	WidthTabHandle,A0
+		MOVE.L	(A0),A0
+		MOVE.L	A0,WidthPtr ;]
+		MOVE.L	LastFond,D0	;check if there is a last FOND.
+		BEQ.S	MakeITab	;if not, style extra can’t be fractional.
+		TST.B	FDevDisable	;set if the device would prefer the FOND style extra.
+		BNE.S	FMCore_40E7BA ;]
+		TST.W	fmInDevice(A3) ;]
+		BNE.S	MakeITab
+
+FMCore_40E7BA ;]
+		BTST	#4,WidthListHand	;]set if fractional style extra is always from FOND.
+		BNE.S	FMCore_40E7C8 ;]
+		TST.B	FractEnable	;set if application allows fractional spacing
+		BEQ.S	MakeITab	;if not, don’t figure fractional style extra from FOND.									<06Nov85>
+
+FMCore_40E7C8 ;]
+		BTST	#5,WidthListHand ;]
+		BEQ.W	ComputeFractExtra ;]
+
+MakeITab
+		MOVEQ	#0,D6	;clear out D6
+		MOVE.B	FOutExtra,D6	;get extra value
+		EXT.W	D6	;sign extend it
+		SWAP	D6	;make it fixed point
+
+MakeWTab
+		MOVE.W	fmInSize(A3),D1 ;]
+		LEA	WidTabFont(A0),A1 ;]
+		MOVE.L	FOutFontHandle,D0
+		CMP.L	(A1),D0
+		BNE.S	InitWidthMeta ;]
+		CMP.W	WidthFSize(A0),D1 ;]
+		BEQ.W	AdjustStyle ;]
+
+; the font changed so we have to make the table from scratch.  First
+; init the meta fields in the new table.
+
+InitWidthMeta ;]
+		MOVE.L	D0,(A1)+
+		CLR.L	(A1)+	;set lastSpExtra to 0
+		MOVE.L	D6,(A1)	;set lastStyExtra to value
+		ADD.W	#WidthAFID-WidthStyle,A1
+		MOVE.W	FONDID,(A1)+
+		MOVE.L	LastFOND,(A1)
+		MOVE.L	D0,A0
+		BSR.W	DeRefResource	;load resource who's handle is in A0.
+		MOVE.L	A0,A1
+
+; D2 holds the flags word, D3 has firstChar and D4 has lastChar.  Compute
+; the size of the tables in D5.
+		MOVEM.W	(A0),D2-D4	;get flags, first, last
+		MOVE.W	D4,D5	;copy lastChar
+		SUB.W	D3,D5	;compute lastChar-firstChar
+		MOVE.W	D5,D1	;keep # in D1
+		ADDQ.W	#3,D5	;# of chars, including missing
+		ADD.W	D5,D5	;compute size of table
+		EXT.L	D5	;make it a longWord
+
+; compute address of offset/width table into A1
+		MOVEQ	#0,D0
+		MOVE.W	fOWTLoc(A0),D0	;get size till owTable
+		ADDQ.L	#8,D0
+		ADD.L	D0,D0	;double for bytes
+		ADD.L	D0,A1
+
+;————————————————————————————————————————————————————————————————————		
+; case out on the font format, pointing A1 at the right table and getting
+; the width of the missing character in long format in D7
+		MOVEQ	#0,D7	;clear out D7
+		TST.B	FractEnable	;use expanded widths?
+		BEQ.S	NoExpandedWidth ;]
+		BTST	#1,D2	;expanded width table present?
+		BNE.S	GotExpandedWidth ;]
+		BTST	#6,WidthListHand	;]set if FOND fractional widths are not (to be) used.
+		BNE.S	NoExpandedWidth ;]
+
+; See if we have a family width table for this font.  A4 contains an offset to it if there is one
+; (set up by MapFont) or is NIL.
+		MOVE.L	A4,D0	;got family width table?
+		BEQ.S	NoExpandedWidth ;]
+		MOVE.L	LastFOND,A1	;get famDef record
+		MOVE.L	(A1),A1	;handle -> pointer
+		ADD.L	A4,A1	;compute width tab ptr
+		BRA.W	FamilyMissingWidth ;]
+
+; this font doesn't have an expanded width table, so A1 is cool.  Fetch
+; the width of the missing character.
+
+NoExpandedWidth ;]
+		MOVE.B	-3(A1,D5),D7	;get byte width
+		SWAP	D7	;convert to fixed point
+		BRA.S	DoWTable	;go make the table
+
+; the font does have an expanded width table, so adjust A1 and fetch the
+; width of the missing character
+
+GotExpandedWidth ;]
+		ADD.L	D5,A1	;bump to expanded table
+		MOVE.W	-4(A1,D5),D7	;get fixed point width
+		ASL.L	#8,D7
+
+; set up D5 with a boolean that specifies whether we have to call FixMul
+; to do the scale-disable scaling
+
+DoWTable
+		CMP.L	#$10000,FScaleHFact	;scale factor = 1
+		SNE	D5	;if = 1, make it 0				<10-30-85>
+		AND.B	FScaleDisable,D5	;FScaleDisable must be on, too
+
+; OK, start making the width table by filling in the missing characters
+; for "minChar" characters
+		ADD.L	D6,D7
+		MOVE.L	D7,D0	;							<10-30-85>
+		BSR.W	ScaleD0 ;]
+
+FillMissingPrefix ;]
+		MOVE.L	D0,D7	;							<10-30-85>
+		MOVE.L	WidthPtr,A0
+		BRA.S	FMCore_40E880 ;]
+
+FMCore_40E87E ;]
+		MOVE.L	D7,(A0)+	;stuff in missing width
+
+FMCore_40E880 ;]
+		DBRA	D3,FMCore_40E87E ;]
+
+; now we case out to two separate loops for filling out the body of the
+; width table, depending on if we have an expanded table.
+		CLR.B	UsedFWidths	;assume we don't use them
+		TST.B	FractEnable	;fraction widths enabled?
+		BEQ.S	CalcOldWLoop	;if not, skip
+		BTST	#1,D2	;which format? (check for width table in font)
+		BNE.S	ExpandedWidthLoop ;]
+		BTST	#6,WidthListHand ;]
+		BNE.S	CalcOldWLoop
+		MOVE.L	A4,D0
+		BNE.W	FamilyWidthLoopStart ;]
+
+; its the old format, so walk down the o/w table, computing the fixed point
+; widths and stuffing them into the table.
+
+CalcOldWLoop
+		MOVEQ	#0,D0	;clear out D0
+		MOVE.W	(A1)+,D3	;get offset/width
+		BPL.S	FMCore_40E8AC ;]
+		MOVE.L	D7,D0	;use missing width
+		BRA.S	FMCore_40E8B4 ;]
+
+FMCore_40E8AC ;]
+		MOVE.B	D3,D0	;get width
+		SWAP	D0	;make it fixed-point
+		ADD.L	D6,D0
+		BSR.S	ScaleD0 ;]
+
+FMCore_40E8B4 ;]
+		MOVE.L	D0,(A0)+	;stuff it
+		DBRA	D1,CalcOldWLoop
+
+;————————————————————————————————————————————————————————————————————
+; OK, now fill out the end of the table with the missing character width
+
+FillTheRest
+		SUB.W	#255,D4 ;]
+		BEQ.S	AdjustSpace ;]
+		NEG.W	D4
+		SUBQ.W	#1,D4
+
+FMCore_40E8C4 ;]
+		MOVE.L	D7,(A0)+	;stuff the width
+		DBRA	D4,FMCore_40E8C4 ;]
+
+;————————————————————————————————————————————————————————————————————
+; Short cut space extra check at the beginning of SwapFont jumps to here.  Also, cached widths case jumps
+; here.
+
+AdjustSpace
+		MOVE.L	WidthPtr,A1 ;]
+		ADD.W	#WidthStyle,A1 ;]
+		BRA.W	AdjustSpaceDelta ;]
+
+ExpandedWidthLoop ;]
+		MOVEQ	#0,D0	;clear out D0
+		MOVE.W	(A1)+,D3	;get 8.8 character width
+		CMP.W	#-1,D3	;is it missing?
+		BNE.S	FMCore_40E8E4 ;]
+		MOVE.L	D7,D0	;use missing width
+		BRA.S	FMCore_40E8EC ;]
+
+FMCore_40E8E4 ;]
+		MOVE.W	D3,D0	;get width
+		ASL.L	#8,D0	;make it 16.16 fixed-point
+		ADD.L	D6,D0
+		BSR.S	ScaleD0 ;]
+
+FMCore_40E8EC ;]
+		MOVE.L	D0,(A0)+	;stuff it
+		DBRA	D1,ExpandedWidthLoop ;]
+		ST	UsedFWidths	;we used them
+		BRA.S	FillTheRest
+
+*R The callers add D6 before ScaleD0. The later AddD6ScaleD0 routine combines these operations.
+
+ScaleD0 ;]
+		TST.B	D5	; need to scale it?
+		BEQ.S	FMCore_40E90E ;]
+		MOVEM.L	D0-D1/A0-A1,-(SP)
+		MOVE.L	D0,-(SP)	;pass param D0
+		MOVE.L	FScaleHFact,-(SP)
+		BSR.W	MyFixMul ;]
+		MOVEM.L	(SP)+,D0-D1/A0-A1	;function result (D0), restore registers (D1, A0, A1)
+
+FMCore_40E90E ;]
+		RTS
+
+; use family widths to figure sizes
+
+FamilyWidthLoopStart ;]
+		MOVE.L	A0,-(SP)
+		MOVE.L	WidthPtr,A0
+		MOVE.W	WidthASize(A0),D0
+		MOVE.L	(SP)+,A0
+		MOVE.W	D0,-(SP)
+
+FamilyWidthLoop ;]
+		MOVEQ	#0,D0	;clear out D0
+		MOVE.W	(A1)+,D3	;get 4.12 1-point width
+		CMP.W	#-1,D3	;is it missing?
+		BNE.S	FMCore_40E92C ;]
+		MOVE.L	D7,D0	;use missing width
+		BRA.S	FMCore_40E936 ;]
+
+FMCore_40E92C ;]
+		MOVE.W	D3,D0	;get width
+		MULU.W	(SP),D0	;scale it up
+		ASL.L	#4,D0	;adjust to 16.16 fixed point
+		ADD.L	D6,D0
+		BSR.S	ScaleD0 ;]
+
+FMCore_40E936 ;]
+		MOVE.L	D0,(A0)+	;stuff it
+		DBRA	D1,FamilyWidthLoop ;]
+		ADDQ.W	#2,SP	;pop off point size
+		ST	UsedFWidths	;we used them
+		BRA.W	FillTheRest
+
+SizeInD0 ;]
+		MOVE.W	fmInSize(A3),D0	;get current size
+		BNE.S	FMCore_40E95A ;]
+		TST.W	(A3)
+		BNE.S	FMCore_40E956 ;]
+		MOVE.W	SysFontSize,D0
+		BNE.S	FMCore_40E95A ;]
+
+FMCore_40E956 ;]
+		MOVE.B	FMDefaultSize,D0
+
+FMCore_40E95A ;]
+		RTS
+
+FamilyMissingWidth ;]
+		MOVE.L	WidthPtr,A0
+		MOVE.W	WidthASize(A0),D0
+		MOVE.W	-4(A1,D5),D7	;get fixed point width
+		MULU.W	D0,D7 ;]
+		ASL.L	#4,D7	;convert to 32 bits <28Jun AJH>
+		BRA.W	DoWTable	;back to common code
+
+*R The ROM adjusts cached widths by the change in style extra.
+
+AdjustStyle ;]
+		ADDQ.L	#8,A1
+		SUB.L	(A1),D6 ;]
+		BEQ.S	AdjustSpaceDelta ;]
+		ADD.L	D6,(A1) ;]
+		MOVE.L	WidthPtr,A0
+		MOVE.W	#255,D0
+
+FMCore_40E980 ;]
+		ADD.L	D6,(A0)+ ;]
+		DBRA	D0,FMCore_40E980 ;]
+
+AdjustSpaceDelta ;]
+		MOVE.L	GrafGlobals(A5),A0
+		MOVE.L	thePort(A0),A0
+		MOVE.L	spExtra(A0),D7	;get current space extra
+		SUBQ.L	#4,A1
+		SUB.L	(A1),D7	;subtract old with current
+		BEQ.S	ControlDevice ;]
+
+; D7 has the difference in the value of spaceExtra.  The only problem is spaceExtra is given in screen
+; coordinates but we must return stuff in font coordinate space.  Thus we must scale spaceExtra before
+; adding it in.  	 		FMInNumer.h		FOutDenom.h
+;			width =	————————	*	————————	* 	spExtra
+;					FMInDenom.h 		FOutNumer.h
+		ADD.L	D7,(A1)	;remember new value
+		SUB.W	#12,SP	;make space on stack
+		MOVE.W	FMInNumer+2(A3),-(SP)	;push x input numer
+		MOVE.W	FMInDenom+2(A3),-(SP)	;push x input denom
+		BSR.W	MyFixRatio	;]compute ratio
+		SUBQ.W	#4,SP	;make space for result
+		MOVE.W	FOutDenom+2,-(SP)	;push x output denom
+		MOVE.W	FOutNumer+2,-(SP)	;push x output numer
+		BSR.W	MyFixRatio	;]compute ratio
+		BSR.W	MyFixMul	;]calculate scale factor
+		MOVE.L	D7,-(SP)	;push space extra
+		BSR.W	MyFixMul	;]scale it
+		MOVE.L	WidthPtr,A0
+		MOVE.L	(SP)+,D0	;get scaled delta
+		ADD.L	D0,4*' '(A0)	;adjust space width
+
+; Now that we finally have everything the way we want it, let the current
+; device have a crack at changing things if it wants to.
+
+ControlDevice ;]
+		MOVEQ	#-1,D0	;get lots of ones
+		MOVE.B	FMInDevice(A3),D0	;get the device number
+		BEQ.S	DoneStyle ;]
+
+; call the driver to give it a chance to change the output record
+		MOVEQ	#IOQElSize,D1
+		SUB.L	D1,SP
+		MOVE.L	SP,A0
+		MOVE.W	D0,IORefNum(A0)	;set up the refNum
+		MOVE.W	#FMgrCtl1,CSCode(A0)	;set up the control code
+		MOVE.L	A3,CSParam(A0)	;pass the input record as a parameter
+		MOVE.W	FMInDevice(A3),CSParam+4(A0)	;pass subclass, too
+		_Control
+		ADD.L	D1,SP
+
+; All done now so copy the input record into the current record for the next time.
+
+DoneStyle ;]
+		MOVE.L	A3,A0
+		LEA	CurFMInput,A1	;point to current record
+		MOVE.L	(A0)+,(A1)+	;copy first 4 bytes
+		MOVE.L	(A0)+,(A1)+	;copy next 4 bytes
+		MOVE.L	(A0)+,(A1)+	;copy next 4 bytes
+		MOVE.L	(A0)+,(A1)+	;copy last	4 bytes
+		MOVE.L	GrafGlobals(A5),A0
+		MOVE.L	thePort(A0),A0
+		MOVE.L	spExtra(A0),LastSPExtra ;]
+		MOVE.L	WidthPtr,A0
+		MOVE.B	UsedFWidths,WidthUsedFam(A0)	;update UsedFam.
+		MOVE.B	FOutCurStyle,WidthAFace(A0)	;update Actual Face.
+		MOVE.W	FONDID,WidthAFID(A0) ;]
+		MOVE.L	LastFOND,WidthFHand(A0) ;]
+		LEA	WidthFID(A0),A0 ;]
+		MOVE.L	(A3)+,(A0)+
+		MOVE.L	(A3)+,(A0)+
+		MOVE.L	(A3)+,(A0)+
+		MOVE.L	(A3),(A0)
+		MOVEM.L	(SP)+,D3-D7/A3-A4
+		BRA.W	CheckPurged
+
+; We can only get this far if the FOND has valid style extra entries (part of the FOND flags)?
+; Next, compute the fixed point extra into D6 when we do have a family definition record present.
+
+ComputeFractExtra ;]
+		MOVEM.L	D0-D2/A0,-(SP)
+		MOVE.L	LastFOND,A0
+		BSR.W	DeRefResource	;load resource who's handle is in A0.
+		LEA	FONDProperty(A0),A0	;point to start of table
+		MOVEQ	#0,D6
+		MOVE.W	(A0)+,D6	;get plain extra
+		EXT.L	D6
+		MOVE.B	FOutCurStyle,D1	;get style byte
+		BEQ.S	FMCore_40EA62 ;]
+		MOVEQ	#7,D0	;consider 8 bits worth
+
+FMCore_40EA54 ;]
+		MOVE.W	(A0)+,D2	;get extra value
+		EXT.L	D2
+		LSR.W	#1,D1
+		BCC.S	FMCore_40EA5E ;]
+		ADD.L	D2,D6	;add it in
+
+FMCore_40EA5E ;]
+		DBRA	D0,FMCore_40EA54 ;]
+
+FMCore_40EA62 ;]
+		ASL.L	#4,D6	;adjust 4.12 to 16.16 fixed point
+		SUBQ.W	#4,SP
+		MOVE.L	WidthPtr,A0
+		MOVE.W	WidthASize(A0),D0
+		CLR.W	-(SP)	;fraction part zero.
+		MOVE.W	D0,-(SP)
+		MOVE.L	D6,-(SP)	;compute floating extra times pointsize
+		BSR.W	MyFixMul ;]
+		MOVE.L	(SP)+,D6
+		MOVE.L	D6,D0
+		SWAP	D0
+		BPL.S	FMCore_40EA82 ;]
+		ADDQ.W	#1,D0
+
+FMCore_40EA82 ;]
+		MOVE.B	D0,FOutExtra	;and save the byte-sized result
+		MOVEM.L	(SP)+,D0-D2/A0
+		TST.B	FractEnable
+		BEQ.W	MakeITab
+		BRA.W	MakeWTab ;]
+
+;————————————————————————————————————————————————————————————————————
+; Utility called by DoMapFont when the correct widths were found in the width cache.  It is called twice
+; to set up FOutNumer h & v, FScaleVFact & FScaleHFact.  A1 first points to widthVOutput in the FOND.
+; D1 is either 0 (for v) or 2 (for h).
+;————————————————————————————————————————————————————————————————————
+
+SetUpScale
+		LEA	fmOutNumer+FOutRec,A0	;set up the scale factor in the output record.
+		MOVE.W	(A1)+,D0
+		MOVE.W	D0,0(A0,D1.W) ;]
+		LEA	FScaleVFact,A0	;also set up scale factor in low memory.
+		MOVEQ	#0,D0	;clear high word (unsigned?)
+		MOVE.W	2(A1),D0	;widthVFactor or widthHFactor
+		ASL.L	#8,D0	;adjust 8.8 number to 16.16
+		ASL.W	#1,D1
+		NEG.W	D1	;make 0 or -4.  (Low memory is h, v; table is v, h)
+		MOVE.L	D0,0(A0,D1)	;save @ FScaleVFact, then FScaleHFact
+		RTS
+
+*R The ROM swaps a cache entry with WidthTabHandle and changes the handle purge bits directly.
+
+SwapWidthHandles ;]
+		MOVE.L	WidthTabHandle,D3 ;]
+		MOVE.L	(A4),A0
+		MOVE.L	A0,WidthTabHandle	;save it in widthTabHandle.
+		MOVE.L	(A0),WidthPtr
+		BCLR	#purge,(A0) ;]
+		MOVE.L	D3,(A4)
+		MOVE.L	D3,A0
+		BSET	#purge,(A0) ;]
+		MOVE.W	#-2,CurFMFamily ;]
+		RTS
+
+DifFont
+		MOVEM.L	D3-D7,-(SP)
+		MOVE.B	fmInFace(A3),FOutCurStyle	;set up desired style
+		MOVE.W	fmInDevice(A3),D0	;get device in request
+		CMP.W	CurFMDevice,D0	;did it change?
+		BEQ.S	DoMapFont ;]
+		BSR.W	SetNewDevice	;otherwise, read in the new stuff
+
+; DoMapFont searches handles pointed to by the width list for a table of widths matching the font
+; requested by the input pointer.
+; 12-Aug-86	CRC		Details, details…
+;	The algorithm for determining which entry to use was:
+;		Check list until match, or entry = 0, or entry has been purged, or the end of the list is reached.
+;		If an entry was purged, reallocate it and use it.
+;		If entry = 0, allocate it and use it.
+
+DoMapFont
+		MOVE.L	WidthListHand,D0	;do we have any spare width tables?
+		AND.L	Lo3Bytes,D0
+		BEQ.S	FMCore_40EB06 ;]
+		MOVE.W	CurFMFamily,D1 ;]
+		ADDQ.W	#1,D1
+		BNE.S	FMCore_40EB0A ;]
+		BSR.W	InValWidths	;invalidate all of the width tables.
+
+FMCore_40EB06 ;]
+		BRA.W	MapUncachedFont ;]
+
+; We know that there has been some change.  Search the list of width tables for a match.
+
+FMCore_40EB0A ;]
+		MOVE.L	D0,A4	;get the width list handle.
+		MOVE.L	(A4),A4
+		MOVEQ	#0,D5
+		MOVE.L	#WidTabSize,D0
+
+; Check each list entry to see if it has been allocated, or if the table has purged.
+
+WidthCacheLoop ;]
+		MOVE.L	(A4),D1	;get a possible width table handle.
+		BEQ.S	AllocateWidthTable ;]
+		MOVE.L	D1,A0
+		MOVE.L	(A0),D1
+		BEQ.S	ReallocateWidthTable ;]
+		MOVE.L	D1,A1
+		MOVE.L	A3,A0	;copy the input pointer
+		LEA	WidthFID(A1),A1	;point to old width's info.
+		CMPM.L	(A0)+,(A1)+	;does family, size; face, needbits, device;
+		BNE.S	NextWidthCache ;]
+		CMPM.L	(A0)+,(A1)+
+		BNE.S	NextWidthCache ;]
+		CMPM.L	(A0)+,(A1)+
+		BNE.S	NextWidthCache ;]
+		CMPM.L	(A0)+,(A1)+
+		BEQ.S	CachedFont ;]
+
+NextWidthCache ;]
+		ADDQ.W	#4,A4	;bump the list pointer.
+		ADDQ.W	#4,D5
+		CMP.W	#WidListSize,D5 ;]
+		BCS.S	WidthCacheLoop ;]
+		SUBQ.W	#4,A4	;point back at the one we want to use.
+		BRA.S	FMCore_40EBAE ;]
+
+; We already have the font handle (from the old width table), so skip most of MapFont.
+
+CachedFont ;]
+		BSR.W	SwapWidthHandles ;]
+		MOVE.W	(A1)+,FONDID ;]
+		MOVE.L	(A1)+,A0	;get new FOND handle
+		MOVE.L	A0,LastFOND	;save it
+		BEQ.S	FMCore_40EB5C ;]
+		MOVE.L	(A0),A0
+		MOVE.B	(A0),SaveFondFlags	;save the high byte of the FOND flags.
+
+FMCore_40EB5C ;]
+		MOVE.B	(A1)+,UsedFWidths	;remember if we used family widths.
+		MOVE.B	(A1)+,FOutCurStyle	;set up real style (computed along with width table).
+		MOVEQ	#0,D1
+		BSR.W	SetUpScale	;set up the vertical scale factor and output.
+		MOVEQ	#2,D1
+		BSR.W	SetUpScale	;set up the horizontal scale factor and output.
+		MOVE.L	WidthPtr,A1 ;]
+		MOVE.L	WidTabFont(A1),A0
+		MOVE.L	A0,FOutFontHandle
+		BRA.S	GotFontHandle ;]
+
+; We found a purged list entry, so let's re-allocate it.
+
+ReallocateWidthTable ;]
+		MOVE.L	TheZone,-(SP)
+		MOVE.L	SysZone,TheZone
+		_ReAllocHandle
+		MOVE.L	(SP)+,TheZone
+		BRA.S	InstallWidthTable ;]
+
+; We are beyond all list entries, so create a new one.
+
+AllocateWidthTable ;]
+		_NewHandle ,SYS
+		BNE.S	FMCore_40EBAE ;]
+
+InstallWidthTable ;]
+		MOVE.L	WidthListHand,A4	;get the width list handle again.
+		MOVE.L	(A4),A4	;since it may have moved.
+		LEA	0(A4,D5),A4	;determine list entry address.
+		MOVE.L	A0,(A4)
+		MOVE.L	(A0),A0
+		MOVEQ	#-1,D0
+		MOVE.L	D0,WidTabFont(A0) ;]
+		MOVE.W	D0,WidthFID(A0) ;]
+		BRA.S	FMCore_40EBB2 ;]
+
+FMCore_40EBAE ;]
+		TST.W	D5
+		BEQ.S	MapUncachedFont ;]
+
+FMCore_40EBB2 ;]
+		BSR.W	SwapWidthHandles ;]
+
+; call MapFont to do all the hard work, installing a font in the output record
+
+MapUncachedFont ;]
+		BSR.W	MapFont	;figure out font and install it
+
+; set up ascent, descent, etc...
+
+GotFontHandle
+		MOVE.L	FOutFontHandle,A0	;get the current font handle
+		BSR.W	DeRefResource	;load resource who's handle is in A0.
+		TST.B	FScaleDisable	; if scaling disabled, do new way
+		BNE.S	newSetupHeight
+		LEA	FOutAscent,A1	;point to the info section
+		MOVE.B	FAscent+1(A0),(A1)+	;copy ascent
+		MOVE.B	FDescent+1(A0),(A1)+	;copy descent
+		MOVE.B	FWidMax+1(A0),(A1)+	;copy max width
+		MOVE.B	FLeading+1(A0),(A1)	;copy leading
+
+FMCore_40EBDC ;]
+		BRA.W	DoStyle
+
+newSetupHeight
+		LEA	FOutAscent,A1	;point to the info section
+		MOVE.B	FAscent+1(A0),D0
+		BSR.S	ByteScale	;copy integer ascent
+		MOVE.B	FDescent+1(A0),D0
+		BSR.S	ByteScale	;copy descent
+		MOVE.B	FWidMax+1(A0),D0	;maxwidth needs a horizontal factor adjustment.
+		MOVE.L	FScaleHFact,D1
+		BSR.S	ByteHScale	;copy max width
+		MOVE.B	FLeading+1(A0),D0
+		BSR.S	ByteScale	;copy leading
+		BRA.S	FMCore_40EBDC ;]
+
+*R DeRefResource loads a purged resource and returns its pointer in A0.
+
+DeRefResource
+		TST.L	(A0)	;see if it is already loaded.
+		BNE.S	FMCore_40EC10 ;]
+		MOVE.L	A0,-(SP)	;push it
+		MOVE.W	#MapTrue,ROMMapInsert	;get it from ROM if possible	<10 Jul 85>
+		_LoadResource	;make sure its loaded
+
+FMCore_40EC10 ;]
+		MOVE.L	(A0),A0	;handle -> pointer
+		RTS
+
+;————————————————————————————————————————————————————————————————————
+; ByteScale, ByteHScale are utility routines used to figure the font metrics for this font.
+; FScaleVFact contains the nice factor to allow scaling to be disabled so that QD can do no or easy bitmap
+; scaling.  The value to be scaled is passed in D0, and scaled by the value in D1.
+;————————————————————————————————————————————————————————————————————
+
+ByteScale
+		MOVE.L	FScaleVFact,D1
+
+ByteHScale
+		EXT.W	D0	;fix-ize the byte in D0
+		SWAP	D0
+		CLR.W	D0	;clear fract
+		MOVEM.L	D0-D1/A0-A1,-(SP)
+		MOVE.L	D1,-(SP)
+		BSR.W	MyFixMul ;]
+		MOVEM.L	(SP)+,D0/A0-A1
+		ADD.L	#32768,D0 ;]
+		SWAP	D0
+		MOVE.B	D0,(A1)+	;save it in FMgrOutRec
+		RTS
+
+FPointOne		DC.W	1
+			DC.W	0
+
+
+*R MyFixMul handles unit and integer factors before calling the multiplication trap.
+
+MyFixMul ;]
+		MOVE.L	(SP)+,A1
+		MOVE.L	(SP)+,D0
+		MOVE.L	(SP)+,D1
+		MOVE.L	A1,-(SP)
+		MOVE.L	D0,-(SP)
+		CMP.L	FPointOne,D1 ;]
+		BEQ.S	ReturnFixed ;]
+		MOVE.L	D1,(SP)
+		CMP.L	FPointOne,D0 ;]
+		BEQ.S	ReturnFixed ;]
+		TST.W	D1
+		BNE.S	FMCore_40EC6E ;]
+		SWAP	D1
+		MOVE.L	D2,-(SP)
+		MOVE.L	D0,D2
+		SWAP	D2
+		MULU.W	D1,D2
+		SWAP	D2
+		MULU.W	D1,D0
+		ADD.L	D2,D0
+		MOVE.L	(SP)+,D2
+		MOVE.L	D0,(SP)
+		BRA.S	ReturnFixed ;]
+
+FMCore_40EC6E ;]
+		MOVE.L	D1,-(SP)
+		MOVE.L	D0,-(SP)
+		_FixMul
+
+ReturnFixed ;]
+		MOVE.L	(SP)+,4(SP)
+		RTS
+
+*R MyFixRatio returns one for equal operands and otherwise calls the ratio trap.
+
+MyFixRatio ;]
+		MOVE.L	(SP)+,A1
+		MOVE.W	(SP)+,D0
+		MOVE.W	(SP)+,D1
+		MOVE.L	A1,-(SP)
+		MOVE.L	FPointOne,-(SP) ;]
+		CMP.W	D0,D1
+		BEQ.S	ReturnFixed ;]
+		MOVE.W	D1,-(SP)
+		MOVE.W	D0,-(SP)
+		_FixRatio
+		BRA.S	ReturnFixed ;]
+
+GetFontHandle
+		MOVE.W	#MapTRUE,ROMMapInsert
+		BRA.S	GetFontResource ;]
+
+GetStrike
+		MOVE.W	#MapFALSE,ROMMapInsert	;don't load the font           	<10 July 85>
+
+GetFontResource ;]
+		SUBQ.W	#4,SP	;make space for function result
+		MOVE.L	#'FONT',-(SP)	;'FONT' is resType
+		MOVE.W	D3,-(SP)
+		_GetResource
+		ST	GotStrike ;]
+		MOVE.L	(SP)+,D0
+		MOVE.L	D0,A0
+		RTS
+
+;———————————————————————————————————————————————————————————————————
+; MapFont does all the hard work in FMSwapFont.  Given a pointer to the
+; font input record in A3, it normalizes the scale, finds the best set
+; of bits it can and installs them into the output record.
+;———————————————————————————————————————————————————————————————————
+
+MapFont
+		CLR.B	FontFlag
+		SUB.L	A4,A4	;no family widths yet!
+		BSR.W	SizeInD0 ;]
+		MOVE.W	D0,D5
+		MOVE.W	(A3),D3
+
+MapFamily ;]
+		BNE.S	FMCore_40ECCA ;]
+		MOVE.W	SysFontFam,D3 ;]
+
+FMCore_40ECCA ;]
+		CMP.W	#1,D3
+		BNE.S	CalcRealSize ;]
+
+UseApplicationFont ;]
+		MOVE.W	ApFontID,D3
+
+; OK, now D3 has the family we want.  Now scale the size based on the current
+; DotsPerInch and numer/denom and build the resource ID of the font we want
+; (even though we might not have it)
+
+CalcRealSize
+		SUB.W	#14,SP	;make space for function results
+		MOVE.W	FMDotsPerInch+2,-(SP)	;push horizontal dots/inch
+		MOVE.W	#80,-(SP)	;push nominal dots/inch
+		BSR.S	MyFixRatio	;]turn into fixed point
+		SUBQ.W	#4,SP	;make some room
+		MOVE.W	fmInNumer+2(A3),-(SP)	;push horizontal numerator
+		MOVE.W	fmInDenom+2(A3),-(SP)	;push horizontal denominator
+		BSR.S	MyFixRatio	;]make that a fixed point, too
+		BSR.W	MyFixMul	;]multiply them together.
+		CLR.W	-(SP)	;fraction part is 0
+		BSR.W	SizeInD0 ;]
+		MOVE.W	D0,-(SP)
+		BSR.W	MyFixMul	;]scale the size.
+		MOVE.W	(SP)+,D0
+		MOVE.W	(SP)+,D1
+		BPL.S	FMCore_40ED06 ;]
+		ADDQ.W	#1,D0
+
+FMCore_40ED06 ;]
+		MOVE.W	D0,(SP)
+
+; At this point the desired family is in D3 and the desired size is on the top of the stack.  See if we have a
+; family definition record for this family; if so, handle it the new way.  Try to get a record of type
+; <FOND,D3> into D0.  Since this is sometimes speed critical, we implement a cache to skip the difficult
+; resource search if we can.  The FOND in the first element of the cache, WidthTabHandle, is always
+; unpurgable.
+
+TryForFond
+		BSR.W	GetFOND	;use common utility below (GetFontName)
+		BNE.W	NewFontLookUp	;if so, go look up size
+		CMP.W	#512,D3	;if greater than 511, must have FOND
+		BCS.S	OldFontLookUp	;if in old range, use old method
+		BRA.W	SubstituteFamily ;]
+
+OrInSize
+		AND.W	#$FF80,D3	;use high nine bits from that
+		OR.W	D0,D3	;combine family and size
+		BRA.W	GetFontHandle ;]
+
+; after all that work, the desired size is on the top of the stack.  Now we'll
+; use it to build the resource ID of the desired font in D3
+
+OldFontLookUp
+		MOVE.W	(SP)+,D0	;get the desired size
+		AND.W	#$007F,D0	;use only low 7 bits
+		ASL.W	#7,D3	;make room for size field
+		OR.W	D0,D3	;add in the size bits
+		MOVE.W	D0,D7	;save target size
+
+; At this point, D3 has the resource ID of the font we want.  See if its there.
+		BSR.W	GetFontHandle	;get the font, if we can
+		BNE.S	GotTheFont	;if we got it, stop searching
+
+; we couldn't find the one we wanted so try for 2X and .5X for the general
+; search.
+		MOVE.W	D3,D4	;remember where we started
+		MOVE.W	D7,D0	;get target size
+		CMP.W	#64,D0	;is it > 64?
+		BGE.S	SkipDouble	;if so, forget about doubling
+		ADD.W	D0,D0	;compute doubled size
+		BSR.S	OrInSize	;or in the size
+		BNE.S	GotTheFont	;if so, use it
+
+; well, 2X didn't work so try .5X
+
+SkipDouble
+		MOVE.W	D7,D0	;get target size
+		LSR.W	#1,D0	;divide by 2
+		BCS.S	SkipHalf	;if odd, we're out of luck
+		BSR.S	OrInSize	;or in the size
+		BNE.S	GotTheFont	;if so, go use it
+
+; we couldn't find a 2X or 1/2X match so start scanning up.  If that doesn't
+; work, scan down.
+
+SkipHalf
+		MOVE.W	D4,D3	;retreive starting place
+		MOVEQ	#1,D6	;search up first
+		TST.B	FScaleDisable	;scaling disabled?
+		BEQ.S	ScanFontLoop
+		MOVEQ	#-1,D6	;search down then
+
+ScanFontLoop
+		ADD.W	D6,D3	;bump to the next size
+		AND.W	#$007F,D3	;only the low 7 bits are significant
+		BEQ.W	ScanDone	;if we reach zero, done direction
+		MOVE.W	D4,D0	;get the original
+		AND.W	#$FF80,D0	;mask off size
+		OR.W	D0,D3	;build new one
+		BSR.W	GetFontHandle	;get the font handle if we can
+		BEQ.S	ScanFontLoop	;if we couldn't, loop again
+
+; we found a font so install it and compute the appropriate numer/denom
+;
+;				Numer' := Numer * requested size * DotsPerInch
+;				-----------------------------------------------
+;				Denom' := Denom * actual size * 80
+;
+; Font handle in A0, size in D3.
+
+GotTheFont
+		MOVE.L	A0,FOutFontHandle	;install the font handle
+		BSR.W	BuildCharTable	;make the character (height) table
+		BSR.W	SizeInD0 ;]
+		SUBQ.W	#4,SP	;make room for result
+		MOVE.W	D0,-(SP)
+		MOVE.W	D3,-(SP)	;push actual size
+		AND.W	#$007F,(SP)	;use only low 7 bits
+		BSR.W	MyFixRatio	;]make it a fixed point number.
+		MOVE.L	(SP)+,D6	;keep size scale in D6
+		MOVE.L	WidthPtr,A0
+		MOVE.W	D3,WidthASize(A0)	;save actual size in width table.
+		MOVEQ	#0,D5	;first do the vertical
+		BSR.S	MapScale	;calculate numer.v/denom.v
+		MOVEQ	#2,D5	;now do the horizontal
+
+; compute the new numer/demon as a fixed point number, then rationalize it
+; and stick it where it belongs
+
+MapScale
+		SUB.W	#12,SP
+		MOVE.W	fmInNumer(A3,D5),-(SP)	;push the numer
+		MOVE.W	fmInDenom(A3,D5),-(SP)	;push the denom
+		BSR.W	MyFixRatio	;]compute the ratio.
+		SUBQ.W	#4,SP	;make room for result
+		LEA	FMDotsPerInch,A0	;point to the dots/inch factor
+		MOVE.W	0(A0,D5),-(SP)	;push the dots/inch
+		MOVE.W	#80,-(SP)	;the screen is 80 dots/inch
+		BSR.W	MyFixRatio	;]make it a rational number.
+		BSR.W	MyFixMul	;]multiply them together.
+		MOVE.L	D6,-(SP)	;push the size scale
+		BSR.W	MyFixMul	;]multiply that in, too.
+		LEA	FOutNumer,A0	;point to the place to stuff result
+		MOVE.L	(SP)+,D0	;get the fixed point result
+		LSR.L	#8,D0	;take the middle 16 bits
+		MOVE.W	D0,0(A0,D5)	;store the numerator
+		MOVEQ	#0,D1	;zero top half of scale factor
+		MOVE.W	D0,D1	;remember it
+		MOVE.W	#256,4(A0,D5.W) ;]
+		TST.B	FScaleDisable
+		BEQ.S	FMCore_40EE28 ;]
+		MOVE.W	#256,D0	;start value for numerator
+
+FMCore_40EDEA ;]
+		CMP.W	#512,D1	; scale up > 2 x
+		BLT.S	FMCore_40EDF6 ;]
+		ASL.W	#1,D0	; multiply numer by two
+		ASR.W	#1,D1	; divide scale factor by two
+		BRA.S	FMCore_40EDEA ;]
+
+FMCore_40EDF6 ;]
+		CMP.W	#192,D1	; scale down < .75?
+		BGE.S	FMCore_40EE02 ;]
+		ASR.W	#1,D0	; multiply by 1/2
+		ASL.W	#1,D1	; divide by 1/2
+		BRA.S	FMCore_40EDF6 ;]
+
+FMCore_40EE02 ;]
+		CMP.W	#256,D1	; scale down between 1x and 2x
+		BGE.S	FMCore_40EE1A ;]
+		MOVE.W	D0,D2	; * 3
+		ADD.W	D0,D0
+		ADD.W	D2,D0
+		ASR.W	#2,D0	; multiply by 3/4ths
+		ASL.W	#2,D1	; divide by 3/4ths
+		EXT.L	D1
+		DIVU.W	#3,D1
+		EXT.L	D1
+
+FMCore_40EE1A ;]
+		MOVE.W	D0,0(A0,D5)	;stuff numer
+		ASL.L	#8,D1	;fixate scale factor
+		TST.W	D5	;horizontal?
+		BEQ.S	FMCore_40EE40 ;]
+		CMP.L	FScaleHFact,D1 ;]
+
+FMCore_40EE28 ;]
+		BEQ.S	FMCore_40EE4A ;]
+		MOVE.L	D1,FScaleHFact	;save new scale factor
+		MOVE.L	WidthTabHandle,A0
+		MOVE.L	(A0),A0
+		CLR.L	WidTabFont(A0) ;]
+		MOVEQ	#-1,D2
+		MOVE.W	D2,WidthFID(A0)
+		BRA.S	FMCore_40EE4A ;]
+
+FMCore_40EE40 ;]
+		CMP.L	FScaleVFact,D1 ;]
+		BEQ.S	FMCore_40EE4A ;]
+		MOVE.L	D1,FScaleVFact	; record new V factor
+
+FMCore_40EE4A ;]
+		MOVE.L	WidthPtr,A1 ;]
+		LEA	WidthVOutput(A1),A1
+		MOVE.W	D0,0(A1,D5)
+		ASR.L	#8,D1	;shift scale factor back to a word.
+		MOVE.W	D1,WidthVFactor-WidthVOutput(A1,D5)
+		RTS	;second time through, this ends MapFont
+
+;———————————————————————————————————————————————————————————————————
+; At this point, we've scanned all we can in one direction.  If scaling is not allowed, then we started 
+; scanning down so now we must scan up; the opposite is true if scaling is allowed.  If we have scanned
+; in both directions, then start up the great font substitution machine.
+
+ScanDone
+		TST.B	FScaleDisable	; scaling disabled?
+		BEQ.S	FMCore_40EE6A ;]
+		NEG.W	D6	;negate the direction
+		BMI.S	SubFont ;]
+		BRA.S	FMCore_40EE6E ;]
+
+FMCore_40EE6A ;]
+		NEG.W	D6	;negate the direction
+		BPL.S	SubFont ;]
+
+FMCore_40EE6E ;]
+		MOVE.W	D4,D3	;start with the target again
+		BRA.W	ScanFontLoop	;try our luck scanning down
+
+*R The ROM toggles FontFlag while trying the application and system font families.
+
+SubFont
+		NOT.B	FontFlag ;]
+		BNE.W	UseApplicationFont ;]
+		MOVEQ	#0,D3
+		BRA.W	MapFamily ;]
+
+; ——————————————————————————————————————————————————————————————————			
+; SetNewDevice is called when we notice that the device has changed.
+; If the device is 0 (the screen), fill out the info ourselves,
+; otherwise make a status call to the driver to get it.  Called only in DifFont after noting that the device
+; has changed.
+
+SetNewDevice
+		TST.W	D0	;is it the screen?
+		BEQ.S	SetScreenDevice	;if so, no need to call the driver
+		MOVEQ	#-1,D0	;get some ones
+		MOVE.B	fmInDevice(A3),D0	;build the refNum
+		MOVEQ	#IOQElSize,D1	;get size of pBlock
+		SUB.L	D1,SP	;make space for control record
+		LEA	IORefNum(SP),A0	;point A0 at OS block
+		MOVE.W	D0,(A0)+	;set up the refNum
+		MOVE.W	#FMgrCtl1,(A0)+	;set up the control code
+		LEA	FMDotsPerInch,A1	;get place to stash info
+		MOVE.L	A1,(A0)+	;tell the driver about it
+		MOVE.W	fmInDevice(A3),(A0)+	;pass subclass, too
+		MOVE.L	SP,A0	;point A0 at pBlock
+		_Status	;ask the driver
+		ADD.L	D1,SP	;pop off parameter block
+		RTS
+
+; Set up parameters for the screen
+
+SetScreenDevice
+		LEA	FMDotsPerInch,A1	;get place to stash info
+		LEA	ScreenStyleTab,A0
+		MOVEQ	#28,D0	;28 bytes of info to move
+		_BlockMove	;move it in
+		RTS
+
+;——————————————————————————————————————————————————————————————————
+; FindSize is a utility the scans the font family data structure for the
+; size that's passed in D3.  It uses the famDef handle in A2.
+;——————————————————————————————————————————————————————————————————
+
+FindSize
+		MOVE.L	(A2),A0	;handle->pointer
+		LEA	FONDAssoc(A0),A0	;bump past header
+		MOVE.W	(A0)+,D1	;get the # of entries
+
+FMCore_40EEC2 ;]
+		CMP.W	(A0)+,D3	;this the one?
+		BEQ.S	GoLoadStrike	;if so, go load it
+		BLT.S	FMCore_40EECE ;]
+		ADDQ.W	#FAssocSiz-2,A0	;bump to next entry
+		DBRA	D1,FMCore_40EEC2 ;]
+
+FMCore_40EECE ;]
+		MOVEQ	#0,D0
+		RTS
+
+GoLoadStrike
+		MOVE.L	(A0),D0	;get style/ID words from FOND
+		MOVE.L	D0,FOutFontHandle ;]
+
+LoadNewStrike
+		MOVE.L	D0,-(SP)
+		SUBQ.W	#4,SP
+		MOVE.L	#'NFNT',-(SP)	;push NFNT
+		MOVE.W	D0,-(SP)
+		MOVE.W	#MapTRUE,ROMMapInsert
+		_GetResource	;got it?
+		MOVE.L	(SP)+,D0
+		BEQ.S	fontOnlyLoad	;if not, look for FONT
+		ADDQ.W	#4,SP
+		RTS
+
+fontOnlyLoad
+		MOVE.L	(SP),D0
+		MOVE.L	#'FONT',-(SP)
+		MOVE.W	D0,-(SP)
+		MOVE.W	#MapTRUE,ROMMapInsert
+		_GetResource
+		MOVE.L	(SP)+,D0
+		RTS
+
+;————————————————————————————————————————————————————————————————————
+; NewFontLookUp is passed the family definition record in D0 and the
+; desired size on the top of the stack.  It decides on the best strike
+; to use, then uses common code to finish up.
+;————————————————————————————————————————————————————————————————————
+
+NewFontLookUp
+		MOVE.W	(SP)+,D5	;get desired size
+		MOVE.L	A2,-(SP)
+		MOVE.L	D0,A2	;keep fDef handle in A2
+
+; first go for an exact match
+		MOVE.W	D5,D3
+		BSR.S	FindSize
+		BNE.S	GoFoundTheSize
+
+; if FScaleDisable is on, don't bother to look for  2X and .5X first
+		TST.B	FScaleDisable
+		BNE.S	FindClosest
+
+; now try for the one that's twice the size
+		ADD.W	D3,D3
+		BSR.S	FindSize
+		BNE.S	GoFoundTheSize
+
+; try for the half-size one
+		MOVE.W	D5,D3
+		LSR.W	#1,D3
+		BSR.S	FindSize
+
+GoFoundTheSize
+		BNE.S	FoundTheSize
+
+; oh, well, beggars can't be choosers.  Scan to find the closest one
+; in size
+
+FindClosest
+		MOVE.L	(A2),A0	;point to famDef
+		LEA	FONDAssoc(A0),A0	;point to size list
+		MOVE.W	(A0)+,D4	;get # of entries-1
+		MOVEQ	#0,D1	;no font yet
+		MOVEQ	#127,D2
+
+Scan4SizeLoop
+		MOVE.W	D5,D0	;get one we want <DLD-12-Sep-85>
+		SUB.W	(A0),D0	;compute delta
+		BPL.S	FMCore_40EF48 ;]
+		TST.B	FScaleDisable	; scaling disabled?
+		BEQ.S	FMCore_40EF46 ;]
+		TST.W	D1	; if so, skip town
+		BNE.S	sizeFound	; because we want to scale up
+
+FMCore_40EF46 ;]
+		NEG.W	D0	;absolute value
+
+FMCore_40EF48 ;]
+		CMP.W	D2,D0	;closest one yet
+		BGT.S	NxtSizeLoop	;if not, skip
+		MOVE.W	D0,D2	;remember it
+		MOVE.W	(A0),D1	;remember font, too
+
+NxtSizeLoop
+		ADDQ.W	#FAssocSiz,A0	;bump to next entry
+		DBRA	D4,Scan4SizeLoop	;search them all
+
+sizeFound
+		MOVE.W	D1,D3	;get best alternative
+		BSR.W	FindSize	;try to get it...
+		BNE.S	FoundTheSize
+
+NewFailed
+		MOVE.L	(SP)+,A2
+		MOVE.W	D5,-(SP)	;put size on stack
+		MOVE.W	(A3),D3	;get the requested family
+
+*R The ROM maps family 1 to ApFontID and searches the requested 512-family neighborhood for IDs at or above $4000.
+
+SubstituteFamily ;]
+		CMP.W	#1,D3
+		BNE.S	FMCore_40EF72 ;]
+		MOVE.W	ApFontID,D3
+
+FMCore_40EF6E ;]
+		BRA.W	OldFontLookUp
+
+FMCore_40EF72 ;]
+		CMP.W	#16384,D3
+		BCS.S	FMCore_40EF6E ;]
+		TST.B	FontFlag ;]
+		BNE.S	FMCore_40EF8A ;]
+		ST	FontFlag
+		AND.W	#-512,D3 ;]
+
+FMCore_40EF86 ;]
+		BRA.W	TryForFond ;]
+
+FMCore_40EF8A ;]
+		ADDQ.W	#1,D3
+		MOVE.W	D3,D0
+		AND.W	#511,D0
+		BNE.S	FMCore_40EF86 ;]
+		CLR.B	FontFlag
+		ADDQ.W	#2,SP
+		BRA.W	UseApplicationFont ;]
+
+; OK, we found the size so now worry about the style.  The Font handle is
+; in D0.
+
+FoundTheSize
+		MOVE.L	(A2),A0	;handle->pointer
+		LEA	FONDAssoc(A0),A0	;skip header
+		MOVE.W	(A0)+,D1	;fetch # of entries
+
+FTSLoop
+		CMP.W	(A0),D3	;search for matching size
+		BEQ.S	GotEntry
+		ADDQ.W	#FAssocSiz,A0
+		DBRA	D1,FTSLoop
+		BRA.S	NewFailed
+
+ExactStyleMatch ;]
+		MOVE.L	A0,A1
+		BRA.S	FoundStyleMatch ;]
+
+; Registers used:
+; D0 = handle to font	(input)		D1 = left in assoc. table (input)	D2 = user style descriptor, scratch
+; D3 = actual size (input)			D4 = best style weight, temp.	D5 = scratch
+; D6 = FOND style descriptor		D7 = scratch				A0 = FOND data pointer (input)
+; A1 = best style entry			A2 = handle to FOND			A3 = input record
+; A4 = offset to width table in FOND
+;
+; A0 points to the first entry of this size in the FOND, but maybe the FOND contains a stylized font that
+; is better.  Loop through to pick up the best qualifying one.  The first font in the actual
+; size pointed to by the FOND has already been successfully loaded, and is pointed to by D0.
+
+GotEntry
+		ADDQ.W	#2,A0	;point to style field
+		MOVEQ	#0,D4
+		MOVE.B	fmInFace(A3),D2	;get style we want
+
+SelectStyleLoop ;]
+		MOVE.W	(A0)+,D6
+		CMP.B	D6,D2 ;]
+		BEQ.S	ExactStyleMatch ;]
+		MOVE.W	D2,D7
+		NOT.W	D7
+		AND.B	D6,D7 ;]
+		BNE.S	NextStyleEntry ;]
+
+		MOVEQ	#0,D1
+		MOVEQ	#7,D7	;start with bit 8
+
+StyleMagnitudeLoop ;]
+		BTST	D7,D2 ;]
+		BEQ.S	FMCore_40EFDC ;]
+		BTST	D7,D6 ;]
+		BEQ.S	FMCore_40EFDC ;]
+		ADD.B	StyleWeights(PC,D7.W),D1 ;]
+
+FMCore_40EFDC ;]
+		DBRA	D7,StyleMagnitudeLoop ;]
+
+		CMP.W	D1,D4
+		BGE.S	NextStyleEntry ;]
+		MOVE.W	D1,D4
+		MOVE.L	A0,A1	;remember entry
+
+NextStyleEntry ;]
+		ADDQ.W	#FAssocSiz-2,A0	;bump to next entry
+		CMP.W	-2(A0),D3 ;]
+		BEQ.S	SelectStyleLoop ;]
+
+
+FoundStyleMatch ;]
+		MOVE.W	-2(A1),D6 ;]
+		MOVE.W	FOutFontHandle+2,D1 ;]
+		CMP.W	(A1),D1	;do we already have it?
+		BEQ.S	FoundFontStyle ;]
+		MOVE.L	D0,-(SP)
+		MOVE.W	(A1),D0	;get ID
+		BSR.W	LoadNewStrike
+		BNE.S	LoadedNewStyle ;]
+		MOVE.L	(SP)+,D0
+		MOVE.W	FOutFontHandle,D6 ;]
+
+FoundFontStyle ;]
+		MOVE.L	D0,A0
+		NOT.W	D6	;invert mask of what we got
+		AND.B	D6,FOutCurStyle	;turn off built-in properties
+		NOT.W	D6
+
+*R The ROM selects a family width table by exact style. The later source also weights partial matches.
+		MOVE.L	(A2),A1
+		MOVEQ	#0,D1
+		MOVE.W	FONDLast(A1),D1
+		SUB.W	FONDFirst(A1),D1	;compute # of chars-1
+		ADDQ.W	#3,D1
+		ADD.W	D1,D1	;compute size of table
+		MOVE.L	FONDWTabOff(A1),D0	;get offset to widthTabs
+		BEQ.S	NoFamilyWidths ;]
+		ADD.L	D0,A1	;point to the width tables
+		MOVE.W	(A1)+,D2	;get # of tables-1
+		BMI.S	NoFamilyWidths ;]
+
+SearchFamilyWidths ;]
+		MOVE.W	(A1)+,D0
+		CMP.B	D0,D6
+		BEQ.S	FoundFamilyWidths ;]
+		ADD.L	D1,A1
+		DBRA	D2,SearchFamilyWidths ;]
+
+NoFamilyWidths ;]
+		MOVE.L	(SP)+,A2
+		BRA.W	GotTheFont
+
+LoadedNewStyle ;]
+		ADDQ.W	#4,SP
+		BRA.S	FoundFontStyle ;]
+
+FoundFamilyWidths ;]
+		SUB.L	(A2),A1
+		MOVE.L	A1,A4
+		BRA.S	NoFamilyWidths ;]
+
+; >>> Styleweights needs to be driver supplied, at least for alternate display devices?
+; StyleWeights is a table of weights for the font style bits, to determine which strike to display on
+; the screen.  Styles not provided by the strike returned are generated by QuickDraw.
+
+StyleWeights
+			DC.B	 	4					 ;weight for bold
+			DC.B	 	8					 ;weight for italic
+			DC.B	 	1					 ;weight for underline
+			DC.B	 	3					 ;weight for outline
+			DC.B	 	3					 ;weight for shadow
+			DC.B	 	2					 ;weight for condensed
+			DC.B		1					 ;weight for extended
+			DC.B		0					 ;bit 7 unused
+
+
+; StyleTable for the Screen -- note this is changed from old ROM; no
+; more extra for bold and italic.
+
+
+ScreenStyleTab
+			DC.W		80,80			; dots/inch
+			DC.B	 	0,1,1			; bold
+			DC.B	 	1,8,0			; italic
+			DC.B	 	0,0,0			; underline (stub)
+			DC.B	 	5,1,1			; outline
+			DC.B	 	5,2,2			; shadow
+			DC.B	 	0,0,$FF			; condensed
+			DC.B	 	0,0,1			; extended
+			DC.B	 	1,1,1			; underline (for real)
+
+
+Theft			
+			DC.B		$00,$77,$7A,$3B,$C9,$35,$30,$19
+			DC.B		$80,$AF,$30,$18,$7A,$60,$18,$09
+			DC.B		$00,$60,$31,$98,$09,$72,$7B,$BA
+			DC.B		$49,$BF,$E0,$9D,$01,$02,$20,$BF
+			DC.B		$40,$88,$01,$F1,$FE,$02,$0A,$81
+			DC.B		$BC,$04,$07,$03,$9A,$08,$04,$0F
+			DC.B		$80,$99,$1F,$C0,$37,$60,$B9,$0F
+			DC.B		$04,$03,$DF,$0F,$98,$08,$37,$60
+			DC.B		$1F,$C1,$A8,$04,$0F,$80,$02,$02
+			DC.B		$9A,$01,$04,$87,$08,$18
+
+
+		ENDPROC
+		END

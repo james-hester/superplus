@@ -1,0 +1,373 @@
+{
+  "module": "TFSDIR1",
+  "source": "Reconstruction/Source/OS/HFS/TFSDIR1.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSDIR1.a",
+      "sha256": "fdd30f7b28572edb95e325b7123984776228e65f4cf6d0759014d673e795586d",
+      "line_ranges": [
+        [
+          1,
+          787
+        ]
+      ],
+      "role": "Routine bodies, original comments, and history used to separate retained behavior from later changes."
+    },
+    {
+      "path": "OS/HFS/MFSDIR1.a",
+      "sha256": "3bdc88f224ca197ff1b9c19d46b94bedda878f4ad21baa4faceba06452d43d41",
+      "line_ranges": [
+        [
+          33,
+          60
+        ],
+        [
+          129,
+          136
+        ]
+      ],
+      "role": "MFSOpen starts the adjacent module. The commented CVFlgs call also records the former location of the MFS writability check."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          48,
+          48
+        ],
+        [
+          286,
+          287
+        ],
+        [
+          337,
+          337
+        ],
+        [
+          339,
+          339
+        ],
+        [
+          345,
+          346
+        ],
+        [
+          348,
+          350
+        ],
+        [
+          352,
+          354
+        ],
+        [
+          361,
+          361
+        ],
+        [
+          368,
+          368
+        ],
+        [
+          370,
+          375
+        ]
+      ],
+      "role": "File control block fields, flags, fixed entry length, and volume fields."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          129,
+          129
+        ],
+        [
+          136,
+          136
+        ],
+        [
+          202,
+          202
+        ],
+        [
+          234,
+          234
+        ],
+        [
+          270,
+          270
+        ],
+        [
+          406,
+          407
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          428,
+          428
+        ],
+        [
+          461,
+          461
+        ],
+        [
+          463,
+          464
+        ],
+        [
+          475,
+          477
+        ],
+        [
+          521,
+          521
+        ]
+      ],
+      "role": "Catalog record fields, file-system flags, and cache buffer flags."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          740,
+          741
+        ],
+        [
+          759,
+          760
+        ],
+        [
+          822,
+          822
+        ],
+        [
+          961,
+          961
+        ]
+      ],
+      "role": "Parameter-block fields and Finder file type offset."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          189,
+          190
+        ],
+        [
+          195,
+          196
+        ],
+        [
+          200,
+          200
+        ],
+        [
+          213,
+          213
+        ],
+        [
+          216,
+          216
+        ]
+      ],
+      "role": "File and directory error values."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          367,
+          368
+        ]
+      ],
+      "role": "Operating-system trap table and FileOpen and PermssnChk vector definitions."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x403ff2",
+      "end_exclusive": "0x404294",
+      "rom_offset": "0x3ff2",
+      "length": 674,
+      "sha256": "8b95c68a2a4454a8ac4e6234089b2643e69fba0a39de12417464951752227309",
+      "start_label": "Gt1stFCB",
+      "end_label": "TFSDIR1End",
+      "boundary_evidence": "Gt1stFCB starts immediately after the MFSVOL GMVIDone branch at 0x403ff2. The complete surviving TFSDIR1 routine sequence ends with the PopCName RTS at 0x404292. MFSOpen begins OS/HFS/MFSDIR1.a at 0x404294."
+    }
+  ],
+  "entry_points": {
+    "Gt1stFCB": "0x403ff2",
+    "GtNxtFCB": "0x403ffa",
+    "Gt1stMatch": "0x404002",
+    "GNMLoop": "0x404004",
+    "GtNxtMatch": "0x404010",
+    "GNMRTS": "0x404018",
+    "OpenRF": "0x40401a",
+    "FileOpen": "0x404024",
+    "vFileOpen": "0x40402a",
+    "FOpen1": "0x404032",
+    "OpnErrExit": "0x404040",
+    "OpnExit": "0x404044",
+    "ChkVol": "0x404048",
+    "SetupFCB": "0x40410e",
+    "PermssnChk": "0x40416c",
+    "vPermssnChk": "0x404172",
+    "okToRead": "0x40419c",
+    "okToOpen": "0x4041a0",
+    "pcheckRTS": "0x4041a2",
+    "FCBScan": "0x4041a4",
+    "FCBScnOK": "0x4041d2",
+    "FCBScnExit": "0x4041d4",
+    "CreateDir": "0x4041d6",
+    "FileCreate": "0x4041e2",
+    "CreateCN": "0x4041ec",
+    "CrFile": "0x404226",
+    "CrExit": "0x404254",
+    "PushCName": "0x404258",
+    "PopCName": "0x404288",
+    "TFSDIR1End": "0x404294"
+  },
+  "integration_manifest": {
+    "name": "tfsdir1",
+    "source": "Reconstruction/Source/OS/HFS/TFSDIR1.a",
+    "start": "0x403ff2",
+    "end_exclusive": "0x404294",
+    "entry_points": {
+      "Gt1stFCB": "0x403ff2",
+      "GtNxtFCB": "0x403ffa",
+      "Gt1stMatch": "0x404002",
+      "GNMLoop": "0x404004",
+      "GtNxtMatch": "0x404010",
+      "GNMRTS": "0x404018",
+      "OpenRF": "0x40401a",
+      "FileOpen": "0x404024",
+      "vFileOpen": "0x40402a",
+      "FOpen1": "0x404032",
+      "OpnErrExit": "0x404040",
+      "OpnExit": "0x404044",
+      "ChkVol": "0x404048",
+      "SetupFCB": "0x40410e",
+      "PermssnChk": "0x40416c",
+      "vPermssnChk": "0x404172",
+      "okToRead": "0x40419c",
+      "okToOpen": "0x4041a0",
+      "pcheckRTS": "0x4041a2",
+      "FCBScan": "0x4041a4",
+      "FCBScnOK": "0x4041d2",
+      "FCBScnExit": "0x4041d4",
+      "CreateDir": "0x4041d6",
+      "FileCreate": "0x4041e2",
+      "CreateCN": "0x4041ec",
+      "CrFile": "0x404226",
+      "CrExit": "0x404254",
+      "PushCName": "0x404258",
+      "PopCName": "0x404288",
+      "TFSDIR1End": "0x404294"
+    }
+  },
+  "changes": [
+    {
+      "location": "GtNxtFCB and FileOpen FCB clearing loops",
+      "change": "Restored the fixed 94-byte file control block size instead of loading FSFCBLen.",
+      "evidence": "GtNxtFCB adds immediate 94 at 0x403ffa. The clearing loops load immediate 46 at 0x404058 and 0x404102, then use DBRA to clear 47 words. The source history dates the change to FSFCBLen to February 1987."
+    },
+    {
+      "location": "SetupFCB",
+      "change": "Restored the caller-supplied buffer setup retained as commented instructions in the surviving source.",
+      "evidence": "At 0x40411c, the ROM reads IOOwnBuf. When that pointer is nonzero, it clears the ten-byte buffer header, sets CBHEmpty, and stores the data pointer in the FCB. These instructions match the code disabled in February 1987."
+    },
+    {
+      "location": "FileOpen filename copy",
+      "change": "Removed the later catalog lookup and recopy of the filename.",
+      "evidence": "The ROM copies the pathname element into FCBCName at 0x4040c0 through 0x4040d2 and proceeds directly to the flags. It lacks the June 1989 CMGetCN call, catalog-name copy, and parameter-block save and restore. The caller-provided case therefore remains in the FCB."
+    },
+    {
+      "location": "Later entry points and preflight hook",
+      "change": "Removed the parallel FCB and WDCB helpers, OpenDF, and OpenAttemptHook. Restored the OpenRF label.",
+      "evidence": "The ROM begins at Gt1stFCB. OpenRF follows GNMRTS directly at 0x40401a. FOpen1 calls Gt1stFCB directly at 0x404032. The source history records the parallel helpers, OpenDF, and preflight patches in April 1992, then the OpenRFTrap naming change in May 1992."
+    },
+    {
+      "location": "CreateCN",
+      "change": "Removed the CVFlgs call and error branch added in January 1986.",
+      "evidence": "After testing FNFErr at 0x4041f6, the ROM calls TFSVCBTst at 0x4041fc. The surviving source added CVFlgs before that call. Its history and the commented code in MFSDIR1 record the transfer of this check from MFSCreate."
+    },
+    {
+      "location": "Source definitions, addressing, and provenance",
+      "change": "Copied required equates from the surviving includes, supplied external routine addresses, and made JSR addressing explicit. Preserved the original header, applicable history, and comments. Marked the revised routine list, FileCreate call description, and new comments as reconstruction notes.",
+      "evidence": "The FileOpen and PermssnChk vectors retain their original expressions and resolve to 0x784 and 0x788. The BlockMove trap emits 0xa02e. AdjEOF and CMCreateCN use PC-relative JSR instructions. The reconstruction retains shared-write checks, file-lock flags, and the October 1985 PushCName and PopCName fixes."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "FSQueue",
+      "address": "0x4028aa"
+    },
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "FndFilName",
+      "address": "0x404990"
+    },
+    {
+      "name": "TFSVCBTst",
+      "address": "0x404ec6"
+    },
+    {
+      "name": "MFSOpen",
+      "address": "0x404294"
+    },
+    {
+      "name": "AdjEOF",
+      "address": "0x405530"
+    },
+    {
+      "name": "MFSCreate",
+      "address": "0x4042de"
+    },
+    {
+      "name": "CMCreateCN",
+      "address": "0x406044"
+    }
+  ],
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x403ff2, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "710bd636231a648aba6f67d56b5aed2f747d84568c1b44c42e0b375042de09db",
+    "assembled_length": 674,
+    "matched_bytes": 674,
+    "entry_points_checked": 30,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute file opens, permission checks, directory creation, buffer handling, or asynchronous operations.",
+      "External routines and trap implementations lie outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Restored expressions and comments explain the verified ROM behavior; they do not establish the exact original spelling."
+    ]
+  }
+}

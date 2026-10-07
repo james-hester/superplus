@@ -1,0 +1,751 @@
+{
+  "module": "TFSVOL services",
+  "source": "Reconstruction/Source/OS/HFS/TFSVOLServices.a",
+  "originals": [
+    {
+      "path": "OS/HFS/TFSVOL.a",
+      "sha256": "532dac54d50c57c28d90e1a37a316ae0bb24d06bc5071f114601c8299f3c76e4",
+      "line_ranges": [
+        [
+          1,
+          3
+        ],
+        [
+          888,
+          2731
+        ]
+      ],
+      "role": "The remaining volume routines, applicable comments, and history. Later bodies identify changes absent from the target ROM."
+    },
+    {
+      "path": "OS/HFS/FileMgrPatches.a",
+      "sha256": "f693045a52a563c63e7d0499db7f3868fc5d35d330cda3e0228f36b84c7fa849",
+      "line_ranges": [
+        [
+          1879,
+          1914
+        ],
+        [
+          2057,
+          2094
+        ],
+        [
+          2224,
+          2253
+        ]
+      ],
+      "role": "Descriptions and entry code for FixDtrmV3, NoCloseOnOffline, NoCloseOnEject, and UnmountForTheNineties."
+    },
+    {
+      "path": "OS/HFS/MFSVOL.a",
+      "sha256": "7069be21af49557a9278c13bdce2886fd4e90b96466545d1fbdc553fe0eb817c",
+      "line_ranges": [
+        [
+          1,
+          112
+        ]
+      ],
+      "role": "MV_GetMFSMap starts the next module and establishes the end boundary."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "line_ranges": [
+        [
+          41,
+          41
+        ],
+        [
+          45,
+          46
+        ],
+        [
+          48,
+          50
+        ],
+        [
+          259,
+          260
+        ],
+        [
+          262,
+          263
+        ],
+        [
+          274,
+          274
+        ],
+        [
+          278,
+          278
+        ],
+        [
+          287,
+          287
+        ],
+        [
+          292,
+          294
+        ],
+        [
+          298,
+          301
+        ],
+        [
+          312,
+          314
+        ],
+        [
+          318,
+          320
+        ],
+        [
+          327,
+          330
+        ],
+        [
+          352,
+          352
+        ],
+        [
+          361,
+          361
+        ],
+        [
+          452,
+          456
+        ],
+        [
+          461,
+          468
+        ],
+        [
+          474,
+          474
+        ]
+      ],
+      "role": "File, volume, directory, search-path, and low-memory definitions."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSPrivate.a",
+      "sha256": "0200241e068c38de776f320475306c8bfbca4c3ede852281364b2494e473db48",
+      "line_ranges": [
+        [
+          126,
+          126
+        ],
+        [
+          128,
+          130
+        ],
+        [
+          138,
+          139
+        ],
+        [
+          141,
+          141
+        ],
+        [
+          148,
+          151
+        ],
+        [
+          158,
+          158
+        ],
+        [
+          166,
+          166
+        ],
+        [
+          406,
+          406
+        ],
+        [
+          420,
+          420
+        ],
+        [
+          427,
+          427
+        ],
+        [
+          436,
+          437
+        ],
+        [
+          520,
+          520
+        ],
+        [
+          525,
+          525
+        ]
+      ],
+      "role": "Private File Manager globals and catalog definitions."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "line_ranges": [
+        [
+          524,
+          524
+        ],
+        [
+          529,
+          529
+        ],
+        [
+          615,
+          615
+        ],
+        [
+          639,
+          639
+        ],
+        [
+          660,
+          662
+        ],
+        [
+          733,
+          733
+        ],
+        [
+          735,
+          739
+        ],
+        [
+          795,
+          798
+        ],
+        [
+          800,
+          801
+        ],
+        [
+          804,
+          804
+        ],
+        [
+          806,
+          806
+        ],
+        [
+          809,
+          809
+        ],
+        [
+          814,
+          814
+        ],
+        [
+          818,
+          818
+        ],
+        [
+          822,
+          822
+        ],
+        [
+          847,
+          848
+        ],
+        [
+          851,
+          859
+        ],
+        [
+          879,
+          882
+        ],
+        [
+          1007,
+          1008
+        ],
+        [
+          1042,
+          1042
+        ],
+        [
+          1492,
+          1493
+        ]
+      ],
+      "role": "Parameter-block and queue fields, root identifiers, and BufPtr."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysErr.a",
+      "sha256": "aaa74ccef8d22c46dd7f6b989293c8dfc16f99b28971443bcda64b718e976564",
+      "line_ranges": [
+        [
+          182,
+          182
+        ],
+        [
+          184,
+          184
+        ],
+        [
+          191,
+          191
+        ],
+        [
+          193,
+          193
+        ],
+        [
+          197,
+          197
+        ],
+        [
+          202,
+          202
+        ],
+        [
+          204,
+          204
+        ],
+        [
+          213,
+          214
+        ]
+      ],
+      "role": "File Manager error codes."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "line_ranges": [
+        [
+          235,
+          235
+        ],
+        [
+          364,
+          364
+        ]
+      ],
+      "role": "The DtrmV1 vector address."
+    },
+    {
+      "path": "Interfaces/AIncludes/SonyEqu.a",
+      "sha256": "a50475e8ab79e9a01cdb92877d382da56079d331fa76a411b63252ddd786029a",
+      "line_ranges": [
+        [
+          457,
+          461
+        ]
+      ],
+      "role": "The disk-in-place field and its status comments."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x00400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x403414",
+      "end_exclusive": "0x403daa",
+      "rom_offset": "0x3414",
+      "length": 2454,
+      "sha256": "189eb52babedb5a3cb7db67dd47de1bb88dd34b93a84ef66de8fb04c5dac750b",
+      "start_label": "FindDrive",
+      "end_label": "TFSVOLServicesEnd",
+      "boundary_evidence": "FindDrive begins at its exported ROM address 0x403414, immediately after AccessBT in the preceding TFSVOL mount group. The final SetupDef branch ends at 0x403daa. MV_GetMFSMap starts the MFSVOL source and the next ROM span there."
+    }
+  ],
+  "entry_points": {
+    "FindDrive": "0x403414",
+    "OffLine": "0x40343a",
+    "DumpCaches": "0x403442",
+    "FlushBuffers": "0x40344e",
+    "flVCaches": "0x4034a0",
+    "flBufOK": "0x4034d4",
+    "flBufExit": "0x4034d6",
+    "Eject": "0x4034e0",
+    "Eject1": "0x4034e4",
+    "ejectDrvNum": "0x4034fa",
+    "ejectDone": "0x403508",
+    "ejectMnted": "0x40350c",
+    "ejectMark": "0x403570",
+    "ejectIt": "0x403598",
+    "UnMountVol": "0x4035b4",
+    "FlushVFiles": "0x4035be",
+    "ckNxtFCB": "0x4035c8",
+    "ckNxtF1": "0x4035ea",
+    "fvFilesExit": "0x4035f2",
+    "FlushVol": "0x4035fc",
+    "FlVolStart": "0x403604",
+    "FlVolDone": "0x403628",
+    "FlVolOK": "0x403632",
+    "FlVolExit": "0x403634",
+    "CkExtFS": "0x403638",
+    "DtrmV3": "0x403642",
+    "DtrmV1": "0x403650",
+    "vDtrmV1": "0x403656",
+    "dtrmVRef": "0x403668",
+    "dtrmGotCk": "0x403678",
+    "dtrmErrRTS": "0x40367a",
+    "dtrmDeflt": "0x40367e",
+    "dtrmGotVol": "0x40368c",
+    "dtrmExOK": "0x4036b4",
+    "dtrmPath": "0x4036b8",
+    "dtrmPth2": "0x4036ee",
+    "dtrmPth3": "0x40370c",
+    "dtrmPthEnd": "0x403718",
+    "dtrmPthUse": "0x40372c",
+    "AddSPEntry": "0x403756",
+    "DtrmVol": "0x403784",
+    "DtrmV2": "0x403788",
+    "DtrmDone": "0x4037c4",
+    "NoNameErr": "0x4037cc",
+    "VolSpcfd": "0x4037d0",
+    "CkVol": "0x4037d4",
+    "SetPMSP": "0x4037f6",
+    "SetPMSPOK": "0x40381e",
+    "GetVolInfo": "0x403824",
+    "RetVolInfo": "0x403858",
+    "retVRef": "0x403906",
+    "retAlBks": "0x40391a",
+    "GVIDone": "0x4039b8",
+    "TGVIOK": "0x4039c8",
+    "TGVIDone": "0x4039ca",
+    "SetVolInfo": "0x4039ce",
+    "SVIDone": "0x403a3e",
+    "SetVolName": "0x403a42",
+    "CVFlgs": "0x403a76",
+    "CVExit": "0x403a88",
+    "GetVol": "0x403a8a",
+    "GetVolDone": "0x403aa6",
+    "NSVErrXit": "0x403aaa",
+    "XferVName": "0x403aae",
+    "SetVol": "0x403ada",
+    "SetDir": "0x403b1a",
+    "SetDefDir": "0x403b3e",
+    "SetDirOK": "0x403b48",
+    "SetDirExit": "0x403b4a",
+    "GetDir": "0x403b4e",
+    "OpenWD": "0x403b72",
+    "opnWDOK": "0x403ba8",
+    "opnWDExit": "0x403baa",
+    "SetDefWDCB": "0x403bae",
+    "FillWDCB": "0x403bb4",
+    "PickWDCB": "0x403bd2",
+    "pickNoMore": "0x403c1a",
+    "CloseWD": "0x403c1e",
+    "clsWDOK": "0x403c52",
+    "clsWDExit": "0x403c54",
+    "GetWDInfo": "0x403c58",
+    "GtWDIOK": "0x403c6e",
+    "GtWDIExit": "0x403c70",
+    "GetWDCBInfo": "0x403c74",
+    "getWD_1": "0x403ca4",
+    "IndxWDInfo": "0x403cb2",
+    "getWDLoop": "0x403cd6",
+    "XferWDInfo": "0x403cfa",
+    "XferVN": "0x403cfc",
+    "GetWDIExit": "0x403d00",
+    "ReadWDCB": "0x403d04",
+    "RetWDInfo": "0x403d1a",
+    "RetDefInfo": "0x403d20",
+    "CkWDRefNum": "0x403d3c",
+    "WDRfnCkExit": "0x403d5a",
+    "SetUpWDCB": "0x403d60",
+    "SetWDOK": "0x403d7e",
+    "SetWDExit": "0x403d80",
+    "SetupDef": "0x403d8a",
+    "TFSVOLServicesEnd": "0x403daa"
+  },
+  "integration_manifest": {
+    "name": "tfsvol-services",
+    "source": "Reconstruction/Source/OS/HFS/TFSVOLServices.a",
+    "start": "0x403414",
+    "end_exclusive": "0x403daa",
+    "entry_points": {
+      "FindDrive": "0x403414",
+      "OffLine": "0x40343a",
+      "DumpCaches": "0x403442",
+      "FlushBuffers": "0x40344e",
+      "flVCaches": "0x4034a0",
+      "flBufOK": "0x4034d4",
+      "flBufExit": "0x4034d6",
+      "Eject": "0x4034e0",
+      "Eject1": "0x4034e4",
+      "ejectDrvNum": "0x4034fa",
+      "ejectDone": "0x403508",
+      "ejectMnted": "0x40350c",
+      "ejectMark": "0x403570",
+      "ejectIt": "0x403598",
+      "UnMountVol": "0x4035b4",
+      "FlushVFiles": "0x4035be",
+      "ckNxtFCB": "0x4035c8",
+      "ckNxtF1": "0x4035ea",
+      "fvFilesExit": "0x4035f2",
+      "FlushVol": "0x4035fc",
+      "FlVolStart": "0x403604",
+      "FlVolDone": "0x403628",
+      "FlVolOK": "0x403632",
+      "FlVolExit": "0x403634",
+      "CkExtFS": "0x403638",
+      "DtrmV3": "0x403642",
+      "DtrmV1": "0x403650",
+      "vDtrmV1": "0x403656",
+      "dtrmVRef": "0x403668",
+      "dtrmGotCk": "0x403678",
+      "dtrmErrRTS": "0x40367a",
+      "dtrmDeflt": "0x40367e",
+      "dtrmGotVol": "0x40368c",
+      "dtrmExOK": "0x4036b4",
+      "dtrmPath": "0x4036b8",
+      "dtrmPth2": "0x4036ee",
+      "dtrmPth3": "0x40370c",
+      "dtrmPthEnd": "0x403718",
+      "dtrmPthUse": "0x40372c",
+      "AddSPEntry": "0x403756",
+      "DtrmVol": "0x403784",
+      "DtrmV2": "0x403788",
+      "DtrmDone": "0x4037c4",
+      "NoNameErr": "0x4037cc",
+      "VolSpcfd": "0x4037d0",
+      "CkVol": "0x4037d4",
+      "SetPMSP": "0x4037f6",
+      "SetPMSPOK": "0x40381e",
+      "GetVolInfo": "0x403824",
+      "RetVolInfo": "0x403858",
+      "retVRef": "0x403906",
+      "retAlBks": "0x40391a",
+      "GVIDone": "0x4039b8",
+      "TGVIOK": "0x4039c8",
+      "TGVIDone": "0x4039ca",
+      "SetVolInfo": "0x4039ce",
+      "SVIDone": "0x403a3e",
+      "SetVolName": "0x403a42",
+      "CVFlgs": "0x403a76",
+      "CVExit": "0x403a88",
+      "GetVol": "0x403a8a",
+      "GetVolDone": "0x403aa6",
+      "NSVErrXit": "0x403aaa",
+      "XferVName": "0x403aae",
+      "SetVol": "0x403ada",
+      "SetDir": "0x403b1a",
+      "SetDefDir": "0x403b3e",
+      "SetDirOK": "0x403b48",
+      "SetDirExit": "0x403b4a",
+      "GetDir": "0x403b4e",
+      "OpenWD": "0x403b72",
+      "opnWDOK": "0x403ba8",
+      "opnWDExit": "0x403baa",
+      "SetDefWDCB": "0x403bae",
+      "FillWDCB": "0x403bb4",
+      "PickWDCB": "0x403bd2",
+      "pickNoMore": "0x403c1a",
+      "CloseWD": "0x403c1e",
+      "clsWDOK": "0x403c52",
+      "clsWDExit": "0x403c54",
+      "GetWDInfo": "0x403c58",
+      "GtWDIOK": "0x403c6e",
+      "GtWDIExit": "0x403c70",
+      "GetWDCBInfo": "0x403c74",
+      "getWD_1": "0x403ca4",
+      "IndxWDInfo": "0x403cb2",
+      "getWDLoop": "0x403cd6",
+      "XferWDInfo": "0x403cfa",
+      "XferVN": "0x403cfc",
+      "GetWDIExit": "0x403d00",
+      "ReadWDCB": "0x403d04",
+      "RetWDInfo": "0x403d1a",
+      "RetDefInfo": "0x403d20",
+      "CkWDRefNum": "0x403d3c",
+      "WDRfnCkExit": "0x403d5a",
+      "SetUpWDCB": "0x403d60",
+      "SetWDOK": "0x403d7e",
+      "SetWDExit": "0x403d80",
+      "SetupDef": "0x403d8a",
+      "TFSVOLServicesEnd": "0x403daa"
+    }
+  },
+  "changes": [
+    {
+      "location": "FindDrive, CkExtFS, DtrmV3, and DtrmV2",
+      "change": "Removed later dispatch stubs while retaining the original DtrmV1 vector. Omitted the later empty-name D2 fix.",
+      "evidence": "The ROM enters the four routines directly. DtrmV1 pushes the vector at 0x0778 and returns; vDtrmV1 starts at 0x403656. DtrmV3 falls through to that vector for an empty string without clearing D2. FileMgrPatches.a describes FixDtrmV3 and the missing clear."
+    },
+    {
+      "location": "Offline and eject",
+      "change": "Restored synchronization at the shared Eject1 entry and cleared FlushOnly before closing HFS control files. Removed the later patch that keeps those files open.",
+      "evidence": "Offline sets NoEject and branches; Eject clears it. Eject1 calls FSQueueSync at 0x4034e4. The mounted HFS path clears FlushOnly at 0x40355a and calls FlushBuffers. The surviving NoCloseOnOffline and NoCloseOnEject patches document the replacement policy."
+    },
+    {
+      "location": "UnmountVol and FlushVol",
+      "change": "Restored the short unmount entry and shared flush path, which closes open files. Removed busy-file restrictions, unconditional-unmount handling, desktop shutdown, and the extra close path for offline volumes.",
+      "evidence": "At 0x4035b4 UnMountVol synchronizes, clears FlushOnly, and branches to the shared DtrmV3 call at 0x403604. The HFS path skips FlushBuffers when vcbDrvNum is zero, then disposes the VCB if unmounting. The source dates the busy-file and shutdown changes to November 4, 1987."
+    },
+    {
+      "location": "FlushBuffers",
+      "change": "Preserved the ROM behavior that clears VCBCTRef after each of the two control-file closes.",
+      "evidence": "The instructions at 0x403488 and 0x40349c both clear offset 166, the catalog reference field. The second follows the extent-file close. This matches the surviving source; the reconstruction does not change the second clear to VCBXTRef."
+    },
+    {
+      "location": "XferVName",
+      "change": "Restored the 24-bit mask and pointer-bound comparison, replacing StripAddress. Used BufPtr for the bound shown in the ROM.",
+      "evidence": "At 0x403abc the ROM applies Lo3Bytes at 0x031a. At 0x403ac0 it compares with BufPtr at 0x010c and skips copying if the pointer is greater. Inactive source lines retain the earlier check but name MemTop at 0x0108; the later active line calls StripAddress."
+    },
+    {
+      "location": "PickWDCB",
+      "change": "Restored selection by volume, directory, and caller ProcID, retaining the first available WDCB. Removed the Process Manager parallel records and ioWDCreated writes.",
+      "evidence": "The ROM at 0x403bd2..0x403c1e reads ioWDProcID into D3, skips the two reserved entries, reuses a matching record, or fills the first free entry. It returns TMWDOErr when no entry is available. The surviving expanded body supplies the matching loop and applicable comments."
+    },
+    {
+      "location": "Working-directory information and validation",
+      "change": "Omitted the later D1 clear in GetWDCBInfo and the closed-WDCB pointer check in CkWDRefNum.",
+      "evidence": "At 0x403c7a GetWDCBInfo reads only the reference-number word into D1. At 0x403d3c CkWDRefNum checks the index bounds and 16-byte record alignment, then reports success without checking WDVCBPtr. The source dates those additions to April 15 and September 15, 1986."
+    },
+    {
+      "location": "Source form and provenance",
+      "change": "Preserved the module description and applicable API comments and history. Restored the earlier entry names, selected branch widths shown by the ROM, made PC-relative calls explicit, and encoded the asynchronous Control variant directly.",
+      "evidence": "Control emits opcode 0xa404. GetVolInfo retains the word branch at 0x403884. The restored FlVolStart name identifies the common entry at 0x403604. New notes identify the reconstructed code, and original inactive EX-CODE lines receive semicolon prefixes."
+    }
+  ],
+  "external_references": [
+    {
+      "name": "QWordSearch",
+      "address": "0x402c86"
+    },
+    {
+      "name": "TFSVCBTst",
+      "address": "0x404ec6"
+    },
+    {
+      "name": "MarkVCBDirty",
+      "address": "0x402d28"
+    },
+    {
+      "name": "FlushMDB",
+      "address": "0x402d2e"
+    },
+    {
+      "name": "FClose",
+      "address": "0x405168"
+    },
+    {
+      "name": "FlushCache",
+      "address": "0x4076c6"
+    },
+    {
+      "name": "DsposVBlks",
+      "address": "0x4033a2"
+    },
+    {
+      "name": "FSQueueSync",
+      "address": "0x4028a6"
+    },
+    {
+      "name": "CmdDone",
+      "address": "0x40295e"
+    },
+    {
+      "name": "MFSFlush",
+      "address": "0x403f00"
+    },
+    {
+      "name": "MDspsMap",
+      "address": "0x403df6"
+    },
+    {
+      "name": "DequeueTrap",
+      "address": "0x4019f0"
+    },
+    {
+      "name": "EnqueueTrap",
+      "address": "0x4019ca"
+    },
+    {
+      "name": "Gt1stFCB",
+      "address": "0x403ff2"
+    },
+    {
+      "name": "GtNxtFCB",
+      "address": "0x403ffa"
+    },
+    {
+      "name": "FSQueue",
+      "address": "0x4028aa"
+    },
+    {
+      "name": "DsposVCB",
+      "address": "0x40336e"
+    },
+    {
+      "name": "GetVCBDrv",
+      "address": "0x402cc0"
+    },
+    {
+      "name": "GetVCBRfn",
+      "address": "0x402ca6"
+    },
+    {
+      "name": "GetWDCBRfn",
+      "address": "0x402cf4"
+    },
+    {
+      "name": "ExtOffLinCk",
+      "address": "0x404aba"
+    },
+    {
+      "name": "CMGetCN",
+      "address": "0x406238"
+    },
+    {
+      "name": "MarkVCB",
+      "address": "0x402d1e"
+    },
+    {
+      "name": "FndFilName",
+      "address": "0x404990"
+    },
+    {
+      "name": "Gt1stWDCB",
+      "address": "0x4043a0"
+    },
+    {
+      "name": "GtNxtWDCB",
+      "address": "0x4043a8"
+    },
+    {
+      "name": "jDtrmV1",
+      "address": "0x000778",
+      "kind": "low-memory dispatch vector"
+    }
+  ],
+  "scope": {
+    "description": "This span completes the remainder of OS/HFS/TFSVOL.a. The preceding mount group is recorded separately in Reconstruction/Evidence/tfsvol.json.",
+    "remaining_work_in_original_module": false
+  },
+  "verification": {
+    "method": "Reconstruction/Tools/verify.py assembled for the 68000, linked at 0x403414, and compared every emitted byte and all recorded labels against the ROM.",
+    "assembler": "GNU assembler (GNU Binutils) 2.39",
+    "assembler_flags": [
+      "-m68000",
+      "--register-prefix-optional",
+      "--base-size-default-16",
+      "--fatal-warnings"
+    ],
+    "source_sha256": "60885b1a5e152262ea401008629b9ccc069fedb037185d5673ea01ac5e46fe87",
+    "assembled_length": 2454,
+    "matched_bytes": 2454,
+    "entry_points_checked": 100,
+    "result": "exact",
+    "limits": [
+      "The comparison proves emitted bytes and label positions. It does not execute volume operations, asynchronous driver calls, search-path hooks, or working-directory operations.",
+      "External routine and trap targets are outside this span. Their referenced addresses and opcodes are checked here, but their implementations and runtime dispatch are not.",
+      "The original Mac Plus source and historical assembler output remain unavailable. Later history explains individual differences but does not establish the ROM build date.",
+      "The reconstruction preserves the ROM behavior, including the repeated VCBCTRef clear, missing D2 clear, and older working-directory validation. It does not apply later fixes."
+    ]
+  }
+}

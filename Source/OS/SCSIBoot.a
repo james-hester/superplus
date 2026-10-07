@@ -1,0 +1,196 @@
+*R Mac Plus SCSI driver loader.
+*R The original descriptor scan and SCSI read sequence remain where they match.
+*R Later partition searches, checksums, retries, and heap changes are omitted.
+*R The two NOP instructions are present in the target ROM.
+*R See Evidence/scsiboot.json for provenance and the byte comparison.
+
+;
+;	File:		SCSIBoot.a
+;
+;	Contains:	This is the SCSI boot code for the Macintosh.
+;
+;	Written by:	Erich Ringewald
+;
+;	Copyright:	© 1985-1993 by Apple Computer, Inc.  All rights reserved.
+;
+*R Original histories through January 1986:
+;				 1/16/86	ELR		Fixed polarity of beq to bpl for tst of SCSI byte.
+;				10/28/85	ELR		Fixed bug in SCSILoad which didn't correctly look at SCSIFlags
+;				10/27/85	ELR		Removed inclusion of SCSIMacs and SCSIBootEqu; this is now
+;									included in NewEqu.
+;				10/27/85	ELR		Added Flag "SCSIDrvrs" which is a bitmap for loaded SCSI
+;									drivers. Now SCSILoad can be called repeatedly to check for new
+;									devices coming online. A call to SCSILoad was placed in the
+;									RDBootBlocks loop in StartInit to facilitate this.
+;				 9/27/85	ELR		Bunch of changes in a last ditch effort to get something to
+;									work.
+;				 9/16/85	RDC		More changes for MidMac
+;				 9/13/85	RDC		Added changes for Milwaukee (MidMac) Fixed SetTrapaddress call
+;									to work with new ROM's Added include of HWequ.text
+;				  9/6/85	ELR		New Today.
+;
+
+		INCLUDE 'Private.a'
+		INCLUDE 'SCSI.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'Traps.a'
+
+scsiComplete  	EQU 		4
+
+
+
+		INCLUDE 'SCSIMacs.a' ;]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SCSIBoots PROC EXPORT
+            EXPORT SCSILoad
+*R SCSILoad loads SCSI device drivers during startup.
+*R The ROM tests the SCSI configuration byte and scans IDs 6–0.
+SCSILoad
+            TST.B   SCSIFlag
+            BPL.S   LoadDone ;]
+            MOVEM.L D0-D7/A0-A6,-(SP)
+            NOP
+            NOP
+            MOVEQ   #6,D5 ;]
+CheckNext
+            BTST    D5,SCSIDrvrs ;]
+            BNE.S   @1
+            BSR.S   OpenIt
+@1
+            SUBQ.W  #1,D5
+            BGE.S   CheckNext ;]
+            MOVEM.L (SP)+,D0-D7/A0-A6
+LoadDone ;]
+            RTS
+
+*R OpenIt solicits the SCSI device whose ID is in D5 for a Macintosh driver.
+*R The ROM reads 256 bytes of the descriptor and partition blocks.
+OpenIt
+            SUB.L   #256,SP ;]
+            MOVE.L  SP,A2
+				moveq.l	#0,d3					; d3 gets block location
+				moveq.l	#1,d2					; d2 gets block count
+				move.w	#256,d4 				; d4 gets block size
+				bsr.s		SRead					; read the block from unit in d5
+				bne.s	Exit				;]stop on a read error
+				cmpi.w	#SBSigWord,SBSig(sp)	; is it for real?
+				bne.s	Exit				;]stop on an invalid signature
+
+				move.w	SBBlkSize(sp),d4		; get the block size
+				move.w	SBDrvCount(sp),d0		; get the driver count
+				lea 	SBDrvrs(sp),a0			; point at driver list
+				move.l	SBData(sp),d7			; save the default data block pointer...
+
+NextDD
+            CMPI.W  #SBMac,DDType(A0) ;]
+            BEQ.S   FoundDD
+            ADDQ.L  #DDLen,A0
+            SUBQ.W  #1,D0
+            BNE.S   NextDD
+            BRA.S   Exit
+
+FoundDD
+				bset.b	d5,SCSIDrvrs			; show we tried to load the driver
+				move.l	DDBlock(a0),d3			; block #
+				move.w	DDSize(a0),d2			; # blocks
+
+				move.l	d4,d0					; block size of driver
+				mulu	d2,d0					; times # blocks is byte size
+; head for the system heap
+				_NewPtr ,SYS
+				move.l	a0,a3					; put the driver here
+				move.l	a0,a2
+
+				bsr.s		SRead					; load the driver
+				bne.s	Exit				; deallocate on error	<A349/04Nov86>
+
+				moveq.l	#1,d3					; now read block 1
+				moveq.l	#1,d2					; do a single block
+				move.w	#256,d4					; full block
+				move.l	sp,a2					; ontop of block 0 is OK
+				bsr.s		SRead					; preserves a2
+				bne.s	Exit				; error in read of block 1
+            MOVE.L  A2,A0                       ;pointer to the partition block
+            JSR     (A3)                        ;install the driver
+Exit
+            ADD.W   #256,SP
+            RTS
+
+*R Read block. D3 is the block, D2 the block count, D4 the block size, D5 the unit.
+*R A2 is the transfer address; D6 points to the stack command list.
+SRead
+				lea		 Scratch8,a0
+				move.b	 #8,(a0)+				; read command
+
+				swap 	 d3
+				andi.b	 #$1F,d3				; isolate disk address
+				move.b	 d3,(a0)+				; LUN and disk address
+				swap 	 d3
+
+				move.w 	 d3,(a0)+				; disk address
+
+				move.b   d2,(a0)+                ;block count
+				clr.b	 (a0)+					; cmdbyte
+
+				mulu.w 	 d2,d4					;] size (d4) * count (d2) = total bytes
+
+				sub.w	 #(SCSIZE*2),sp 		; make room for 2 commands...
+				move.l	 sp,d6					; save this pointer...
+
+				subq.w 	 #2,sp					; space for return value
+				_SCSIGet
+                TST.W   (SP)                    ;error condition?
+                BNE.S   RdErr ;]
+
+				move.w 	d5,-(sp)				; selid
+				_SCSISelect
+                TST.W   (SP)                    ;error condition?
+                BNE.S   RdErr ;]
+
+				pea		 Scratch8
+				move.w 	 #6,-(sp)				; count
+				_SCSICmd
+                TST.W   (SP)                    ;error condition?
+                BNE.S   RdErr ;]
+
+				move.l	 d6,a0					; point at command block
+				move.w 	 #SCINC,(a0)+			; read command
+				move.l	 a2,(a0)+				; to this address
+				move.l	 d4,(a0)+				; this many bytes
+; then stop
+				move.w	 #SCSTOP,(a0)+ ;]
+
+				move.l	 d6,-(sp)				; pass a pointer to this thing
+
+				_SCSIRead						;read the data
+				pea		 Scratch8				; address for status byte
+				pea		 Scratch8+2				; address for message byte
+; wait up to one sec
+				move.l	 #60,-(sp) ;]
+				_SCSIComplete
+            TST.W   (SP)
+            BNE.S   RdErr ;]
+            ADDQ.L  #2,SP
+            ADD.W   #(SCSize*2),SP ;]
+            MOVEQ   #0,D0
+            RTS
+RdErr ;]
+            ADDQ.L  #2,SP
+            ADD.W   #(SCSize*2),SP ;]
+            MOVEQ   #-1,D0
+            RTS
+SCSIBootEnd ;]
+            END

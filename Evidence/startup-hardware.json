@@ -1,0 +1,313 @@
+{
+  "module": "Mac Plus startup hardware and globals",
+  "status": "complete for assigned span",
+  "source": "Reconstruction/Source/OS/StartMgr/StartHardware.a",
+  "originals": [
+    {
+      "path": "OS/StartMgr/StartInit.a",
+      "sha256": "15a435c41f67bf4e517627c53333d520461594c80036fcd825b517c22c8e30b0",
+      "line_ranges": [
+        [
+          1,
+          33
+        ],
+        [
+          1226,
+          1230
+        ],
+        [
+          2766,
+          2990
+        ],
+        [
+          4203,
+          4220
+        ]
+      ],
+      "role": "The later startup source preserves the header, global initialization, cursor setup, and IWM mode loop."
+    },
+    {
+      "path": "OS/StartMgr/StartFail.a",
+      "sha256": "ad1b84576da8777d5a2e014732d9164f4f9628e1a623280ad68ed06acbc5bf2b",
+      "line_ranges": [
+        [
+          1,
+          69
+        ],
+        [
+          116,
+          117
+        ],
+        [
+          371,
+          443
+        ]
+      ],
+      "role": "The later failure handler preserves register saving, hexadecimal drawing operations, and the exact 48-byte numFont table. Its history records the removal of the fixed IWM motor access and PutSymbol."
+    },
+    {
+      "path": "OS/Clock.a",
+      "sha256": "30bd4dc45eef2b5b89183d79b3cea41082063c168cb06a8b3f27e5e40e84a040",
+      "line_ranges": [
+        [
+          55,
+          65
+        ],
+        [
+          83,
+          108
+        ]
+      ],
+      "role": "The clock history records the stackless interface and the later move of ClkNoMem, ReadFrClk, and SendToClk from StartInit."
+    },
+    {
+      "path": "OS/IoPrimitives/ClockPRAMPrimitives.a",
+      "sha256": "b4f65080d1e641d35bc7360fb779c1f7be4461adeb863a100af2802ec7be9050",
+      "line_ranges": [
+        [
+          521,
+          624
+        ]
+      ],
+      "role": "The later clock primitives retain the command protocol but use different register conventions and restore the interrupt mask."
+    },
+    {
+      "path": "Internal/Asm/InternalOnlyEqu.a",
+      "sha256": "2eab90672f1b0e223760ffa0b2e724ebb2a2b4b514c3cbac9f62d166fb76e38a",
+      "line_ranges": [
+        [
+          466,
+          509
+        ]
+      ],
+      "role": "The original macros establish the A5 and A6 return conventions. The reconstruction restores 68000 word branches and retains the RTS5 and RTS6 bodies."
+    },
+    {
+      "path": "Interfaces/AIncludes/FSEqu.a",
+      "sha256": "c1fc18f64f12f16abac762f64aa2b87f0f99e3ce6b5b8b5ee306479b7f24572b",
+      "role": "Original low-memory and hardware equates used by the reconstructed operands."
+    },
+    {
+      "path": "Interfaces/AIncludes/HardwareEqu.a",
+      "sha256": "aed4e7d94aa2ae499bd91584b3b2281973b854443e5c12eaf1efd6235f95d0ba",
+      "role": "Original low-memory and hardware equates used by the reconstructed operands."
+    },
+    {
+      "path": "Interfaces/AIncludes/Private.a",
+      "sha256": "ae023af063bdffcd0fcd1a9387470e87954f6cd278500cd5e7be9cd73e114d89",
+      "role": "Original low-memory and hardware equates used by the reconstructed operands."
+    },
+    {
+      "path": "Interfaces/AIncludes/SysEqu.a",
+      "sha256": "240ddb8a2d9dc2e84b8851f970d1eb326c1c3ef3b99b63ff19b752b524d07e60",
+      "role": "Original low-memory and hardware equates used by the reconstructed operands."
+    },
+    {
+      "path": "Interfaces/AIncludes/ToolUtils.a",
+      "sha256": "d774fd8ab4740f2f9e42b5c4d8e4c35003979a5f057da203febb844521b0a9ba",
+      "role": "Original low-memory and hardware equates used by the reconstructed operands."
+    }
+  ],
+  "target": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000",
+    "header_checksum": "0x4d1f8172"
+  },
+  "spans": [
+    {
+      "start": "0x400062",
+      "end_exclusive": "0x400516",
+      "length": 1204,
+      "sha256": "e500790569fc158829e35cdd2025d341c5e66aef45474211c7b78cd09095e6b5",
+      "boundary_evidence": "StartBoot begins at $400062 after the ROM header and phase-read helper. The assigned boundary at $400516 falls between completed mouse interrupt vector setup and the next SCC address initialization instructions; execution continues into the adjacent startup span."
+    }
+  ],
+  "entry_points": {
+    "StartBoot": "0x400062",
+    "FinishPhaseRead": "0x40006c",
+    "InitEarlyHardware": "0x400086",
+    "CheckPRAMSignature": "0x4000a8",
+    "ReadPRAMVolume": "0x4000b2",
+    "InitVolume": "0x4000bc",
+    "StartBootSound": "0x4000ee",
+    "InitIWM": "0x4000f8",
+    "SetIWMMode": "0x400104",
+    "StartMemoryTest": "0x400126",
+    "StartTestResult": "0x400132",
+    "CritErr": "0x400136",
+    "DrawFailureIcon": "0x400152",
+    "FormatFailureCode": "0x40015c",
+    "FailLoop": "0x40016a",
+    "chLoop": "0x40017e",
+    "FailureCounter": "0x4001ac",
+    "numFont": "0x4001ba",
+    "ClearScreen": "0x4001ea",
+    "ClearScreenLoop": "0x4001f0",
+    "ClkNoMem": "0x4001f8",
+    "ClockExtended": "0x400220",
+    "ClockCommand": "0x400226",
+    "ClockDirection": "0x400228",
+    "ClockWriteData": "0x400232",
+    "ClockWriteDone": "0x40023c",
+    "ClockRead": "0x40023e",
+    "ClockReadData": "0x400246",
+    "ClockDone": "0x40024e",
+    "SendToClk": "0x400254",
+    "SendClockBit": "0x400256",
+    "ReadFrClk": "0x400266",
+    "ReadClockBit": "0x400274",
+    "BootBeep": "0x40028a",
+    "BeepWaitTick": "0x4002a4",
+    "BeepWaitVIA": "0x4002ac",
+    "BeepPollVIA": "0x4002ae",
+    "BeepDelay": "0x4002be",
+    "BeepDelayLoop": "0x4002c2",
+    "BeepWave": "0x4002c8",
+    "BeepWaveByte": "0x4002ce",
+    "BeepWaveRun": "0x4002d0",
+    "BeepFilter": "0x4002e8",
+    "BeepFilterLoop": "0x4002f0",
+    "BeepRepeatWave": "0x400310",
+    "BeepNextFrame": "0x40031a",
+    "BeepNextTick": "0x400324",
+    "BeepNextVIA": "0x40032c",
+    "BeepFrameDone": "0x40033c",
+    "BeepSilence": "0x400348",
+    "ContinueBoot": "0x400352",
+    "FillWithOnes": "0x40035a",
+    "CheckBootROM": "0x400368",
+    "SetMemoryGlobals": "0x40037e",
+    "BootRetry": "0x4003a8",
+    "InitSystemGlobals": "0x4003f8",
+    "InitCrsrVars": "0x40045e",
+    "ZeroCursorVars": "0x400466",
+    "InitCrsrMgr": "0x400480",
+    "InitInterruptVectors": "0x4004bc",
+    "InitEmptyVectors": "0x4004c8",
+    "StartHardwareEnd": "0x400516"
+  },
+  "data_spans": [
+    {
+      "start": "0x4001ba",
+      "end_exclusive": "0x4001ea",
+      "length": 48,
+      "kind": "sixteen hexadecimal glyphs, three bytes per glyph",
+      "source": "OS/StartMgr/StartFail.a:423"
+    }
+  ],
+  "changes": [
+    {
+      "change": "Restore the fixed hardware startup path and stackless calls.",
+      "reason": "The ROM reads phase inputs, chooses RAM decoding, reads the PRAM volume, programs the VIA and IWM, and runs the early test before using a stack. Later StartInit revisions support different hardware and relocate these operations."
+    },
+    {
+      "change": "Restore the six-digit failure display and fixed screen geometry.",
+      "reason": "The target saves registers at $3FFC80, stops the IWM motor through its fixed base address, draws six hexadecimal digits, and leaves a visible counter. Later StartFail revisions add two-line failure codes, variable screen geometry, and test-manager dispatch. Matching comments and numFont bytes remain unchanged."
+    },
+    {
+      "change": "Restore the earlier clock register convention and startup waveform code.",
+      "reason": "ClkNoMem loads its own VIA address into A1, uses D1 for commands and D2 for data, and returns through A5. Its helpers return through A6. The target does not save and restore SR as the later primitive does. The standalone BootBeep source is absent from this tree; named 68000 instructions recover the waveform and filtering loops from the ROM."
+    },
+    {
+      "change": "Restore the original low-memory initialization and interrupt vectors.",
+      "reason": "The target uses fixed sound and screen offsets, the short cursor jump table, and the original low-memory vector addresses. Later universal hardware setup and expanded-memory state are absent from this span."
+    },
+    {
+      "change": "Make assembler choices and provenance explicit.",
+      "reason": "PC-relative operands and branch widths specify the target encodings. BSR5 and BSR6 expand into actual 68000 instructions. Reconstruction notes identify restored bodies, revised macro definitions, and later historical excerpts; applicable original comments remain unchanged."
+    }
+  ],
+  "verification": {
+    "method": "The common verifier assembled the MPW source for the 68000, linked it at $400062, and compared every byte and each recorded label with the ROM.",
+    "result": "All 1204 bytes match the ROM.",
+    "source_sha256": "de2e537002efdbcc514fa0512f9db323b6f8ae3d45c2cb438afbce9f8423ccb4",
+    "source_dependencies": [
+      {
+        "path": "Reconstruction/Source/OS/StartMgr/StartHardware.a",
+        "sha256": "de2e537002efdbcc514fa0512f9db323b6f8ae3d45c2cb438afbce9f8423ccb4"
+      },
+      {
+        "path": "Reconstruction/Source/OS/StartMgr/StartHardwareEqu.a",
+        "sha256": "8a8fadc2a123fd9cc8b55d4b17a5a10f06afd421be648698070b8ad22c3bc3a2"
+      }
+    ],
+    "matched_bytes": 1204,
+    "entry_points_checked": 62,
+    "limits": [
+      "The comparison does not execute power-on tests, PRAM access, sound generation, or interrupt delivery.",
+      "The reconstructed labels and selected expressions do not establish the spelling of the missing original source.",
+      "This span ends within startup; the SCC setup and the test and failure-symbol callees lie in adjacent modules. DrawStartupSymbol is a descriptive name for the external target at $400F00."
+    ]
+  },
+  "integration_manifest": {
+    "name": "startup-hardware",
+    "source": "Reconstruction/Source/OS/StartMgr/StartHardware.a",
+    "start": "0x400062",
+    "end_exclusive": "0x400516",
+    "entry_points": {
+      "StartBoot": "0x400062",
+      "FinishPhaseRead": "0x40006c",
+      "InitEarlyHardware": "0x400086",
+      "CheckPRAMSignature": "0x4000a8",
+      "ReadPRAMVolume": "0x4000b2",
+      "InitVolume": "0x4000bc",
+      "StartBootSound": "0x4000ee",
+      "InitIWM": "0x4000f8",
+      "SetIWMMode": "0x400104",
+      "StartMemoryTest": "0x400126",
+      "StartTestResult": "0x400132",
+      "CritErr": "0x400136",
+      "DrawFailureIcon": "0x400152",
+      "FormatFailureCode": "0x40015c",
+      "FailLoop": "0x40016a",
+      "chLoop": "0x40017e",
+      "FailureCounter": "0x4001ac",
+      "numFont": "0x4001ba",
+      "ClearScreen": "0x4001ea",
+      "ClearScreenLoop": "0x4001f0",
+      "ClkNoMem": "0x4001f8",
+      "ClockExtended": "0x400220",
+      "ClockCommand": "0x400226",
+      "ClockDirection": "0x400228",
+      "ClockWriteData": "0x400232",
+      "ClockWriteDone": "0x40023c",
+      "ClockRead": "0x40023e",
+      "ClockReadData": "0x400246",
+      "ClockDone": "0x40024e",
+      "SendToClk": "0x400254",
+      "SendClockBit": "0x400256",
+      "ReadFrClk": "0x400266",
+      "ReadClockBit": "0x400274",
+      "BootBeep": "0x40028a",
+      "BeepWaitTick": "0x4002a4",
+      "BeepWaitVIA": "0x4002ac",
+      "BeepPollVIA": "0x4002ae",
+      "BeepDelay": "0x4002be",
+      "BeepDelayLoop": "0x4002c2",
+      "BeepWave": "0x4002c8",
+      "BeepWaveByte": "0x4002ce",
+      "BeepWaveRun": "0x4002d0",
+      "BeepFilter": "0x4002e8",
+      "BeepFilterLoop": "0x4002f0",
+      "BeepRepeatWave": "0x400310",
+      "BeepNextFrame": "0x40031a",
+      "BeepNextTick": "0x400324",
+      "BeepNextVIA": "0x40032c",
+      "BeepFrameDone": "0x40033c",
+      "BeepSilence": "0x400348",
+      "ContinueBoot": "0x400352",
+      "FillWithOnes": "0x40035a",
+      "CheckBootROM": "0x400368",
+      "SetMemoryGlobals": "0x40037e",
+      "BootRetry": "0x4003a8",
+      "InitSystemGlobals": "0x4003f8",
+      "InitCrsrVars": "0x40045e",
+      "ZeroCursorVars": "0x400466",
+      "InitCrsrMgr": "0x400480",
+      "InitInterruptVectors": "0x4004bc",
+      "InitEmptyVectors": "0x4004c8",
+      "StartHardwareEnd": "0x400516"
+    }
+  }
+}

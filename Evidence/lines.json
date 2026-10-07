@@ -1,0 +1,168 @@
+{
+  "module": "QuickDraw/Lines.a",
+  "source_path": "Reconstruction/Source/QuickDraw/Lines.a",
+  "source_sha256": "48118a845e4dbdc93523c0216383a9e6756584477ada2b0c43d115ca8483b09e",
+  "upstream_source": {
+    "path": "QuickDraw/Classic/Lines.m.a",
+    "sha256": "6828a4208691d0b479c578aa297e276471c245855816ec28d232cac6906cb2f0",
+    "instruction_lines": [
+      48,
+      399
+    ]
+  },
+  "equate_source": {
+    "path": "QuickDraw/Classic/GrafTypes.m.a",
+    "sha256": "e82af05cd87ff478acb4210e24c3e41b5451768024be426182073558ebded0a2",
+    "copied_line_ranges": [
+      [
+        103,
+        103
+      ],
+      [
+        161,
+        162
+      ],
+      [
+        228,
+        229
+      ],
+      [
+        248,
+        272
+      ],
+      [
+        297,
+        310
+      ],
+      [
+        501,
+        501
+      ],
+      [
+        508,
+        532
+      ]
+    ]
+  },
+  "rom": {
+    "path": "Reconstruction/ROM/MacPlus-v3.bin",
+    "sha256": "dd908e2b65772a6b1f0c859c24e9a0d3dcde17b1c6a24f4abd8955846d7895e7",
+    "base_address": "0x400000"
+  },
+  "spans": [
+    {
+      "start_address": "0x409668",
+      "end_address_exclusive": "0x40984c",
+      "rom_offset": "0x9668",
+      "length": 484,
+      "sha256": "1d3289331f05a390d87d851bdc5684232619a5450b63d0dfb6186c9390f314a2",
+      "first_symbol": "StdLine",
+      "last_symbol": "PenNormal"
+    }
+  ],
+  "symbols": {
+    "StdLine": "0x409668",
+    "LineTo": "0x4096fa",
+    "Line": "0x409710",
+    "MoveTo": "0x409728",
+    "MOVE": "0x409734",
+    "MOOV": "0x409734",
+    "DoLine": "0x409748",
+    "HidePen": "0x4097c0",
+    "ShowPen": "0x4097c4",
+    "GetPenState": "0x4097d0",
+    "SetPenState": "0x4097d4",
+    "GetPen": "0x4097f6",
+    "PenSize": "0x409806",
+    "PenMode": "0x409814",
+    "PenPat": "0x40981a",
+    "PenNormal": "0x40982e"
+  },
+  "manifest_entry": {
+    "name": "lines",
+    "source": "Reconstruction/Source/QuickDraw/Lines.a",
+    "start": "0x409668",
+    "end_exclusive": "0x40984c",
+    "entry_points": {
+      "StdLine": "0x409668",
+      "LineTo": "0x4096fa",
+      "Line": "0x409710",
+      "MoveTo": "0x409728",
+      "MOVE": "0x409734",
+      "MOOV": "0x409734",
+      "DoLine": "0x409748",
+      "HidePen": "0x4097c0",
+      "ShowPen": "0x4097c4",
+      "GetPenState": "0x4097d0",
+      "SetPenState": "0x4097d4",
+      "GetPen": "0x4097f6",
+      "PenSize": "0x409806",
+      "PenMode": "0x409814",
+      "PenPat": "0x40981a",
+      "PenNormal": "0x40982e"
+    }
+  },
+  "external_routines": {
+    "CheckPic": "0x40e448",
+    "PutPicVerb": "0x40e34a",
+    "PutPicByte": "0x40e2aa",
+    "PutPicLong": "0x40e2ce",
+    "DrawLine": "0x40984c",
+    "PutLine": "0x409d94",
+    "SetHSize": "0x408798",
+    "PortWord": "0x408402"
+  },
+  "edits": [
+    {
+      "kind": "extraction",
+      "description": "Retained the complete executable Lines.m.a module in its original order, including routine comments and parameter equates."
+    },
+    {
+      "kind": "addressing",
+      "description": "Made PC addressing explicit for direct calls and code addresses. Replaced IMPORT directives with verified external routine equates."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Spelled small immediate additions and decrements as ADDQ and SUBQ to match the ROM encoding."
+    },
+    {
+      "kind": "equates",
+      "description": "Copied the required GrafTypes.m.a field and global equates. Selected the MC68000 processor."
+    },
+    {
+      "kind": "provenance",
+      "description": "Preserved the original file name, copyright notice, drawing header, and routine comments. Omitted later archive history and placeholder header fields. Added marked reconstruction notes."
+    },
+    {
+      "kind": "configuration",
+      "description": "Omitted the later hasPenFraction selection and conditional pen-fraction writes. The ROM has no corresponding stores. Selected the Mac Plus Toolbox table at $C00."
+    },
+    {
+      "kind": "instruction_encoding",
+      "description": "Replaced MOVE.B #FRAME,-(SP) with CLR.B -(SP), matching the ROM encoding for the zero frame verb."
+    },
+    {
+      "kind": "macro_restoration",
+      "description": "Retained the UNLINK call and supplied the four-byte return sequence: UNLK A6, MOVE.L (SP)+,(SP), RTS."
+    }
+  ],
+  "verification": {
+    "result": "exact_byte_match",
+    "checked_bytes": 484,
+    "checked_entry_points": 16,
+    "method": "Called Reconstruction/Tools/verify.py verify_module in an independent temporary directory. The verifier translated procedure scopes and macros, assembled for MC68000, linked at the ROM address, checked entry points and relocations, and compared every emitted byte.",
+    "build_directory": "/tmp/macplus-lines-verify",
+    "temporary_verifier": "/tmp/verify-lines-cluster.py",
+    "assembler": "GNU assembler 2.39",
+    "source_sha256": "48118a845e4dbdc93523c0216383a9e6756584477ada2b0c43d115ca8483b09e",
+    "assembled_sha256": "1d3289331f05a390d87d851bdc5684232619a5450b63d0dfb6186c9390f314a2",
+    "unresolved_relocations": 0,
+    "raw_instruction_data_directives": false,
+    "scope": "The entire emitted span matches the ROM. MPW assembly has not been run. Byte equality does not establish the original source formatting or exact historical macro implementation."
+  },
+  "prose_lint": {
+    "tool": "Vale",
+    "authored_notes_and_evidence": "passed",
+    "historical_comments": "preserved"
+  }
+}

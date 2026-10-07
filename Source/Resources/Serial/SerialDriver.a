@@ -1,0 +1,1098 @@
+*R This file restores the Mac Plus SERD resource.
+*R The original standalone driver body is absent from this tree.
+*R PatchPlusROM.a retains driver headers, local variable definitions, tables,
+*R routine documentation, and parts of the instruction bodies. This source
+*R preserves those comments where they describe the ROM and reconstructs the
+*R missing instructions from the ROM. Other labels and comments are new.
+*R Later RAM signatures, expanded-memory storage, DTR repairs, and external
+*R clock support are absent from this target.
+*R OPWORD definitions preserve the actual trap words.
+
+		EXPORT SERDResource ;]
+
+	INCLUDE 'SerialEqu.a' ;]
+	INCLUDE 'SerialDriverEqu.a' ;]
+
+
+*R The ROM map supplies the resource header and its allocation metadata.
+
+SERDResourceBlock ;]
+	DC.B ResourceBlockFlags,0 ;]
+	DC.W SERDResourceEnd-SERDResourceBlock ;]
+	DC.L MasterPointerOffset ;]
+
+
+*R SERD installs four driver headers in the unit table.
+
+SERDResource ;]
+	BRA.S InstallSerial ;]
+
+*R The signature and version words remain data behind the entry branch.
+
+	DC.W 0
+	DC.B 'SERD' ;]
+	DC.W 0,Version ;]
+
+InstallSerial ;]
+	PEA AsyncBOut
+	PEA AsyncBIn
+	PEA AsyncAOut
+	PEA AsyncAIn
+	MOVEQ #-6,D3
+InstallDriver
+	MOVE.W D3,D0
+	_DrvrInstall ,SYS,$100
+	BSET #7,(A0)
+	MOVE.L (A0),A0
+	MOVE.L (SP)+,A1
+	MOVE.L A1,(A0)+
+	MOVE.W (A1),(A0)+ ;]
+	MOVE.W #Version,(A0) ;]
+	SUBQ.W #1,D3
+	CMP.W #-9,D3
+	BGE.S InstallDriver ;]
+	RTS
+
+*R These headers retain the surviving patch text without its RAM signatures.
+
+AsyncAIn
+			DC.W	$4D00				; read, control, status, lock
+			DC.W	0,0 				; not an ornament
+			DC.W	0					; no menu
+
+			DC.W	AInOpen-AsyncAIn	; Initialization routine
+			DC.W	AInPrime-AsyncAIn	; input Prime routine
+			DC.W	AControl-AsyncAIn	; shared Control routine
+			DC.W	AStatus-AsyncAIn	; shared Status routine
+; Close routine
+			DC.W	InClose-AsyncAIn ;]
+
+			DC.B	4					; channel A input driver
+			DC.B	'.AIn '
+AsyncAOut
+			DC.W	$4E00				; write, control, status, lock
+			DC.W	0,0 				; not an ornament
+			DC.W	0					; no menu
+
+			DC.W	AOutOpen-AsyncAOut	; Initialization routine
+			DC.W	AOutPrime-AsyncAOut ; output Prime routine
+			DC.W	AControl-AsyncAOut	; shared Control routine
+			DC.W	AStatus-AsyncAOut	; shared Status routine
+			DC.W	AOutClose-AsyncAOut ; Close routine
+
+			DC.B	5					; channel A output driver
+			DC.B	'.AOut'
+AsyncBIn
+			DC.W	$4D00				; read, control, status, lock
+			DC.W	0,0 				; not an ornament
+			DC.W	0					; no menu
+
+			DC.W	BInOpen-AsyncBIn	; Initialization routine
+			DC.W	BInPrime-AsyncBIn	; input Prime routine
+			DC.W	BControl-AsyncBIn	; shared Control routine
+			DC.W	BStatus-AsyncBIn	; shared Status routine
+; Close routine
+			DC.W	InClose-AsyncBIn ;]
+
+			DC.B	4					; channel B input driver
+			DC.B	'.BIn '
+AsyncBOut
+			DC.W	$4E00				; write, control, status, lock
+			DC.W	0,0 				; not an ornament
+			DC.W	0					; no menu
+			DC.W	BOutOpen-AsyncBOut	; Initialization routine
+			DC.W	BOutPrime-AsyncBOut ; output Prime routine
+			DC.W	BControl-AsyncBOut	; shared Control routine
+			DC.W	BStatus-AsyncBOut	; shared Status routine
+			DC.W	BOutClose-AsyncBOut ; Close routine
+
+			DC.B	5					; channel B output driver
+			DC.B	'.BOut'
+
+
+
+
+*R Input open calls claim the port and record the input DCE address.
+
+AInOpen
+	BSR.S ChkAConfig ;]
+	MOVE.L A1,AInDCE ;]
+	BRA.S InOpenVersion ;]
+BInOpen
+	BSR.S ChkBConfig ;]
+	MOVE.L A1,BInDCE ;]
+InOpenVersion ;]
+	MOVE.B #Version,DCtlQueue+1(A1)
+InOpenOK ;]
+	MOVEQ #0,D0
+	RTS
+ChkAConfig ;]
+	MOVEQ #4,D1
+	MOVEQ #8,D2
+	BRA.S ChkConfig ;]
+ChkBConfig ;]
+	MOVEQ #0,D1
+	MOVEQ #0,D2
+ChkConfig
+	MOVE.B SPConfig,D0
+	LSR.B D1,D0 ;]
+	AND.B #15,D0
+	BEQ.S CheckPortUse ;]
+	SUBQ.B #2,D0
+	BEQ.S CheckPortUse ;]
+	MOVEQ #portNotCf,D0
+ConfigFailed ;]
+	ADDQ.W #4,SP
+	RTS
+CheckPortUse ;]
+	MOVE.W PortAUse,D0 ;]
+	ROR.W D2,D0 ;]
+	BCLR #7,D0
+	BNE.S ClaimPort ;]
+	EORI.B #2,D0 ;]
+	BEQ.S PortReady ;]
+	MOVEQ #portInUse,D0
+	BRA.S ConfigFailed ;]
+ClaimPort ;]
+	MOVE.B #2,D0 ;]
+	ROR.W D2,D0 ;]
+	MOVE.W D0,PortAUse ;]
+PortReady ;]
+	RTS
+
+*R Output open calls allocate locals and install the interrupt vectors.
+
+AOutOpen
+	BSR.S ChkAConfig ;]
+	LEA PortAVars,A2	; local variables address
+	PEA PollDtaIn ;]
+	PEA SCAIntHnd ;]
+	PEA RAIntHnd ;]
+	PEA TAIntHnd ;]
+	PEA Lvl2DT+16
+	PEA ExtAIntHnd ;]
+	PEA ExtStsDT+8
+	MOVEQ #2,D1
+	MOVEQ #-9,D2
+	MOVEQ #-126,D3
+	MOVE.W SPPortA,D4	; parameter RAM config value, chan A
+	BRA.S OpenInstall
+BOutOpen
+	BSR.S ChkBConfig ;]
+	LEA PortBVars,A2 ;]
+	CLR.L -(SP)
+	PEA SCBIntHnd ;]
+	PEA RBIntHnd ;]
+	PEA TBIntHnd ;]
+	PEA Lvl2DT
+	PEA ExtBIntHnd ;]
+	PEA ExtStsDT
+	MOVEQ #0,D1
+	MOVEQ #23,D2
+	MOVEQ #66,D3
+	MOVE.W SPPortB,D4	; parameter RAM config value, chan B
+OpenInstall
+	MOVEQ #(LclVarSize+1)/2,D0
+	ADD.L D0,D0
+	_ResrvMem ,SYS
+	MOVEQ #(LclVarSize+1)/2,D0
+	ADD.L D0,D0
+	_NewHandle ,SYS,CLEAR
+	BEQ.S InstallVectors ;]
+	ADD.W #28,SP
+	RTS
+InstallVectors
+	MOVE.L A0,DCtlStorage(A1)	; save handle in our storage pointer
+	MOVE.B #Version,DCtlQueue+1(A1)
+	MOVE.L (A0),(A2)
+	BSET #7,(A0)
+	MOVE.L (A0),A2
+	LEA SaveExInt(A2),A3
+	MOVE.L (SP)+,A0
+	MOVE.L (A0),(A3)+
+	MOVE.L (SP)+,(A0)
+	MOVE.L (SP)+,A0
+	MOVE.L (A0),(A3)+
+	MOVE.L (SP)+,(A0)+
+	ADDQ.W #4,A0
+	MOVE.L (A0),(A3)+
+	MOVE.L (SP)+,(A0)+
+	MOVE.L (A0),(A3)+
+	MOVE.L (SP)+,(A0)+
+	MOVE.L (SP)+,D0
+	BEQ.S InitLocals ;]
+	MOVE.L D0,PollProc
+InitLocals ;]
+	MOVE.L A2,A3
+	MOVE.L A1,(A3)+
+	MOVE.W D1,(A3)+
+	BSR.W InstllLBuf ;]
+	ST Options(A2)	; abort input on errors defaults on
+	MOVE.B D3,SCCReset(A2)	; channel reset data
+	MOVE.B D2,WReqPin(A2)	; WR1 value for SCC initialization
+
+;_______________________________________________________________________
+;
+; ToInitSCC
+;  This fills in the SCC register image (bytes 'StopBits' to 'XmitBits'
+;inclusive) for output to the chip.
+;
+; A2 = SCC A or B side vars
+; D4 = [V][V][W][W][X][X][Y][Y] [Z][Z][Z][Z][Z][Z][Z][Z]
+;	VV = 1,2,3,   for 1,1.5,2 stop bits  (00 for AppleBus)
+;	WW = 0,1,2,3  for no,odd,no,even parity
+;	XX = 0,1,2,3, for 5,7,6,8 data bits
+;	YY = high byte of baud rate constant, low 2 bits
+;	ZZZZZZZZ = low byte of baud rate constant
+;
+;____________________________________________________________________
+;
+
+ToInitSCC
+	MOVE.W #-16384,D0 ;]
+	AND.W D4,D0
+	BNE.S InitDataBits ;]
+	MOVE.W #-13302,D4 ;]
+InitDataBits ;]
+	MOVE.W #3072,D0
+	AND.W D4,D0
+	ROL.W #6,D0
+	MOVE.B MaskTbl(PC,D0.W),CharMask(A2) ;]
+	LEA StopBits(A2),A3
+	LEA InitDefs,A4
+	MOVEQ #7,D0
+DecodeConfig ;]
+	MOVE.B (A4)+,D1
+	MOVE.W D4,D3
+	ROL.W D1,D3
+	AND.B (A4)+,D3
+	OR.B (A4)+,D3
+	MOVE.B D3,(A3)+
+	DBRA D0,DecodeConfig ;]
+	MOVEQ #100,D1
+	AND.B (A3)+,D1
+	MOVE.B D1,WR1AVal(A2)	; and store in WReqPin
+	MOVE.W D4,(A3)
+	MOVEQ #$08,D0
+	OR.B WR5AVal(A2),D0 ;]
+	MOVE.B D0,DTRNegVal(A2)	;									<C216/14oct86>
+	MOVE.B XmitBits(A2),LastWR5(A2) ;]
+	BSR.S InitSCC
+	MOVEQ #0,D0
+OpenEnd
+	RTS
+MaskTbl		DC.B	$1F 		; mask for 5-bit data						<A363/07nov86><14Oct85>
+			DC.B	$7F 		; mask for 7-bit data						<A363/07nov86><14Oct85>
+			DC.B	$3F 		; mask for 6-bit data						<A363/07nov86><14Oct85>
+			DC.B	$FF 		; mask for 8-bit data						<A363/07nov86><14Oct85>
+
+
+
+*R InitDefs retains the original asserted DTR bit in the final WR5 value.
+
+InitDefs
+			DC.B	4,$0F,$40	; (WR4)  rotate left 4, leave 4 low bits, add $40
+			DC.B	0,$00,$00	; (WR4)  (dummy entry - WR1AVal will go here)
+			DC.B	12,$C0,$00	; (WR3)  WR3 - first write
+			DC.B	11,$60,$02	; (WR5)  WR5 - first write (no DTR)			<14Oct85>
+			DC.B	0,$FF,$00	; (WR12) baud constant, low byte
+			DC.B	8,$03,$00	; (WR13) baud constant, hi byte
+			DC.B	12,$C0,$01	; (WR3)  WR3 - final value
+*R WR5 includes the original asserted DTR bit.
+			DC.B	11,$60,$8A ;]
+
+
+InitData	DC.B	$02,9				; status in low bits, MIE disabled
+			DC.B	4,$FF				; x16 clk, stop bits, parity options
+			DC.B	1,$FF				; WR1 reg, first write
+			DC.B	3,$FF				; bits/char option rcvr
+			DC.B	5,$FF				; bits/char option xmitter
+			DC.B	$00,2				; zero interrupt vector
+			DC.B	$00,10				; NRZ encoding
+clkMode		DC.B	$50,11				; br gen clk to rcvr, xmitter,clockMode				<57>
+			DC.B	12,$FF				; set baud rate low byte
+			DC.B	13,$FF				; set baud rate high byte
+
+			DC.B	3,$FF				; enable rcvr
+			DC.B	5,$FF				; enable xmitter
+BRGEnable	DC.B	$01,14				; enb baud rate generator from RTxC pin				<57>
+
+			DC.B	$A8,15				; Break, CTS, and DCD (for mouse) external ints		<2.3>
+
+			DC.B	$10,0				; reset ext/status twice
+			DC.B	$10,0
+			DC.B	1,$FF				; w/req pin configuration
+			DC.B	$0A,9				; enable interrupts, status in low bits
+
+
+*R This helper derives both SCC control addresses from the channel offset.
+
+GetSCCAddrs ;]
+	MOVEM.L SCCRd,A0-A1 ;]
+	ADD.W SCCOffset(A2),A0 ;]
+	ADD.W SCCOffset(A2),A1 ;]
+	RTS
+
+;_______________________________________________________________________
+;
+; Routine:		SCC Initialize Routine
+;
+; Arguments:	  A2 (input)  --  pointer to local variables for this channel
+;
+; Function: 	This routine initializes one channel of the SCC for asynchronous
+;				communication; the baud rate, data bits, stop bits, and parity
+;				options are set according to local variable values.  The baud-rate generator
+;				output is used for both transmitter and receiver clocks, and
+;				interrupts are enabled:  CTS, Break, and DCD (for Mac mouse) external
+;				interrupts are enabled; all transmitter and receiver interrupts
+;				are enabled.  Parity errors are configured to generate special
+;				condition vectors.
+;
+; Other:		Registers A0-A3 are used.
+;
+; 				Initialization data for SCC: RS-232 async communication:			
+;				FORMAT: data,register#	- for immediate data				
+;				register#,$FF	- for variable data 				
+;																	
+; 				Initialization order is as suggested in a Zilog applications		
+; 				note on SCC initialization.										
+;																	
+;
+
+InitSCC
+	LEA InitData,A3
+	MOVEQ #InitLth,D1
+InitSCC1
+	MOVE.W SR,-(SP)
+	MOVEM.L A0-A2,-(SP)
+	BSR.S GetSCCAddrs ;]
+	ORI.W #768,SR
+	MOVE.B (A0),D2
+	LEA StopBits(A2),A2 ;]
+InitSCCLoop ;]
+	MOVE.W (A3)+,D0
+	TST.B D0
+	BPL.S WriteSCCReg ;]
+	MOVE.B (A2)+,D0
+	ROR.W #8,D0
+WriteSCCReg ;]
+	MOVE.B D0,(A1)
+	ROR.W #8,D0
+	MOVE.L (SP),(SP)
+	MOVE.B D0,(A1)
+	SUBQ.W #2,D1
+	BGT.S InitSCCLoop ;]
+	NOP
+	MOVE.B (A0),D2
+	MOVEM.L (SP)+,A0-A2
+	LSL.B #2,D2
+	SMI CTSFlag(A2)	; set flags according to CTS
+	MOVE.W (SP)+,SR
+	RTS
+
+*R ResetData disables reception and transmission and restores interrupt settings.
+
+ResetData
+	DC.B $02,9
+	DC.B 4,$FF,1,$FF,3,$FF,5,$FF ;]
+	DC.B $08,15,$01,1,$0A,9 ;]
+ResetDataEnd ;]
+
+
+*R Close restores saved interrupt vectors and releases local storage.
+
+AOutClose
+	CLR.L PollProc
+	LEA Lvl2DT+16,A4
+	LEA ExtStsDT+8,A5
+	LEA PortAVars,A6	; local variables ptr address		<14Oct85>
+	MOVEQ #8,D3
+	BRA.S ABClose
+BOutClose
+	LEA Lvl2DT,A4
+	LEA ExtStsDT,A5
+	LEA PortBVars,A6 ;]
+	MOVEQ #0,D3
+ABClose
+	MOVE.L (A6),A2
+	TST.B CtlOptions(A2)	; leave DTR unchanged?				<14Oct85>
+	BPL.S CloseSync ;]
+	MOVEQ #-9,D0 ;]
+	AND.B LastWR5(A2),D0	; current DTR state in bit 7
+	MOVE.B D0,WR5AVal(A2) ;]
+CloseSync ;]
+	BSR.S SyncOutput ;]
+	LEA ResetData,A3 ;]
+	MOVEQ #ResetLth,D1
+	BSR.W InitSCC1 ;]
+	LEA SaveExInt(A2),A3
+	MOVE.L (A3)+,(A5)
+	MOVE.L (A3)+,(A4)+
+	ADDQ.L #4,A4
+	MOVE.L (A3)+,(A4)+
+	MOVE.L (A3),(A4)
+	MOVE.L DCtlStorage(A1),A0	; get storage handle
+	_DISPOSHANDLE
+	CLR.L DCtlStorage(A1)	; without a trace
+	CLR.L (A6)
+FreePort
+	MOVE.W PortAUse,D0 ;]
+	ROR.W D3,D0
+	ST D0
+	ROR.W D3,D0
+	MOVE.W D0,PortAUse ;]
+InClose ;]
+	MOVEQ #0,D0
+	RTS
+SyncOutput
+	MOVEM.L D0-D1/A0-A1,-(SP)
+	BSR.W GetSCCAddrs ;]
+	MOVEQ #-1,D1
+SyncLoop ;]
+	MOVE.W SR,-(SP)
+	ORI.W #768,SR
+	MOVE.B (A0),D0
+	MOVE.L (SP),(SP)
+	MOVE.B #1,(A1)
+	MOVE.L (SP),(SP)
+	MOVE.B (A0),D0
+	MOVE.W (SP)+,SR
+	LSR.B #1,D0
+	DBCS D1,SyncLoop ;]
+	MOVEM.L (SP)+,D0-D1/A0-A1
+	RTS
+
+*R Status reports buffered bytes or the accumulated errors and request flags.
+
+AStatus
+	MOVE.L PortAVars,A2
+	BRA.S ABStatus
+BStatus
+	MOVE.L PortBVars,A2 ;]
+ABStatus
+	MOVE.W IOTrap(A0),-(SP)
+	MOVE.L A1,-(SP)
+	MOVE.W SR,-(SP)
+	ORI.W #768,SR
+	LEA CSCode(A0),A0
+	MOVEQ #StatusErr,D0
+	MOVE.L A2,D1
+	BLE.S CtlExit ;]
+	MOVE.W (A0)+,D1
+	SUBQ.W #2,D1
+	BNE.S GetStatus ;]
+	BSR.W GetBufRegs ;]
+	BSR.W GetBufCnt ;]
+	CLR.W (A0)+
+	MOVE.W D0,(A0)
+	BRA.S CtlGood
+GetStatus
+	SUBQ.W #6,D1
+	BNE.S CtlExit ;]
+	MOVE.W AsyncErr(A2),(A0)+ ;]
+	CLR.B AsyncErr(A2) ;]
+	MOVE.L ReadCmd(A2),(A0)+ ;]
+	BRA.S CtlGood
+
+*R Control dispatch uses offsets from the original twenty-entry table.
+
+AControl
+	MOVE.L PortAVars,A2
+	BRA.S ABControl ;]
+BControl
+	MOVE.L PortBVars,A2 ;]
+ABControl ;]
+	MOVE.W IOTrap(A0),-(SP)
+	MOVE.L A1,-(SP)
+	MOVE.W SR,-(SP)
+	ORI.W #768,SR
+	LEA CSCode(A0),A0
+	MOVE.W (A0)+,D1
+CtlDisp ;]
+	SUBQ.W #1,D1
+	BNE.S CtlNormal ;]
+	MOVE.L A2,D2
+	BLE.S KillIODone ;]
+	CLR.W ReadCmd(A2) ;]
+	CLR.L BufIndex(A2)
+KillIODone ;]
+	MOVE.W (SP)+,SR
+	ADDQ.W #6,SP
+	RTS
+CtlNormal ;]
+	MOVE.L A2,D2
+	BLE.S CtrlErr ;]
+	LEA CtlTable,A1 ;]
+	SUBQ.W #7,D1
+	BMI.S CtrlErr ;]
+	CMP.W #19,D1 ;]
+	BHI.S CtrlErr ;]
+	ADD.W D1,D1
+	MOVE.W 0(A1,D1.W),D1 ;]
+	MOVE.B XmitBits(A2),D0	; make the WR5 value used to 		<C216/14oct86>
+	JSR 0(A1,D1.W) ;]
+CtlGood
+	MOVEQ #0,D0
+CtlExit
+	MOVE.W (SP)+,SR
+	MOVE.L (SP)+,A1
+	BTST #9,(SP)+ ;]
+	BEQ.S ToIODone ;]
+	RTS
+ToIODone ;]
+	MOVE.L JIODone,-(SP)
+	RTS
+BadCall ;]
+	ADDQ.W #4,SP
+CtrlErr
+	MOVEQ #ControlErr,D0
+	BRA.S CtlExit
+CtlTable ;]
+	DC.W CtlConfig-CtlTable ;]
+	DC.W CtlBuffer-CtlTable ;]
+	DC.W CtlHShake-CtlTable ;]
+	DC.W CtlClrBreak-CtlTable ;]
+	DC.W CtlSetBreak-CtlTable ;]
+	DC.W CtlSetSpd-CtlTable ;]
+	DC.W CtlHShakeDTR-CtlTable ;]
+	DC.W BadCall-CtlTable ;]
+	DC.W SetCtlOptions-CtlTable ;]
+	DC.W CtlSetDTR-CtlTable ;]
+	DC.W CtlClrDTR-CtlTable ;]
+	DC.W CtlPEChar-CtlTable ;]
+	DC.W CtlAltChar-CtlTable ;]
+	DC.W CtlStopOutput-CtlTable ;]
+	DC.W ContOut-CtlTable ;]
+	DC.W CtlXOn-CtlTable ;]
+	DC.W ForceXOn-CtlTable ;]
+	DC.W CtlXOff-CtlTable ;]
+	DC.W ForceXOff-CtlTable ;]
+	DC.W CtlReset-CtlTable ;]
+
+CtlConfig
+	MOVE.W (A0)+,D4
+	CMP.W lastSetup(A2),D4 ;]
+	BEQ.S BufferDone ;]
+	BRA.W ToInitSCC
+CtlBuffer
+	CLR.L BufIndex(A2)
+	MOVE.L (A0)+,A4
+	MOVE.W (A0),D1
+	BNE.S InstallBuffer ;]
+InstllLBuf
+	LEA LocalBuf(A2),A4
+	MOVEQ #64,D1
+InstallBuffer ;]
+	LEA InBufPtr(A2),A3 ;]
+	MOVE.L A4,(A3)+
+	MOVE.W D1,(A3)+
+	LSR.W #2,D1
+	MOVE.W D1,(A3)+
+	MOVE.W D1,(A3)+
+BufferDone ;]
+	RTS
+CtlHShakeDTR ;]
+	MOVE.B 7(A0),-(SP) ;]
+	BRA.S SetHandshake ;]
+CtlHShake ;]
+	MOVE.B InHWHS(A2),-(SP) ;]
+SetHandshake ;]
+	TST.B SWHS(A2)	; software handshake enabled?
+	BNE.S SerialBranch_41bb20 ;]
+	CLR.B XOFFlag(A2)
+SerialBranch_41bb20 ;]
+	MOVE.L (A0)+,SWHS(A2) ;]
+	MOVE.W (A0)+,Options(A2) ;]
+	MOVE.B (A0)+,D0
+	MOVE.B D0,InSWHS(A2) ;]
+	MOVE.B D0,InSWHS1(A2) ;]
+	BNE.S ContinueHandshake ;]
+	BSR.W CtlXOn ;]
+ContinueHandshake ;]
+	BSR.W ContOut1 ;]
+	MOVE.B (SP)+,D0
+	CMP.B InHWHS(A2),D0 ;]
+	BEQ.S SerialBranch_41bb4a ;]
+	MOVE.B D0,InHWHS(A2) ;]
+	BEQ.S CtlSetDTR ;]
+SerialBranch_41bb4a ;]
+	RTS
+SetCtlOptions ;]
+	MOVE.B (A0),CtlOptions(A2)	; store new value						<58>
+	RTS
+CtlClrDTR ;]
+	MOVE.B DTRNegVal(A2),D0 ;]
+	BSET #6,FlowOff(A2)	; have we negated DTR?				<14Oct85>
+	BRA.S SaveDTR ;]
+CtlSetDTR ;]
+	MOVE.B XmitBits(A2),D0	; make the WR5 value used to 		<C216/14oct86>
+	BCLR #6,FlowOff(A2) ;]
+SaveDTR ;]
+	MOVE.B D0,LastWR5(A2)	;   remember DTR & other bits,		<C216/14oct86>
+	BRA.S CtlClrBreak ;]
+CtlSetBreak ;]
+	MOVE.W 4(SP),SR ;]
+	BSR.W SyncOutput ;]
+	ORI.W #768,SR
+	BSET #4,D0
+CtlClrBreak ;]
+	MOVEQ #5,D1
+CtlSet ;]
+	BSR.W GetOutputPort ;]
+	MOVE.B D1,(A3)
+	MOVE.L (SP),(SP)
+	MOVE.B D0,(A3)
+	RTS
+CtlSetSpd
+	MOVE.L #MacConst,D2
+	MOVE.L D2,D3
+	MOVEQ #0,D0
+	MOVE.W (A0),D0
+	MOVE.L D0,D1
+	LSR.W #1,D1
+	ADD.L D1,D2
+	DIVU.W D0,D2
+	MOVE.W D2,D1
+	SUBQ.W #2,D2
+	MOVE.B D2,BaudLoCnst(A2)	; set the baud constant
+	LSR.W #8,D2
+	MOVE.B D2,BaudHiCnst(A2)
+	DIVU.W D1,D3
+	MOVE.W D3,(A0)
+	CLR.W lastSetup(A2)	; zero invalidates lastSetup
+	BRA.W InitSCC ;]
+CtlStopOutput ;]
+	ST XOFFlag(A2)	; if so, then note it
+	RTS
+ForceXOn ;]
+	BCLR #7,FlowOff(A2) ;]
+	MOVE.B InSWHS1(A2),InSWHS(A2) ;]
+	MOVE.B XONChar(A2),D0 ;]
+SendForced ;]
+	BRA.W SendFlowChar ;]
+ForceXOff ;]
+	BSET #7,FlowOff(A2) ;]
+	CLR.B InSWHS(A2) ;]
+	MOVE.B XOFFChar(A2),D0 ;]
+	BRA.S SendForced ;]
+CtlReset ;]
+	MOVE.B SCCReset(A2),D0 ;]
+	MOVEQ #9,D1
+	BRA.S CtlSet ;]
+CtlAltChar ;]
+	MOVE.W (A0),PEChar(A2) ;]
+	RTS
+CtlPEChar ;]
+	MOVE.B (A0),PEChar(A2) ;]
+	MOVE.B (A0),AltChar(A2) ;]
+	BCLR #7,AltChar(A2) ;]
+	RTS
+
+*R Output uses the driver fetch vector and respects software and hardware handshakes.
+
+AOutPrime
+	MOVE.L PortAVars,A2
+	BRA.S OutPrime ;]
+BOutPrime
+	MOVE.L PortBVars,A2 ;]
+OutPrime ;]
+	MOVE.W SR,-(SP)
+	ORI.W #768,SR
+	ST WriteCmd(A2) ;]
+	BSR.S CheckHandshake ;]
+	BNE.S OutputReturn ;]
+OutputByte ;]
+	BSR.S GetOutputPort ;]
+	BEQ.S OutputReturn ;]
+	MOVE.B SendXOnff(A2),D0 ;]
+	CLR.B SendXOnff(A2) ;]
+	AND.W #255,D0
+	BNE.S WriteByte ;]
+	MOVE.L JFetch,A0 ;]
+	JSR (A0)
+WriteByte ;]
+	MOVE.B D0,SCCData(A3) ;]
+	TST.W D0
+	BMI.S OutputDone ;]
+OutputReturn ;]
+	MOVEQ #0,D0
+	MOVE.W (SP)+,SR
+	RTS
+OutputDone ;]
+	CLR.B WriteCmd(A2) ;]
+	MOVE.W (SP)+,SR
+GoodFinish ;]
+	MOVEQ #0,D0
+	BRA.W ToIODone ;]
+GetOutputPort ;]
+	MOVE.L SCCRd,A3
+	ADD.W SCCOffset(A2),A3 ;]
+	TST.B (A3)
+	MOVE.W (SP),(SP)
+	BTST #2,(A3) ;]
+	ADD.L #SCCWriteOffset,A3 ;]
+	RTS
+CheckHandshake ;]
+	TST.B SWHS(A2)	; software handshake enabled?
+	BEQ.S CheckHardware ;]
+	TST.B XOFFlag(A2) ;]
+	BNE.S HandshakeBlocked ;]
+CheckHardware ;]
+	TST.B HWHS(A2) ;]
+	BEQ.S HandshakeReady ;]
+	TST.B CTSFlag(A2) ;]
+	BEQ.S HandshakeReady ;]
+HandshakeBlocked ;]
+	MOVEQ #1,D0
+	RTS
+HandshakeReady ;]
+	MOVEQ #0,D0
+	RTS
+TBIntHnd ;]
+	MOVE.L PortBVars,A2 ;]
+	BRA.S TXIntHnd ;]
+TAIntHnd ;]
+	MOVE.L PortAVars,A2
+TXIntHnd ;]
+	TST.B SendXOnff(A2) ;]
+	BNE.S StartOutput ;]
+	TST.B WriteCmd(A2) ;]
+	BEQ.S ResetTxPending ;]
+	BSR.S CheckHandshake ;]
+	BNE.S ResetTxPending ;]
+StartOutput ;]
+	MOVE.L (A2),A1
+	MOVE.W SR,-(SP)
+	BRA.W OutputByte ;]
+ResetTxPending ;]
+	MOVE.B #40,(A1) ;]
+	RTS
+ContOut
+	CLR.B XOFFlag(A2)
+ContOut1 ;]
+	BSR.S CheckHandshake ;]
+	BNE.S OutputRTS ;]
+	TST.B WriteCmd(A2) ;]
+	BNE.S StartOutput ;]
+OutputRTS ;]
+	RTS
+
+*R Input drains the local buffer before leaving a read request pending.
+
+AInPrime
+	MOVE.L PortAVars,A2
+	BRA.S InPrime
+BInPrime
+	MOVE.L PortBVars,A2 ;]
+InPrime
+	MOVEQ #ReadErr,D0
+	MOVE.L A2,D1
+	BLE.W ToIODone ;]
+	BSR.S GetBufRegs ;]
+ReadBuffer ;]
+	MOVE.W SR,-(SP)
+	ORI.W #768,SR
+	CMP.W BufIndex(A2),D2 ;]
+	BEQ.S QueueRead ;]
+	MOVE.B 0(A3,D2.W),D0 ;]
+	ADDQ.W #1,D2
+	CMP.W D3,D2
+	BNE.S SaveOutdex ;]
+	MOVEQ #0,D2
+SaveOutdex ;]
+	MOVE.W D2,BufOutdex(A2) ;]
+	BSR.S toStash ;]
+	MOVE.W (SP)+,SR
+	TST.W D0
+	BPL.S ReadBuffer ;]
+	BSR.S ResumeInput ;]
+	BRA.W GoodFinish ;]
+QueueRead ;]
+	ST ReadCmd(A2) ;]
+	BRA.S CheckLowWater ;]
+ResumeInput ;]
+	MOVE.W SR,-(SP)
+	ORI.W #768,SR
+CheckLowWater ;]
+	TST.W InSWHS(A2)	; XON/XOFF or DTR input flow control?<14Oct85>
+	BEQ.S InputResumed ;]
+	BSR.S GetBufRegs ;]
+	BSR.S GetBufCnt ;]
+	CMP.W BufLow(A2),D0 ;]
+	BHI.S InputResumed ;]
+	BSR.S InputFlowOn ;]
+InputResumed ;]
+	MOVEQ #0,D0
+	MOVE.W (SP)+,SR
+	RTS
+toStash ;]
+	MOVE.L JStash,-(SP)
+StashReturn ;]
+	RTS
+GetBufRegs ;]
+	MOVE.L InBufPtr(A2),A3 ;]
+	MOVE.W BufSizeX(A2),D3 ;]
+	MOVEM.W BufIndex(A2),D1-D2 ;]
+	RTS
+GetBufCnt ;]
+	MOVE.W D1,D0
+	SUB.W D2,D0
+	BCC.S CountReady ;]
+	ADD.W D3,D0
+CountReady ;]
+	RTS
+InputFlowOn ;]
+	TST.B InHWHS(A2)	; input DTR flow control?			<14Oct85>
+	BEQ.S InputSoftwareOn ;]
+	BCLR #6,FlowOff(A2) ;]
+	BEQ.S InputSoftwareOn ;]
+	BSR.W CtlSetDTR ;]
+InputSoftwareOn ;]
+	TST.B InSWHS(A2) ;]
+	BEQ.S StashReturn ;]
+CtlXOn ;]
+	BCLR #7,FlowOff(A2) ;]
+	BEQ.S StashReturn ;]
+	MOVE.B XONChar(A2),D0 ;]
+SendXOnffChar ;]
+	TST.B SendXOnff(A2) ;]
+	BEQ.S SendFlowChar ;]
+ClearPendingChar ;]
+	CLR.B SendXOnff(A2) ;]
+SendCharDone ;]
+	RTS
+SendFlowChar ;]
+	MOVE.B D0,SendXOnff(A2) ;]
+	BSR.W GetOutputPort ;]
+	BEQ.S SendCharDone ;]
+	MOVE.B D0,SCCData(A3) ;]
+	BRA.S ClearPendingChar ;]
+
+;_______________________________________________________________________
+;
+; Routine:		PollDtaIn
+; Arguments:	  A5.L (input)	-- AVBufA pointer
+;				  A6.L (input)	-- SCC channel A Data pointer
+;				  PollStack 	-- start of stack data
+;				This routine should be jsr'ed to, with polled input data
+;				 on the stack (high-order bytes between current SP+4 and
+;				 PollStack address).
+; Function: 	Processes input data from disk driver polling.
+;_______________________________________________________________________
+
+
+PollDtaIn ;]
+	MOVE.L PollStack,A4	; start of data
+	MOVE.L (SP)+,PollRtnAddr ;]
+StorData
+	TST.B (A5)
+	BMI.S ProcessPolled ;]
+	MOVE.B (A6),-(SP)
+	BRA.S StorData
+ProcessPolled ;]
+	CMP.L SP,A4
+	BEQ.S PollDone ;]
+	SUBQ.W #2,A4
+	MOVE.B (A4),D0
+	LEA PortAVars,A3
+	LEA SCCRBase+ACtl,A0
+	LEA SCCWBase+ACtl,A1
+	BSR.S PollStash
+	BRA.S StorData
+PollDone ;]
+	MOVE.L PollStack,SP
+	MOVE.L PollRtnAddr,-(SP) ;]
+	RTS
+
+;_______________________________________________________________________
+;
+; Routine:		RXIntHnd
+;
+; Arguments:	  A0 (input)   --  chan A/B control read address
+;				  A1 (input)   --  chan A/B control write address
+;
+; Function: 	This routine handles SCC receiver interrupts for
+;				both channels; the data is read and stashed, IODone called
+;				if necessary.
+;________________________________________________________________________
+
+
+RBIntHnd ;]
+	LEA PortBVars,A3 ;]
+	BRA.S RXIntHnd
+RAIntHnd ;]
+	LEA PortAVars,A3
+RXIntHnd
+	MOVE.B SCCData(A0),D0
+PollStash
+	MOVE.L (A3)+,A2
+	MOVE.L (A3),A3
+	AND.B CharMask(A2),D0
+	MOVE.B PEChar(A2),D1	; Are we translating PE Characters?
+	BEQ.S CheckXOnXOff ;]
+	CMP.B D1,D0
+	BNE.S CheckXOnXOff ;]
+	MOVE.B AltChar(A2),D0	; Make sure that a good char		<14Oct85>
+CheckXOnXOff ;]
+	TST.B SWHS(A2)	; software handshake enabled?
+	BEQ.S StashIt
+	CMP.B XONChar(A2),D0	; was this an XON?					<14Oct85>
+	BEQ.W ContOut ;]
+	CMP.B XOFFChar(A2),D0	; how about an XOFF?				<14Oct85>
+	BNE.S StashIt
+	ST XOFFlag(A2)	; if so, then note it
+	BRA.S InputRTS
+StashIt
+	TST.B ReadCmd(A2)
+	BEQ.S PutInOurBuf
+	MOVE.L A3,A1
+	BSR.W toStash ;]
+	BPL.S InputRTS
+	CLR.B ReadCmd(A2)	; no longer a read request pending
+	BRA.W GoodFinish ;]
+PutInOurBuf
+	BSR.W GetBufRegs ;]
+	MOVE.B D0,0(A3,D1.W)
+	ADDQ.W #1,D1
+	CMP.W D3,D1
+	BNE.S CheckBufferFull ;]
+	MOVEQ #0,D1
+CheckBufferFull ;]
+	CMP.W D2,D1
+	BNE.S SaveIndex ;]
+	BSET #0,AsyncErr(A2) ;]
+	BRA.S InputRTS
+SaveIndex ;]
+	MOVE.W D1,BufIndex(A2)	; update index
+	TST.W InSWHS(A2)	; XON/XOFF or DTR input flow control?<14Oct85>
+	BEQ.S InputRTS
+	BSR.W GetBufCnt ;]
+	SUB.W D0,D3
+	CMP.W BufHigh(A2),D3	; past the max limit?
+	BCC.S InputRTS
+	TST.B InHWHS(A2)	; input DTR flow control?			<14Oct85>
+	BEQ.S CtlXOff ;]
+	BSET #6,FlowOff(A2)	; have we negated DTR?				<14Oct85>
+
+*R The ROM branches back to CheckBufferFull here. The later DTR patch changes this target to Put.
+
+	BNE.S CheckBufferFull ;]
+DropDTR ;]
+	BSR.W CtlClrDTR ;]
+Put ;]
+	TST.B InSWHS(A2) ;]
+	BEQ.S InputRTS
+CtlXOff ;]
+	BSET #7,FlowOff(A2) ;]
+	BNE.S InputRTS ;]
+	MOVE.B XOFFChar(A2),D0 ;]
+	BSR.W SendXOnffChar ;]
+InputRTS
+	RTS
+
+;_______________________________________________________________________
+;
+; Routine:		SCIntHnd
+;
+; Arguments:	  A0 (input)   --  channel A/B control read address
+;				  A1 (input)   --  channel A/B control write address
+;
+; Function: 	This routine handles SCC special condition interrupts:
+;				these occur when an input character is received that has
+;				a parity error, framing error, or causes an overrun.
+;				If the option is set to abort on the error, the character
+;				is discarded and the input request (if any) aborted; otherwise,
+;				the error is noted and the character buffered as usual.
+
+SCBIntHnd ;]
+	LEA PortBVars,A3 ;]
+	BRA.S SCIntHnd
+SCAIntHnd ;]
+	LEA PortAVars,A3
+SCIntHnd
+	MOVE.B #1,(A1)
+	MOVE.L (A3)+,A2
+	MOVE.L (A3),A3
+	MOVE.B (A0),D1
+	MOVEQ #112,D3
+	AND.B D3,D1
+	OR.B D1,AsyncErr(A2)	; accumulate errors (delay, too)
+	MOVE.B SCCData(A0),D0
+	AND.B CharMask(A2),D0
+	MOVE.B Options(A2),D2	; get abort options
+	AND.B D1,D2
+	MOVE.B #48,(A1)
+	AND.B D3,D2
+	BNE.S AbortReceive ;]
+	MOVE.B PEChar(A2),D3	; alternate char for parity errors?
+	BEQ.S StashErrorChar ;]
+	CMP.B D0,D3
+	BNE.S CheckParity ;]
+	MOVE.B AltChar(A2),D0	; Make sure that a good char		<14Oct85>
+CheckParity ;]
+	BTST #4,D1
+	BEQ.S StashErrorChar ;]
+	MOVE.B D3,D0
+StashErrorChar ;]
+	BRA.W StashIt
+AbortReceive ;]
+	TST.B ReadCmd(A2)
+	BEQ.S InputRTS
+	MOVEQ #RcvrErr,D0
+RdReqDone ;]
+	MOVE.L A3,A1
+	CLR.B ReadCmd(A2)	; no longer a read request pending
+	BRA.W ToIODone ;]
+
+*R The external interrupt path posts configured events and tracks CTS changes.
+
+ExtBIntHnd ;]
+	LEA PortBVars,A3 ;]
+	BRA.S ExtIntHnd
+ExtAIntHnd ;]
+	LEA PortAVars,A3
+ExtIntHnd
+	MOVE.L (A3)+,A2
+	MOVE.L (A3),A3
+	MOVE.B D1,D2
+	AND.B PostOptions(A2),D2	; post this change?
+	BEQ.S CheckBreak ;]
+	MOVEM.L D0/A0,-(SP)
+	MOVE.W #11,A0 ;]
+	ASL.W #8,D0
+	MOVE.B D1,D0
+	SWAP D0
+	MOVE.W DCtlRefnum(A3),D0
+	_POSTEVENT
+	MOVEM.L (SP)+,D0/A0
+CheckBreak ;]
+	TST.B D1
+	BMI.S extBreak
+	LSL.B #2,D0
+	SMI CTSFlag(A2)	; set flags according to CTS
+	CMP.W #80,HSCount(A2)	; exceeded 80 transitions in 16 MS? <14Oct85>
+	BCS.S CountCTS ;]
+	MOVEQ #-120,D0
+	MOVEQ #15,D1
+	BSR.W CtlSet ;]
+CountCTS ;]
+	MOVE.L Ticks,D2	; get current tick time 			<14Oct85>
+	CMP.L LastTime(A2),D2	; same as last? 					<14Oct85>
+	BEQ.S IncrementCTS ;]
+	MOVE.L D2,LastTime(A2)	; new last time 					<14Oct85>
+	CLR.W HSCount(A2)	; restart count for new time		<14Oct85>
+IncrementCTS ;]
+	ADDQ.W #1,HSCount(A2)	; update count						<14Oct85>
+	BRA.W ContOut1 ;]
+extBreak
+	TST.B D0
+	BMI.S BreakError ;]
+	MOVE.B SCCData(A0),D0
+	RTS
+BreakError ;]
+	MOVEQ #BreakRecd,D0
+	TST.B ReadCmd(A2)
+	BNE.S RdReqDone ;]
+	RTS
+SERDResourceEnd ;]
+	END

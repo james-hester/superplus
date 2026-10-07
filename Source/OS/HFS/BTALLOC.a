@@ -1,0 +1,534 @@
+;
+;	File:		BTALLOC.a
+;
+;	Contains:	These routines provide allocation of disk space for BTree files.
+;				Space is allocated in node size units, a BTree node = n logical
+;				blocks.   Each node is identified by a node number which is the
+;				logical block number (relative to the file space) of the first
+;				block in the node.
+;
+;	Written by:	Bill Bruffey
+;
+;	Copyright:	© 1984-1991 by Apple Computer, Inc., all rights reserved.
+;
+;	Change History (most recent first):
+;
+;				10/25/85	BB		Added jump vectors for ROM versions.
+;				10/17/85	BB		Fixed ExtBtFile to force map record sizes to n long words.
+;				10/16/85	BB		Fixed AllocNode to calculate the node numbers properly when
+;									working with a bit map that has been extended. Fixed bug in
+;									ExtBTFile which was subtracting the new map node from the free
+;									count twice.
+;				10/10/85	BB		Added use of new MOVEQ equates for GetBlock and RelBlock. Added
+;									use of MarkBlock. Did some minor code clean up.
+;				 9/25/85	BB		Fixed bug in ExtBTFile which was moving a long instead of a byte
+;									into the node type of a new map node.
+;				 9/23/85	BB		Removed check for null node pointer in RelMap, it is now checked
+;									by RelNode.
+;				 8/29/85	BB		Modified ExtBTFile to accept a partial allocation.
+;				  8/8/85	BB		Modified ExtBTFile for new node format.
+;				 6/10/85	BB		Cleaned up some.
+;				 3/15/85	BB		Modified to use A6 stack.
+;				 3/11/85	BB		Added Extend BTree File (ExtBTFile).
+;				  3/5/85	BB		Added support for multiple map records.
+;				 1/17/85	BB		Removed use of BTree Global area (BTG).
+;				11/10/84	BB		Added check for "no space".
+;				10/12/84	BB		Modified to use file IO instead of physical disk IO. Modified to
+;									use BTCB instead of VCB.
+;				 9/30/84	BB		Modified register usage and changed to use volume refnum instead
+;									of drive number.
+;				 8/21/84	BB		New today
+;
+
+*R BTALLOC reproduces $406E38..$40706C in ROM $4D1F8172.
+*R The original header, applicable history, and comments remain. ExtBTFile
+*R predates the added InitNode error check and alternate-MDB update. The
+*R later Sony includes and configuration declarations are absent with that
+*R update. Original equates and explicit instruction forms retain the bytes.
+
+*R These equates retain the original include definitions.
+		IMPORT ExtendFile,GetNode,GetRecA,InitNode,MarkBlock,RelNode ;]
+
+		INCLUDE 'FSEqu.a'
+		INCLUDE 'FSPrivate.a'
+		INCLUDE 'Private.a'
+		INCLUDE 'SysErr.a'
+
+
+
+
+;__________________________________________________________________________________
+;
+; External
+;  Routines:	 AllocNode	-  Allocates a BTree disk node.
+;				 ExtBTFile	-  Extends a BTree file.
+;				 FreeNode	-  Frees(de-allocates) a Btree disk node.
+;
+; Internal
+;  Subroutines:  GetMap 	-  Gets the next allocation map.
+;				 RelMap 	-  Releases the node containing the current
+;							   allocation map.
+;
+;__________________________________________________________________________________
+
+
+			BLANKS		ON
+			STRING		ASIS
+
+
+BTAlloc 	PROC	EXPORT
+
+			EXPORT	AllocNode,ExtBTFile,FreeNode
+
+			EXPORT	vAllocNode,vExtBTFile,vFreeNode						 ;]
+
+
+
+;__________________________________________________________________________________
+;
+; Routine:		AllocNode
+;
+; Function: 	Allocates a BTree disk node.
+;
+; Input:		A4.L  -  pointer to BTCB
+;
+; Output:		D0.W  -  result code
+;				D1.L  -  node number of allocated node
+;
+; Called by:	BTInsert,SplitLT
+;__________________________________________________________________________________
+
+AllocNode
+			MOVE.L	jAllocNode,-(SP)	; jumptable entry for vAllocNode		<25Oct85>
+			RTS 						; go there								<25Oct85>
+vAllocNode								; 'vectored' AllocNode routine			<25Oct85>
+
+			MOVE.L	(SP)+,-(A6) 		; save return address on A6 stack
+			MOVEM.L D2-D4/A2-A3,-(A6)	; save registers						<16Oct85>
+
+			MOVEQ	#0,D4				; beg node # for current map record 	<16Oct85>
+;
+; get next map record
+;
+			SUBA.L	A2,A2				; start with map in header node
+ANGetMap
+			BSR 	GetMap				; get next map record
+			BEQ.S	ANSearch			; ok ->
+			CMPI.W	#BTnotfound,D0		; map node not found?
+			BNE.S	ANExit1 			; no, some other error ->
+			MOVEQ	#BTnospace,D0		; result = "no space"					 <14Oct85>
+			BRA.S	ANExit1 			; exit ->
+;
+; search map record for a long word containing a free node (zero bit)
+;
+ANSearch
+			MOVE.W	D1,D2				; map record size						 <16Oct85>
+			LSR.W	#2,D2				;	in long words						 <16Oct85>
+			SUBQ.W	#1,D2				;	 - 1 = loop index					 <16Oct85>
+			MOVEA.L A1,A0				; start at beginning of the record
+@1			MOVE.L	(A0)+,D0			; next map long word
+			CMPI.L	#$FFFFFFFF,D0		; any free blocks ?
+			BNE.S	ANFound 			; ...yes, ->
+			DBRA	D2,@1				; continue search						 <16Oct85>
+
+			EXT.L	D1					; map record size						 <16Oct85>
+			LSL.L	#3,D1				;	x 8 = # of nodes					 <16Oct85>
+			ADD.L	D1,D4				; adjust beg node # 					 <16Oct85>
+
+			BRA.S	ANGetMap			; try next map record ->
+;
+; found a long word with some free blocks, locate 1st one
+;
+ANFound
+			MOVE.W	#31,D2				; initial bit index
+@1			BTST	D2,D0				; free block?
+			BEQ.S	@2					; ...yes ->
+			DBRA	D2,@1				; try next bit
+@2			BSET	D2,D0				; mark block allocated
+
+			MOVE.L	D0,D3				; save updated map long word in D3
+			LEA 	-4(A0),A0			; position back to map long word
+			MOVEA.L  A0,A3				; save ptr(map long word) in A3
+;
+; calculate node number for the selected node
+;
+			SUBA.L	A1,A0				; byte offset to word
+			MOVE.L	A0,D1				; put in D1
+			LSL.L	#3,D1				; x 8 = bit offset to long word
+			ADDI.L	#31,D1				; + bit offset within long word
+			EXT.L	D2					;
+			SUB.L	D2,D1				;
+			ADD.L	D4,D1				; = node number 						 <16Oct85>
+;
+; check for end of map
+;
+			MOVE.L	BTCNNodes(A4),D0	; # of nodes = max node # + 1			 <16Oct85>
+			CMP.L	D1,D0				; target node within map range?
+			BGT.S	ANAlloc 			; yes ->
+
+			BSR 	RelMap				; release map node
+			MOVEQ	#BTnospace,D0		; result = "no space"					 <14Oct85>
+			BRA.S	ANExit1 			 ; exit ->
+;
+; allocate the node
+;
+ANAlloc
+			MOVE.L	D3,(A3) 			; update the map
+
+			MOVEA.L A2,A0				; mark the node dirty					 <10Oct85>
+			JSR 	MarkBlock			;										 <10Oct85>
+
+			SUBQ.L	#1,BTCFree(A4)		; adjust free block count
+			BSET	#BTCDirty,BTCFlags(A4) ; mark BTCB dirty
+
+			CLR.W	D0					; indicate no error
+;
+; clean up and exit
+;
+ANExit
+			BSR 	RelMap				; release map node
+ANExit1
+			MOVEM.L (A6)+,D2-D4/A2-A3	; restore regs							  <16Oct85>
+			MOVE.L	(A6)+,-(SP) 		; put return address back on stack
+			TST.W	D0					; set up condition codes
+			RTS 						; exit AllocNode
+
+
+
+
+
+;__________________________________________________________________________________
+;
+; Routine:		ExtBTFile
+;
+; Function: 	Extends a BTree file.  The data fork of the BTree file is extended
+;				by one clump-size unit.  The file may be extended by less than one
+;				clump if a full clump is not available.  The BTree space map is
+;				extended to include the additional file space.
+;
+; Input:		A4.L  -  pointer to BTCB
+;
+; Output:		D0.W  -  result code
+;						   0 = ok
+;						   BTnospace = no available disk space
+;						   other = error
+;
+; Called by:	BTInsert
+;__________________________________________________________________________________
+
+ExtBTFile
+			MOVE.L	jExtBTFile,-(SP)	; jumptable entry for vExtBTFile		<25Oct85>
+			RTS 						; go there								<25Oct85>
+vExtBTFile								; 'vectored' ExtBTFile routine			<25Oct85>
+
+			MOVE.L	(SP)+,-(A6) 		; save return address on A6 stack
+			MOVEM.L D2-D6/A2,-(A6)		; save registers
+;
+; extend the BTree file space (data fork)
+;
+			MOVE.W	BTCRefNum(A4),D1	; file refnum
+			MOVEA.L FCBSPtr,A1			; A1 = ptr(1st FCB)
+			MOVEA.L FCBVPtr(A1,D1.W),A2 ; A2 = ptr(VCB)
+*R Permit noncontiguous allocation.
+			MOVEQ	#0,D3
+			MOVE.L	FCBClmpSize(A1,D1.W),D4 ; request one clump
+
+			JSR 	ExtendFile			; extend the file
+			BEQ.S	EFCalRange			; got the space ->						<02Sep85>
+			CMPI.W	#DskFulErr,D0		; 'disk full' error?					<29Aug85>
+			BNE 	EFExit1 			; no, some other error ->				<29Aug85>
+			TST.L	D6					; get any space?						<29Aug85>
+			BEQ 	EFExit1 			; no, give up ->						<02Sep85>
+;
+; calculate node number range for new space
+;
+EFCalRange
+			MOVE.L	BTCNNodes(A4),D3	; beg node # = current # of nodes		<16Oct85>
+			MOVE.L	D3,D4				; D3 and D4 = beg node #
+
+			MOVE.L	FCBPLen(A1,D1.W),D5 ; get new physical length
+			DIVU	BTCNodeSize(A4),D5	; physical length / node size
+			SWAP	D5					;	 = number of nodes
+			CLR.W	D5					;
+			SWAP	D5					;
+			MOVE.L	D5,BTCNNodes(A4)	; update total number of nodes
+			SUBQ.L	#1,D5				; # of nodes - 1 = node # of ending node
+			MOVE.L	D5,D6				; D5 and D6 = end node #
+;
+; locate map positions for beginning and end of new space
+;
+			SUBA.L	A2,A2				; start with map record in header
+EFGetMap
+			BSR 	GetMap				; get next map record
+			BNE 	EFExit1 			; error ->
+
+			EXT.L	D1					; map size(bytes)
+			LSL.L	#3,D1				;	 x 8 = map size(bits)
+
+			SUB.L	D1,D3				; make relative begin/end node numbers
+			SUB.L	D1,D5				; ...relative to next map record
+			BGE.S	@1					; end node beyond this map ->
+
+			SUBQ.L	#1,D4				; adjust begin nodenum for no new map
+			BRA 	EFUpdFree			; update free count ->
+
+@1			TST.L	NDFLink(A2) 		; have another map node?
+			BNE.S	EFGetMap			; yes, continue search ->
+;
+; must extend the map, update the previous 'last' map node and release it
+;
+EFAddMap
+			MOVE.L	D4,NDFlink(A2)		; link new node to last node
+
+			TST.L	D3					; new space begin within last map record?
+			BGE.S	@1					; no, must be all in new record ->
+
+			ADD.L	D1,D3				; make node number relative to this record
+			DIVU	#8,D3				; div node number
+;			 CLR.L	 D0 				 ;	  by byte size						   <16Oct85>
+			MOVE.W	D3,D0				;	quotient = byte offset
+			CLR.W	D3
+			SWAP	D3					;	remainder = bit offset
+			MOVEQ	#7,D1				; 7 - bit offset						   <16Oct85>
+			SUB.L	D3,D1				;	   = bit index
+
+			BSET	D1,0(A1,D0.W)		; pre-allocate map node 				   <16Oct85>
+			MOVEQ	#-1,D3				; indicate map node already allocated
+
+@1			MOVEA.L A2,A0				; mark the map node dirty				   <10Oct85>
+			JSR 	MarkBlock			;										 <10Oct85>
+
+			BSR 	RelMap				; release the map node					   <10Oct85>
+			BNE.S	EFExit1 			; error ->								   <10Oct85>
+;
+; initialize a new map node
+;
+EFNewMap
+			MOVE.L	 D4,D1				; map node number = begin node number
+			JSR 	 InitNode			; get an initialized node
+			MOVE.L	 A0,A2				; A2 = ptr(new map node)
+			MOVE.B	 #NDMapNode,NDType(A2) ; set node type						   <25Sep85>
+			MOVE.W	 #1,NDNRecs(A2) 	; map is one large record
+
+			MOVE.W	 BTCNodeSize(A4),D1 ; D1 = node size							   <17Oct85>
+			MOVEQ	 #-(lenND+4),D0 	; map rec size								   <17Oct85>
+			ADD.W	 D1,D0				;	= nodesize - length(nd) - size(2 offsets)  <17Oct85>
+			LSR.W	 #2,D0				; round down								   <17Oct85>
+			LSL.W	 #2,D0				;	to long word							   <17Oct85>
+			ADDI.W	 #lenND,D0			; rec offset = map rec size + length(ND)	   <17Oct85>
+			MOVE.W	 D0,-4(A2,D1.W) 	; set free space offset 					   <17Oct85>
+
+;			 ADDQ.L   #1,D4 			 ; don't include map node in free count    <16Oct85>
+
+			TST.L	D3					; map node bit within new record?
+			BLT.S	@1					; no -> 								   <10Oct85>
+			MOVE.B	#$80,lenND(A2)		; pre-allocate 1st node (map node)
+
+@1			MOVEA.L A2,A0				; mark the map node dirty				   <10Oct85>
+			JSR 	MarkBlock			;										 <10Oct85>
+;
+; update free node count
+;
+EFUpdFree
+			SUB.L	D4,D6				; end node # - beg node # = # of nodes-1
+			ADD.L	D6,BTCFree(A4)		; adjust free node count
+			BSET	#BTCDirty,BTCFlags(A4) ; mark BTCB dirty
+;
+; clean up and exit
+;
+EFExit
+			CLR.B	D0					; result = "ok"
+			BSR 	RelMap				; release last map node
+EFExit1
+			MOVEM.L (A6)+,D2-D6/A2		; restore regs
+			MOVE.L	(A6)+,-(SP) 		; put return address back on stack
+			TST.W	D0					; set up condition codes
+			RTS 						; exit ExtBTFile
+
+
+
+
+
+;__________________________________________________________________________________
+;
+; Routine:		FreeNode
+;
+; Function: 	Frees (de-allocates) a Btree disk node.
+;
+; Input:		D1.L  -  node number of node being released
+;				A4.L  -  pointer to BTCB
+;
+; Output:		D0.W  -  result code
+;
+; Called by:	BTDelete
+;__________________________________________________________________________________
+
+FreeNode
+			MOVE.L	jFreeNode,-(SP) 	; jumptable entry for vFreeNode 		<25Oct85>
+			RTS 						; go there								<25Oct85>
+vFreeNode								; 'vectored' FreeNode routine			<25Oct85>
+
+			MOVE.L	(SP)+,-(A6) 		; save return address on A6 stack
+			MOVEM.L D2-D3/A2,-(A6)		; save registers
+			MOVE.L	D1,D3				; D3 = input node number
+;
+; locate map record for target node
+;
+			SUBA.L	A2,A2				; indicate no node buffer
+FNGetMap
+			BSR 	GetMap				; get next map record
+			BNE.S	FNExit1 			; didn't find it ->
+
+			EXT.L	D1					; map size(bytes)
+			LSL.L	#3,D1				;	 x 8 = map size(bits)
+			SUB.L	D1,D3				; node within this record?
+			BGE.S	FNGetMap			; no, get next map record ->
+;
+; found map record, mark node free
+;
+FNFound
+			ADD.L	D1,D3				; make node number relative to this rec
+			DIVU	#8,D3				; div node number
+			CLR.L	D0					;	 by byte size
+			MOVE.W	D3,D0				; quotient = byte offset
+			CLR.W	D3
+			SWAP	D3					; remainder = bit position
+			MOVEQ	#7,D1				; 7 - bit position				   <16Oct85>
+			SUB.L	D3,D1				;	 = bit index
+			BCLR	D1,0(A1,D0.W)		  ; mark node as free
+
+			MOVEA.L A2,A0				; mark the map node dirty		   <10Oct85>
+			JSR 	MarkBlock			;										 <10Oct85>
+
+			ADDQ.L	#1,BTCFree(A4)		; adjust free count
+			BSET	#BTCDirty,BTCFlags(A4) ; mark BTCB dirty
+;
+; clean up and exit
+;
+FNExit
+			CLR.B	D0					; indicate no error
+			BSR 	RelMap				; release map node
+FNExit1
+			MOVEM.L (A6)+,D2-D3/A2		; restore regs
+			MOVE.L	(A6)+,-(SP) 		; put return address back on stack
+			TST.W	D0					; set up condition codes
+			RTS 						; exit AllocNode/FreeNode
+
+
+
+
+;_________________________________________________________________________________
+;
+; Internal Subroutines
+;_________________________________________________________________________________
+
+
+;__________________________________________________________________________________
+;
+; Subroutine:	GetMap
+;
+; Function: 	Gets next allocation map.  If a current node buffer is not given,
+;				the first map record (in the BTree header node) is obtained.
+;
+; Input:		A2.L  -  ptr(node buffer) containing current map record
+;							 0 = no current node buffer
+;				A4.L  -  pointer to BTCB
+;
+; Output:		D0.W  -  result code
+;							 0 = ok
+;							BTnotfound = map record not found (end of map)
+;							other = error
+;				A2.L  -  ptr(cache buffer) containing next map node
+;				D2.L  -  node number of next map node
+;				A1.L  -  ptr(map record) within map node
+;				D1.W  -  size of map record (bytes)
+;__________________________________________________________________________________
+
+GetMap
+			MOVE.L	(SP)+,-(A6) 		; save return address on A6 stack
+;
+; release current map node
+;
+			MOVEQ	#0,D2				 ; assume map in header node	  <10Oct85>
+
+			MOVE.L	A2,D0				; have a current node?
+			BEQ.S	GMGetNode			; no, get header node ->
+			MOVE.L	NDFLink(A2),D2		; get link to next map node
+
+			BSR 	RelMap				; release the current map node	  <10Oct85>
+			BNE.S	GMExit				; error ->						  <10Oct85>
+
+			TST.L	D2					; have a next node?
+			BNE.S	GMGetNode			; yes ->
+			MOVEQ	#BTnotfound,D0		; result = 'map record not found' <14Oct85>
+			BRA.S	GMExit				; exit ->
+;
+; get next map node
+;
+GMGetNode
+			MOVEQ	#0,D1				; no GetBlock options			  <10Oct85>
+			JSR 	GetNode 			; get map node
+			BNE.S	GMExit				; error ->
+			MOVEA.L A0,A2				; A2 = ptr(node buffer)
+;
+; locate map record and caculate its size
+;
+			MOVEQ	#0,D0				; assume map record is record 0
+			CMPI.B	#NDHdrNode,NDType(A2) ; header node?
+			BNE.S	@1					; no ->
+			MOVEQ	#2,D0				; map record is record 2
+
+@1			MOVEA.L A2,A1				; locate
+			JSR 	GetRecA 			; ...the record
+			MOVE.L	A0,D1				; D1 = ptr(record)
+			MOVE.W	NDNRecs(A2),D0		; locate
+			JSR 	GetRecA 			; ...the last record in node
+			MOVEA.L D1,A1				; A1 = ptr(record)
+			SUBA.L	A1,A0				; map size = ptr(last record)
+			MOVE.W	A0,D1				;	  - ptr(map record)
+
+			CLR.W	D0					; result = ok
+GMExit
+			MOVE.L	(A6)+,-(SP) 		; put return address back on stack
+			TST.W	D0					; set up condition codes
+			RTS 						; exit GetMap
+
+
+
+
+
+;__________________________________________________________________________________
+;
+; Subroutine:	RelMap
+;
+; Function: 	Releases the node containing the current allocation map.  The
+;				node is released with no RelBlock options.
+;
+; Input:		A2.L  -  pointer to current node buffer
+;							 0 = no node buffer
+;				A4.L  -  pointer to BTCB
+;
+; Output:		D0.W  -  result code
+;							0 = ok
+;							other = error
+;				A2.L  -  set to zero (no map node)
+;__________________________________________________________________________________
+
+RelMap
+			MOVE.L	(SP)+,-(A6) 		; save return address on A6 stack
+			MOVEM.L D1/A0-A1,-(A6)		; save registers
+
+			MOVEQ	#0,D1				; no RelBlock options			 <10Oct85>
+			MOVE.L	A2,A0				; ptr(node buffer)				 <23Sep85>
+			JSR 	RelNode 			; release the node
+
+			SUBA.L	A2,A2				; indicate no map node			 <10Oct85>
+
+			MOVEM.L (A6)+,D1/A0-A1		; restore registers
+			MOVE.L	(A6)+,-(SP) 		; put return address back on stack
+			TST.W	D0					; set up condition codes
+			RTS 						; exit RelMap
+	ENDP
+
+BTALLOCEnd ;]
+	END

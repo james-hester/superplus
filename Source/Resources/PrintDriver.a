@@ -1,0 +1,241 @@
+*R Mac Plus .Print driver resource.
+*R The released header, entry stubs, volume helpers, and applicable comments remain.
+*R The removed ROM loader is restored from the target instructions.
+*R The resource block header includes its eight bytes and master-pointer offset.
+*R See Evidence/print-driver.json for provenance and the byte comparison.
+
+;
+;	File:		PrintDriver.a
+;
+;	Contains:	generic printer shell
+;
+;				We get called only if the driver has not yet been attached, so we must attach
+;				it.	This involves getting the correct DRVR from the resource file pointed
+;				to by STR -8192 in the system file, and replacing ourselves with it.  This
+;				will convince future calls to the print driver to go direct, until the driver
+;				gets purged, in which case we will get called again, and we simply go get the
+;				real driver again.
+;
+;	Written by:	Burt Sloane
+;
+;	Copyright:	© 1984-1990 by Apple Computer, Inc., all rights reserved.
+;
+*R Original histories through 1985:
+;				 9/12/85	LAK		Set the dRAMBased bit in the appropriate byte.
+;				 8/28/85	BBM		added .include for tlasm-newequ.text.
+;				 8/26/85	Leo		ROM-ized the driver, incorporating Larry's changes from his
+;									version: if for ROM, then set dNeedsLock bit, set dRAMBased bit
+;									when splicing in printer driver, and don't do the
+;									ReleaseResource on ourselves. Also incorporated use of
+;									RsrcMapEntry trap for ROM version. Changed code to be included
+;									from a superset file that has all the includes and the
+;									definition of the conditional assembly constants forROM and
+;									forRAM in it.
+;				 8/14/85	Leo		Auugh! Hang bug in MacPaint was caused because there's a routine
+;									in some PrLink, somewhere, called PrNoPurge that does a
+;									GetResource('DRVR',2). How obnoxious! In order to work around
+;									this bug, we're writing the handle to DRVR -8192 into the
+;									resource map over the handle to DRVR 2.
+;				 7/31/85	LEO		Added GetDefDrive and GoSetVol from Donion's Scrapbook
+;				 7/15/85	LEO		Added version info corresponding to Cary's memo Eliminated
+;									copying of code into tempRect. Eliminated master pointer/back
+;									pointer swap. Eliminated closing of resource file (speedup,
+;									hopefully).
+;				  2/1/85	BAS		fixed a bug in the error case introduced 16-Jan. also handled
+;									not getting the resource better
+;				 1/16/85	BAS		let openres do the volume hacking for me
+;				10/29/84	BAS		took out the global flag, made it always close the resFile
+;				 9/12/84	BAS		made STR -8192 not need to be in the system file for Bud
+;				  9/7/84	BAS		Put in suggestions/bugs found by LAK & SC & RS { whew! }
+;
+
+		EXPORT PrintHeader ;]
+
+		INCLUDE 'PrPrivate.a'
+		INCLUDE 'ResourceMgrPriv.a'
+		INCLUDE 'SysEqu.a'
+		INCLUDE 'SysErr.a'
+		INCLUDE 'ToolUtils.a'
+		INCLUDE 'Traps.a'
+
+
+
+RNameO EQU RID+2
+
+PrintResourceBlock ;]
+            DC.L $C0000000+PrintResourceEnd-PrintResourceBlock ;]
+            DC.L $54 ;]
+PrintHeader ;]
+OrnEntry
+;enable all calls and set the lock flag
+            DC.B $4F,$00 ;]
+            DC.W 0              ;no time
+            DC.W 0,0            ;no events, no menu
+;
+; Entry point offset table
+;
+;open routine
+            DC.W PrintOpen-PrintHeader ;]
+;prime
+            DC.W PrintPrime-PrintHeader ;]
+;control
+            DC.W PrintControl-PrintHeader ;]
+;status
+            DC.W PrintStatus-PrintHeader ;]
+;close
+            DC.W PrintClose-PrintHeader ;]
+;
+; and a name for any humans nearby
+            DC.B $06,'.Print ' ;]
+            ALIGN 2
+;
+; Version data
+            DC.W 0
+            DC.B 'DRVR'
+            DC.W $0002,$0019 ;]
+
+PrintOpen
+            MOVEQ #DrvrOpen,D1
+            BRA.S GetDrvr       ;do the open call
+PrintPrime ;]
+            MOVEQ #DrvrPrime,D1
+            BRA.S GetDrvr       ;do the prime call
+PrintControl ;]
+            MOVEQ #DrvrCtl,D1
+            BRA.S GetDrvr       ;do the ctl call
+PrintStatus ;]
+            MOVEQ #DrvrStatus,D1
+            BRA.S GetDrvr       ;do the status call
+PrintClose
+            MOVEQ #DrvrClose,D1
+            NOP
+
+; GetDrvr - go find the driver and load it in.
+*R The ROM replaces this stub's resource-map entry, then returns into the driver.
+GetDrvr
+            SUBQ.W #4,SP
+            MOVEM.L A0-A1,-(SP)
+            MOVE.W D1,-(SP)      ;save D1
+            MOVE.W CurMap,-(SP)  ;save the current map
+            MOVE.L A1,-(SP)
+            MOVE.L TopMapHndl,A0
+            MOVE.L (A0),A0
+            MOVE.W 20(A0),CurMap
+;] Get the printer name from the current resource chain.
+*R The ROM does not check the returned string handle before locking it.
+            SUBQ.W #4,SP
+            MOVE.W #-8192,-(SP)
+            _GetString
+            MOVE.L (SP)+,A2
+            BSET #7,(A2)
+            MOVE.L (A2),A1
+;] Save the default volume and select the system volume while opening the file.
+            BSR.W GetDefDrive
+            MOVE.W D0,-(SP)
+            MOVE.W BootDrive,D0
+            BSR.W GoSetVol
+            SUBQ.W #2,SP
+            MOVE.L A1,-(SP)
+            _OpenResFile
+            MOVE.L A2,-(SP)
+            _ReleaseResource
+            TST.W (SP)+
+            BMI.W OpenFailed ;]
+            MOVE.W (SP)+,D0
+            BSR.W GoSetVol
+; Next, get the DRVR resource from the print resource file.
+            SUBQ.W #4,SP         ;space for handle
+            MOVE.L #'DRVR',-(SP) ;type
+            MOVE.W #-8192,-(SP)  ;ID
+            _GetResource
+            MOVE.L (SP)+,D0      ;get the handle
+            BEQ.W ErrorZ ;]
+            MOVE.L D0,A2
+            MOVE.W ResErr,D0
+            BMI.W ErrorZ ;]
+            MOVE.L A2,-(SP)
+            _DetachResource
+            BSR.W GetDrvrEntry ;]
+            BNE.S ReplaceDriver ;]
+            MOVE.W #resNotFound,D0
+            BRA.S ErrorZ ;]
+ReplaceDriver ;]
+            MOVE.L A2,RHndl(A3) ;]
+            MOVE.L (SP)+,A0
+            MOVE.L (A2),A1
+            MOVE.B (A1),DCtlFlags(A0) ;]
+            BSET #dRAMBased,DCtlFlags+1(A0) ;]
+            MOVE.L A2,DCtlDriver(A0) ;]
+            MOVE.W (SP)+,CurMap  ;restore the map
+            MOVE.W (SP)+,D1      ;get back the call number
+;] Lock the driver and use its entry-point table for the original call.
+            BSET #7,(A2)
+            MOVE.L (A2),A0
+            MOVE.W 0(A0,D1.W),D1 ;]
+            LEA 0(A0,D1.W),A0 ;]
+            MOVE.L A0,8(SP)
+            MOVEM.L (SP)+,A0-A1
+            RTS
+OpenFailed ;]
+            MOVE.W (SP)+,D0
+            BSR.W GoSetVol
+            MOVE.W #resFNotFound,D0 ;]
+ErrorZ
+            MOVE.W D0,PrintVars  ;save error code
+            MOVE.L (SP)+,A0
+            MOVE.W (SP)+,CurMap  ;restore the map
+            MOVE.W (SP)+,D1      ;get back the call number
+            MOVEM.L (SP)+,A0-A1
+            ADDQ.W #4,SP
+CompletelyDone
+            BTST #9,ioTrap(A0)   ;were we called Immed?
+            BNE.S Return
+            MOVE.L JIODone,-(SP) ;no, go to ioDone
+Return
+            RTS                 ;go away
+
+; GetDefDrive returns the default volume refNum in d0.
+; GoSetVol sets the current default volume to the vRefNum
+; in d0.
+;
+GetDefDrive             				;get the default drive into D0
+        MOVEQ   #0,D0
+GoSetVol                				;set the default drive to D0.
+        SUB		#ioVQElSize,SP          ;make room for _SetVol parm block
+        MOVE.L  SP,A0
+        MOVE    D0,ioVDrvNum(A0)        ;pass the drive number
+		CLR.L   ioVNPtr(A0)             ;nil name pointer
+		_SetVol
+		_GetVol
+		MOVE    ioVDrvNum(A0),D0        ;get back the drive number
+		ADD     #ioVQElSize,SP          ;pop off the frame
+		RTS                             ;return without error check
+;		
+
+;] GetDrvrEntry obtains the resource-map entry for this stub without loading it.
+;] MOVEM restores ResLoad without changing the result's condition codes.
+GetDrvrEntry ;]
+            MOVEM.L D0-D1/A1-A2,-(SP)
+            MOVE.W ResLoad,A1 ;]
+            CLR.W ResLoad ;]
+            SUBQ.W #4,SP
+            MOVE.L #'DRVR',-(SP)
+            MOVE.W #2,-(SP)
+            _GetResource
+            MOVE.L (SP)+,D0
+            BEQ.S EntryDone ;]
+            SUBQ.W #4,SP
+            MOVE.L D0,-(SP)
+            _RsrcMapEntry
+            MOVE.L (SP)+,D0
+            BEQ.S EntryDone ;]
+            MOVE.L SysMapHndl,A0
+            MOVE.L (A0),D1
+            ADD.L D1,D0
+EntryDone ;]
+            MOVE.L D0,A3
+            MOVEM.W A1,ResLoad ;]
+            MOVEM.L (SP)+,D0-D1/A1-A2
+            RTS
+PrintResourceEnd ;]
+            END
